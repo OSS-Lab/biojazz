@@ -1,0 +1,7 @@
+{
+  'Set' => {
+             'element_class' => 'GenomeModel',
+             'elements_ref' => []
+           }
+};
+

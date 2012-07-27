@@ -1,0 +1,533 @@
+{
+  'Gene' => {
+              'STOP_linker_code' => '111',
+              'gene_start_code' => '01111110',
+              'gene_start_code_length' => 8,
+              'regulated_concentration_max' => '0.001',
+              'regulated_concentration_min' => '1e-12',
+              'regulated_concentration_width' => 4,
+              'soft_linker_code' => '001',
+              'stop_linker_code' => '.{0,3}',
+              'unused_width' => 32
+            },
+  'Instantiable' => {
+                      'instances' => [],
+                      'instances_index' => {}
+                    },
+  'Named' => {
+               'name' => 'Gene'
+             },
+  'Parser' => {
+                'linker_ref' => {
+                                  'domains' => '001'
+                                },
+                'mutation_rate_ref' => {
+                                         'START_CODE' => '0',
+                                         'STOP_CODE' => '0',
+                                         'UNUSED' => '1',
+                                         'domains' => '1',
+                                         'domains_linker' => '1',
+                                         'regulated_concentration' => '1'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'START_CODE',
+                                       '01111110'
+                                     ],
+                                     [
+                                       'regulated_concentration',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'UNUSED',
+                                       '\\G.{32}'
+                                     ],
+                                     [
+                                       'domains',
+                                       bless( do{\(my $o = undef)}, 'Domain' ),
+                                       '\\G001(?=.{141})'
+                                     ],
+                                     [
+                                       'STOP_CODE',
+                                       '\\G.{0,3}'
+                                     ]
+                                   ]
+              },
+  'Set' => {
+             'element_class' => 'Domain',
+             'elements_ref' => [
+                                 $VAR1->{'Parser'}{'structure_ref'}[3][1]
+                               ]
+           }
+};
+
+Gene min length is: 185
+{
+  'GeneInstance' => {
+                      'export_flag' => 1
+                    },
+  'Instance' => {
+                  'parent_class' => 'Gene',
+                  'parent_name' => 'Gene',
+                  'parent_ref' => bless( do{\(my $o = undef)}, 'Gene' )
+                },
+  'Named' => {
+               'name' => 'G0221'
+             },
+  'ParserInstance' => {
+                        'length' => '188',
+                        'locus' => '221',
+                        'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' ),
+                        'start_pos' => 0,
+                        'transcription_ref' => {
+                                                 'START_CODE' => [
+                                                                   '01111110',
+                                                                   '221',
+                                                                   '8'
+                                                                 ],
+                                                 'STOP_CODE' => [
+                                                                  '100',
+                                                                  '406',
+                                                                  '3'
+                                                                ],
+                                                 'UNUSED' => [
+                                                               '11001001100110100011010110110111',
+                                                               '233',
+                                                               '32'
+                                                             ],
+                                                 'domains' => [
+                                                                [
+                                                                  bless( do{\(my $o = undef)}, 'DomainInstance' ),
+                                                                  '265',
+                                                                  '141'
+                                                                ]
+                                                              ],
+                                                 'regulated_concentration' => [
+                                                                                '1000',
+                                                                                '229',
+                                                                                '4'
+                                                                              ]
+                                               },
+                        'transcription_valid_flag' => 1,
+                        'translation_ref' => {
+                                               'START_CODE' => '01111110',
+                                               'STOP_CODE' => '100',
+                                               'UNUSED' => '11001001100110100011010110110111',
+                                               'domains' => [
+                                                              {
+                                                                'RT_phi' => '0.478983382209189',
+                                                                'RT_transition_rate' => '0.447740513454224',
+                                                                'TR_transition_rate' => '16.0427417473101',
+                                                                'UNUSED' => '11111110001111010010101001110000',
+                                                                'allosteric_flag' => '1',
+                                                                'protodomains' => [
+                                                                                    {
+                                                                                      'Keq_ratio' => '827.729746752389',
+                                                                                      'UNUSED' => '00111010000110100111100',
+                                                                                      'binding_profile' => '1000',
+                                                                                      'kb_conformation_mask' => '1001',
+                                                                                      'kb_polarity_mask' => '0100',
+                                                                                      'kb_profile' => '0011',
+                                                                                      'kf_conformation_mask' => '111010',
+                                                                                      'kf_polarity_mask' => '110110',
+                                                                                      'kf_profile' => '010011',
+                                                                                      'kp_conformation_mask' => '0000',
+                                                                                      'kp_profile' => '0011',
+                                                                                      'substrate_polarity' => '1',
+                                                                                      'type' => 'msite'
+                                                                                    }
+                                                                                  ]
+                                                              }
+                                                            ],
+                                               'regulated_concentration' => '6.30957344480193e-08'
+                                             },
+                        'translation_valid_flag' => 1,
+                        'upper_ref' => ''
+                      }
+};
+
+ReactionSite : {
+    name => "PD0328",
+    type => "msite",
+    Keq_ratio => 827.729746752389,
+}
+AllostericStructure : {
+    name => "D0265",
+    allosteric_flag => 1,
+    allosteric_transition_rates => [0.447740513454224,16.0427417473101],
+    Phi => 0.478983382209189,
+    elements => [PD0328],
+}
+Structure : {  # IC of G0221 = 6.30957344480193e-08
+    name => "G0221",
+    elements => [D0265],
+    max_count => -1,
+}
+
+
+STORABLE TEST
+{
+  'Gene' => {
+              'STOP_linker_code' => '111',
+              'gene_start_code' => '01111110',
+              'gene_start_code_length' => 8,
+              'regulated_concentration_max' => '0.001',
+              'regulated_concentration_min' => '1e-12',
+              'regulated_concentration_width' => 4,
+              'soft_linker_code' => '001',
+              'stop_linker_code' => '.{0,3}',
+              'unused_width' => 32
+            },
+  'Instantiable' => {
+                      'instances' => [],
+                      'instances_index' => {}
+                    },
+  'Named' => {
+               'name' => 'Gene'
+             },
+  'Parser' => {
+                'linker_ref' => {
+                                  'domains' => '001'
+                                },
+                'mutation_rate_ref' => {
+                                         'START_CODE' => '0',
+                                         'STOP_CODE' => '0',
+                                         'UNUSED' => '1',
+                                         'domains' => '1',
+                                         'domains_linker' => '1',
+                                         'regulated_concentration' => '1'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'START_CODE',
+                                       '01111110'
+                                     ],
+                                     [
+                                       'regulated_concentration',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'UNUSED',
+                                       '\\G.{32}'
+                                     ],
+                                     [
+                                       'domains',
+                                       bless( do{\(my $o = undef)}, 'Domain' ),
+                                       '\\G001(?=.{141})'
+                                     ],
+                                     [
+                                       'STOP_CODE',
+                                       '\\G.{0,3}'
+                                     ]
+                                   ]
+              },
+  'Set' => {
+             'element_class' => 'Domain',
+             'elements_ref' => [
+                                 $VAR1->{'Parser'}{'structure_ref'}[3][1]
+                               ]
+           }
+};
+
+{
+  'Gene' => {
+              'STOP_linker_code' => '111',
+              'gene_start_code' => '01111110',
+              'gene_start_code_length' => 8,
+              'regulated_concentration_max' => '0.001',
+              'regulated_concentration_min' => '1e-12',
+              'regulated_concentration_width' => '4',
+              'soft_linker_code' => '001',
+              'stop_linker_code' => '.{0,3}',
+              'unused_width' => '32'
+            },
+  'Instantiable' => {
+                      'instances' => [],
+                      'instances_index' => {}
+                    },
+  'Named' => {
+               'name' => 'Gene'
+             },
+  'Parser' => {
+                'linker_ref' => {
+                                  'domains' => '001'
+                                },
+                'mutation_rate_ref' => {
+                                         'START_CODE' => '0',
+                                         'STOP_CODE' => '0',
+                                         'UNUSED' => '1',
+                                         'domains' => '1',
+                                         'domains_linker' => '1',
+                                         'regulated_concentration' => '1'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'START_CODE',
+                                       '01111110'
+                                     ],
+                                     [
+                                       'regulated_concentration',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'UNUSED',
+                                       '\\G.{32}'
+                                     ],
+                                     [
+                                       'domains',
+                                       bless( do{\(my $o = undef)}, 'Domain' ),
+                                       '\\G001(?=.{141})'
+                                     ],
+                                     [
+                                       'STOP_CODE',
+                                       '\\G.{0,3}'
+                                     ]
+                                   ]
+              },
+  'Set' => {
+             'element_class' => 'Domain',
+             'elements_ref' => [
+                                 $VAR1->{'Parser'}{'structure_ref'}[3][1]
+                               ]
+           }
+};
+
+UNTRANSLATE TEST
+$VAR1 = {
+          'START_CODE' => '01111110',
+          'STOP_CODE' => '111',
+          'UNUSED' => '00000000000000000000000000001010',
+          'domains' => [
+                         {
+                           'RT_phi' => '0111001100',
+                           'RT_transition_rate' => '1010101010',
+                           'TR_transition_rate' => '0101010101',
+                           'UNUSED' => '00000000000000000000000000000100',
+                           'allosteric_flag' => '1',
+                           'protodomains' => [
+                                               {
+                                                 'Keq_ratio' => '0000000000',
+                                                 'UNUSED' => '00000000000001000000001',
+                                                 'binding_profile' => '0010',
+                                                 'kb_conformation_mask' => '1100',
+                                                 'kb_polarity_mask' => '0011',
+                                                 'kb_profile' => '1011',
+                                                 'kf_conformation_mask' => '001111',
+                                                 'kf_polarity_mask' => '000000',
+                                                 'kf_profile' => '000011',
+                                                 'kp_conformation_mask' => '0101',
+                                                 'kp_profile' => '0011',
+                                                 'substrate_polarity' => '1',
+                                                 'type' => '10'
+                                               },
+                                               {
+                                                 'Keq_ratio' => '0010101011',
+                                                 'UNUSED' => '00000000000001000000011',
+                                                 'binding_profile' => '0110',
+                                                 'kb_conformation_mask' => '1100',
+                                                 'kb_polarity_mask' => '0011',
+                                                 'kb_profile' => '1011',
+                                                 'kf_conformation_mask' => '001111',
+                                                 'kf_polarity_mask' => '000000',
+                                                 'kf_profile' => '000011',
+                                                 'kp_conformation_mask' => '0101',
+                                                 'kp_profile' => '0011',
+                                                 'substrate_polarity' => '1',
+                                                 'type' => '01'
+                                               },
+                                               {
+                                                 'Keq_ratio' => '0101010101',
+                                                 'UNUSED' => '00000000000001000000111',
+                                                 'binding_profile' => '0111',
+                                                 'kb_conformation_mask' => '1100',
+                                                 'kb_polarity_mask' => '0011',
+                                                 'kb_profile' => '1011',
+                                                 'kf_conformation_mask' => '001111',
+                                                 'kf_polarity_mask' => '000000',
+                                                 'kf_profile' => '000011',
+                                                 'kp_conformation_mask' => '0101',
+                                                 'kp_profile' => '0011',
+                                                 'substrate_polarity' => '0',
+                                                 'type' => '00'
+                                               }
+                                             ]
+                         },
+                         {
+                           'RT_phi' => '1000110011',
+                           'RT_transition_rate' => '1101010100',
+                           'TR_transition_rate' => '0010101011',
+                           'UNUSED' => '00000000000000000000000000000101',
+                           'allosteric_flag' => '0',
+                           'protodomains' => [
+                                               {
+                                                 'Keq_ratio' => '0000000000',
+                                                 'UNUSED' => '00000000000001100000001',
+                                                 'binding_profile' => '1111',
+                                                 'kb_conformation_mask' => '1100',
+                                                 'kb_polarity_mask' => '0011',
+                                                 'kb_profile' => '1011',
+                                                 'kf_conformation_mask' => '001111',
+                                                 'kf_polarity_mask' => '000000',
+                                                 'kf_profile' => '000011',
+                                                 'kp_conformation_mask' => '0101',
+                                                 'kp_profile' => '0011',
+                                                 'substrate_polarity' => '1',
+                                                 'type' => '01'
+                                               }
+                                             ]
+                         }
+                       ],
+          'regulated_concentration' => '1111'
+        };
+
+01111110111100000000000000000000000000001010110101010100101010101011100110000000000000000000000000000000100101001000001110110011000000000000000000110011111100010100000000000001000000001000011011000001110110011001010101100000000110011111100010100000000000001000000011000000011100001110110011010101010100000000110011111100010100000000000001000000111001011010101000010101011100011001100000000000000000000000000000101011111100001110110011000000000000000000110011111100010100000000000001100000001111
+{
+  'GeneInstance' => {
+                      'export_flag' => 1
+                    },
+  'Instance' => {
+                  'parent_class' => 'Gene',
+                  'parent_name' => 'Gene',
+                  'parent_ref' => bless( do{\(my $o = undef)}, 'Gene' )
+                },
+  'Named' => {
+               'name' => 'G0000'
+             },
+  'ParserInstance' => {
+                        'length' => '494',
+                        'locus' => '0',
+                        'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' ),
+                        'start_pos' => 0,
+                        'transcription_ref' => {
+                                                 'START_CODE' => [
+                                                                   '01111110',
+                                                                   '0',
+                                                                   '8'
+                                                                 ],
+                                                 'STOP_CODE' => [
+                                                                  '111',
+                                                                  '491',
+                                                                  '3'
+                                                                ],
+                                                 'UNUSED' => [
+                                                               '00000000000000000000000000001010',
+                                                               '12',
+                                                               '32'
+                                                             ],
+                                                 'domains' => [
+                                                                [
+                                                                  bless( do{\(my $o = undef)}, 'DomainInstance' ),
+                                                                  '44',
+                                                                  '303'
+                                                                ],
+                                                                [
+                                                                  bless( do{\(my $o = undef)}, 'DomainInstance' ),
+                                                                  '350',
+                                                                  '141'
+                                                                ]
+                                                              ],
+                                                 'domains_linker' => [
+                                                                       [
+                                                                         '001',
+                                                                         '347',
+                                                                         '3'
+                                                                       ]
+                                                                     ],
+                                                 'regulated_concentration' => [
+                                                                                '1111',
+                                                                                '8',
+                                                                                '4'
+                                                                              ]
+                                               },
+                        'transcription_valid_flag' => 1,
+                        'translation_ref' => {
+                                               'START_CODE' => '01111110',
+                                               'STOP_CODE' => '111',
+                                               'UNUSED' => '00000000000000000000000000001010',
+                                               'domains' => [
+                                                              {
+                                                                'RT_phi' => '0.449657869012708',
+                                                                'RT_transition_rate' => '9.99999999999999',
+                                                                'TR_transition_rate' => '0.1',
+                                                                'UNUSED' => '00000000000000000000000000000100',
+                                                                'allosteric_flag' => '1',
+                                                                'protodomains' => [
+                                                                                    {
+                                                                                      'Keq_ratio' => '0.001',
+                                                                                      'UNUSED' => '00000000000001000000001',
+                                                                                      'binding_profile' => '0010',
+                                                                                      'kb_conformation_mask' => '1100',
+                                                                                      'kb_polarity_mask' => '0011',
+                                                                                      'kb_profile' => '1011',
+                                                                                      'kf_conformation_mask' => '001111',
+                                                                                      'kf_polarity_mask' => '000000',
+                                                                                      'kf_profile' => '000011',
+                                                                                      'kp_conformation_mask' => '0101',
+                                                                                      'kp_profile' => '0011',
+                                                                                      'substrate_polarity' => '1',
+                                                                                      'type' => 'csite'
+                                                                                    },
+                                                                                    {
+                                                                                      'Keq_ratio' => '0.0100677529813686',
+                                                                                      'UNUSED' => '00000000000001000000011',
+                                                                                      'binding_profile' => '0110',
+                                                                                      'kb_conformation_mask' => '1100',
+                                                                                      'kb_polarity_mask' => '0011',
+                                                                                      'kb_profile' => '1011',
+                                                                                      'kf_conformation_mask' => '001111',
+                                                                                      'kf_polarity_mask' => '000000',
+                                                                                      'kf_profile' => '000011',
+                                                                                      'kp_conformation_mask' => '0101',
+                                                                                      'kp_profile' => '0011',
+                                                                                      'substrate_polarity' => '1',
+                                                                                      'type' => 'msite'
+                                                                                    },
+                                                                                    {
+                                                                                      'Keq_ratio' => '0.1',
+                                                                                      'UNUSED' => '00000000000001000000111',
+                                                                                      'binding_profile' => '0111',
+                                                                                      'kb_conformation_mask' => '1100',
+                                                                                      'kb_polarity_mask' => '0011',
+                                                                                      'kb_profile' => '1011',
+                                                                                      'kf_conformation_mask' => '001111',
+                                                                                      'kf_polarity_mask' => '000000',
+                                                                                      'kf_profile' => '000011',
+                                                                                      'kp_conformation_mask' => '0101',
+                                                                                      'kp_profile' => '0011',
+                                                                                      'substrate_polarity' => '0',
+                                                                                      'type' => 'bsite'
+                                                                                    }
+                                                                                  ]
+                                                              },
+                                                              {
+                                                                'RT_phi' => '0.550342130987292',
+                                                                'RT_transition_rate' => '99.3270297603253',
+                                                                'TR_transition_rate' => '0.0100677529813686',
+                                                                'UNUSED' => '00000000000000000000000000000101',
+                                                                'allosteric_flag' => '0',
+                                                                'protodomains' => [
+                                                                                    {
+                                                                                      'Keq_ratio' => '0.001',
+                                                                                      'UNUSED' => '00000000000001100000001',
+                                                                                      'binding_profile' => '1111',
+                                                                                      'kb_conformation_mask' => '1100',
+                                                                                      'kb_polarity_mask' => '0011',
+                                                                                      'kb_profile' => '1011',
+                                                                                      'kf_conformation_mask' => '001111',
+                                                                                      'kf_polarity_mask' => '000000',
+                                                                                      'kf_profile' => '000011',
+                                                                                      'kp_conformation_mask' => '0101',
+                                                                                      'kp_profile' => '0011',
+                                                                                      'substrate_polarity' => '1',
+                                                                                      'type' => 'msite'
+                                                                                    }
+                                                                                  ]
+                                                              }
+                                                            ],
+                                               'regulated_concentration' => '0.000999999999999999'
+                                             },
+                        'translation_valid_flag' => 1,
+                        'upper_ref' => ''
+                      }
+};
+

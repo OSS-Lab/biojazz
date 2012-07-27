@@ -1,0 +1,22 @@
+######################################################################################
+# File:     RELEASE_HISTORY.TXT
+# Author:   Julien F. Ollivier
+#
+# Copyright (C) 2005-2012 Julien Ollivier.
+#
+# This program comes with ABSOLUTELY NO WARRANTY.
+# This is free software, and you are welcome to redistribute it
+# under certain conditions. See file LICENSE.TXT for details.
+#
+# Synopsys: This file documents changes made to each release of BioJazz.
+#
+######################################################################################
+
+Date    	Tag                     Preparer        Notes
+----    	---                     --------        -------
+
+2012-06-??	ALPHA-02		ollivier	Update for compatibility with ANC v1.x.
+							Fix miscelleneous issues, update tests.
+
+2008-06-02	ALPHA-01		ollivier	Initial release to other users.
+

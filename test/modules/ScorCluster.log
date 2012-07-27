@@ -1,0 +1,76 @@
+ScorCluster::new() -- New ScorCluster cluster_size=2, work_dir=test/modules, scoring_class=Scoring, cluster_type=LOCAL
+Creating ScorNode ID=0 logfile=test/modules/localdir/ScorCluster/ScorNode.0.20120611_121528.log cluster_type=LOCAL
+Creating ScorNode ID=1 logfile=test/modules/localdir/ScorCluster/ScorNode.1.20120611_121528.log cluster_type=LOCAL
+ScorCluster::start -- parent process started (pid=2842, child=2858)
+ScorCluster::start -- child process started (pid=2858, parent=2842)
+ScorNode::spawn spawning local node
+ScorNode::spawn spawning local node
+ScorCluster::start -- child process done spawning, started multitask
+ScorCluster: Child process 2858 received SIGUSR1 (shutting down)
+
+ScorCluster::DEMOLISH called (pid 2858, ctrl_C_flag=0, sigusr1_flag=1)
+ScorCluster::DEMOLISH am child (pid 2858)
+ScorNode::DEMOLISH called (pid 2858)
+Moving test/modules/localdir/ScorCluster/ScorNode.1.20120611_121528.log to test/modules/ScorCluster/ScorNode.1.20120611_121528.log
+ScorNode::DEMOLISH called (pid 2858)
+Moving test/modules/localdir/ScorCluster/ScorNode.0.20120611_121528.log to test/modules/ScorCluster/ScorNode.0.20120611_121528.log
+ScorCluster::start -- parent process returning
+ScorCluster::DEMOLISH called (pid 2842, ctrl_C_flag=0, sigusr1_flag=0)
+---------------------------------------
+Shutting down the cluster
+---------------------------------------
+ScorCluster::DEMOLISH am parent (pid 2842), shutting down child and waiting...
+ScorCluster::DEMOLISH am parent (pid 2842), done cleanup...
+---------------------------------------
+Shutdown complete
+---------------------------------------
+ScorNode::DEMOLISH called (pid 2842)
+ScorNode::DEMOLISH called (pid 2842)
+
+LOGFILE test/modules/ScorCluster/ScorNode.0.*.log:
+PS1='[ScorNode 0]'
+]0;ollivier@cumbia: ~/Project/biojazz/workingollivier@cumbia:~/Project/biojazz/working$ PS1='[ScorNode 0]'
+[ScorNode 0]echo my shell is ready
+my shell is ready
+[ScorNode 0]stty ocrnl -onlcr
+[ScorNode 0]date
+Mon Jun 11 12:15:34 EDT 2012
+[ScorNode 0]hostname
+cumbia
+[ScorNode 0]cd /home/ollivier/Project/biojazz/working
+[ScorNode 0]
+[ScorNode 0]nice -10 perl -I/home/ollivier/Project/biojazz/working/modules -Icus 
+tom -I/home/ollivier/Project/anc/working/base -MUtils -MGenomeModel -MScoring -e 
+ '$|=1; print "PERL_SHELL> ";while(<STDIN>){printn $_;eval "$_";print "$@" if $@ 
+;print "PERL_SHELL> ";}'
+PERL_SHELL> use Storable qw(store retrieve);
+use Storable qw(store retrieve);
+
+PERL_SHELL> use Globals qw($verbosity $TAG);
+use Globals qw($verbosity $TAG);
+
+PERL_SHELL> $verbosity=1; $TAG="ScorCluster";
+$verbosity=1; $TAG="ScorCluster";
+
+PERL_SHELL> $scoring_ref = Scoring->new({config_file => "test/modules/ScorCluster.cfg", node_ID => 0, work_dir => "test/modules/ScorCluster", local_dir => "test/modules/localdir/ScorCluster", });
+$scoring_ref = Scoring->new({config_file => "test/modules/ScorCluster.cfg", node_ID => 0, work_dir => "test/modules/ScorCluster", local_dir => "test/modules/localdir/ScorCluster", });
+
+read_config: reading test/modules/ScorCluster.cfg
+read_config: nice = 15
+read_config: vmem = 750000
+read_config: local_dir = scoring/localdir
+read_config: scoring_class = Scoring
+read_config: work_dir = scoring
+MatlabDriver::START: starting matlab(0) on localhost (Mon Jun 11 12:15:44 EDT 2012)
+MatlabDriver::START: logfile is test/modules/localdir/ScorCluster/matlab/matlab.0.log
+MatlabDriver::START: executing "ulimit -S -v 750000; ulimit -a; matlab -nodesktop -nosplash"
+MatlabDriver::START: MATLAB shell pid=2933
+PERL_SHELL> ^C
+exit
+Scoring: process 2901 exiting from CTRL-C
+
+MatlabDriver::DEMOLISH: Closing matlab(0)
+Scoring::DEMOLISH: called
+Moving test/modules/localdir/ScorCluster/matlab/matlab.0.log to test/modules/ScorCluster/matlab
+Done moving.
+Scoring::DEMOLISH: done

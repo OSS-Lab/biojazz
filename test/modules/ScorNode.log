@@ -1,0 +1,52 @@
+Creating ScorNode ID=0 logfile=test/modules/localdir/ScorNode.0.log cluster_type=LOCAL
+ScorNode::spawn spawning local node
+ScorNode::DEMOLISH called (pid 2208)
+Moving test/modules/localdir/ScorNode.0.log to test/modules/ScorNode.0.log
+
+LOGFILE test/modules/ScorNode.0.log:
+PS1='[ScorNode 0]'
+]0;ollivier@cumbia: ~/Project/biojazz/workingollivier@cumbia:~/Project/biojazz/working$ PS1='[ScorNode 0]'
+[ScorNode 0]echo my shell is ready
+my shell is ready
+[ScorNode 0]stty ocrnl -onlcr
+[ScorNode 0]date
+Mon Jun 11 12:10:40 EDT 2012
+[ScorNode 0]hostname
+cumbia
+[ScorNode 0]cd /home/ollivier/Project/biojazz/working
+[ScorNode 0]
+[ScorNode 0]nice -10 perl -I/home/ollivier/Project/biojazz/working/modules -Icus 
+tom -I/home/ollivier/Project/anc/working/base -MUtils -MGenomeModel -MScoring -e 
+ '$|=1; print "PERL_SHELL> ";while(<STDIN>){printn $_;eval "$_";print "$@" if $@ 
+;print "PERL_SHELL> ";}'
+PERL_SHELL> use Storable qw(store retrieve);
+use Storable qw(store retrieve);
+
+PERL_SHELL> use Globals qw($verbosity $TAG);
+use Globals qw($verbosity $TAG);
+
+PERL_SHELL> $verbosity=1; $TAG="ScorNode";
+$verbosity=1; $TAG="ScorNode";
+
+PERL_SHELL> $scoring_ref = Scoring->new({config_file => "test/modules/ScorNode.cfg", node_ID => 0, work_dir => "test/modules", local_dir => "test/modules/localdir", });
+$scoring_ref = Scoring->new({config_file => "test/modules/ScorNode.cfg", node_ID => 0, work_dir => "test/modules", local_dir => "test/modules/localdir", });
+
+read_config: reading test/modules/ScorNode.cfg
+read_config: nice = 15
+read_config: vmem = 750000
+read_config: local_dir = scoring/localdir
+read_config: scoring_class = Scoring
+read_config: work_dir = scoring
+MatlabDriver::START: starting matlab(0) on localhost (Mon Jun 11 12:10:51 EDT 2012)
+MatlabDriver::START: logfile is test/modules/localdir/matlab/matlab.0.log
+MatlabDriver::START: executing "ulimit -S -v 750000; ulimit -a; matlab -nodesktop -nosplash"
+MatlabDriver::START: MATLAB shell pid=2241
+PERL_SHELL> ^C
+exit
+Scoring: process 2236 exiting from CTRL-C
+
+MatlabDriver::DEMOLISH: Closing matlab(0)
+Scoring::DEMOLISH: called
+Moving test/modules/localdir/matlab/matlab.0.log to test/modules/matlab
+Done moving.
+Scoring::DEMOLISH: done

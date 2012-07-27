@@ -1,0 +1,527 @@
+read_config: reading test/custom/Template.cfg
+read_config: nice = 15
+read_config: vmem = 750000
+read_config: scoring_class = Template
+read_config: work_dir = template
+read_config: radius = 0
+read_config: kf_max = 1e5
+read_config: kf_min = 0.1
+read_config: kb_max = 10
+read_config: kb_min = 0.001
+read_config: kp_max = 1000
+read_config: kp_min = 1
+read_config: regulated_concentration_width = 4
+read_config: gene_unused_width = 32
+read_config: regulated_concentration_max = 1e-3
+read_config: regulated_concentration_min = 1e-12
+read_config: RT_transition_rate_width = 5
+read_config: TR_transition_rate_width = 6
+read_config: RT_phi_width = 7
+read_config: domain_unused_width = 8
+read_config: RT_transition_rate_max = 1e2
+read_config: RT_transition_rate_min = 1e-2
+read_config: TR_transition_rate_max = 1e4
+read_config: TR_transition_rate_min = 1e-4
+read_config: RT_phi_max = 0.99
+read_config: RT_phi_min = 0.01
+read_config: binding_profile_width = 3
+read_config: kf_profile_width = 4
+read_config: kb_profile_width = 5
+read_config: kp_profile_width = 6
+read_config: Keq_profile_width = 7
+read_config: protodomain_unused_width = 10
+read_config: Keq_ratio_max = 1e2
+read_config: Keq_ratio_min = 1e-2
+read_config: max_external_iterations = 1
+read_config: max_internal_iterations = 0
+read_config: max_complex_size = 4
+read_config: max_species = 40
+read_config: max_csite_bound_to_msite_number = 2
+read_config: default_steric_factor = 1e-3
+read_config: export_graphviz = nothing
+read_config: solver = ode23s
+read_config: sampling_interval = 0.1
+read_config: t_final = 100
+read_config: InitialStep = 1e-8
+read_config: AbsTol = 1e-9
+read_config: RelTol = 1e-3
+read_config: MaxStep = 10.0
+read_config: plot_input = 0
+read_config: plot_output = 0
+read_config: plot_species = 1
+read_config: plot_phase = 0
+read_config: plot_min = -1
+MatlabDriver::START: starting matlab(99) on localhost (Fri Jun 15 23:07:36 EDT 2012)
+MatlabDriver::START: logfile is test/custom/matlab/matlab.99.log
+MatlabDriver::START: executing "ulimit -S -v 750000; ulimit -a; matlab -nodesktop -nosplash"
+MatlabDriver::START: MATLAB shell pid=22867
+{
+  'Scoring' => {
+                 'anc_ref' => {},
+                 'config_file' => 'test/custom/Template.cfg',
+                 'config_ref' => {
+                                   'AbsTol' => '1e-9',
+                                   'InitialStep' => '1e-8',
+                                   'Keq_profile_width' => '7',
+                                   'Keq_ratio_max' => '1e2',
+                                   'Keq_ratio_min' => '1e-2',
+                                   'MaxStep' => '10.0',
+                                   'RT_phi_max' => '0.99',
+                                   'RT_phi_min' => '0.01',
+                                   'RT_phi_width' => '7',
+                                   'RT_transition_rate_max' => '1e2',
+                                   'RT_transition_rate_min' => '1e-2',
+                                   'RT_transition_rate_width' => '5',
+                                   'RelTol' => '1e-3',
+                                   'TR_transition_rate_max' => '1e4',
+                                   'TR_transition_rate_min' => '1e-4',
+                                   'TR_transition_rate_width' => '6',
+                                   'binding_profile_width' => '3',
+                                   'default_steric_factor' => '1e-3',
+                                   'domain_unused_width' => '8',
+                                   'export_graphviz' => 'nothing',
+                                   'gene_unused_width' => '32',
+                                   'kb_max' => '10',
+                                   'kb_min' => '0.001',
+                                   'kb_profile_width' => '5',
+                                   'kf_max' => '1e5',
+                                   'kf_min' => '0.1',
+                                   'kf_profile_width' => '4',
+                                   'kp_max' => '1000',
+                                   'kp_min' => '1',
+                                   'kp_profile_width' => '6',
+                                   'max_complex_size' => '4',
+                                   'max_csite_bound_to_msite_number' => '2',
+                                   'max_external_iterations' => '1',
+                                   'max_internal_iterations' => '0',
+                                   'max_species' => '40',
+                                   'nice' => '15',
+                                   'plot_input' => '0',
+                                   'plot_min' => '-1',
+                                   'plot_output' => '0',
+                                   'plot_phase' => '0',
+                                   'plot_species' => '1',
+                                   'protodomain_unused_width' => '10',
+                                   'radius' => '0',
+                                   'regulated_concentration_max' => '1e-3',
+                                   'regulated_concentration_min' => '1e-12',
+                                   'regulated_concentration_width' => '4',
+                                   'sampling_interval' => '0.1',
+                                   'scoring_class' => 'Template',
+                                   'solver' => 'ode23s',
+                                   't_final' => '100',
+                                   'vmem' => '750000',
+                                   'work_dir' => 'template'
+                                 },
+                 'logfile' => 'matlab.99.log',
+                 'matlab_ref' => bless( do{\(my $o = undef)}, 'MatlabDriver' ),
+                 'matlab_work' => 'test/custom/matlab',
+                 'node_ID' => 99,
+                 'work_dir' => 'test/custom'
+               }
+};
+
+read_config: reading test/custom/Template.cfg
+read_config: nice = 15
+read_config: vmem = 750000
+read_config: scoring_class = Template
+read_config: work_dir = template
+read_config: radius = 0
+read_config: kf_max = 1e5
+read_config: kf_min = 0.1
+read_config: kb_max = 10
+read_config: kb_min = 0.001
+read_config: kp_max = 1000
+read_config: kp_min = 1
+read_config: regulated_concentration_width = 4
+read_config: gene_unused_width = 32
+read_config: regulated_concentration_max = 1e-3
+read_config: regulated_concentration_min = 1e-12
+read_config: RT_transition_rate_width = 5
+read_config: TR_transition_rate_width = 6
+read_config: RT_phi_width = 7
+read_config: domain_unused_width = 8
+read_config: RT_transition_rate_max = 1e2
+read_config: RT_transition_rate_min = 1e-2
+read_config: TR_transition_rate_max = 1e4
+read_config: TR_transition_rate_min = 1e-4
+read_config: RT_phi_max = 0.99
+read_config: RT_phi_min = 0.01
+read_config: binding_profile_width = 3
+read_config: kf_profile_width = 4
+read_config: kb_profile_width = 5
+read_config: kp_profile_width = 6
+read_config: Keq_profile_width = 7
+read_config: protodomain_unused_width = 10
+read_config: Keq_ratio_max = 1e2
+read_config: Keq_ratio_min = 1e-2
+read_config: max_external_iterations = 1
+read_config: max_internal_iterations = 0
+read_config: max_complex_size = 4
+read_config: max_species = 40
+read_config: max_csite_bound_to_msite_number = 2
+read_config: default_steric_factor = 1e-3
+read_config: export_graphviz = nothing
+read_config: solver = ode23s
+read_config: sampling_interval = 0.1
+read_config: t_final = 100
+read_config: InitialStep = 1e-8
+read_config: AbsTol = 1e-9
+read_config: RelTol = 1e-3
+read_config: MaxStep = 10.0
+read_config: plot_input = 0
+read_config: plot_output = 0
+read_config: plot_species = 1
+read_config: plot_phase = 0
+read_config: plot_min = -1
+generate_random_genome: generating genome of length 2000
+Template::score_genome: scoring genome Template
+name => G0000
+PRE_JUNK => 101110010111011000100011111011001100000100001110011010110000101001101101011111001100
+genes => 
+  name => G0084
+  START_CODE => 10000001
+  regulated_concentration => 0011
+  UNUSED => 11011001101101100110111010001001
+  domains => 
+    name => D0128
+    allosteric_flag => 1
+    RT_transition_rate => 01001
+    TR_transition_rate => 110101
+    RT_phi => 1011111
+    UNUSED => 01011111
+    protodomains => 
+      name => PD0155
+      type => 11
+      substrate_polarity => 1
+      binding_profile => 010
+      kf_profile => 0100
+      kb_profile => 10011
+      kp_profile => 100100
+      Keq_ratio => 0001011000
+      kf_polarity_mask => 0011
+      kb_polarity_mask => 10101
+      kf_conformation_mask => 1011
+      kb_conformation_mask => 11111
+      kp_conformation_mask => 100010
+      UNUSED => 0101010100
+  STOP_CODE => 1110
+genes_linker => 01010010001110100000000101010001101000100111101111
+genes => 
+  name => G0274
+  START_CODE => 10000001
+  regulated_concentration => 1010
+  UNUSED => 00100100010010100010110100110000
+  domains => 
+    name => D0318
+    allosteric_flag => 1
+    RT_transition_rate => 01101
+    TR_transition_rate => 110100
+    RT_phi => 1111111
+    UNUSED => 11011010
+    protodomains => 
+      name => PD0345
+      type => 10
+      substrate_polarity => 1
+      binding_profile => 101
+      kf_profile => 1100
+      kb_profile => 00010
+      kp_profile => 010100
+      Keq_ratio => 0000010101
+      kf_polarity_mask => 0101
+      kb_polarity_mask => 11000
+      kf_conformation_mask => 1011
+      kb_conformation_mask => 10110
+      kp_conformation_mask => 110000
+      UNUSED => 1111000000
+  STOP_CODE => 0100
+genes_linker => 0011110011011000011101011110101011011111010111100100010001100010110100101000110101001010101111000111010100001100100001010100110000110100101111000111101111011110010100011110011001001000111010000101111111101001101111110101011100000000010010100000100101110000010001010110001010100000110011111011001100100010101110001011011100001001100001010111001011101111110011100100111011010010111011001110101100110010110101111101110011001111010000011011100000101011010011000001010111110101000110100100011001111010110011000111000101010101111101011100010100010111000000011011100110010100111000110011001110001100110110111001000011010001110000010111110000000101010101011110101111100000111001000111011011100011010011101100111010011100011110111111000100111010100011011110100110000101110111100000000100110101000100000110010001010001001010101000011101110001111010011110111000101100110001010000110100000000000
+genes => 
+  name => G1297
+  START_CODE => 10000001
+  regulated_concentration => 1100
+  UNUSED => 11010110110110000110010011111011
+  domains => 
+    name => D1341
+    allosteric_flag => 0
+    RT_transition_rate => 11010
+    TR_transition_rate => 111000
+    RT_phi => 0101111
+    UNUSED => 11011000
+    protodomains => 
+      name => PD1368
+      type => 00
+      substrate_polarity => 1
+      binding_profile => 011
+      kf_profile => 0000
+      kb_profile => 01101
+      kp_profile => 011001
+      Keq_ratio => 0110000000
+      kf_polarity_mask => 0001
+      kb_polarity_mask => 11101
+      kf_conformation_mask => 0011
+      kb_conformation_mask => 01110
+      kp_conformation_mask => 101010
+      UNUSED => 1101000111
+  STOP_CODE => 1010
+genes_linker => 00110110101001000111100001101111101000000011000111101101001110001010110011101001010010110101110111010010010010011110101100110110101001010100100010000000110111100011111001101101111110
+genes => 
+  name => G1619
+  START_CODE => 10000001
+  regulated_concentration => 0111
+  UNUSED => 00011000000101110011011010010111
+  domains => 
+    name => D1663
+    allosteric_flag => 0
+    RT_transition_rate => 10110
+    TR_transition_rate => 010110
+    RT_phi => 1001100
+    UNUSED => 01011010
+    protodomains => 
+      name => PD1690
+      type => 00
+      substrate_polarity => 1
+      binding_profile => 111
+      kf_profile => 1000
+      kb_profile => 11000
+      kp_profile => 101110
+      Keq_ratio => 0000001100
+      kf_polarity_mask => 0110
+      kb_polarity_mask => 00000
+      kf_conformation_mask => 1001
+      kb_conformation_mask => 00101
+      kp_conformation_mask => 000000
+      UNUSED => 0000100101
+  STOP_CODE => 0010
+genes_linker => 010000011011111100011011111001011110011000001000100100011111000110100001110101001101010
+genes => 
+  name => G1846
+  START_CODE => 10000001
+  regulated_concentration => 1110
+  UNUSED => 11010101010000111100001000000000
+  domains => 
+    name => D1890
+    allosteric_flag => 0
+    RT_transition_rate => 10011
+    TR_transition_rate => 110001
+    RT_phi => 0100011
+    UNUSED => 11101000
+    protodomains => 
+      name => PD1917
+      type => 10
+      substrate_polarity => 1
+      binding_profile => 001
+      kf_profile => 0100
+      kb_profile => 10110
+      kp_profile => 111111
+      Keq_ratio => 0011101101
+      kf_polarity_mask => 0001
+      kb_polarity_mask => 11111
+      kf_conformation_mask => 1111
+      kb_conformation_mask => 10000
+      kp_conformation_mask => 001011
+      UNUSED => 0011111010
+  STOP_CODE => 0001
+POST_JUNK => 11001101101001
+
+io_sequence=10000001000000000000000000000000000000001010011111010000100011000000101001101001111011100011010000000000001001111110110001010111000000011111
+Stimulus:
+null -> LG_0000_x; clamp_source_LG_0000_x="(0.5*0.001*1*(1 + square((t-10)/100*2*pi, 50)) + 0.5*0.001*1*(1 + square((t-15)/100*2*pi, 50)) + 0.5*0.001*1*(1 + square((t-20)/100*2*pi, 50)) + 0.5*0.001*1*(1 + square((t-25)/100*2*pi, 50)) + 0.5*0.001*1*(1 + square((t-30)/100*2*pi, 50)))/5"
+LG_0000_x -> null; clamp_sink_LG_0000_x=1
+10 15 20 25 30 60 65 70 75 80
+0 0.0002 0.0004 0.0006 0.0008 0.001 0.0008 0.0006 0.0004 0.0002
+compute_high_order_adjacency_matrix: computing to order 12
+compute_connectivity_matrix: computing
+compute_high_order_adjacency_matrix: computing to order 8
+compute_connectivity_matrix: computing
+Protodomains: PD0155,PD0345,PD1368,PD1690,PD1917,LPD0071
+ | 0    | 0    | 0    | 0    | 0    | 1   
+ | 0    | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 0    | 1    | 0   
+ | 0    | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 1    | 0    | 0    | 0   
+ | 1    | 0    | 0    | 0    | 0    | 0   
+
+ | 1    | 0    | 0    | 0    | 0    | 1   
+ | 0    | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 1    | 0    | 1    | 0   
+ | 0    | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 1    | 0    | 1    | 0   
+ | 1    | 0    | 0    | 0    | 0    | 1   
+
+Genes: G0084,G0274,G1297,G1619,G1846,LG0000
+ | 0    | 1    | 0    | 0    | 0    | 1   
+ | 1    | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 0    | 1    | 0   
+ | 0    | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 1    | 0    | 0    | 0   
+ | 1    | 0    | 0    | 0    | 0    | 0   
+
+ | 1    | 1    | 0    | 0    | 0    | 1   
+ | 1    | 1    | 0    | 0    | 0    | 1   
+ | 0    | 0    | 1    | 0    | 1    | 0   
+ | 0    | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 1    | 0    | 1    | 0   
+ | 1    | 1    | 0    | 0    | 0    | 1   
+
+prune_isolated_genes: pruned genes: G1619
+export_anc: created 9 rules
+##############################################################################
+# Allosteric Network Compiler (ANC)
+# Copyright (C) 2005-2011 Julien Ollivier
+# Author:       Julien F. Ollivier
+# Version:      1.01
+# Release Date: 2011/08/26
+# This program comes with ABSOLUTELY NO WARRANTY.
+# This is free software, and you are welcome to redistribute it
+# under certain conditions. See file LICENSE.TXT for details.
+##############################################################################
+
+MODEL 	= test/custom/matlab/Template.mod
+OUT 	= test/custom/matlab/Template.eqn
+OUTDIR 	= test/custom/matlab
+
+Start time: Fri Jun 15 23:07:39 EDT 2012
+CLEANING UP
+CREATING OUTPUT DIRECTORY
+READING MODEL test/custom/matlab/Template.mod
+REPORTING COMPILE PARAMETERS
+max_external_iterations = 1
+max_internal_iterations = 0
+max_species = 40
+max_complex_size = 4
+max_csite_bound_to_msite_number = 2
+kf_1st_order_rate_cutoff = 0
+kf_2nd_order_rate_cutoff = 0
+kb_rate_cutoff = 0
+kp_rate_cutoff = 0
+default_steric_factor = 0.001
+report = species
+export_graphviz = network,collapse_states,collapse_complexes
+compact_names = 1
+protein_separator = _
+IMPORTING COMPLEXES
+COMPILING RULES
+Compiling rule PD0345 PD0155 (0 R 0 R) of class CanBindRule
+PD0155 CanBind PD0345
+Compiling rule PD0345 PD0155 (0 R 0 T) of class CanBindRule
+PD0155 CanBind PD0345
+Compiling rule PD0345 PD0155 (0 T 0 R) of class CanBindRule
+PD0155 CanBind PD0345
+Compiling rule PD0345 PD0155 (0 T 0 T) of class CanBindRule
+PD0155 CanBind PD0345
+Compiling rule PD0155 LPD0071 (0 R 0 .) of class CanBindRule
+PD0155 CanBind LPD0071
+Compiling rule PD0155 LPD0071 (0 T 0 .) of class CanBindRule
+PD0155 CanBind LPD0071
+Compiling rule PD0155 LPD0071 (1 R 0 .) of class CanBindRule
+PD0155 CanBind LPD0071
+Compiling rule PD0155 LPD0071 (1 T 0 .) of class CanBindRule
+PD0155 CanBind LPD0071
+Compiling rule PD1917 PD1368 (0 . 0 .) of class CanBindRule
+PD1368 CanBind PD1917
+INSTANTIATING COMPLEXES
+INITIALIZING INSTANCES
+COMPILING REACTION NETWORK
+ReactionNetwork::compile_network: starting...
+ReactionNetwork::compile_network: STARTING INTERNAL iteration=1 total_species=5
+ReactionNetwork::compile_internal_reactions: reached maximum iterations (0), exiting...
+ReactionNetwork::compile_network: STARTING EXTERNAL iteration=1 total_species=5
+ReactionNetwork::compile_network: DONE EXTERNAL iteration=1 total_species=9
+compile_network: reached maximum iterations (1), exiting...
+ReactionNetwork::compile_network: STARTING FINAL-INTERNAL total_species=9
+ReactionNetwork::compile_internal_reactions: reached maximum iterations (0), exiting...
+ReactionNetwork::compile_network: DONE FINAL-INTERNAL total_species=9
+ReactionNetwork::compile_network: Done computing species in 1 iterations
+COMPILING ICs and STIMULI
+Init Ic!00 comprises 1 objects:
+	G0084R0
+Init Ic!01 comprises 1 objects:
+	G0274R
+Init Ic!02 comprises 1 objects:
+	G1297
+Init Ic!03 comprises 1 objects:
+	G1846
+Init Ic!04 comprises 1 objects:
+	LG0000
+COMPILING PROBES
+EXPORTING NETWORK
+Facile->export(): generating Facile equation file
+REPORTING SPECIES IN: test/custom/matlab/Template.species.rpt
+EXPORTING NETWORK TO GRAPHVIZ
+Start time: Fri Jun 15 23:07:39 EDT 2012
+End time:   Fri Jun 15 23:07:40 EDT 2012
+ANC NUM SPECIES: 9
+facile_run: facile command is /home/ollivier/Project/facile/working/facile.pl  --matlab test/custom/matlab/Template.eqn
+facile_run: started facile on Fri Jun 15 23:07:40 EDT 2012
+
+Facile version 0.41
+Copyright (c) 2003-2012, Ollivier, Siso, Swain et al.
+Note: input files for Matlab sims are test/custom/matlab/Template_odes.m, test/custom/matlab/TemplateDriver.m, test/custom/matlab/Template_s.m, test/custom/matlab/Template_r.m
+
+facile_run: finished facile on Fri Jun 15 23:07:40 EDT 2012
+
+Template::score_genome: running matlab driver
+G_name = G0084R0
+G_value = 6.210662354793990e-11
+y = 9.999999782986351e-07 6.152062435274860e-11 2.170136453922038e-14 1.553408730608365e-12 9.999999998770069e-13 1.229931605327039e-22 1.584767310618567e-05 2.511873843325316e-04 1.258818425432497e-09 0.000000000000000e+00
+delta_y = 4.87110436757582e-16 -1.57012538765893e-12 -4.87110189018178e-16 1.57061249782633e-12 -2.14753939256595e-23 2.14755007843417e-23 -6.71199140239937e-12 -6.71199126009783e-12 6.711991401883e-12 0
+max_G = 6.309573444801930e-11
+matlab_report_max_values: getting max values from matlab...
+matlab_report_max_values: MAX value for G0084R0 is 6.309573444801930e-11
+matlab_report_max_values: MAX value for G0084R0_G0274Ri00 is 2.250254074036666e-14
+matlab_report_max_values: MAX value for G0084R0_LG0000i00 is 1.281986201534904e-22
+matlab_report_max_values: MAX value for G0084R1 is 1.707928928473402e-11
+matlab_report_max_values: MAX value for G0274R is 1.000000000000000e-06
+matlab_report_max_values: MAX value for G1297 is 1.584893192461110e-05
+matlab_report_max_values: MAX value for G1297_G1846i00 is 1.286673054826277e-09
+matlab_report_max_values: MAX value for G1846 is 2.511886431509570e-04
+matlab_report_max_values: MAX value for LG0000 is 1.000000000000000e-12
+final_G = 4.600021860804367e-11
+matlab_report_final_values: getting final values from matlab...
+matlab_report_final_values: final value for G0084R0 is 4.600021860804367e-11
+matlab_report_final_values: final value for G0084R0_G0274Ri00 is 1.622655514947759e-14
+matlab_report_final_values: final value for G0084R0_LG0000i00 is 9.196586954171531e-23
+matlab_report_final_values: final value for G0084R1 is 1.707928928473402e-11
+matlab_report_final_values: final value for G0274R is 9.999999837734446e-07
+matlab_report_final_values: final value for G1297 is 1.584767310549940e-05
+matlab_report_final_values: final value for G1297_G1846i00 is 1.258819111698297e-09
+matlab_report_final_values: final value for G1846 is 2.511873843318453e-04
+matlab_report_final_values: final value for LG0000 is 9.999999999080341e-13
+matlab_plot_complex: Figure 100 -- LG_0000_x
+matlab_plot_complex: Figure 101 -- G0084R0
+matlab_plot_complex: Figure 1 -- G0084R0
+matlab_plot_complex: Figure 2 -- G0084R0_G0274Ri00
+matlab_plot_complex: Figure 3 -- G0084R0_LG0000i00
+matlab_plot_complex: Figure 4 -- G0084R1
+matlab_plot_complex: Figure 5 -- G0274R
+matlab_plot_complex: Figure 6 -- G1297
+matlab_plot_complex: Figure 7 -- G1297_G1846i00
+matlab_plot_complex: Figure 8 -- G1846
+matlab_plot_complex: Figure 9 -- LG0000
+random number = 0.7045255803983
+random number = 0.811802603290545
+random number = 0.541554319953502
+random number = 0.46381778630235
+{
+  'GenomeModel' => {
+                     'elite_flag' => 0,
+                     'history_ref' => [],
+                     'score' => 60,
+                     'stats_ref' => {
+                                      'stat1' => 45,
+                                      'stat2' => 54
+                                    }
+                   },
+  'Model' => {
+               'parser_ref' => bless( do{\(my $o = undef)}, 'Genome' ),
+               'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' )
+             },
+  'Named' => {
+               'name' => 'Template'
+             }
+};
+
+Scoring::DEMOLISH: called
+MatlabDriver::DEMOLISH: Closing matlab(99)
+Scoring::DEMOLISH: done

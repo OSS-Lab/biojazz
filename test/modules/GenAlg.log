@@ -1,0 +1,160 @@
+ScorCluster::new() -- New ScorCluster cluster_size=2, work_dir=test/modules, scoring_class=Scoring, cluster_type=LOCAL
+Creating ScorNode ID=0 logfile=test/modules/localdir/Scoring/GenAlg/ScorNode.0.20120611_121427.log cluster_type=LOCAL
+Creating ScorNode ID=1 logfile=test/modules/localdir/Scoring/GenAlg/ScorNode.1.20120611_121427.log cluster_type=LOCAL
+ScorCluster::start -- parent process started (pid=2582, child=2598)
+ScorCluster::start -- child process started (pid=2598, parent=2582)
+ScorNode::spawn spawning local node
+ScorNode::spawn spawning local node
+ScorCluster::start -- child process done spawning, started multitask
+ScorCluster: Child process 2598 received SIGUSR1 (shutting down)
+
+ScorCluster::DEMOLISH called (pid 2598, ctrl_C_flag=0, sigusr1_flag=1)
+ScorCluster::DEMOLISH am child (pid 2598)
+ScorNode::DEMOLISH called (pid 2598)
+Moving test/modules/localdir/Scoring/GenAlg/ScorNode.1.20120611_121427.log to test/modules/GenAlg/ScorNode.1.20120611_121427.log
+ScorNode::DEMOLISH called (pid 2598)
+Moving test/modules/localdir/Scoring/GenAlg/ScorNode.0.20120611_121427.log to test/modules/GenAlg/ScorNode.0.20120611_121427.log
+ScorCluster::start -- parent process returning
+{
+  'GenAlg' => {
+                'cluster_ref' => bless( do{\(my $o = undef)}, 'ScorCluster' ),
+                'config_ref' => {
+                                  'cluster_size' => 2,
+                                  'cluster_type' => 'LOCAL',
+                                  'config_file' => 'test/modules/GenAlg.cfg',
+                                  'host_list' => [
+                                                   'localhost'
+                                                 ],
+                                  'local_dir' => 'test/modules/localdir',
+                                  'nice' => 0,
+                                  'scoring_class' => 'Scoring',
+                                  'work_dir' => 'test/modules'
+                                }
+              }
+};
+
+ScorCluster::DEMOLISH called (pid 2582, ctrl_C_flag=0, sigusr1_flag=0)
+---------------------------------------
+Shutting down the cluster
+---------------------------------------
+ScorCluster::DEMOLISH am parent (pid 2582), shutting down child and waiting...
+ScorCluster::DEMOLISH am parent (pid 2582), done cleanup...
+---------------------------------------
+Shutdown complete
+---------------------------------------
+ScorNode::DEMOLISH called (pid 2582)
+ScorNode::DEMOLISH called (pid 2582)
+
+LOGFILE test/modules/GenAlg/ScorNode.1.*.log:
+PS1='[ScorNode 1]'
+echo my shell is ready
+]0;ollivier@cumbia: ~/Project/biojazz/workingollivier@cumbia:~/Project/biojazz/working$ PS1='[ScorNode 1]'
+[ScorNode 1]echo my shell is ready
+my shell is ready
+[ScorNode 1]stty ocrnl -onlcr
+[ScorNode 1]date
+Mon Jun 11 12:14:33 EDT 2012
+[ScorNode 1]hostname
+cumbia
+[ScorNode 1]cd /home/ollivier/Project/biojazz/working
+[ScorNode 1]
+[ScorNode 1]nice -0 perl -I/home/ollivier/Project/biojazz/working/modules -Icust 
+om -I/home/ollivier/Project/anc/working/base -MUtils -MGenomeModel -MScoring -e  
+'$|=1; print "PERL_SHELL> ";while(<STDIN>){printn $_;eval "$_";print "$@" if $@; 
+print "PERL_SHELL> ";}'
+PERL_SHELL> use Storable qw(store retrieve);
+use Storable qw(store retrieve);
+
+PERL_SHELL> use Globals qw($verbosity $TAG);
+use Globals qw($verbosity $TAG);
+
+PERL_SHELL> $verbosity=1; $TAG="GenAlg";
+$verbosity=1; $TAG="GenAlg";
+
+PERL_SHELL> $scoring_ref = Scoring->new({config_file => "test/modules/GenAlg.cfg", node_ID => 1, work_dir => "test/modules/GenAlg", local_dir => "test/modules/localdir/Scoring/GenAlg", });
+$scoring_ref = Scoring->new({config_file => "test/modules/GenAlg.cfg", node_ID => 1, work_dir => "test/modules/GenAlg", local_dir => "test/modules/localdir/Scoring/GenAlg", });
+
+read_config: reading test/modules/GenAlg.cfg
+read_config: nice = 15
+read_config: vmem = 750000
+read_config: local_dir = scoring/localdir
+read_config: scoring_class = Scoring
+read_config: work_dir = scoring
+read_config: radius = 0
+read_config: kf_max = 1e5
+read_config: kf_min = 0.1
+read_config: kb_max = 10
+read_config: kb_min = 0.001
+read_config: kp_max = 1000
+read_config: kp_min = 1
+read_config: regulated_concentration_width = 4
+read_config: gene_unused_width = 32
+read_config: regulated_concentration_max = 1e-3
+read_config: regulated_concentration_min = 1e-12
+read_config: RT_transition_rate_width = 5
+read_config: TR_transition_rate_width = 6
+read_config: RT_phi_width = 7
+read_config: domain_unused_width = 8
+read_config: RT_transition_rate_max = 1e2
+read_config: RT_transition_rate_min = 1e-2
+read_config: TR_transition_rate_max = 1e4
+read_config: TR_transition_rate_min = 1e-4
+read_config: RT_phi_max = 0.99
+read_config: RT_phi_min = 0.01
+read_config: binding_profile_width = 3
+read_config: kf_profile_width = 4
+read_config: kb_profile_width = 5
+read_config: kp_profile_width = 6
+read_config: Keq_profile_width = 7
+read_config: protodomain_unused_width = 10
+read_config: Keq_ratio_max = 1e2
+read_config: Keq_ratio_min = 1e-2
+read_config: inum_genomes = 2
+read_config: max_population = 4
+read_config: elite_pool_size = 1
+read_config: num_generations = 2
+read_config: first_generation = 0
+read_config: remove_old_files = 0
+read_config: score_initial_generation = 1
+read_config: rescore_elite = 0
+read_config: initial_genome = random
+read_config: ranking_nonviable = 0.2
+read_config: ranking_pressure = 1.2
+read_config: prob_mutate_params = 0.6
+read_config: prob_mutate_global = 0.2
+read_config: prob_recombination = 0.05
+read_config: prob_duplicate = 0.05
+read_config: prob_delete = 0.1
+read_config: mutation_rate = 0.01
+read_config: max_external_iterations = 1
+read_config: max_internal_iterations = 0
+read_config: max_complex_size = 4
+read_config: max_species = 40
+read_config: max_csite_bound_to_msite_number = 2
+read_config: default_steric_factor = 1e-3
+read_config: export_graphviz = nothing
+read_config: plot_input = 0
+read_config: plot_output = 0
+read_config: plot_species = 1
+read_config: plot_phase = 0
+read_config: plot_min = -1
+read_config: solver = ode23s
+read_config: sampling_interval = 0.1
+read_config: t_final = 100
+read_config: InitialStep = 1e-8
+read_config: AbsTol = 1e-9
+read_config: RelTol = 1e-3
+read_config: MaxStep = 10.0
+MatlabDriver::START: starting matlab(1) on localhost (Mon Jun 11 12:14:44 EDT 2012)
+MatlabDriver::START: logfile is test/modules/localdir/Scoring/GenAlg/matlab/matlab.1.log
+MatlabDriver::START: executing "ulimit -S -v 750000; ulimit -a; matlab -nodesktop -nosplash"
+MatlabDriver::START: MATLAB shell pid=2725
+PERL_SHELL> ^C
+exit
+Scoring: process 2643 exiting from CTRL-C
+
+MatlabDriver::DEMOLISH: Closing matlab(1)
+Scoring::DEMOLISH: called
+Moving test/modules/localdir/Scoring/GenAlg/matlab/matlab.1.log to test/modules/GenAlg/matlab
+Done moving.
+Scoring::DEMOLISH: done

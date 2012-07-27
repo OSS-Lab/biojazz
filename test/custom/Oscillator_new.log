@@ -1,0 +1,449 @@
+read_config: reading test/modules/Oscillator_new.cfg
+read_config: nice = 15
+read_config: vmem = 450000
+read_config: scoring_class = Oscillator_new
+read_config: work_dir = oscillator_new
+read_config: radius = 1
+read_config: kf_max = 1e3
+read_config: kf_min = 1e-3
+read_config: kb_max = 1e3
+read_config: kb_min = 1e-3
+read_config: kp_max = 1e3
+read_config: kp_min = 1e-3
+read_config: regulated_concentration_width = 10
+read_config: gene_unused_width = 4
+read_config: regulated_concentration_max = 1e3
+read_config: regulated_concentration_min = 1e-3
+read_config: RT_transition_rate_width = 10
+read_config: TR_transition_rate_width = 10
+read_config: RT_phi_width = 10
+read_config: domain_unused_width = 4
+read_config: RT_transition_rate_max = 1e2
+read_config: RT_transition_rate_min = 1e-2
+read_config: TR_transition_rate_max = 1e2
+read_config: TR_transition_rate_min = 1e-2
+read_config: RT_phi_max = 1.0
+read_config: RT_phi_min = 0.0
+read_config: binding_profile_width = 8
+read_config: kf_profile_width = 20
+read_config: kb_profile_width = 20
+read_config: kp_profile_width = 10
+read_config: Keq_profile_width = 10
+read_config: protodomain_unused_width = 4
+read_config: Keq_ratio_max = 1e2
+read_config: Keq_ratio_min = 1e-2
+read_config: max_external_iterations = -1
+read_config: max_internal_iterations = -1
+read_config: max_complex_size = 4
+read_config: max_species = 160
+read_config: max_csite_bound_to_msite_number = 1
+read_config: default_max_count = 2
+read_config: default_steric_factor = 1e3
+read_config: export_graphviz = network,collapse_states,collapse_complexes
+read_config: plot_input = 1
+read_config: plot_output = 1
+read_config: plot_species = 0
+read_config: plot_phase = 1
+read_config: plot_min = -1
+read_config: sprint_transcript = 1
+read_config: sprint_history = 1
+read_config: solver = ode23s
+read_config: InitialStep = 1e-8
+read_config: AbsTol = 1e-9
+read_config: RelTol = 1e-3
+read_config: MaxStep = 1.0
+read_config: sampling_interval = 0.1
+read_config: t_final = 1000
+read_config: lg_binding_profile = 01000011
+read_config: tg_binding_profile = 10100011
+read_config: LG_init = 1e-3
+read_config: TG_init = 200
+MatlabDriver::START: starting matlab(97) on localhost (Mon Jun  9 17:52:12 EDT 2008)
+MatlabDriver::START: logfile is test/custom/matlab/matlab.97.log
+MatlabDriver::START: executing "ulimit -S -v 450000; ulimit -a; matlab -nodesktop -nosplash"
+MatlabDriver::START: MATLAB shell pid=15653
+{
+  'Scoring' => {
+                 'anc_ref' => {},
+                 'config_file' => 'test/modules/Oscillator_new.cfg',
+                 'config_ref' => {
+                                   'AbsTol' => '1e-9',
+                                   'InitialStep' => '1e-8',
+                                   'Keq_profile_width' => '10',
+                                   'Keq_ratio_max' => '1e2',
+                                   'Keq_ratio_min' => '1e-2',
+                                   'LG_init' => '1e-3',
+                                   'MaxStep' => '1.0',
+                                   'RT_phi_max' => '1.0',
+                                   'RT_phi_min' => '0.0',
+                                   'RT_phi_width' => '10',
+                                   'RT_transition_rate_max' => '1e2',
+                                   'RT_transition_rate_min' => '1e-2',
+                                   'RT_transition_rate_width' => '10',
+                                   'RelTol' => '1e-3',
+                                   'TG_init' => '200',
+                                   'TR_transition_rate_max' => '1e2',
+                                   'TR_transition_rate_min' => '1e-2',
+                                   'TR_transition_rate_width' => '10',
+                                   'binding_profile_width' => '8',
+                                   'default_max_count' => '2',
+                                   'default_steric_factor' => '1e3',
+                                   'domain_unused_width' => '4',
+                                   'export_graphviz' => [
+                                                          'network,collapse_states,collapse_complexes'
+                                                        ],
+                                   'gene_unused_width' => '4',
+                                   'kb_max' => '1e3',
+                                   'kb_min' => '1e-3',
+                                   'kb_profile_width' => '20',
+                                   'kf_max' => '1e3',
+                                   'kf_min' => '1e-3',
+                                   'kf_profile_width' => '20',
+                                   'kp_max' => '1e3',
+                                   'kp_min' => '1e-3',
+                                   'kp_profile_width' => '10',
+                                   'lg_binding_profile' => '01000011',
+                                   'max_complex_size' => '4',
+                                   'max_csite_bound_to_msite_number' => '1',
+                                   'max_external_iterations' => '-1',
+                                   'max_internal_iterations' => '-1',
+                                   'max_species' => '160',
+                                   'nice' => '15',
+                                   'plot_input' => '1',
+                                   'plot_min' => '-1',
+                                   'plot_output' => '1',
+                                   'plot_phase' => '1',
+                                   'plot_species' => '0',
+                                   'protodomain_unused_width' => '4',
+                                   'radius' => '1',
+                                   'regulated_concentration_max' => '1e3',
+                                   'regulated_concentration_min' => '1e-3',
+                                   'regulated_concentration_width' => '10',
+                                   'sampling_interval' => '0.1',
+                                   'scoring_class' => 'Oscillator_new',
+                                   'solver' => 'ode23s',
+                                   'sprint_history' => '1',
+                                   'sprint_transcript' => '1',
+                                   't_final' => '1000',
+                                   'tg_binding_profile' => '10100011',
+                                   'vmem' => '450000',
+                                   'work_dir' => 'oscillator_new'
+                                 },
+                 'logfile' => 'matlab.97.log',
+                 'matlab_ref' => bless( do{\(my $o = undef)}, 'MatlabDriver' ),
+                 'matlab_work' => 'test/custom/matlab',
+                 'node_ID' => 97,
+                 'work_dir' => 'test/custom'
+               }
+};
+
+read_config: reading test/modules/Oscillator_new.cfg
+read_config: nice = 15
+read_config: vmem = 450000
+read_config: scoring_class = Oscillator_new
+read_config: work_dir = oscillator_new
+read_config: radius = 1
+read_config: kf_max = 1e3
+read_config: kf_min = 1e-3
+read_config: kb_max = 1e3
+read_config: kb_min = 1e-3
+read_config: kp_max = 1e3
+read_config: kp_min = 1e-3
+read_config: regulated_concentration_width = 10
+read_config: gene_unused_width = 4
+read_config: regulated_concentration_max = 1e3
+read_config: regulated_concentration_min = 1e-3
+read_config: RT_transition_rate_width = 10
+read_config: TR_transition_rate_width = 10
+read_config: RT_phi_width = 10
+read_config: domain_unused_width = 4
+read_config: RT_transition_rate_max = 1e2
+read_config: RT_transition_rate_min = 1e-2
+read_config: TR_transition_rate_max = 1e2
+read_config: TR_transition_rate_min = 1e-2
+read_config: RT_phi_max = 1.0
+read_config: RT_phi_min = 0.0
+read_config: binding_profile_width = 8
+read_config: kf_profile_width = 20
+read_config: kb_profile_width = 20
+read_config: kp_profile_width = 10
+read_config: Keq_profile_width = 10
+read_config: protodomain_unused_width = 4
+read_config: Keq_ratio_max = 1e2
+read_config: Keq_ratio_min = 1e-2
+read_config: max_external_iterations = -1
+read_config: max_internal_iterations = -1
+read_config: max_complex_size = 4
+read_config: max_species = 160
+read_config: max_csite_bound_to_msite_number = 1
+read_config: default_max_count = 2
+read_config: default_steric_factor = 1e3
+read_config: export_graphviz = network,collapse_states,collapse_complexes
+read_config: plot_input = 1
+read_config: plot_output = 1
+read_config: plot_species = 0
+read_config: plot_phase = 1
+read_config: plot_min = -1
+read_config: sprint_transcript = 1
+read_config: sprint_history = 1
+read_config: solver = ode23s
+read_config: InitialStep = 1e-8
+read_config: AbsTol = 1e-9
+read_config: RelTol = 1e-3
+read_config: MaxStep = 1.0
+read_config: sampling_interval = 0.1
+read_config: t_final = 1000
+read_config: lg_binding_profile = 01000011
+read_config: tg_binding_profile = 10100011
+read_config: LG_init = 1e-3
+read_config: TG_init = 200
+sequence=01111110100011001100001000000000010000000001111111111000000000111101000000000000000000001111100000000000000000000111111000000000000000000000000000000000000000000000000011111111111111111111000001111100000000000000000000000000010100111010111111111111111111111111100000000000000011100000111000000000000000000000000000000000000000000000000011111111111111100000111110000000000000000000000000000011100000111111010000000000000010000000001000000000000000000000001000011101011111111111111111111111110000000000000001110000011100100110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001110000
+Template::score_genome: scoring genome Oscillator_new
+Stimulus:
+null -> LG0000_x; impulse_source_LG0000_x="0.5*0.2*(square(2*pi*(t-250)/1000, 5)+1)"
+250 300
+
+HISTORY(10):
+
+
+name => G0000
+PRE_JUNK => 
+genes => 
+  name => G0000
+  START_CODE => 01111110
+  regulated_concentration => 1000110011
+  UNUSED => 0000
+  domains => 
+    name => D0022
+    allosteric_flag => 1
+    RT_transition_rate => 0000000000
+    TR_transition_rate => 1000000000
+    RT_phi => 1111111111
+    UNUSED => 0000
+    protodomains => 
+      name => PD0057
+      type => 00
+      substrate_polarity => 0
+      binding_profile => 00111101
+      kf_profile => 00000000000000000000
+      kb_profile => 11111000000000000000
+      kp_profile => 0000011111
+      Keq_ratio => 1000000000
+      kf_polarity_mask => 00000000000000000000
+      kb_polarity_mask => 00000000000000000000
+      kf_conformation_mask => 11111111111111111111
+      kb_conformation_mask => 00000111110000000000
+      kp_conformation_mask => 0000000000
+      UNUSED => 0000
+    protodomains_linker => 000
+    protodomains => 
+      name => PD0225
+      type => 10
+      substrate_polarity => 1
+      binding_profile => 00111010
+      kf_profile => 11111111111111111111
+      kb_profile => 11111000000000000000
+      kp_profile => 1110000011
+      Keq_ratio => 1000000000
+      kf_polarity_mask => 00000000000000000000
+      kb_polarity_mask => 00000000000000000000
+      kf_conformation_mask => 11111111111111100000
+      kb_conformation_mask => 11111000000000000000
+      kp_conformation_mask => 0000000000
+      UNUSED => 0000
+  STOP_CODE => 111
+genes_linker => 0000
+genes => 
+  name => G0397
+  START_CODE => 01111110
+  regulated_concentration => 1000000000
+  UNUSED => 0000
+  domains => 
+    name => D0419
+    allosteric_flag => 0
+    RT_transition_rate => 1000000000
+    TR_transition_rate => 1000000000
+    RT_phi => 0000000000
+    UNUSED => 0000
+    protodomains => 
+      name => PD0454
+      type => 10
+      substrate_polarity => 0
+      binding_profile => 00111010
+      kf_profile => 11111111111111111111
+      kb_profile => 11111000000000000000
+      kp_profile => 1110000011
+      Keq_ratio => 1001001100
+      kf_polarity_mask => 00000000000000000000
+      kb_polarity_mask => 00000000000000000000
+      kf_conformation_mask => 00000000000000000000
+      kb_conformation_mask => 00000000000000000000
+      kp_conformation_mask => 0000000000
+      UNUSED => 0000
+  STOP_CODE => 111
+POST_JUNK => 0000
+
+compute_high_order_adjacency_matrix: computing to order 12
+compute_connectivity_matrix: computing
+compute_high_order_adjacency_matrix: computing to order 8
+compute_connectivity_matrix: computing
+Protodomains: PD0057,PD0225,PD0454,LPD0057,TPD0057,TPD0057
+ | 0    | 1    | 0    | 1    | 0    | 0   
+ | 1    | 0    | 0    | 0    | 0    | 1   
+ | 0    | 0    | 0    | 0    | 1    | 0   
+ | 1    | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 1    | 0    | 0    | 1   
+ | 0    | 1    | 0    | 0    | 1    | 0   
+
+ | 1    | 1    | 1    | 1    | 1    | 1   
+ | 1    | 1    | 1    | 1    | 1    | 1   
+ | 1    | 1    | 1    | 1    | 1    | 1   
+ | 1    | 1    | 1    | 1    | 1    | 1   
+ | 1    | 1    | 1    | 1    | 1    | 1   
+ | 1    | 1    | 1    | 1    | 1    | 1   
+
+Genes: G0000,G0397,LG0000,TG0000
+ | 0    | 0    | 1    | 1   
+ | 0    | 0    | 0    | 1   
+ | 1    | 0    | 0    | 0   
+ | 1    | 1    | 0    | 0   
+
+ | 1    | 1    | 1    | 1   
+ | 1    | 1    | 1    | 1   
+ | 1    | 1    | 1    | 1   
+ | 1    | 1    | 1    | 1   
+
+prune_isolated_genes: pruned genes: 
+export_anc: created 5 rules
+##############################################################################
+# Allosteric Network Compiler
+# Copyright (c) 2005-2008
+# All rights reserved
+# Author: Julien F. Ollivier
+# Version: 0.07
+# Release Date: 2008/05/23
+##############################################################################
+
+LIB 	= MWC
+MODEL 	= test/custom/matlab/Oscillator_new.mod
+OUT 	= test/custom/matlab/Oscillator_new.eqn
+OUTDIR 	= test/custom/matlab
+
+Start time: Mon Jun  9 17:52:15 EDT 2008
+CLEANING UP
+CREATING OUTPUT DIRECTORY
+READING MODEL test/custom/matlab/Oscillator_new.mod
+REPORTING COMPILE PARAMETERS
+max_external_iterations = -1
+max_internal_iterations = -1
+max_species = 160
+max_complex_size = 4
+max_csite_bound_to_msite_number = 1
+kf_1st_order_rate_cutoff = 0
+kf_2nd_order_rate_cutoff = 0
+kb_rate_cutoff = 0
+kp_rate_cutoff = 0
+default_steric_factor = 1000
+report = species
+export_graphviz = network,collapse_states,collapse_complexes
+compact_names = 0
+protein_separator = _
+IMPORTING COMPLEXES
+COMPILING RULES
+INSTANTIATING COMPLEXES
+INITIALIZING INSTANCES
+CREATING/COMPILING REACTION NETWORK
+ReactionNetwork::compile_network: starting...
+ReactionNetwork::compile_network: STARTING INTERNAL iteration=1 total_species=4
+ReactionNetwork::compile_network: STARTING EXTERNAL iteration=1 total_species=5
+ReactionNetwork::compile_network: DONE EXTERNAL iteration=1 total_species=9
+ReactionNetwork::compile_network: STARTING INTERNAL iteration=2 total_species=9
+ReactionNetwork::compile_network: STARTING EXTERNAL iteration=2 total_species=9
+ReactionNetwork::compile_external_reactions: processing species 5 of 9
+ReactionNetwork::compile_network: DONE EXTERNAL iteration=2 total_species=13
+ReactionNetwork::compile_network: STARTING INTERNAL iteration=3 total_species=13
+ReactionNetwork::compile_network: STARTING EXTERNAL iteration=3 total_species=13
+ReactionNetwork::compile_external_reactions: processing species 5 of 13
+ReactionNetwork::compile_external_reactions: processing species 10 of 13
+ReactionNetwork::compile_network: DONE EXTERNAL iteration=3 total_species=13
+ReactionNetwork::compile_network: STARTING FINAL-INTERNAL total_species=13
+ReactionNetwork::compile_network: DONE FINAL-INTERNAL total_species=13
+ReactionNetwork::compile_network: Done computing species in 3 iterations
+EXPORTING NETWORK TO FACILE
+export_facile: generating Facile equation file
+COMPILING/EXPORTING FACILE PROBES
+REPORTING SPECIES
+EXPORTING NETWORK TO GRAPHVIZ
+Start time: Mon Jun  9 17:52:15 EDT 2008
+End time:   Mon Jun  9 17:52:15 EDT 2008
+ANC NUM SPECIES: 13
+facile_run: facile command is /cnd0/home/ollivier/Desktop/Project/facile/stable/facile.pl  --matlab test/custom/matlab/Oscillator_new.eqn
+facile_run: started facile on Mon Jun  9 17:52:15 EDT 2008
+
+Facile version 0.23
+Copyright (c) 2003-2008, Ollivier, Siso, Swain et al.
+Note: input files for Matlab sims are test/custom/matlab/Oscillator_new.m, test/custom/matlab/Oscillator_newDriver.m, test/custom/matlab/Oscillator_new_s.m, test/custom/matlab/Oscillator_new_r.m, test/custom/matlab/Oscillator_new_ode_event.m
+
+facile_run: finished facile on Mon Jun  9 17:52:15 EDT 2008
+
+Template::score_genome: running matlab driver
+Template::score_genome: running custom Matlab script
+matlab_plot_complex: Figure 900 -- LG0000_x
+matlab_plot_complex: Figure 901 -- TG0000_0
+matlab_plot_complex: Figure 902 -- TG0000_1
+G_name = G0000_xxR
+G_value = 9.883767447031624e-01
+y = 9.883081340585335e-01 2.228505451379221e-01 1.005664210978837e+00 1.982373884511048e+02 9.835589973568183e-03 5.833368171540139e-08 1.111016563883068e-03 1.005664281579892e+00 2.883358633380988e-09 2.951973743692199e-09 9.076987551381498e-04 5.383456315272312e-09 9.229011540600723e-05
+delta_y = -0.00409724791639221 0.000921139010674477 4.86456466708418e-06 -0.000925834714792018 0.00400784295391327 2.39300322645607e-08 5.18310545199498e-09 -5.17589482385006e-09 2.68016514715552e-10 -9.00729364592738e-11 8.45453177503784e-05 5.2151239714874e-10 -8.4545986255941e-05
+max_G = 2.004715673882520e+00
+matlab_report_max_values: getting max values from matlab...
+matlab_report_max_values: MAX value for G0000_xxR is 2.004715673882520e+00
+matlab_report_max_values: MAX value for G0000_xxR_LG0000_x_TG0000_1_i00 is 3.378861294501734e-04
+matlab_report_max_values: MAX value for G0000_xxR_LG0000_x_i00 is 3.166532706329182e-06
+matlab_report_max_values: MAX value for G0000_xxR_TG0000_1_i00 is 1.009223713186884e+00
+matlab_report_max_values: MAX value for G0000_xxT is 9.838612018616995e-03
+matlab_report_max_values: MAX value for G0000_xxT_LG0000_x_TG0000_1_i00 is 6.299800144353460e-04
+matlab_report_max_values: MAX value for G0000_xxT_LG0000_x_i00 is 9.960935548317184e-01
+matlab_report_max_values: MAX value for G0000_xxT_TG0000_1_i00 is 6.992079598570097e-08
+matlab_report_max_values: MAX value for G0397_x is 1.006775298136860e+00
+matlab_report_max_values: MAX value for G0397_x_TG0000_0_i00 is 1.005664293829602e+00
+matlab_report_max_values: MAX value for LG0000_x is 9.325771030484038e+00
+matlab_report_max_values: MAX value for TG0000_0 is 2.004715673882520e+02
+matlab_report_max_values: MAX value for TG0000_1 is 2.391019720375797e+01
+final_G = 1.109176504379111e-02
+matlab_report_final_values: getting final values from matlab...
+matlab_report_final_values: final value for G0000_xxR is 1.109176504379111e-02
+matlab_report_final_values: final value for G0000_xxR_LG0000_x_TG0000_1_i00 is 2.863841261843100e-04
+matlab_report_final_values: final value for G0000_xxR_LG0000_x_i00 is 3.139769175664021e-06
+matlab_report_final_values: final value for G0000_xxR_TG0000_1_i00 is 1.004731897566007e+00
+matlab_report_final_values: final value for G0000_xxT is 1.096283922612952e-04
+matlab_report_final_values: final value for G0000_xxT_LG0000_x_TG0000_1_i00 is 5.216291171832132e-04
+matlab_report_final_values: final value for G0000_xxT_LG0000_x_i00 is 9.879919164219514e-01
+matlab_report_final_values: final value for G0000_xxT_TG0000_1_i00 is 5.788035528962556e-08
+matlab_report_final_values: final value for G0397_x is 1.232868503318128e-03
+matlab_report_final_values: final value for G0397_x_TG0000_0_i00 is 1.005539968689717e+00
+matlab_report_final_values: final value for LG0000_x is 9.012196955031328e+00
+matlab_report_final_values: final value for TG0000_0 is 1.786222914062405e+02
+matlab_report_final_values: final value for TG0000_1 is 1.983821542389898e+01
+final score=0.000000000000000e+00
+{
+  'GenomeModel' => {
+                     'elite_flag' => 0,
+                     'history_ref' => [],
+                     'score' => '0.000000000000000e+00',
+                     'stats_ref' => {
+                                      'parse_successful' => 1
+                                    }
+                   },
+  'Model' => {
+               'parser_ref' => bless( do{\(my $o = undef)}, 'Genome' ),
+               'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' )
+             },
+  'Named' => {
+               'name' => 'Oscillator_new'
+             }
+};
+
+Scoring::DEMOLISH: called
+MatlabDriver::DEMOLISH: Closing matlab(97)
+Scoring::DEMOLISH: done

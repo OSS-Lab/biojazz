@@ -1,0 +1,6 @@
+#PBS -l ncpus=1
+#PBS -V
+
+# This PBS file is used to start interactive shells.
+# Using it ensures matlab binaries are in the path.
+

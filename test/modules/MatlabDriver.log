@@ -1,0 +1,64 @@
+MatlabDriver::START: starting driver1 on localhost (Mon Jun 11 12:10:04 EDT 2012)
+MatlabDriver::START: logfile is test/modules/MatlabDriver.localhost1.log
+MatlabDriver::START: executing "ulimit -S -v 750000; ulimit -a; matlab -nodesktop -nosplash"
+MatlabDriver::START: MATLAB shell pid=2033
+time(seconds)        unlimited
+file(blocks)         unlimited
+data(kbytes)         unlimited
+stack(kbytes)        unlimited
+coredump(blocks)     0
+memory(kbytes)       unlimited
+locked memory(kbytes) 64
+process              unlimited
+nofiles              1024
+vmemory(kbytes)      750000
+locks                unlimited
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2009 The MathWorks, Inc.
+                 Version 7.9.0.529 (R2009b) 32-bit (glnx86)
+                              August 12, 2009
+
+ 
+  To get started, type one of these: helpwin, helpdesk, or demo.
+  For product information, visit www.mathworks.com.
+3 + 4
+ 
+>> 
+ans =
+
+     7
+MatlabDriver::START: starting driver2 on localhost (Mon Jun 11 12:10:06 EDT 2012)
+MatlabDriver::START: logfile is test/modules/MatlabDriver.localhost2.log
+MatlabDriver::START: executing "ulimit -S -v 700000; ulimit -a; matlab -nodesktop -nosplash"
+MatlabDriver::START: MATLAB shell pid=2108
+time(seconds)        unlimited
+file(blocks)         unlimited
+data(kbytes)         unlimited
+stack(kbytes)        unlimited
+coredump(blocks)     0
+memory(kbytes)       unlimited
+locked memory(kbytes) 64
+process              unlimited
+nofiles              1024
+vmemory(kbytes)      700000
+locks                unlimited
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2009 The MathWorks, Inc.
+                 Version 7.9.0.529 (R2009b) 32-bit (glnx86)
+                              August 12, 2009
+
+ 
+  To get started, type one of these: helpwin, helpdesk, or demo.
+  For product information, visit www.mathworks.com.
+5 + 20
+ 
+>> 
+ans =
+
+    25
+MatlabDriver::DEMOLISH: Closing driver2
+exit
+MatlabDriver::DEMOLISH: Closing driver1
+exit

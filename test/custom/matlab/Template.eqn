@@ -1,0 +1,39 @@
+# Facile model created by Allosteric Network Compiler (ANC)
+# ANC version 1.01 released 2011/08/26
+# Fri Jun 15 23:07:40 EDT 2012
+
+
+# REACTION CLASS: CatalyticReaction
+# ---------------------------------
+G0274R               + G0084R0              <-> G0084R0_G0274Ri00               ; fb00=3162.27766016838; bb00=0.00630957344480193 # (R!00) Kd = 1.99526231496888e-06
+G0084R0_G0274Ri00                            -> G0274R + G0084R1                ; kp00=8.96150501946605          # (R!01)
+
+# REACTION CLASS: BindingReaction
+# -------------------------------
+G0084R0              + LG0000               <-> G0084R0_LG0000i00               ; fb01=3.16227766016838; bb01=1.58489319246112 # (R!02) Kd = 0.501187233627274
+G1297                + G1846                <-> G1297_G1846i00                  ; fb01=3.16227766016838; bb02=10 # (R!03) Kd = 3.16227766016838
+
+
+# CUSTOM REACTIONS (from EQN section)
+# -----------------------------------
+null -> LG_0000_x; clamp_source_LG_0000_x="(0.5*0.001*1*(1 + square((t-10)/100*2*pi, 50)) + 0.5*0.001*1*(1 + square((t-15)/100*2*pi, 50)) + 0.5*0.001*1*(1 + square((t-20)/100*2*pi, 50)) + 0.5*0.001*1*(1 + square((t-25)/100*2*pi, 50)) + 0.5*0.001*1*(1 + square((t-30)/100*2*pi, 50)))/5"
+LG_0000_x -> null; clamp_sink_LG_0000_x=1
+
+
+# INITIAL CONCENTRATIONS (compiled from MODEL section)
+# ----------------------------------------------------
+INIT:
+G0084R0 = 6.30957344480193e-11
+G0274R = 1e-06
+G1297 = 1.58489319246111e-05
+G1846 = 0.000251188643150957
+LG0000 = 1e-12
+
+
+# CONFIG (from CONFIG section)
+# ----------------------------
+CONFIG:
+t_final = 100;
+t_vector = [t0:0.1:tf];
+matlab_ode_solver = ode23s;
+matlab_odeset_options = odeset('InitialStep', 1e-8, 'AbsTol', 1e-9, 'RelTol', 1e-3, 'MaxStep', 10.0);
