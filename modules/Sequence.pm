@@ -137,6 +137,16 @@ use base qw();
 	return $sequence_of{ident $self} = join "", @sequence;
     }
 
+#-------------------------------------------------------------------------------
+    # Function: generate_certain_sequence
+    # Synopsys: Generate a sequence of a given networks structure
+#-------------------------------------------------------------------------------
+
+    sub generate_certain_sequence {
+      my $self = shift;
+      
+    }
+
     #--------------------------------------------------------------------------------------
     # Function: mutate_subseq
     # Synopsys: Mutate given length of bits from starting at locus, with given probability.
