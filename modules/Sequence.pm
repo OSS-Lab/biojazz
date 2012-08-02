@@ -140,6 +140,9 @@ use base qw();
 #-------------------------------------------------------------------------------
     # Function: generate_certain_sequence
     # Synopsys: Generate a sequence of a given networks structure
+    # 
+    # a single subroutine is likely to be enough for parsing anc language reversely
+    # Should I modify the anc program to do extra reversely parsing?
 #-------------------------------------------------------------------------------
 
     sub generate_certain_sequence {
