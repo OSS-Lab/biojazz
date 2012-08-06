@@ -52,6 +52,8 @@ use base qw();
 
 	confess "ERROR: internal error -- incorrect width" if $width != @vector;
 	
+	# flipping ?
+	# what is the map operator and the # symbol
 	my @flipped = map {$vector[$#vector - $_] } (0..$#vector);
 	
 	return $class->new({vector => \@flipped, width => $width});

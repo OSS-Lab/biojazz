@@ -156,7 +156,7 @@ sub evolve {
     system("cp -p $config_ref->{config_file} $config_ref->{work_dir}/$TAG/$source_dir");
     system("cp -p $Bin/*.pl $Bin/modules/*.pm $config_ref->{work_dir}/$TAG/$source_dir");
     system("cp -p ./custom/*.pm $config_ref->{work_dir}/$TAG/$source_dir");
-    system("bzr status $Bin > $config_ref->{work_dir}/$TAG/$source_dir/bzr_status");
+#    system("bzr status $Bin > $config_ref->{work_dir}/$TAG/$source_dir/bzr_status");
 
     # START (creates nodes, forks node manager process)
     my $ga_ref = GenAlg->new({

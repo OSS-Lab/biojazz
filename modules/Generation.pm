@@ -130,7 +130,9 @@ use base qw(Set ClassData);
 
     #--------------------------------------------------------------------------------------
     # Function: create_random_genomes
-    # Synopsys: 
+    # Synopsys: here is the subroutine that creating the genome.
+    #           we could use the similar way to generate genomes of the first generation
+    #           Besides the sequence there are some other information in the genome file
     #--------------------------------------------------------------------------------------
     sub create_random_genomes {
 	my $self = shift; my $obj_ID = ident $self;
