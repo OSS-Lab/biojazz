@@ -137,13 +137,13 @@ use base qw();
 	return $sequence_of{ident $self} = join "", @sequence;
     }
 
-#-------------------------------------------------------------------------------
-    # Function: generate_certain_sequence
-    # Synopsys: Generate a sequence of a given networks structure
-    # 
-    # a single subroutine is likely to be enough for parsing anc language reversely
-    # Should I modify the anc program to do extra reversely parsing?
-#-------------------------------------------------------------------------------
+    #-------------------------------------------------------------------------------
+        # Function: generate_certain_sequence
+        # Synopsys: Generate a sequence of a given networks structure
+        # 
+        # a single subroutine is likely to be enough for parsing anc language reversely
+        # Should I modify the anc program to do extra reversely parsing?
+    #-------------------------------------------------------------------------------
 
     sub generate_certain_sequence {
       my $self = shift;
