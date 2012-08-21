@@ -67,8 +67,10 @@ use vars qw(
 # Synopsys: Initialize and create a workspace
 #--------------------------------------------------------------------------------------
 sub create_workspace {
+    # creat the workspace name
     my $workspace_name = shift || "bjazz";
-
+    
+    # creat workspace and cp configure files, custom files and module files into the workspace
     printn "BioJazz is creating your workspace...";
     system("mkdir -p $workspace_name");
     system("mkdir -p $workspace_name/config");
@@ -87,10 +89,13 @@ sub create_workspace {
 # Synopsys: Initialization, configuration, run evolution.
 #--------------------------------------------------------------------------------------
 sub evolve {
+    # add random number generator seed to arguments????  the argument should have the seed configured in biojazz.pl
     my %args = (
 	seed => -1,
 	@_,
        );
+    
+    # pass seed from arguments to seed ????
     check_args(\%args, 1);
     my $seed = $args{seed};
 
@@ -156,7 +161,7 @@ sub evolve {
     system("cp -p $config_ref->{config_file} $config_ref->{work_dir}/$TAG/$source_dir");
     system("cp -p $Bin/*.pl $Bin/modules/*.pm $config_ref->{work_dir}/$TAG/$source_dir");
     system("cp -p ./custom/*.pm $config_ref->{work_dir}/$TAG/$source_dir");
-#    system("bzr status $Bin > $config_ref->{work_dir}/$TAG/$source_dir/bzr_status");
+    #system("bzr status $Bin > $config_ref->{work_dir}/$TAG/$source_dir/bzr_status");
 
     # START (creates nodes, forks node manager process)
     my $ga_ref = GenAlg->new({
@@ -208,7 +213,7 @@ sub load_genome {
 
 #--------------------------------------------------------------------------------------
 # Function: score_genome
-# Synopsys: 
+# Synopsys: scoring genome with config_ref and scoring_ref which defined in configure files
 #--------------------------------------------------------------------------------------
 sub score_genome {
     eval("use $config_ref->{scoring_class};");
@@ -230,7 +235,8 @@ sub score_genome {
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
-
+    
+    # set_elite_flag :: need to revisit to modify according to different selection method
     $ref->set_elite_flag(0);
     return $scoring_ref->score_genome($ref);
 }
@@ -266,6 +272,7 @@ sub collect_history_from_logfile {
 	logfile => $logfile,
        );
 }
+# subroutine to export history which could be used to analyse the simulation results?
 sub export_history {
     $history_ref->export(
 	filename => "$config_ref->{work_dir}/history.$TAG.xls",

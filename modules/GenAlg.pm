@@ -61,9 +61,11 @@ use base qw();
 	my $local_dir = (defined $config_ref->{local_dir} ?
 			 "$config_ref->{local_dir}/$config_ref->{scoring_class}" :
 			 undef);
-
+	
+	# if the host_list is not asigned value put the host_list 
 	my $host_list_ref = ref $config_ref->{host_list} ? $config_ref->{host_list} : [$config_ref->{host_list}];
-
+	
+	# assign values to cluster reference
 	my $cluster_ref = $cluster_ref_of{$obj_ID} = ScorCluster->new({
 	    config_file => $config_ref->{config_file},
 	    cluster_type => $config_ref->{cluster_type},
