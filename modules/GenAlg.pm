@@ -63,6 +63,7 @@ use base qw();
 			 undef);
 	
 	# if the host_list is not asigned value put the host_list 
+	# ref return a reference or NULL value
 	my $host_list_ref = ref $config_ref->{host_list} ? $config_ref->{host_list} : [$config_ref->{host_list}];
 	
 	# assign values to cluster reference
@@ -88,6 +89,7 @@ use base qw();
     # Synopsys: Load generation (i) from disk into current.
     #--------------------------------------------------------------------------------------
     sub load_current_generation {
+	# The ident() utility that produces this unique key is provided by the Class::Std module and is identical in effect to the refaddr() function in the standard Scalar::Util module.
 	my $self = shift; my $obj_ID = ident $self;
 	my $number = shift;
 
