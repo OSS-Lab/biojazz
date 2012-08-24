@@ -100,7 +100,7 @@ use base qw();
 	$current_generation_ref->load_generation(
 	    dir => "$config_ref->{work_dir}/$TAG/obj",
 	    number => $number,
-	   );
+	    );
 	$current_generation_number_of{$obj_ID} = $number;
     }
 
@@ -191,6 +191,11 @@ use base qw();
 	my $current_generation_number = $current_generation_number_of{$obj_ID};
 	my $current_generation_size = $current_generation_ref->get_num_elements();
 
+        if ($current_generation_size > 1) {
+	    printn "There are more than one elements in this generation";
+	    exit(1);
+	}
+
 	my $next_generation_ref = Generation->new({});
 	my $next_generation_number = $current_generation_number + 1;
 
@@ -208,112 +213,118 @@ use base qw();
 	}
 
 	# rank the current population by sorting on score
-	my $ranked_genomes_ref = $current_generation_ref->get_ranked_genomes();
-
-	my @ranked_indices = @{$ranked_genomes_ref->{ranked_indices}};
-	my @ranked_genomes = @{$ranked_genomes_ref->{ranked_genomes}};
-	my @ranking = @{$ranked_genomes_ref->{ranking}};
-
-	printn "ranked indices:  ".join ",", @ranked_indices;
-	printn "ranking:         ".join ",", @ranking;
+#	my $ranked_genomes_ref = $current_generation_ref->get_ranked_genomes();
+#
+#	my @ranked_indices = @{$ranked_genomes_ref->{ranked_indices}};
+#	my @ranked_genomes = @{$ranked_genomes_ref->{ranked_genomes}};
+#	my @ranking = @{$ranked_genomes_ref->{ranking}};
+#
+#	printn "ranked indices:  ".join ",", @ranked_indices;
+#	printn "ranking:         ".join ",", @ranking;
 
 	# propagate the top genomes unchanged to next generation (elitist strategy)
-	my $num_elite = (@ranked_genomes >= $config_ref->{elite_pool_size}) ? $config_ref->{elite_pool_size} : @ranked_genomes;
+#	my $num_elite = (@ranked_genomes >= $config_ref->{elite_pool_size}) ? $config_ref->{elite_pool_size} : @ranked_genomes;
 
-	for (my $i = 0; $i < $num_elite; $i++) {
-	    my $elite_ref = $ranked_genomes[$i];
-	    my $elite_name = $elite_ref->get_name();
-	    printn "create_next_generation: creating child from elite genome $elite_name";
-	    my $duplicate_ref = $elite_ref->duplicate();
-	    $duplicate_ref->add_history(sprintf("ELITE REPLICATION: $elite_name -> G%03d_I%02d", $next_generation_number, $i));
-	    $duplicate_ref->set_elite_flag(1);
-	    $next_generation_ref->add_element($duplicate_ref);
-	}
+#	for (my $i = 0; $i < $num_elite; $i++) {
+#	    my $elite_ref = $ranked_genomes[$i];
+#	    my $elite_name = $elite_ref->get_name();
+#	    printn "create_next_generation: creating child from elite genome $elite_name";
+#	    my $duplicate_ref = $elite_ref->duplicate();
+#	    $duplicate_ref->add_history(sprintf("ELITE REPLICATION: $elite_name -> G%03d_I%02d", $next_generation_number, $i));
+#	    $duplicate_ref->set_elite_flag(1);
+#	    $next_generation_ref->add_element($duplicate_ref);
+#	}
 
-	my $total_children = $config_ref->{max_population} - $num_elite;
-	printn "create_next_generation: total_children = $total_children";
+#	my $total_children = $config_ref->{max_population} - $num_elite;
+#	printn "create_next_generation: total_children = $total_children";
 
 	# compute rank-based scores
-	my @ranking_scores = ();
-	if (!defined $config_ref->{score_by_rank_flag} || $config_ref->{score_by_rank_flag}) {
-	    printn "create_next_generation: computing parent ranking_scores";
-	    my $ranking_nonviable = $config_ref->{ranking_nonviable};
-	    my $num_nonviable = int $ranking_nonviable * $current_generation_size;
-	    my $rank_nonviable = $current_generation_size - $num_nonviable; # inclusive
-	    my $p1 = ($config_ref->{ranking_pressure})**(1/5);  # per-centile fitness fold-change
-	    my $pr = $p1**(100/$current_generation_size);       # per-rank fitness fold-change
-
-	    for (my $i = 0; $i < $current_generation_size; $i++) {
-		if ($ranking[$i] >= $rank_nonviable) {
-		    $ranking_scores[$i] = 0;
-		} else {
-		    $ranking_scores[$i] = $pr ** ($rank_nonviable - $ranking[$i] - 1);
-		}
-	    }
-	}
-
-	my @fitness_scores = ($config_ref->{score_by_rank_flag}) ? @ranking_scores : @scores;
-	for (my $i = 0; $i < $current_generation_size; $i++) {
-	    printn "fitness_score($i) = $fitness_scores[$i]";
-	}
-
-	my $total_score = 0;
-	for (my $i = 0; $i < $current_generation_size; $i++) {
-	    $total_score += $fitness_scores[$i];
-	}
-
-	printn "create_next_generation: total_score = $total_score";
+#	my @ranking_scores = ();
+#	if (!defined $config_ref->{score_by_rank_flag} || $config_ref->{score_by_rank_flag}) {
+#	    printn "create_next_generation: computing parent ranking_scores";
+#	    my $ranking_nonviable = $config_ref->{ranking_nonviable};
+#	    my $num_nonviable = int $ranking_nonviable * $current_generation_size;
+#	    my $rank_nonviable = $current_generation_size - $num_nonviable; # inclusive
+#	    my $p1 = ($config_ref->{ranking_pressure})**(1/5);  # per-centile fitness fold-change
+#	    my $pr = $p1**(100/$current_generation_size);       # per-rank fitness fold-change
+#
+#	    for (my $i = 0; $i < $current_generation_size; $i++) {
+#		if ($ranking[$i] >= $rank_nonviable) {
+#		    $ranking_scores[$i] = 0;
+#		} else {
+#		    $ranking_scores[$i] = $pr ** ($rank_nonviable - $ranking[$i] - 1);
+#		}
+#	    }
+#	}
+#
+#	my @fitness_scores = ($config_ref->{score_by_rank_flag}) ? @ranking_scores : @scores;
+#	for (my $i = 0; $i < $current_generation_size; $i++) {
+#	    printn "fitness_score($i) = $fitness_scores[$i]";
+#	}
+#
+#	my $total_score = 0;
+#	for (my $i = 0; $i < $current_generation_size; $i++) {
+#	    $total_score += $fitness_scores[$i];
+#	}
+#
+#	printn "create_next_generation: total_score = $total_score";
 
 	# compute scale_factor and rescale scores
-	my $scale_factor;
-	$scale_factor = $total_children / $total_score;
-	my @scaled_fitness_scores = map {$_ * $scale_factor} @fitness_scores;
+#	my $scale_factor;
+#	$scale_factor = $total_children / $total_score;
+#	my @scaled_fitness_scores = map {$_ * $scale_factor} @fitness_scores;
 
 	# guiding principle for the following is that no. children is proportional to fitness score
 	# (use the roulette wheel sampling approach)
-	my $children_created = 0;
-	my $parent_pointer = 0;
-	my $child_pointer = rand(1);
+#	my $children_created = 0;
+#	my $parent_pointer = 0;
+#	my $child_pointer = rand(1);
 	for (my $i = 0; $i < $current_generation_size; $i++) {
-	    my $num_children = 0;
+#	    my $num_children = 0;
 
-	    $parent_pointer += $scaled_fitness_scores[$i];
-	    while ($parent_pointer > $child_pointer) {
-		$child_pointer++;
-		$num_children++;
-	    }
+#	    $parent_pointer += $scaled_fitness_scores[$i];
+#	    while ($parent_pointer > $child_pointer) {
+#		$child_pointer++;
+#		$num_children++;
+#	    }
 
+	    #######################################################
 	    my $parent_ref = $current_generation_ref->get_element($i);
 
-	    printn "create_next_generation: individual $i, ranking=$ranking[$i], fitness_score = $fitness_scores[$i], scaled_fitness_score=$scaled_fitness_scores[$i], num_children=$num_children";
-	    for (my $j = 0; $j < $num_children; $j++) {
-		my $parent_name = $parent_ref->get_name();
-		printn "create_next_generation: creating child $j of individual $parent_name";
-		my $child_ref = $parent_ref->duplicate();
-		$child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $num_elite+$children_created+$j));
-		$child_ref->set_elite_flag(0);
-		$child_ref->mutate(
-		    prob_mutate_params => $config_ref->{prob_mutate_params},
-		    prob_mutate_global => $config_ref->{prob_mutate_global},
-		    prob_recombination => $config_ref->{prob_recombination},
-		    prob_duplicate => $config_ref->{prob_duplicate},
-		    prob_delete => $config_ref->{prob_delete},
-		    mutation_rate => $config_ref->{mutation_rate},
-		   );
-		$child_ref->set_score(undef);
-		$child_ref->clear_stats();
-		$next_generation_ref->add_element($child_ref);
-	    }
-	    $children_created += $num_children;
+#	    printn "create_next_generation: individual $i, ranking=$ranking[$i], fitness_score = $fitness_scores[$i], scaled_fitness_score=$scaled_fitness_scores[$i], num_children=$num_children";
+
+	    #######################################################
+	    printn "create_next_generation: with fixed mutation";
+#	    for (my $j = 0; $j < $num_children; $j++) {
+	    #######################################################
+	    my $parent_name = $parent_ref->get_name();
+#		printn "create_next_generation: creating child $j of individual $parent_name";
+	    #######################################################
+	    my $child_ref = $parent_ref->duplicate();
+	    $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
+#	    $child_ref->set_elite_flag(0);
+#	    $child_ref->mutate(
+#		prob_mutate_params => $config_ref->{prob_mutate_params},
+#		prob_mutate_global => $config_ref->{prob_mutate_global},
+#		prob_recombination => $config_ref->{prob_recombination},
+#		prob_duplicate => $config_ref->{prob_duplicate},
+#		prob_delete => $config_ref->{prob_delete},
+#		mutation_rate => $config_ref->{mutation_rate},
+#		);
+#	    $child_ref->set_score(undef);
+	    $child_ref->clear_stats();
+	    $next_generation_ref->add_element($child_ref);
+#	    }
+#	    $children_created += $num_children;
 	}
 
 	# number of children created may be different from target due to rounding
-	printn "create_next_generation: children_created = $children_created";
+#	printn "create_next_generation: children_created = $children_created";
 
-	if ($children_created != $total_children) {
-	    printn "ERROR: create_next_generation -- did not create correct number of children ($children_created != $total_children)";
-	    exit(1);
-	}
+#	if ($children_created != $total_children) {
+#	    printn "ERROR: create_next_generation -- did not create correct number of children ($children_created != $total_children)";
+#	    exit(1);
+#	}
 
 	# change to next generation
 	$current_generation_number_of{$obj_ID} = $current_generation_number = $next_generation_number;
