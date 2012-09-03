@@ -137,7 +137,6 @@ GetOptions("help"            => \$HELP,
 	   "score"           => \$SCORE,
 	   "inumg=i"         => \$config_ref->{inum_genomes},
 	   "mrate=f"         => \$config_ref->{mutation_rate},
-#	   "start_model=s"   => \$start_model->{start_model},
 	  );
 
 exit if ($version_flag);

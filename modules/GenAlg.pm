@@ -183,7 +183,81 @@ use base qw();
     # Synopsys: 
     #--------------------------------------------------------------------------------------
     sub random_walk_selection {
+	my $self = shift; my $obj_ID = ident $self;
+
+	my $config_ref = $config_ref_of{$obj_ID};
+
+	my $current_generation_ref = $current_generation_ref_of{$obj_ID};
+	my $current_generation_number = $current_generation_number_of{$obj_ID};
+	my $current_generation_size = $current_generation_ref->get_num_elements();
 	
+	if ($current_generation_size > 1) {
+	    printn "ERROR: there is more than 1 genomes in the generation $current_generation_number";
+	    exit(1);
+	}
+
+	my $next_generation_ref = Generation->new({});
+	my $next_generation_number = $current_generation_number + 1;
+
+	printn "create_next_generation: creating generation $next_generation_number";
+	
+	# check scores to make sure defined and positive
+	my @scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
+	if (grep {!defined $_} @scores) {
+	    printn "ERROR: not all scores are defined (if this is first generation, check value of score_initial_generation in config file)";
+	    exit(1);
+	}
+	if (grep {$_ < 0} @scores) {
+	    printn "ERROR: all scores must be non-negative";
+	    exit(1);
+	}
+	
+	# start to generate new generation 
+	for (my $i = 0, $i < $current_generation_size; $i++) {
+	    my $parent_ref = $current_generation_ref->get_element($i);
+	    printn "create_next_generation: individual $i as parent";
+	    my $parent_name = $parent_ref->get_name();
+	    printn "create_next_generation: creating child of individual $parent_name";
+
+	    ######################################################
+	    # start the kimura selection (random walk)
+	    my $child_ref;
+	    my $fixation_p = -1;
+	    my $effective_population_size = $config_ref->{effective_population_size};
+	    my $mutated_score;
+	    while ($fixation_p < rand) {
+	    
+		$child_ref = $parent_ref->duplicate();
+	    
+		$child_ref->set_elite_flag(0);
+		$child_ref->mutate(
+		    prob_mutate_params => $config_ref->{prob_mutate_params},
+		    prob_mutate_global => $config_ref->{prob_mutate_global},
+		    prob_recombination => $config_ref->{prob_recombination},
+		    prob_duplicate => $config_ref->{prob_duplicate},
+		    prob_delete => $config_ref->{prob_delete},
+		    mutation_rate => $config_ref->{mutation_rate},
+		    );
+		$child_ref->set_score(undef);
+		$child_ref->clear_stats();
+		$scoring_ref->score_genome($child_ref);
+		
+		$mutated_score = $child_ref->get_score() - $scores[$i];
+		$fixation_p = (1 - exp(-2 * $mutated_score)) / (1 - exp(-4 * $effective_population_size * $mutated_score));
+	    }
+	    
+
+	    # after fix the mutation
+	    
+	    $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
+	    $next_generation_ref->add_element($child_ref);
+	    
+	}
+	
+	# change to next generation
+	$current_generation_number_of{$obj_ID} = $current_generation_number = $next_generation_number;
+	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
+	$current_generation_ref->refresh_individual_names($current_generation_number);	
     }
 
     #--------------------------------------------------------------------------------------
@@ -440,8 +514,10 @@ use base qw();
 	    if ($current_generation_number_of{$obj_ID} + 1 < $config_ref->{num_generations}) {
 		if ($config_ref->{selection_method} == "random_walk") {
 		    $self->random_walk_selection();
+		    $self->save_current_generation();
 		} elsif ($config_ref->{selection_method} == "populated_random") {
 		    $self->populated_random_selection();
+		    $self->save_current_generation();
 		} elsif (!$config_ref->{selection_method}) {
 		    printn "the selection method is not specified";
 		    exit(1);
