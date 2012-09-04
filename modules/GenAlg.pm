@@ -186,6 +186,7 @@ use base qw();
 	my $self = shift; my $obj_ID = ident $self;
 
 	my $config_ref = $config_ref_of{$obj_ID};
+	my $cluster_ref = $cluster_ref_of{$obj_ID};
 
 	my $current_generation_ref = $current_generation_ref_of{$obj_ID};
 	my $current_generation_number = $current_generation_number_of{$obj_ID};
@@ -211,15 +212,23 @@ use base qw();
 	    printn "ERROR: all scores must be non-negative";
 	    exit(1);
 	}
+
+
+	my %used_nodes = ();
+	printn "score_current_generation: scoring generation $current_generation_number ....";
+
 	
 	# start to generate new generation 
-	for (my $i = 0, $i < $current_generation_size; $i++) {
+	for (my $i = 0; $i < $current_generation_size; $i++) {
+
 	    my $parent_ref = $current_generation_ref->get_element($i);
 	    printn "create_next_generation: individual $i as parent";
 	    my $parent_name = $parent_ref->get_name();
 	    printn "create_next_generation: creating child of individual $parent_name";
 
 	    ######################################################
+
+
 	    # start the kimura selection (random walk)
 	    my $child_ref;
 	    my $fixation_p = -1;
@@ -240,7 +249,19 @@ use base qw();
 		    );
 		$child_ref->set_score(undef);
 		$child_ref->clear_stats();
-		$scoring_ref->score_genome($child_ref);
+
+
+		my $node_ref = $cluster_ref->get_free_node();
+		# ensure reproducibility independent of node scoring if there is element of randomness
+		# by deriving node scoring seed from main random generator
+		my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
+		$node_ref->node_print("srand($seed); \$scoring_ref->score_genome(\$child_ref);\n");
+		$node_ref->node_expect(undef, 'PERL_SHELL');
+		$node_ref->node_print("NODE_READY");
+		$used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on
+
+
+#		$scoring_ref->score_genome($child_ref);
 		
 		$mutated_score = $child_ref->get_score() - $scores[$i];
 		$fixation_p = (1 - exp(-2 * $mutated_score)) / (1 - exp(-4 * $effective_population_size * $mutated_score));
@@ -253,6 +274,18 @@ use base qw();
 	    $next_generation_ref->add_element($child_ref);
 	    
 	}
+
+	# now wait for scoring to finish
+	while (1) {
+	    my @used_list = keys %used_nodes;
+	    my @busy_list = $cluster_ref->get_busy_node_id_list();
+	    my @wait_list = intersection(\@busy_list, \@used_list);
+	    printn "score_current_generation: waiting on nodes... @wait_list";
+	    last if (@wait_list == 0);
+	    sleep 5;		# poll again in 5 seconds....
+	}
+	printn"score_current_generation: done waiting on nodes...";
+	
 	
 	# change to next generation
 	$current_generation_number_of{$obj_ID} = $current_generation_number = $next_generation_number;
