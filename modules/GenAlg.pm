@@ -545,10 +545,10 @@ use base qw();
 	    $self->report_current_generation();
 
 	    if ($current_generation_number_of{$obj_ID} + 1 < $config_ref->{num_generations}) {
-		if ($config_ref->{selection_method} == "random_walk") {
+		if ($config_ref->{selection_method} eq "random_walk") {
 		    $self->random_walk_selection();
 		    $self->save_current_generation();
-		} elsif ($config_ref->{selection_method} == "populated_random") {
+		} elsif ($config_ref->{selection_method} eq "populated_random") {
 		    $self->populated_random_selection();
 		    $self->save_current_generation();
 		} elsif (!$config_ref->{selection_method}) {
