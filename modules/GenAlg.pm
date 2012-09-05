@@ -286,11 +286,16 @@ use base qw();
 		
 		printn "the parent's score is: $scores[$i]";
 		my $child_score = $child_ref->get_score();
+
 		printn "the child's score is; $child_score";
 		
 		$mutated_score = $child_score - $scores[$i];
 
-		$fixation_p = (1 - exp(-2 * $mutated_score)) / (1 - exp(-4 * $effective_population_size * $mutated_score));
+		if ($mutated_score == 0.0) {
+		    $fixation_p = 0.0;
+		} else {
+		    $fixation_p = (1 - exp(-2 * $mutated_score)) / (1 - exp(-4 * $effective_population_size * $mutated_score));
+		}
 	    }
 	    
 
