@@ -16,6 +16,7 @@ use Class::Std;
 use base qw();
 {
     use Carp;
+    use Storable qw(store retrieve);
 
     use Utils;
 
@@ -212,12 +213,14 @@ use base qw();
 	    printn "ERROR: all scores must be non-negative";
 	    exit(1);
 	}
-
+	
+	printn "@scores";
 
 	my %used_nodes = ();
 	printn "score_current_generation: scoring generation $current_generation_number ....";
 
-	
+	my $temp_obj_dir = "$config_ref->{work_dir}/$TAG/obj";
+
 	# start to generate new generation 
 	for (my $i = 0; $i < $current_generation_size; $i++) {
 
@@ -250,20 +253,36 @@ use base qw();
 		$child_ref->set_score(undef);
 		$child_ref->clear_stats();
 
+		# store it first then retrive it when need to score it.
+		
+		my $temp_genome_file = sprintf("$temp_obj_dir/Temp_Genome_I%02d.obj",$i);
+
+		printn "Working on temporary genome files: $temp_genome_file";
+		
+		store($child_ref, "$temp_genome_file");
 
 		my $node_ref = $cluster_ref->get_free_node();
 		# ensure reproducibility independent of node scoring if there is element of randomness
 		# by deriving node scoring seed from main random generator
 		my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
-		$node_ref->node_print("srand($seed); \$scoring_ref->score_genome(\$child_ref);\n");
+		$node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$temp_genome_file\"); \$scoring_ref->score_genome(\$genome_ref); store(\$genome_ref, \"$temp_genome_file\");\n");
 		$node_ref->node_expect(undef, 'PERL_SHELL');
 		$node_ref->node_print("NODE_READY");
 		$used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on
 
 
-#		$scoring_ref->score_genome($child_ref);
+		# retrive the genome after scoring it
+
+		$child_ref = retrieve("$temp_genome_file");
 		
-		$mutated_score = $child_ref->get_score() - $scores[$i];
+		printn "the parent's score is: $scores[$i]";
+		
+		my $child_score = $child_ref->get_score();
+		
+		printn "the child's score is; $child_score"
+		
+		$mutated_score = $child_score - $scores[$i];
+
 		$fixation_p = (1 - exp(-2 * $mutated_score)) / (1 - exp(-4 * $effective_population_size * $mutated_score));
 	    }
 	    
