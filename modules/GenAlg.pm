@@ -279,7 +279,7 @@ use base qw();
 		
 		my $child_score = $child_ref->get_score();
 		
-		printn "the child's score is; $child_score"
+		printn "the child's score is; $child_score";
 		
 		$mutated_score = $child_score - $scores[$i];
 
