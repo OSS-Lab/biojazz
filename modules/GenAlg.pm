@@ -292,7 +292,7 @@ use base qw();
 		$mutated_score = $child_score - $scores[$i];
 
 		if ($mutated_score == 0.0) {
-		    $fixation_p = 0.0;
+		    $fixation_p = 1 / (2 * $effective_population_size);  # test if fix the neutral selection
 		} else {
 		    $fixation_p = (1 - exp(-2 * $mutated_score)) / (1 - exp(-4 * $effective_population_size * $mutated_score));
 		}
