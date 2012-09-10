@@ -250,6 +250,8 @@ use base qw();
 							 });
 
 	# start to generate new generation 
+	my $effective_population_size = $config_ref->{effective_population_size};
+	my $amplifier_alpha = $config_ref->{amplifier_alpha};
 	for (my $i = 0; $i < $current_generation_size; $i++) {
 
 	    my $parent_ref = $current_generation_ref->get_element($i);
@@ -263,7 +265,6 @@ use base qw();
 	    # start the kimura selection (random walk)
 	    my $child_ref;
 	    my $fixation_p = -1;
-	    my $effective_population_size = $config_ref->{effective_population_size};
 	    my $mutated_score;
 	    while ($fixation_p < rand) {
 	    
@@ -296,6 +297,9 @@ use base qw();
 		} else {
 		    $fixation_p = (1 - exp(-2 * $mutated_score)) / (1 - exp(-4 * $effective_population_size * $mutated_score));
 		}
+		
+		$fixation_p *= $amplifier_alpha;
+
 	    }
 	    
 
