@@ -180,11 +180,6 @@ evolve(seed => defined $SEED ? $SEED : -1) if !$SHELL && !$COMMAND && defined $c
 load_genome($GENOME) if $GENOME || $SCORE && defined $config_ref->{config_file};
 score_genome() if $SCORE && defined $config_ref->{config_file};
 
-#======================================================================================
-# TO REVERSELY PARSE THE ANC MODEL TO GENOME/SEQUENCE
-#======================================================================================
-# reversely parse the anc model
-# reverse_parse()
 
 if (defined $COMMAND) {
   eval("$COMMAND");  warn if $@;
