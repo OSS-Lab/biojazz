@@ -28,6 +28,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK);
 	     evolve
 	     load_genome
 	     score_genome
+             initiate_genome
 	     load_history
 	     save_history
 	     collect_history_from_genomes
@@ -89,7 +90,7 @@ sub create_workspace {
 # Synopsys: Initialization, configuration, run evolution.
 #--------------------------------------------------------------------------------------
 sub evolve {
-    # add random number generator seed to arguments????  the argument should have the seed configured in biojazz.pl
+
     my %args = (
 	seed => -1,
 	@_,
@@ -210,10 +211,23 @@ sub load_genome {
     # retrieve the genome object
     return $ref = retrieve($genome);
 }
+#--------------------------------------------------------------------------------------
+# Function: initiate_genome
+# Synopsis: initiate the genome for later load as initial genome
+#--------------------------------------------------------------------------------------
+sub initiate_genome {
+    eval("use $config_ref->{initiate_class};");
+    if ($@) {print $@; return;}
 
+    printn "initiate_genome is called/n";
+
+    
+
+    exit(1);
+}
 #--------------------------------------------------------------------------------------
 # Function: score_genome
-# Synopsys: scoring genome with config_ref and scoring_ref which defined in configure files
+# Synopsis: scoring genome with config_ref and scoring_ref which defined in configure files
 #--------------------------------------------------------------------------------------
 sub score_genome {
     eval("use $config_ref->{scoring_class};");
