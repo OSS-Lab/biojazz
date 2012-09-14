@@ -14,3 +14,25 @@ use warnings;
 package InitiateGenome;
 use Class::Std::Storable;
 use base qw(GenomeModel);
+{
+    
+    use Carp;
+    use Utils;
+    use Globals qw($verbosity $TAG);
+
+    use GenomeModel;
+    use storable qw(store, retrieve);
+
+    
+    sub initiate_genome {
+
+	my $initiate_ref = $config_ref
+
+    }
+
+
+
+
+
+
+}
