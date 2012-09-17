@@ -221,9 +221,10 @@ sub initiate_genome {
 
     printn "initiate_genome is called/n";
 
-    
+    my $initiate_ref = InitiateGenome->new({});
+    $initiate_ref->initiate_genome();
 
-    exit(1);
+    return 1;
 }
 #--------------------------------------------------------------------------------------
 # Function: score_genome
