@@ -26,7 +26,7 @@ use base qw(GenomeModel);
     
     sub initiate_genome {
 
-	my $initiate_ref = $config_ref
+	my $initiate_ref = 
 
     }
 
