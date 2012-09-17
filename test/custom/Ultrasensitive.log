@@ -77,10 +77,69 @@ read_config: TG_init = 1
 read_config: cell_volume = 1e-18
 read_config: lg_binding_profile = 01010011
 read_config: tg_binding_profile = 10100011
-MatlabDriver::START: starting matlab(98) on localhost (Thu Jun 14 12:01:23 EDT 2012)
+MatlabDriver::START: starting matlab(98) on localhost (Mon 17 Sep 2012 14:13:05 BST)
 MatlabDriver::START: logfile is test/custom/matlab/matlab.98.log
 MatlabDriver::START: executing "ulimit -S -v 750000; ulimit -a; matlab -nodesktop -nosplash"
-MatlabDriver::START: MATLAB shell pid=2955
+2012-09-17 14:13:05.560 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.565 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.566 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.567 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.569 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.570 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.571 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.572 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.574 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.575 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.610 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.614 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.615 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.625 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.627 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:05.628 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.821 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.822 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.823 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.823 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.824 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.825 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.826 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.827 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.828 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.828 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.829 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.830 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.831 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.832 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.832 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.833 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.834 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.835 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.836 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.836 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.837 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.838 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.839 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.840 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.841 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.841 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.842 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.843 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.844 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.845 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.845 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.846 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.847 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.848 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.849 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.849 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.850 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.851 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.852 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.853 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.853 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.854 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:07.855 MATLAB_maci64[1981:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+MatlabDriver::START: MATLAB shell pid=1980
 {
   'Scoring' => {
                  'anc_ref' => {},
@@ -298,7 +357,7 @@ MODEL 	= test/custom/matlab/Ultrasensitive.mod
 OUT 	= test/custom/matlab/Ultrasensitive.eqn
 OUTDIR 	= test/custom/matlab
 
-Start time: Thu Jun 14 12:01:26 EDT 2012
+Start time: Mon 17 Sep 2012 14:13:08 BST
 CLEANING UP
 CREATING OUTPUT DIRECTORY
 READING MODEL test/custom/matlab/Ultrasensitive.mod
@@ -362,17 +421,17 @@ EXPORTING NETWORK
 Facile->export(): generating Facile equation file
 REPORTING SPECIES IN: test/custom/matlab/Ultrasensitive.species.rpt
 EXPORTING NETWORK TO GRAPHVIZ
-Start time: Thu Jun 14 12:01:26 EDT 2012
-End time:   Thu Jun 14 12:01:26 EDT 2012
+Start time: Mon 17 Sep 2012 14:13:08 BST
+End time:   Mon 17 Sep 2012 14:13:08 BST
 ANC NUM SPECIES: 13
-facile_run: facile command is /home/ollivier/Project/facile/working/facile.pl  --matlab test/custom/matlab/Ultrasensitive.eqn
-facile_run: started facile on Thu Jun 14 12:01:26 EDT 2012
+facile_run: facile command is /Users/Song/workspace/rule-based-modelling/facile/facile.pl  --matlab test/custom/matlab/Ultrasensitive.eqn
+facile_run: started facile on Mon 17 Sep 2012 14:13:08 BST
 
 Facile version 0.41
 Copyright (c) 2003-2012, Ollivier, Siso, Swain et al.
 Note: input files for Matlab sims are test/custom/matlab/Ultrasensitive_odes.m, test/custom/matlab/UltrasensitiveDriver.m, test/custom/matlab/Ultrasensitive_s.m, test/custom/matlab/Ultrasensitive_r.m, test/custom/matlab/Ultrasensitive_ode_event.m
 
-facile_run: finished facile on Thu Jun 14 12:01:27 EDT 2012
+facile_run: finished facile on Mon 17 Sep 2012 14:13:08 BST
 
 ANC model complexity: 0 + 0 + 0 + 5
 Ultrasensitive::score_genome: running matlab driver...
@@ -381,37 +440,37 @@ matlab_plot_complex: Figure 901 -- TG00000
 matlab_plot_complex: Figure 902 -- TG00001
 RESULT VECTOR: INPUT = LG OUTPUT = TG00001 DELAY = ~
 RESULT VECTOR:  t=47.00  input vector:         0 pos_output_vector: 0.909662 neg_output_vector: 0.0871309 (expected =        0)
-RESULT VECTOR:  t=1152.00 input vector:     3.333 pos_output_vector: 0.907057 neg_output_vector: 0.0897552 (expected = 9.044e-08)
-RESULT VECTOR:  t=2366.00 input vector:     6.667 pos_output_vector: 0.904449 neg_output_vector: 0.0923731 (expected =        1)
-RESULT VECTOR:  t=3431.00 input vector:        10 pos_output_vector: 0.901876 neg_output_vector: 0.0949728 (expected =        1)
-RESULT VECTOR:  t=4489.00 input vector:     6.667 pos_output_vector: 0.904454 neg_output_vector: 0.092399 (expected =        1)
-RESULT VECTOR:  t=5596.00 input vector:     3.333 pos_output_vector: 0.907087 neg_output_vector: 0.0898128 (expected = 9.044e-08)
-RESULT VECTOR:  t=6636.00 input vector:         0 pos_output_vector: 0.909711 neg_output_vector: 0.0871901 (expected =        0)
+RESULT VECTOR:  t=1130.00 input vector:     3.333 pos_output_vector: 0.907061 neg_output_vector: 0.0897538 (expected = 9.044e-08)
+RESULT VECTOR:  t=2243.00 input vector:     6.667 pos_output_vector: 0.904553 neg_output_vector: 0.0923625 (expected =        1)
+RESULT VECTOR:  t=3340.00 input vector:        10 pos_output_vector: 0.901975 neg_output_vector: 0.0949658 (expected =        1)
+RESULT VECTOR:  t=4434.00 input vector:     6.667 pos_output_vector: 0.904542 neg_output_vector: 0.0923677 (expected =        1)
+RESULT VECTOR:  t=5629.00 input vector:     3.333 pos_output_vector: 0.907157 neg_output_vector:  0.08976 (expected = 9.044e-08)
+RESULT VECTOR:  t=6672.00 input vector:         0 pos_output_vector: 0.909752 neg_output_vector: 0.0871414 (expected =        0)
 pos_output_select = 0
-pos_delta = -0.00287930274483437, neg_delta = 0.0283874242624708
+pos_delta = -0.00276902445229787, neg_delta = 0.0286358767387231
 matlab_plot_phase: Figure 904 -- TG00000 vs LG0000
-dy1_min/max = (8.713085599666191e-02, 8.975614856110345e-02) dy1n_min/max = (8.719008449502018e-02, 8.981277609757998e-02)
-dy3_min/max = (9.237312478603710e-02, 9.497384015797491e-02) dy3n_min/max = (9.239839192099769e-02, 9.497276575552414e-02)
-dy1 = 0.00262529256444154 dy2 = 0.00261790425827056 dy3 = 0.0026007153719378
-dy1n = 0.0026226916025598 dy2n = 0.00258626203813757 dy3n=0.00257437383452644
-score=0.0586426039509216, ANC_ok_flag=1, amplitude=0.00260208314820407, amplitude_score=0.00260208314820407, complexity=5, complexity_score=0.952380952380952, delta=0.0283874242624708, delta_score=0.739498020715695, max_mean_squared_err=1, mean_squared_err=0.356840005010797, mean_squared_err_score=0.0745875410248904, min_mean_squared_err=1e-06, network_connected_flag=1, network_connectivity=800, network_score=0.615384615384615, num_adjacent_kinases=1, num_adjacent_phosphatases=1, num_anc_species=13, num_genes=4, num_pruned_genes=0, num_reactions_tg_0=1, num_reactions_tg_1=4, parse_successful=1, score=0.0586426039509216, score_count=1, sim_flag=1, steady_state_score=0.464684014869888, tg_adjacent_genes=2, timeout_flag=0, ultrasensitivity_dy1=0.991650533004895, ultrasensitivity_dy3=1.00561866448748, ultrasensitivity_score=0.165680914728712
-final_score = 0.0586426039509216 cumulative_score = 0.0586426039509216 count = 1
+dy1_min/max = (8.712912951866778e-02, 8.975384080362685e-02) dy1n_min/max = (8.714136857069647e-02, 8.975998327586007e-02)
+dy3_min/max = (9.236252427979973e-02, 9.496580132040197e-02) dy3n_min/max = (9.236766405830672e-02, 9.496578031415299e-02)
+dy1 = 0.00262471128495907 dy2 = 0.00260869048520178 dy3 = 0.00260327704060224
+dy1n = 0.0026186147051636 dy2n = 0.0026076925990772 dy3n=0.00259811625584626
+score=0.0587081177886899, ANC_ok_flag=1, amplitude=0.00260819154213949, amplitude_score=0.00260819154213949, complexity=5, complexity_score=0.952380952380952, delta=0.0286358767387231, delta_score=0.741173208838369, max_mean_squared_err=1, mean_squared_err=0.356850089916531, mean_squared_err_score=0.0745854954093548, min_mean_squared_err=1e-06, network_connected_flag=1, network_connectivity=800, network_score=0.615384615384615, num_adjacent_kinases=1, num_adjacent_phosphatases=1, num_anc_species=13, num_genes=4, num_pruned_genes=0, num_reactions_tg_0=1, num_reactions_tg_1=4, parse_successful=1, score=0.0587081177886899, score_count=1, sim_flag=1, steady_state_score=0.469483568075117, tg_adjacent_genes=2, timeout_flag=0, ultrasensitivity_dy1=0.994861485649672, ultrasensitivity_dy3=1.00288187933043, ultrasensitivity_score=0.166053370227194
+final_score = 0.0587081177886899 cumulative_score = 0.0587081177886899 count = 1
 {
   'GenomeModel' => {
                      'elite_flag' => 0,
                      'history_ref' => [],
-                     'score' => '0.0586426039509216',
+                     'score' => '0.0587081177886899',
                      'stats_ref' => {
                                       'ANC_ok_flag' => 1,
-                                      'amplitude' => '0.00260208314820407',
-                                      'amplitude_score' => '0.00260208314820407',
+                                      'amplitude' => '0.00260819154213949',
+                                      'amplitude_score' => '0.00260819154213949',
                                       'complexity' => 5,
                                       'complexity_score' => '0.952380952380952',
-                                      'delta' => '0.0283874242624708',
-                                      'delta_score' => '0.739498020715695',
+                                      'delta' => '0.0286358767387231',
+                                      'delta_score' => '0.741173208838369',
                                       'max_mean_squared_err' => 1,
-                                      'mean_squared_err' => '0.356840005010797',
-                                      'mean_squared_err_score' => '0.0745875410248904',
+                                      'mean_squared_err' => '0.356850089916531',
+                                      'mean_squared_err_score' => '0.0745854954093548',
                                       'min_mean_squared_err' => '1e-06',
                                       'network_connected_flag' => 1,
                                       'network_connectivity' => 800,
@@ -424,15 +483,15 @@ final_score = 0.0586426039509216 cumulative_score = 0.0586426039509216 count = 1
                                       'num_reactions_tg_0' => 1,
                                       'num_reactions_tg_1' => 4,
                                       'parse_successful' => 1,
-                                      'score' => '0.0586426039509216',
+                                      'score' => '0.0587081177886899',
                                       'score_count' => 1,
                                       'sim_flag' => 1,
-                                      'steady_state_score' => '0.464684014869888',
+                                      'steady_state_score' => '0.469483568075117',
                                       'tg_adjacent_genes' => 2,
                                       'timeout_flag' => 0,
-                                      'ultrasensitivity_dy1' => '0.991650533004895',
-                                      'ultrasensitivity_dy3' => '1.00561866448748',
-                                      'ultrasensitivity_score' => '0.165680914728712'
+                                      'ultrasensitivity_dy1' => '0.994861485649672',
+                                      'ultrasensitivity_dy3' => '1.00288187933043',
+                                      'ultrasensitivity_score' => '0.166053370227194'
                                     }
                    },
   'Model' => {

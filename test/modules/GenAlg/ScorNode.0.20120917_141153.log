@@ -1,0 +1,172 @@
+[?1034hbash-3.2$ PS1='[ScorNode 0]'
+[ScorNode 0]echo my shell is ready
+my shell is ready
+[ScorNode 0]stty ocrnl -onlcr
+[ScorNode 0]date
+Mon 17 Sep 2012 14:11:58 BST
+[ScorNode 0]hostname
+orkun-soyers-MacBook-Pro.local
+[ScorNode 0]cd /Users/Song/workspace/rule-based-modelling/biojazz
+[ScorNode 0]
+[ScorNode 0]nice -0 perl -I/Users/Song/workspace/rule-based-modelling/biojazz/mo 
+dules -Icustom -I/Users/Song/workspace/rule-based-modelling/anc/base -MUtils -MG 
+enomeModel -MScoring -e '$|=1; print "PERL_SHELL> ";while(<STDIN>){printn $_;eva 
+l "$_";print "$@" if $@;print "PERL_SHELL> ";}'
+PERL_SHELL> use Storable qw(store retrieve);
+use Storable qw(store retrieve);
+
+PERL_SHELL> use Globals qw($verbosity $TAG);
+use Globals qw($verbosity $TAG);
+
+PERL_SHELL> $verbosity=1; $TAG="GenAlg";
+$verbosity=1; $TAG="GenAlg";
+
+PERL_SHELL> $scoring_ref = Scoring->new({config_file => "test/modules/GenAlg.cfg", node_ID => 0, work_dir => "test/modules/GenAlg", local_dir => "test/modules/localdir/Scoring/GenAlg", });
+$scoring_ref = Scoring->new({config_file => "test/modules/GenAlg.cfg", node_ID => 0, work_dir => "test/modules/GenAlg", local_dir => "test/modules/localdir/Scoring/GenAlg", });
+
+read_config: reading test/modules/GenAlg.cfg
+read_config: nice = 15
+read_config: vmem = 750000
+read_config: local_dir = scoring/localdir
+read_config: scoring_class = Scoring
+read_config: work_dir = scoring
+read_config: radius = 0
+read_config: kf_max = 1e5
+read_config: kf_min = 0.1
+read_config: kb_max = 10
+read_config: kb_min = 0.001
+read_config: kp_max = 1000
+read_config: kp_min = 1
+read_config: regulated_concentration_width = 4
+read_config: gene_unused_width = 32
+read_config: regulated_concentration_max = 1e-3
+read_config: regulated_concentration_min = 1e-12
+read_config: RT_transition_rate_width = 5
+read_config: TR_transition_rate_width = 6
+read_config: RT_phi_width = 7
+read_config: domain_unused_width = 8
+read_config: RT_transition_rate_max = 1e2
+read_config: RT_transition_rate_min = 1e-2
+read_config: TR_transition_rate_max = 1e4
+read_config: TR_transition_rate_min = 1e-4
+read_config: RT_phi_max = 0.99
+read_config: RT_phi_min = 0.01
+read_config: binding_profile_width = 3
+read_config: kf_profile_width = 4
+read_config: kb_profile_width = 5
+read_config: kp_profile_width = 6
+read_config: Keq_profile_width = 7
+read_config: protodomain_unused_width = 10
+read_config: Keq_ratio_max = 1e2
+read_config: Keq_ratio_min = 1e-2
+read_config: inum_genomes = 2
+read_config: max_population = 4
+read_config: elite_pool_size = 1
+read_config: num_generations = 2
+read_config: first_generation = 0
+read_config: remove_old_files = 0
+read_config: score_initial_generation = 1
+read_config: rescore_elite = 0
+read_config: initial_genome = random
+read_config: ranking_nonviable = 0.2
+read_config: ranking_pressure = 1.2
+read_config: prob_mutate_params = 0.6
+read_config: prob_mutate_global = 0.2
+read_config: prob_recombination = 0.05
+read_config: prob_duplicate = 0.05
+read_config: prob_delete = 0.1
+read_config: mutation_rate = 0.01
+read_config: max_external_iterations = 1
+read_config: max_internal_iterations = 0
+read_config: max_complex_size = 4
+read_config: max_species = 40
+read_config: max_csite_bound_to_msite_number = 2
+read_config: default_steric_factor = 1e-3
+read_config: export_graphviz = nothing
+read_config: plot_input = 0
+read_config: plot_output = 0
+read_config: plot_species = 1
+read_config: plot_phase = 0
+read_config: plot_min = -1
+read_config: solver = ode23s
+read_config: sampling_interval = 0.1
+read_config: t_final = 100
+read_config: InitialStep = 1e-8
+read_config: AbsTol = 1e-9
+read_config: RelTol = 1e-3
+read_config: MaxStep = 10.0
+MatlabDriver::START: starting matlab(0) on localhost (Mon 17 Sep 2012 14:12:06 BST)
+MatlabDriver::START: logfile is test/modules/localdir/Scoring/GenAlg/matlab/matlab.0.log
+MatlabDriver::START: executing "ulimit -S -v 750000; ulimit -a; matlab -nodesktop -nosplash"
+MatlabDriver::START: MATLAB shell pid=1631
+2012-09-17 14:12:06.821 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:06.823 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:06.825 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:06.826 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:06.827 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:07.404 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:07.406 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:07.407 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:07.408 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:07.410 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:07.417 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:08.411 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:08.413 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:08.425 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:08.426 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:08.427 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+ERROR: matlab_wait_on -- matlab appears to have reported an error
+  --> Error occurred loading: /Users/Song/.matlab/R2011b/toolbox_cache-7.13.0-3941918210-maci64.xml
+
+2012-09-17 14:12:17.775 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:17.777 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:17.778 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:17.779 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:17.780 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:17.781 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:18.529 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:18.530 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:18.531 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:18.533 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:18.534 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:18.535 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:19.542 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:19.544 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:19.545 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:19.546 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:19.547 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:19.549 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:20.556 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:20.558 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:20.559 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:20.560 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:20.561 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:20.562 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:21.570 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:21.571 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:21.573 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:21.574 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:21.575 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:21.577 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:22.585 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:22.586 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:22.587 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:22.588 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:22.590 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:22.592 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:23.598 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:23.599 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:23.600 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:23.601 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:23.602 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:23.603 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:12:23.726 MATLAB_maci64[1632:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+PERL_SHELL> ^C
+exit
+Scoring: process 1624 exiting from CTRL-C
+
+MatlabDriver::DEMOLISH: Closing matlab(0)
+Scoring::DEMOLISH: called
+Moving test/modules/localdir/Scoring/GenAlg/matlab/matlab.0.log to test/modules/GenAlg/matlab
+Done moving.
+Scoring::DEMOLISH: done

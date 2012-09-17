@@ -1,0 +1,421 @@
+core file size          (blocks, -c) 0
+data seg size           (kbytes, -d) unlimited
+file size               (blocks, -f) unlimited
+max locked memory       (kbytes, -l) unlimited
+max memory size         (kbytes, -m) 750000
+open files                      (-n) 256
+pipe size            (512 bytes, -p) 1
+stack size              (kbytes, -s) 65532
+cpu time               (seconds, -t) unlimited
+max user processes              (-u) 709
+virtual memory          (kbytes, -v) 750000
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2011 The MathWorks, Inc.
+                    R2011b (7.13.0.564) 64-bit (maci64)
+                              August 13, 2011
+
+    ----------------------------------------------------------
+        Your MATLAB license will expire in 45 days.
+        Please contact your system administrator or
+        MathWorks to renew this license.
+    ----------------------------------------------------------
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+path(path,'/Users/Song/workspace/rule-based-modelling/biojazz/custom')
+cd test/custom/matlab; format long;
+clear all; UltrasensitiveDriver
+ 
+>> >> >> ode_event: integrating from 0.000000 to steady-state (or to timeout at 20000.000000)
+ode_event: steady-state stopping condition reached at t=47.000000
+ode_event: integrated from 0.000000 to 47.000000
+ode_event: integrating from 47.000000 to steady-state (or to timeout at 20000.000000)
+ode_event: steady-state stopping condition reached at t=1130.000000
+ode_event: integrated from 47.000000 to 1130.000000
+ode_event: integrating from 1130.000000 to steady-state (or to timeout at 20000.000000)
+ode_event: steady-state stopping condition reached at t=2243.000000
+ode_event: integrated from 1130.000000 to 2243.000000
+ode_event: integrating from 2243.000000 to steady-state (or to timeout at 20000.000000)
+ode_event: steady-state stopping condition reached at t=3340.000000
+ode_event: integrated from 2243.000000 to 3340.000000
+ode_event: integrating from 3340.000000 to steady-state (or to timeout at 20000.000000)
+ode_event: steady-state stopping condition reached at t=4434.000000
+ode_event: integrated from 3340.000000 to 4434.000000
+ode_event: integrating from 4434.000000 to steady-state (or to timeout at 20000.000000)
+ode_event: steady-state stopping condition reached at t=5629.000000
+ode_event: integrated from 4434.000000 to 5629.000000
+ode_event: integrating from 5629.000000 to steady-state (or to timeout at 20000.000000)
+ode_event: steady-state stopping condition reached at t=6672.000000
+ode_event: integrated from 5629.000000 to 6672.000000
+Facile driver script done
+fv_exists = exist('event_times');
+if (fv_exists)
+str1=sprintf('GET VALUE event_times :');
+
+str2=sprintf(' %.15e', event_times);
+
+str=[str1, str2];
+disp(str)
+
+else
+str=sprintf('GET VALUE event_times : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE event_times : 4.700000000000000e+01 1.130000000000000e+03 2.243000000000000e+03 3.340000000000000e+03 4.434000000000000e+03 5.629000000000000e+03 6.672000000000000e+03
+fv_exists = exist('event_flags');
+if (fv_exists)
+str1=sprintf('GET VALUE event_flags :');
+
+str2=sprintf(' %.15e', event_flags);
+
+str=[str1, str2];
+disp(str)
+
+else
+str=sprintf('GET VALUE event_flags : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE event_flags : 1.000000000000000e+00 1.000000000000000e+00 1.000000000000000e+00 1.000000000000000e+00 1.000000000000000e+00 1.000000000000000e+00 1.000000000000000e+00
+figure(900);plot(t, LG0000); title('Ultrasensitive LG0000')
+figure(901);plot(t, TG00000); title('Ultrasensitive TG00000')
+figure(902);plot(t, TG00001); title('Ultrasensitive TG00001')
+disp('Done plotting')
+
+>> >> >> >> Done plotting
+fv_exists = exist('TG00001');
+if (fv_exists)
+I = find(t<=4.700000000000000e+01,1,'last');
+
+str=sprintf('GET VALUE TG00001 : %.15e', TG00001(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00001 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> >> GET VALUE TG00001 : 9.096621535421560e-01
+fv_exists = exist('TG00000');
+if (fv_exists)
+I = find(t<=4.700000000000000e+01,1,'last');
+
+str=sprintf('GET VALUE TG00000 : %.15e', TG00000(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00000 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00000 : 8.713085601283264e-02
+fv_exists = exist('TG00001');
+if (fv_exists)
+I = find(t<=1.130000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00001 : %.15e', TG00001(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00001 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00001 : 9.070608030829195e-01
+fv_exists = exist('TG00000');
+if (fv_exists)
+I = find(t<=1.130000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00000 : %.15e', TG00000(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00000 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00000 : 8.975383379459795e-02
+fv_exists = exist('TG00001');
+if (fv_exists)
+I = find(t<=2.243000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00001 : %.15e', TG00001(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00001 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00001 : 9.045526021742855e-01
+fv_exists = exist('TG00000');
+if (fv_exists)
+I = find(t<=2.243000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00000 : %.15e', TG00000(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00000 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00000 : 9.236252427979973e-02
+fv_exists = exist('TG00001');
+if (fv_exists)
+I = find(t<=3.340000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00001 : %.15e', TG00001(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00001 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00001 : 9.019748648761158e-01
+fv_exists = exist('TG00000');
+if (fv_exists)
+I = find(t<=3.340000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00000 : %.15e', TG00000(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00000 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00000 : 9.496578031415299e-02
+fv_exists = exist('TG00001');
+if (fv_exists)
+I = find(t<=4.434000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00001 : %.15e', TG00001(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00001 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00001 : 9.045422014960375e-01
+fv_exists = exist('TG00000');
+if (fv_exists)
+I = find(t<=4.434000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00000 : %.15e', TG00000(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00000 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00000 : 9.236767587493727e-02
+fv_exists = exist('TG00001');
+if (fv_exists)
+I = find(t<=5.629000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00001 : %.15e', TG00001(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00001 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00001 : 9.071570254598335e-01
+fv_exists = exist('TG00000');
+if (fv_exists)
+I = find(t<=5.629000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00000 : %.15e', TG00000(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00000 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00000 : 8.975998327586007e-02
+fv_exists = exist('TG00001');
+if (fv_exists)
+I = find(t<=6.672000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00001 : %.15e', TG00001(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00001 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00001 : 9.097522978244934e-01
+fv_exists = exist('TG00000');
+if (fv_exists)
+I = find(t<=6.672000000000000e+03,1,'last');
+
+str=sprintf('GET VALUE TG00000 : %.15e', TG00000(I));
+
+disp(str)
+
+else
+str=sprintf('GET VALUE TG00000 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET VALUE TG00000 : 8.714137289144716e-02
+halfway = floor(size(LG0000,1)/2)
+h=figure(904); plot(LG0000(1:halfway), TG00000(1:halfway));title('test Ultrasensitive PHASE PLOT (TG00000 vs LG0000)')
+hold on; plot(LG0000(halfway+1:end), TG00000(halfway+1:end), 'r');
+axis([0 10 0 1])
+fv_exists = exist('TG00000');
+if (fv_exists)
+I1 = find(t<=4.700000000000000e+01,1,'last');
+
+I2 = find(t<=1.130000000000000e+03,1,'last');
+
+range_max = max(TG00000(I1:I2));
+
+range_min = min(TG00000(I1:I2));
+
+str=sprintf('GET RANGE MIN TG00000 : %.15e', range_min);
+
+disp(str)
+
+str=sprintf('GET RANGE MAX TG00000 : %.15e', range_max);
+
+disp(str)
+
+else
+str=sprintf('GET RANGE MIN TG00000 : UNDEFINED');
+
+str=sprintf('GET RANGE MAX TG00000 : UNDEFINED');
+
+disp(str)
+
+end
+>> 
+halfway =
+
+        3336
+
+>> >> >> >> >> GET RANGE MIN TG00000 : 8.712912951866778e-02
+GET RANGE MAX TG00000 : 8.975384080362685e-02
+fv_exists = exist('TG00000');
+if (fv_exists)
+I1 = find(t<=5.629000000000000e+03,1,'last');
+
+I2 = find(t<=6.672000000000000e+03,1,'last');
+
+range_max = max(TG00000(I1:I2));
+
+range_min = min(TG00000(I1:I2));
+
+str=sprintf('GET RANGE MIN TG00000 : %.15e', range_min);
+
+disp(str)
+
+str=sprintf('GET RANGE MAX TG00000 : %.15e', range_max);
+
+disp(str)
+
+else
+str=sprintf('GET RANGE MIN TG00000 : UNDEFINED');
+
+str=sprintf('GET RANGE MAX TG00000 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET RANGE MIN TG00000 : 8.714136857069647e-02
+GET RANGE MAX TG00000 : 8.975998327586007e-02
+fv_exists = exist('TG00000');
+if (fv_exists)
+I1 = find(t<=2.243000000000000e+03,1,'last');
+
+I2 = find(t<=3.340000000000000e+03,1,'last');
+
+range_max = max(TG00000(I1:I2));
+
+range_min = min(TG00000(I1:I2));
+
+str=sprintf('GET RANGE MIN TG00000 : %.15e', range_min);
+
+disp(str)
+
+str=sprintf('GET RANGE MAX TG00000 : %.15e', range_max);
+
+disp(str)
+
+else
+str=sprintf('GET RANGE MIN TG00000 : UNDEFINED');
+
+str=sprintf('GET RANGE MAX TG00000 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET RANGE MIN TG00000 : 9.236252427979973e-02
+GET RANGE MAX TG00000 : 9.496580132040197e-02
+fv_exists = exist('TG00000');
+if (fv_exists)
+I1 = find(t<=3.340000000000000e+03,1,'last');
+
+I2 = find(t<=4.434000000000000e+03,1,'last');
+
+range_max = max(TG00000(I1:I2));
+
+range_min = min(TG00000(I1:I2));
+
+str=sprintf('GET RANGE MIN TG00000 : %.15e', range_min);
+
+disp(str)
+
+str=sprintf('GET RANGE MAX TG00000 : %.15e', range_max);
+
+disp(str)
+
+else
+str=sprintf('GET RANGE MIN TG00000 : UNDEFINED');
+
+str=sprintf('GET RANGE MAX TG00000 : UNDEFINED');
+
+disp(str)
+
+end
+>> >> GET RANGE MIN TG00000 : 9.236766405830672e-02
+GET RANGE MAX TG00000 : 9.496578031415299e-02
+exit

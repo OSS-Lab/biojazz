@@ -1,9 +1,3 @@
-Creating ScorNode ID=0 logfile=test/modules/localdir/ScorNode.0.log cluster_type=LOCAL
-ScorNode::spawn spawning local node
-ScorNode::DEMOLISH called (pid 1330)
-Moving test/modules/localdir/ScorNode.0.log to test/modules/ScorNode.0.log
-
-LOGFILE test/modules/ScorNode.0.log:
 PS1='[ScorNode 0]'
 [?1034hbash-3.2$ PS1='[ScorNode 0]'
 [ScorNode 0]echo my shell is ready

@@ -517,7 +517,7 @@ export_anc: created 9 rules
 ##########################################################################
 # Allosteric Network Compiler (ANC) model file
 # Created by BioJazz version UNKNOWN released on UNKNOWN
-# Mon Jun 11 12:09:54 EDT 2012
+# Mon 17 Sep 2012 14:10:19 BST
 ##########################################################################
 
 ##########################################################################
@@ -633,14 +633,27 @@ Structure : {  # IC of G1651 = 1.58489319246111e-11
 }
 
 
-#-------------------------
-INIT:  # G0000
-#-------------------------
-G0110 = 6.30957344480193e-08
-G0389 = 1.58489319246111e-11
-G0582 = 1.58489319246111e-05
-G0881 = 1e-12
-G1651 = 1.58489319246111e-11
+# Initial concentrations
+Init : {
+	structure => G0110,
+	IC => 6.30957344480193e-08,
+}
+Init : {
+	structure => G0389,
+	IC => 1.58489319246111e-11,
+}
+Init : {
+	structure => G0582,
+	IC => 1.58489319246111e-05,
+}
+Init : {
+	structure => G0881,
+	IC => 1e-12,
+}
+Init : {
+	structure => G1651,
+	IC => 1.58489319246111e-11,
+}
 
 
 
@@ -808,7 +821,7 @@ export_anc: created 9 rules
 ##########################################################################
 # Allosteric Network Compiler (ANC) model file
 # Created by BioJazz version UNKNOWN released on UNKNOWN
-# Mon Jun 11 12:09:54 EDT 2012
+# Mon 17 Sep 2012 14:10:19 BST
 ##########################################################################
 
 ##########################################################################
@@ -905,13 +918,23 @@ Structure : {  # IC of G1651 = 1.58489319246111e-11
 }
 
 
-#-------------------------
-INIT:  # G0000
-#-------------------------
-G0110 = 6.30957344480193e-08
-G0582 = 1.58489319246111e-05
-G0881 = 1e-12
-G1651 = 1.58489319246111e-11
+# Initial concentrations
+Init : {
+	structure => G0110,
+	IC => 6.30957344480193e-08,
+}
+Init : {
+	structure => G0582,
+	IC => 1.58489319246111e-05,
+}
+Init : {
+	structure => G0881,
+	IC => 1e-12,
+}
+Init : {
+	structure => G1651,
+	IC => 1.58489319246111e-11,
+}
 
 
 
@@ -1015,6 +1038,16 @@ EQN:
 CONFIG:
 
 
+Can't exec "tkdiff": No such file or directory at
+	/Users/Song/workspace/rule-based-modelling/biojazz/modules/Genome.pm line 341 (#1)
+    (W exec) A system(), exec(), or piped open call could not execute the
+    named program for the indicated reason.  Typical reasons include: the
+    permissions were wrong on the file, the file wasn't found in
+    $ENV{PATH}, the executable in question was compiled for another
+    architecture, or the #! line in a script points to an interpreter that
+    can't be run for similar reasons.  (Or maybe your system doesn't support
+    #! at all.)
+    
 STORABLE TEST
 {
   'Genome' => {

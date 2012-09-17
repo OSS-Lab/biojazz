@@ -1,33 +1,3 @@
-ScorCluster::new() -- New ScorCluster cluster_size=2, work_dir=test/modules, scoring_class=Scoring, cluster_type=LOCAL
-Creating ScorNode ID=0 logfile=test/modules/localdir/ScorCluster/ScorNode.0.20120917_141120.log cluster_type=LOCAL
-Creating ScorNode ID=1 logfile=test/modules/localdir/ScorCluster/ScorNode.1.20120917_141120.log cluster_type=LOCAL
-ScorCluster::start -- parent process started (pid=1427, child=1442)
-ScorCluster::start -- child process started (pid=1442, parent=1427)
-ScorNode::spawn spawning local node
-ScorNode::spawn spawning local node
-ScorCluster::start -- child process done spawning, started multitask
-ScorCluster: Child process 1442 received SIGUSR1 (shutting down)
-
-ScorCluster::DEMOLISH called (pid 1442, ctrl_C_flag=0, sigusr1_flag=1)
-ScorCluster::DEMOLISH am child (pid 1442)
-ScorNode::DEMOLISH called (pid 1442)
-Moving test/modules/localdir/ScorCluster/ScorNode.1.20120917_141120.log to test/modules/ScorCluster/ScorNode.1.20120917_141120.log
-ScorNode::DEMOLISH called (pid 1442)
-Moving test/modules/localdir/ScorCluster/ScorNode.0.20120917_141120.log to test/modules/ScorCluster/ScorNode.0.20120917_141120.log
-ScorCluster::start -- parent process returning
-ScorCluster::DEMOLISH called (pid 1427, ctrl_C_flag=0, sigusr1_flag=0)
----------------------------------------
-Shutting down the cluster
----------------------------------------
-ScorCluster::DEMOLISH am parent (pid 1427), shutting down child and waiting...
-ScorCluster::DEMOLISH am parent (pid 1427), done cleanup...
----------------------------------------
-Shutdown complete
----------------------------------------
-ScorNode::DEMOLISH called (pid 1427)
-ScorNode::DEMOLISH called (pid 1427)
-
-LOGFILE test/modules/ScorCluster/ScorNode.0.*.log:
 [?1034hbash-3.2$ PS1='[ScorNode 0]'
 [ScorNode 0]echo my shell is ready
 my shell is ready

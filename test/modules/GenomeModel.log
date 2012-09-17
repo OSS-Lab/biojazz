@@ -145,7 +145,7 @@ Registering instance PD0798                    of object ProtoDomain
                                        bless( do{\(my $o = undef)}, 'GenomeInstance' )
                                      ],
                       'instances_index' => {
-                                             'G0000' => '0'
+                                             'G0000' => 0
                                            }
                     },
   'Named' => {
@@ -204,9 +204,9 @@ Registering instance PD0798                    of object ProtoDomain
                                        bless( do{\(my $o = undef)}, 'GeneInstance' )
                                      ],
                       'instances_index' => {
-                                             'G0069' => '0',
-                                             'G0263' => '1',
-                                             'G0691' => '2'
+                                             'G0069' => 0,
+                                             'G0263' => 1,
+                                             'G0691' => 2
                                            }
                     },
   'Named' => {
@@ -278,9 +278,9 @@ Registering instance PD0798                    of object ProtoDomain
                                        bless( do{\(my $o = undef)}, 'DomainInstance' )
                                      ],
                       'instances_index' => {
-                                             'D0113' => '0',
-                                             'D0307' => '1',
-                                             'D0735' => '2'
+                                             'D0113' => 0,
+                                             'D0307' => 1,
+                                             'D0735' => 2
                                            }
                     },
   'Named' => {
@@ -343,9 +343,9 @@ Registering instance PD0798                    of object ProtoDomain
                                        bless( do{\(my $o = undef)}, 'ProtoDomainInstance' )
                                      ],
                       'instances_index' => {
-                                             'PD0176' => '0',
-                                             'PD0370' => '1',
-                                             'PD0798' => '2'
+                                             'PD0176' => 0,
+                                             'PD0370' => 1,
+                                             'PD0798' => 2
                                            }
                     },
   'Named' => {

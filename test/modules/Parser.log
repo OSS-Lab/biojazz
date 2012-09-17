@@ -215,9 +215,9 @@ called DEMOLISH on instance Test# of object Test of class Parser
                                        bless( do{\(my $o = undef)}, 'ParserInstance' )
                                      ],
                       'instances_index' => {
-                                             'T0005' => '0',
-                                             'T0033' => '1',
-                                             'T0039' => '2'
+                                             'T0005' => 0,
+                                             'T0033' => 1,
+                                             'T0039' => 2
                                            }
                     },
   'Named' => {
@@ -283,7 +283,7 @@ DUMPING PARSERS
                                        bless( do{\(my $o = undef)}, 'ParserInstance' )
                                      ],
                       'instances_index' => {
-                                             'XD0005' => '0'
+                                             'XD0005' => 0
                                            }
                     },
   'Named' => {
@@ -327,8 +327,8 @@ DUMPING PARSERS
                                        bless( do{\(my $o = undef)}, 'ParserInstance' )
                                      ],
                       'instances_index' => {
-                                             'XPD0009' => '0',
-                                             'XPD0020' => '1'
+                                             'XPD0009' => 0,
+                                             'XPD0020' => 1
                                            }
                     },
   'Named' => {

@@ -1,23 +1,22 @@
 ##############################################################################
 # BioJazz -- A biochemical network evolution/design tool
-# Copyright (c) 2005-2008
+# Copyright (c) 2005-2012
 # All rights reserved
 # Author: Julien F. Ollivier
-# Version: ALPHA-01
-# Release Date: 2008/06/04
+# Version: ALPHA-02
+# Release Date: 2012/06/15
 ##############################################################################
 BioJazz running with tag "test_main"
-ANC_HOME=/cnd0/home/ollivier/Desktop/Project/anc/stable
-FACILE_HOME=/cnd0/home/ollivier/Desktop/Project/facile/stable
-WORKSPACE=/misc/samba/ollivier/Project/biojazz/working
+ANC_HOME=/Users/Song/workspace/rule-based-modelling/anc
+FACILE_HOME=/Users/Song/workspace/rule-based-modelling/facile
+WORKSPACE=/Users/Song/workspace/rule-based-modelling/biojazz
 BioJazz using configuration file config/template.cfg
 read_config: reading config/template.cfg
-read_config: (ignoring cluster_type = SSH because noclobber set)
+read_config: (ignoring cluster_type = LOCAL because noclobber set)
 read_config: (ignoring cluster_size = 2 because noclobber set)
-read_config: host_list = host1, host2
 read_config: nice = 15
-read_config: vmem = 450000
-read_config: local_dir = /storage/ollivier/biojazz
+read_config: vmem = 1200000
+read_config: local_dir = template/localdir
 read_config: scoring_class = Template
 read_config: work_dir = template
 read_config: radius = 1
@@ -58,6 +57,8 @@ read_config: remove_old_files = 0
 read_config: score_initial_generation = 1
 read_config: rescore_elite = 0
 read_config: initial_genome = random
+read_config: selection_method = random_walk
+read_config: effective_population_size = 1e6
 read_config: ranking_nonviable = 0.2
 read_config: ranking_pressure = 1.2
 read_config: prob_mutate_params = 0.6
@@ -85,30 +86,20 @@ read_config: plot_input = 0
 read_config: plot_output = 0
 read_config: plot_species = 0
 read_config: plot_phase = 0
-read_config: plot_min = -1
-Start time: Fri Jun  6 16:07:20 EDT 2008
+read_config: plot_min = 0
+Start time: Mon 17 Sep 2012 14:13:41 BST
 BioJazz running with initial number of genomes equal to 2
 BioJazz running with mutation rate of 0.01
 BioJazz using cluster_type LOCAL
 BioJazz using cluster_size 2
+BioJazz using nice 15
 Keeping old files in template/test_main
 Creating output directories
-cvs status: Examining /misc/samba/ollivier/Project/biojazz/working
-cvs status: Examining /misc/samba/ollivier/Project/biojazz/working/config
-cvs status: Examining /misc/samba/ollivier/Project/biojazz/working/custom
-cvs status: Examining /misc/samba/ollivier/Project/biojazz/working/doc
-cvs status: Examining /misc/samba/ollivier/Project/biojazz/working/m_files
-cvs status: Examining /misc/samba/ollivier/Project/biojazz/working/modules
-cvs status: Examining /misc/samba/ollivier/Project/biojazz/working/test
-cvs status: Examining /misc/samba/ollivier/Project/biojazz/working/test/custom
-cvs status: Examining /misc/samba/ollivier/Project/biojazz/working/test/custom/matlab
-cvs status: Examining /misc/samba/ollivier/Project/biojazz/working/test/modules
-cvs status: Examining /misc/samba/ollivier/Project/biojazz/working/test/modules/matlab
 ScorCluster::new() -- New ScorCluster cluster_size=2, work_dir=template, scoring_class=Template, cluster_type=LOCAL
-Creating ScorNode ID=0 logfile=/storage/ollivier/biojazz/Template/test_main/ScorNode.0.20080606_160721.log cluster_type=LOCAL
-Creating ScorNode ID=1 logfile=/storage/ollivier/biojazz/Template/test_main/ScorNode.1.20080606_160721.log cluster_type=LOCAL
-ScorCluster::start -- parent process started (pid=26799, child=26835)
-ScorCluster::start -- child process started (pid=26835, parent=26799)
+Creating ScorNode ID=0 logfile=template/localdir/Template/test_main/ScorNode.0.20120917_141341.log cluster_type=LOCAL
+Creating ScorNode ID=1 logfile=template/localdir/Template/test_main/ScorNode.1.20120917_141341.log cluster_type=LOCAL
+ScorCluster::start -- parent process started (pid=2191, child=2214)
+ScorCluster::start -- child process started (pid=2214, parent=2191)
 ScorNode::spawn spawning local node
 ScorNode::spawn spawning local node
 ScorCluster::start -- child process done spawning, started multitask
@@ -119,114 +110,54 @@ First random number is 0.925671409423561
 create_initial_generation: starting...
 create_initial_generation: creating 2 individuals
 create_initial_generation: done
-GEN_ALG: generation 0
 save_generation: saving generation 0, with 2 individuals
 score_current_generation: scoring generation 0 ....
 score_current_generation: scoring file template/test_main/obj/G000_I00.obj
 ScorCluster::get_free_node -- looking for free node...
-ScorCluster::get_free_node -- node 0 is free
+ScorCluster::get_free_node -- node 1 is free
 score_current_generation: scoring file template/test_main/obj/G000_I01.obj
 ScorCluster::get_free_node -- looking for free node...
-ScorCluster::get_free_node -- node 1 is free
+ScorCluster::get_free_node -- node 0 is free
 score_current_generation: waiting on nodes... 1 0
 score_current_generation: waiting on nodes... 1 0
 score_current_generation: waiting on nodes... 1 0
 
-WARNING: tickle (matched WARNING) -- node 1 appears to have a problem -- expect.before:
+WARNING: tickle (matched WARNING) -- node 0 appears to have a problem -- expect.before:
 	==> WARNING: ReactionNetwork::compile_external_reactions -- max # of species (80) reached!!!
+	==> ReactionNetwork::compile_network: DONE EXTERNAL iteration=2 total_species=80
 score_current_generation: waiting on nodes... 1 0
 score_current_generation: waiting on nodes... 1 0
 score_current_generation: waiting on nodes... 1 0
-score_current_generation: waiting on nodes... 1
-score_current_generation: waiting on nodes... 1
-score_current_generation: waiting on nodes... 1
-score_current_generation: waiting on nodes... 1
-score_current_generation: waiting on nodes... 1
+score_current_generation: waiting on nodes... 0
+score_current_generation: waiting on nodes... 0
+score_current_generation: waiting on nodes... 0
+score_current_generation: waiting on nodes... 0
+score_current_generation: waiting on nodes... 0
+score_current_generation: waiting on nodes... 0
 score_current_generation: waiting on nodes... 
 score_current_generation: done waiting on nodes...
+GEN_ALG: generation 0
 load_generation: loading generation 0, with 2 individuals
 report_current_generation: generation 0
 individual 0  : score=94, stat1=27, stat2=3
 individual 1  : score=87, stat1=25, stat2=42
-create_next_generation: creating generation 1
-ranked indices:  0,1
-ranking:         0,1
-create_next_generation: creating child from elite genome G000_I00
-create_next_generation: total_children = 3
-fitness_score(0) = 94
-fitness_score(1) = 87
-create_next_generation: total_score = 181
-create_next_generation: individual 0, ranking=0, fitness_score = 94, scaled_fitness_score=1.55801104972376, num_children=2
-create_next_generation: creating child 0 of individual G000_I00
-mutate: POINT MUTATION (PARAMS)
-POINT MUTATION (PARAMS) 21 bits in genes G0155,1,G0580,7,G1326,3,G1953,3,G2721,2,G4144,5
-create_next_generation: creating child 1 of individual G000_I00
-mutate: POINT MUTATION (GLOBAL)
-mutated 27 bits in junk dna
-POINT MUTATION (GLOBAL) 31 bits in genes G0155,6,G0580,1,G1326,8,G1953,4,G2721,3,G4144,9
-create_next_generation: individual 1, ranking=1, fitness_score = 87, scaled_fitness_score=1.44198895027624, num_children=1
-create_next_generation: creating child 0 of individual G000_I01
-mutate: DUPLICATION
-duplicate_gene: duplicating gene G1276
-DUPLICATION of gene G1276 to G5000, with 2 mutations
-create_next_generation: children_created = 3
-GEN_ALG: generation 1
-save_generation: saving generation 1, with 4 individuals
-score_current_generation: scoring generation 1 ....
-score_current_generation: scoring file template/test_main/obj/G001_I00.obj
-ScorCluster::get_free_node -- looking for free node...
-ScorCluster::get_free_node -- node 0 is free
-score_current_generation: scoring file template/test_main/obj/G001_I01.obj
-ScorCluster::get_free_node -- looking for free node...
-ScorCluster::get_free_node -- node 1 is free
-score_current_generation: scoring file template/test_main/obj/G001_I02.obj
-ScorCluster::get_free_node -- looking for free node...
-ScorCluster::get_free_node -- node 1 is free
-score_current_generation: scoring file template/test_main/obj/G001_I03.obj
-ScorCluster::get_free_node -- looking for free node...
-ScorCluster::get_free_node -- node 0 is free
-score_current_generation: waiting on nodes... 1 0
-
-WARNING: tickle (matched WARNING) -- node 1 appears to have a problem -- expect.before:
-	==> WARNING: no species in ANC file -- setting score to 0
-score_current_generation: waiting on nodes... 0
-score_current_generation: waiting on nodes... 0
-
-WARNING: tickle (matched WARNING) -- node 0 appears to have a problem -- expect.before:
-	==> WARNING: ReactionNetwork::compile_external_reactions -- max # of species (80) reached!!!
-score_current_generation: waiting on nodes... 0
-score_current_generation: waiting on nodes... 0
-score_current_generation: waiting on nodes... 0
-score_current_generation: waiting on nodes... 0
-score_current_generation: waiting on nodes... 0
-score_current_generation: waiting on nodes... 0
-score_current_generation: waiting on nodes... 0
-score_current_generation: waiting on nodes... 
-score_current_generation: done waiting on nodes...
-load_generation: loading generation 1, with 4 individuals
-report_current_generation: generation 1
-individual 0  : score=18, stat1=98, stat2=64
-individual 1  : score=54, stat1=53, stat2=17
-individual 2  : score=0
-individual 3  : score=71, stat1=66, stat2=36
+ERROR: there is more than 1 genomes in the generation 0
+ScorCluster::DEMOLISH called (pid 2191, ctrl_C_flag=0, sigusr1_flag=0)
 ---------------------------------------
 Shutting down the cluster
 ---------------------------------------
-ScorCluster::DEMOLISH called (pid 26799, ctrl_C_flag=0)
-ScorCluster::DEMOLISH am parent (pid 26799), killing child with CTRL-C and waiting...
-ScorCluster: Child process 26835 exiting from CTRL-C
+ScorCluster::DEMOLISH am parent (pid 2191), shutting down child and waiting...
+ScorCluster: Child process 2214 received SIGUSR1 (shutting down)
 
-ScorCluster::DEMOLISH called (pid 26835, ctrl_C_flag=1)
-ScorCluster::DEMOLISH am child (pid 26835)
-ScorNode::DEMOLISH called (pid 26835)
-Moving /storage/ollivier/biojazz/Template/test_main/ScorNode.1.20080606_160721.log to template/test_main/ScorNode.1.20080606_160721.log
-ScorNode::DEMOLISH called (pid 26835)
-Moving /storage/ollivier/biojazz/Template/test_main/ScorNode.0.20080606_160721.log to template/test_main/ScorNode.0.20080606_160721.log
-ScorCluster::DEMOLISH am parent (pid 26799), done cleanup...
-ScorNode::DEMOLISH called (pid 26799)
-ScorNode::DEMOLISH called (pid 26799)
+ScorCluster::DEMOLISH called (pid 2214, ctrl_C_flag=0, sigusr1_flag=1)
+ScorCluster::DEMOLISH am child (pid 2214)
+ScorNode::DEMOLISH called (pid 2214)
+Moving template/localdir/Template/test_main/ScorNode.1.20120917_141341.log to template/test_main/ScorNode.1.20120917_141341.log
+ScorNode::DEMOLISH called (pid 2214)
+Moving template/localdir/Template/test_main/ScorNode.0.20120917_141341.log to template/test_main/ScorNode.0.20120917_141341.log
+ScorCluster::DEMOLISH am parent (pid 2191), done cleanup...
 ---------------------------------------
 Shutdown complete
 ---------------------------------------
-Start time: Fri Jun  6 16:07:20 EDT 2008
-End time:   Fri Jun  6 16:10:08 EDT 2008
+ScorNode::DEMOLISH called (pid 2191)
+ScorNode::DEMOLISH called (pid 2191)
