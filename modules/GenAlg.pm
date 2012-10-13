@@ -322,6 +322,33 @@ use base qw();
     # Synopsys: 
     #--------------------------------------------------------------------------------------
     sub populated_random_selection {
+	my $self = shift; my $obj_ID = ident $self;
+
+	my $config_ref = $config_ref_of{$obj_ID};
+	
+	my $current_generation_ref = $current_generation_ref_of{$obj_ID};
+	my $current_generation_number = $current_generation_number_of{$obj_ID};
+	my $current_generation_size = $current_generation_ref->get_num_elements();
+	
+	my $next_generation_ref = Generation->new({});
+	my $next_generation_number = $current_generation_number + 1;
+
+	printn "create_next_generation: creating generation $next_generation_number";
+	
+	# check scores to make sure defined and positive
+	my @scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
+	if (grep {!defined $_} @scores) {
+	    printn "ERROR: not all scores are defined (if this is first generation, check value of score_initial_generation in config file)";
+	    exit(1);
+	}
+	if (grep {$_ < 0} @scores) {
+	    printn "ERROR: all scores must be non-negative";
+	    exit(1);
+	}
+	
+	printn "@scores";
+	
+	
 	
     }
 
