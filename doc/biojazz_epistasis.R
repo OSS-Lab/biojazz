@@ -116,7 +116,8 @@ calculateEpistasis <-
     return(epista);
   }
 
-epistasis = calculateEpistasis(10, "logLinearField", 1e-3, 1e3);
+
+epistasis = calculateEpistasis(5, "logLinearField", 1e-2, 1e1);
 
 plot(density(epistasis));
 
