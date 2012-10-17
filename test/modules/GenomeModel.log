@@ -1,0 +1,862 @@
+PARSING TESTS
+generate_random_genome: generating genome of length 1000
+generate_random_sequence: generating sequence of length 1000
+clear_parser_instances: clearing all instances of Genome
+clear_parser_instances: clearing all instances of Gene
+clear_parser_instances: clearing all instances of Domain
+clear_parser_instances: clearing all instances of ProtoDomain
+Creating NEW GenomeInstance            of object Genome, class Genome
+AUTOMETHOD get_structure_ref called on GenomeInstance=SCALAR(Genome#)
+Matched field PRE_JUNK=001111101110111001001100111100100110011101111001010100110100011110100 at 0 using RE ^.*?(?=01111110)
+Matching subfield genes
+Creating NEW GeneInstance              of object Gene, class Gene
+AUTOMETHOD get_structure_ref called on GeneInstance=SCALAR(Gene#)
+Matched field START_CODE=01111110 at 69 using RE 01111110
+Matched field regulated_concentration=0010 at 77 using RE \G.{4}
+Matched field UNUSED=10010000001000001101001101101100 at 81 using RE \G.{32}
+Matching subfield domains
+Creating NEW DomainInstance            of object Domain, class Domain
+AUTOMETHOD get_structure_ref called on DomainInstance=SCALAR(Domain#)
+Matched field allosteric_flag=0 at 113 using RE \G.{1}
+Matched field RT_transition_rate=0101010100 at 114 using RE \G.{10}
+Matched field TR_transition_rate=0010101000 at 124 using RE \G.{10}
+Matched field RT_phi=1000011001 at 134 using RE \G.{10}
+Matched field UNUSED=00010101011000001101000110111101 at 144 using RE \G.{32}
+Matching subfield protodomains
+Creating NEW ProtoDomainInstance       of object ProtoDomain, class ProtoDomain
+AUTOMETHOD get_structure_ref called on ProtoDomainInstance=SCALAR(ProtoDomain#)
+Matched field type=00 at 176 using RE \G.{2}
+Matched field substrate_polarity=0 at 178 using RE \G.{1}
+Matched field binding_profile=1101 at 179 using RE \G.{4}
+Matched field kf_profile=011011 at 183 using RE \G.{6}
+Matched field kb_profile=0101 at 189 using RE \G.{4}
+Matched field kp_profile=1110 at 193 using RE \G.{4}
+Matched field Keq_ratio=0000000000 at 197 using RE \G.{10}
+Matched field kf_polarity_mask=101001 at 207 using RE \G.{6}
+Matched field kb_polarity_mask=0001 at 213 using RE \G.{4}
+Matched field kf_conformation_mask=110101 at 217 using RE \G.{6}
+Matched field kb_conformation_mask=0100 at 223 using RE \G.{4}
+Matched field kp_conformation_mask=1001 at 227 using RE \G.{4}
+Matched field UNUSED=11010000000100111111001 at 231 using RE \G.{23}
+Matched subfield protodomains
+Matched subfield domains
+Matched field STOP_CODE=111 at 254 using RE \G.{0,3}
+Matched subfield genes
+Matching subfield genes
+Creating NEW GeneInstance              of object Gene, class Gene
+Matched field START_CODE=01111110 at 263 using RE 01111110
+Matched field regulated_concentration=1100 at 271 using RE \G.{4}
+Matched field UNUSED=11110110100111110010011010011001 at 275 using RE \G.{32}
+Matching subfield domains
+Creating NEW DomainInstance            of object Domain, class Domain
+Matched field allosteric_flag=0 at 307 using RE \G.{1}
+Matched field RT_transition_rate=1101011011 at 308 using RE \G.{10}
+Matched field TR_transition_rate=0110100010 at 318 using RE \G.{10}
+Matched field RT_phi=1101001011 at 328 using RE \G.{10}
+Matched field UNUSED=00110000110110110001000110111010 at 338 using RE \G.{32}
+Matching subfield protodomains
+Creating NEW ProtoDomainInstance       of object ProtoDomain, class ProtoDomain
+Matched field type=11 at 370 using RE \G.{2}
+Matched field substrate_polarity=1 at 372 using RE \G.{1}
+Matched field binding_profile=0011 at 373 using RE \G.{4}
+Matched field kf_profile=001100 at 377 using RE \G.{6}
+Matched field kb_profile=0101 at 383 using RE \G.{4}
+Matched field kp_profile=1010 at 387 using RE \G.{4}
+Matched field Keq_ratio=1010111101 at 391 using RE \G.{10}
+Matched field kf_polarity_mask=001000 at 401 using RE \G.{6}
+Matched field kb_polarity_mask=1101 at 407 using RE \G.{4}
+Matched field kf_conformation_mask=100010 at 411 using RE \G.{6}
+Matched field kb_conformation_mask=1011 at 417 using RE \G.{4}
+Matched field kp_conformation_mask=0000 at 421 using RE \G.{4}
+Matched field UNUSED=10011110101010110010010 at 425 using RE \G.{23}
+Matched subfield protodomains
+Matched subfield domains
+Matched field STOP_CODE=010 at 448 using RE \G.{0,3}
+Matched subfield genes
+Matching subfield genes
+Creating NEW GeneInstance              of object Gene, class Gene
+Matched field START_CODE=01111110 at 691 using RE 01111110
+Matched field regulated_concentration=0001 at 699 using RE \G.{4}
+Matched field UNUSED=10000001100110001011001110011111 at 703 using RE \G.{32}
+Matching subfield domains
+Creating NEW DomainInstance            of object Domain, class Domain
+Matched field allosteric_flag=1 at 735 using RE \G.{1}
+Matched field RT_transition_rate=0011110010 at 736 using RE \G.{10}
+Matched field TR_transition_rate=1100000101 at 746 using RE \G.{10}
+Matched field RT_phi=0000110101 at 756 using RE \G.{10}
+Matched field UNUSED=00000101000101011011110101100001 at 766 using RE \G.{32}
+Matching subfield protodomains
+Creating NEW ProtoDomainInstance       of object ProtoDomain, class ProtoDomain
+Matched field type=01 at 798 using RE \G.{2}
+Matched field substrate_polarity=1 at 800 using RE \G.{1}
+Matched field binding_profile=1101 at 801 using RE \G.{4}
+Matched field kf_profile=111101 at 805 using RE \G.{6}
+Matched field kb_profile=1101 at 811 using RE \G.{4}
+Matched field kp_profile=1010 at 815 using RE \G.{4}
+Matched field Keq_ratio=1100100100 at 819 using RE \G.{10}
+Matched field kf_polarity_mask=101100 at 829 using RE \G.{6}
+Matched field kb_polarity_mask=0100 at 835 using RE \G.{4}
+Matched field kf_conformation_mask=000111 at 839 using RE \G.{6}
+Matched field kb_conformation_mask=1101 at 845 using RE \G.{4}
+Matched field kp_conformation_mask=1101 at 849 using RE \G.{4}
+Matched field UNUSED=10000100111111111000101 at 853 using RE \G.{23}
+Matched subfield protodomains
+Matched subfield domains
+Matched field STOP_CODE=011 at 876 using RE \G.{0,3}
+Matched subfield genes
+Matched field POST_JUNK=1101011000100011101110100100100101111110010110111110011010010010011010010011011010001000000101010110100111010011010100110 at 879 using RE \G.*
+Registering instance G0000                     of object Genome
+Registering instance G0069                     of object Gene
+Registering instance D0113                     of object Domain
+Registering instance PD0176                    of object ProtoDomain
+Registering instance G0263                     of object Gene
+Registering instance D0307                     of object Domain
+Registering instance PD0370                    of object ProtoDomain
+Registering instance G0691                     of object Gene
+Registering instance D0735                     of object Domain
+Registering instance PD0798                    of object ProtoDomain
+{
+  'GenomeModel' => {
+                     'elite_flag' => 0,
+                     'history_ref' => [],
+                     'stats_ref' => {}
+                   },
+  'Model' => {
+               'parser_ref' => bless( do{\(my $o = undef)}, 'Genome' ),
+               'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' )
+             },
+  'Named' => {
+               'name' => 'GenomeModel'
+             }
+};
+
+{
+  'Genome' => {
+                'kb_max' => 10,
+                'kb_min' => '0.001',
+                'kf_max' => '100000',
+                'kf_min' => '0.1',
+                'kp_max' => 1000,
+                'kp_min' => 1,
+                'radius' => 1
+              },
+  'Instantiable' => {
+                      'instances' => [
+                                       bless( do{\(my $o = undef)}, 'GenomeInstance' )
+                                     ],
+                      'instances_index' => {
+                                             'G0000' => 0
+                                           }
+                    },
+  'Named' => {
+               'name' => 'Genome'
+             },
+  'Parser' => {
+                'linker_ref' => {
+                                  'genes' => '0000'
+                                },
+                'mutation_rate_ref' => {
+                                         'POST_JUNK' => '0',
+                                         'PRE_JUNK' => '0',
+                                         'genes' => '1',
+                                         'genes_linker' => '0'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'PRE_JUNK',
+                                       '^.*?(?=01111110)'
+                                     ],
+                                     [
+                                       'genes',
+                                       bless( do{\(my $o = undef)}, 'Gene' ),
+                                       '\\G.*?(?=01111110.{177})'
+                                     ],
+                                     [
+                                       'POST_JUNK',
+                                       '\\G.*'
+                                     ]
+                                   ]
+              },
+  'Set' => {
+             'element_class' => 'Gene',
+             'elements_ref' => [
+                                 $VAR1->{'Parser'}{'structure_ref'}[1][1]
+                               ]
+           }
+};
+
+{
+  'Gene' => {
+              'STOP_linker_code' => '111',
+              'gene_start_code' => '01111110',
+              'gene_start_code_length' => 8,
+              'regulated_concentration_max' => '0.001',
+              'regulated_concentration_min' => '1e-12',
+              'regulated_concentration_width' => 4,
+              'soft_linker_code' => '001',
+              'stop_linker_code' => '.{0,3}',
+              'unused_width' => 32
+            },
+  'Instantiable' => {
+                      'instances' => [
+                                       bless( do{\(my $o = undef)}, 'GeneInstance' ),
+                                       bless( do{\(my $o = undef)}, 'GeneInstance' ),
+                                       bless( do{\(my $o = undef)}, 'GeneInstance' )
+                                     ],
+                      'instances_index' => {
+                                             'G0069' => 0,
+                                             'G0263' => 1,
+                                             'G0691' => 2
+                                           }
+                    },
+  'Named' => {
+               'name' => 'Gene'
+             },
+  'Parser' => {
+                'linker_ref' => {
+                                  'domains' => '001'
+                                },
+                'mutation_rate_ref' => {
+                                         'START_CODE' => '0',
+                                         'STOP_CODE' => '0',
+                                         'UNUSED' => '1',
+                                         'domains' => '1',
+                                         'domains_linker' => '1',
+                                         'regulated_concentration' => '1'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'START_CODE',
+                                       '01111110'
+                                     ],
+                                     [
+                                       'regulated_concentration',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'UNUSED',
+                                       '\\G.{32}'
+                                     ],
+                                     [
+                                       'domains',
+                                       bless( do{\(my $o = undef)}, 'Domain' ),
+                                       '\\G001(?=.{141})'
+                                     ],
+                                     [
+                                       'STOP_CODE',
+                                       '\\G.{0,3}'
+                                     ]
+                                   ]
+              },
+  'Set' => {
+             'element_class' => 'Domain',
+             'elements_ref' => [
+                                 $VAR1->{'Parser'}{'structure_ref'}[3][1]
+                               ]
+           }
+};
+
+{
+  'Domain' => {
+                'RT_phi_max' => '1',
+                'RT_phi_min' => '0',
+                'RT_phi_width' => 10,
+                'RT_transition_rate_max' => '1000',
+                'RT_transition_rate_min' => '0.001',
+                'RT_transition_rate_width' => 10,
+                'TR_transition_rate_max' => '1000',
+                'TR_transition_rate_min' => '0.001',
+                'TR_transition_rate_width' => 10,
+                'allosteric_flag_width' => 1,
+                'hard_linker_code' => '000',
+                'unused_width' => 32
+              },
+  'Instantiable' => {
+                      'instances' => [
+                                       bless( do{\(my $o = undef)}, 'DomainInstance' ),
+                                       bless( do{\(my $o = undef)}, 'DomainInstance' ),
+                                       bless( do{\(my $o = undef)}, 'DomainInstance' )
+                                     ],
+                      'instances_index' => {
+                                             'D0113' => 0,
+                                             'D0307' => 1,
+                                             'D0735' => 2
+                                           }
+                    },
+  'Named' => {
+               'name' => 'Domain'
+             },
+  'Parser' => {
+                'linker_ref' => {
+                                  'protodomains' => '000'
+                                },
+                'mutation_rate_ref' => {
+                                         'RT_phi' => '1',
+                                         'RT_transition_rate' => '1',
+                                         'TR_transition_rate' => '1',
+                                         'UNUSED' => '1',
+                                         'allosteric_flag' => '1',
+                                         'protodomains' => '1',
+                                         'protodomains_linker' => '1'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'allosteric_flag',
+                                       '\\G.{1}'
+                                     ],
+                                     [
+                                       'RT_transition_rate',
+                                       '\\G.{10}'
+                                     ],
+                                     [
+                                       'TR_transition_rate',
+                                       '\\G.{10}'
+                                     ],
+                                     [
+                                       'RT_phi',
+                                       '\\G.{10}'
+                                     ],
+                                     [
+                                       'UNUSED',
+                                       '\\G.{32}'
+                                     ],
+                                     [
+                                       'protodomains',
+                                       bless( do{\(my $o = undef)}, 'ProtoDomain' ),
+                                       '\\G000(?=.{78})'
+                                     ]
+                                   ]
+              },
+  'Set' => {
+             'element_class' => 'ProtoDomain',
+             'elements_ref' => [
+                                 $VAR1->{'Parser'}{'structure_ref'}[5][1]
+                               ]
+           }
+};
+
+{
+  'Instantiable' => {
+                      'instances' => [
+                                       bless( do{\(my $o = undef)}, 'ProtoDomainInstance' ),
+                                       bless( do{\(my $o = undef)}, 'ProtoDomainInstance' ),
+                                       bless( do{\(my $o = undef)}, 'ProtoDomainInstance' )
+                                     ],
+                      'instances_index' => {
+                                             'PD0176' => 0,
+                                             'PD0370' => 1,
+                                             'PD0798' => 2
+                                           }
+                    },
+  'Named' => {
+               'name' => 'ProtoDomain'
+             },
+  'Parser' => {
+                'mutation_rate_ref' => {
+                                         'Keq_ratio' => '1',
+                                         'UNUSED' => '1',
+                                         'binding_profile' => '1',
+                                         'kb_conformation_mask' => '1',
+                                         'kb_polarity_mask' => '1',
+                                         'kb_profile' => '1',
+                                         'kf_conformation_mask' => '1',
+                                         'kf_polarity_mask' => '1',
+                                         'kf_profile' => '1',
+                                         'kp_conformation_mask' => '1',
+                                         'kp_profile' => '1',
+                                         'substrate_polarity' => '1',
+                                         'type' => '1'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'type',
+                                       '\\G.{2}'
+                                     ],
+                                     [
+                                       'substrate_polarity',
+                                       '\\G.{1}'
+                                     ],
+                                     [
+                                       'binding_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kf_profile',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kp_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'Keq_ratio',
+                                       '\\G.{10}'
+                                     ],
+                                     [
+                                       'kf_polarity_mask',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_polarity_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kf_conformation_mask',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_conformation_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kp_conformation_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'UNUSED',
+                                       '\\G.{23}'
+                                     ]
+                                   ]
+              },
+  'ProtoDomain' => {
+                     'Keq_ratio_max' => '1000',
+                     'Keq_ratio_min' => '0.001',
+                     'Keq_ratio_width' => 10,
+                     'binding_profile_width' => 4,
+                     'kb_profile_width' => 4,
+                     'kf_profile_width' => 6,
+                     'kp_profile_width' => 4,
+                     'substrate_polarity_width' => 1,
+                     'type_width' => 2,
+                     'unused_width' => 23
+                   },
+  'Set' => {
+             'element_class' => 'NONE',
+             'elements_ref' => []
+           }
+};
+
+{
+  'Instance' => {
+                  'parent_class' => 'Genome',
+                  'parent_name' => 'Genome',
+                  'parent_ref' => bless( do{\(my $o = undef)}, 'Genome' )
+                },
+  'Named' => {
+               'name' => 'G0000'
+             },
+  'ParserInstance' => {
+                        'length' => '1000',
+                        'locus' => '0',
+                        'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' ),
+                        'start_pos' => 0,
+                        'transcription_ref' => {
+                                                 'POST_JUNK' => [
+                                                                  '1101011000100011101110100100100101111110010110111110011010010010011010010011011010001000000101010110100111010011010100110',
+                                                                  '879',
+                                                                  '121'
+                                                                ],
+                                                 'PRE_JUNK' => [
+                                                                 '001111101110111001001100111100100110011101111001010100110100011110100',
+                                                                 '0',
+                                                                 '69'
+                                                               ],
+                                                 'genes' => [
+                                                              [
+                                                                bless( do{\(my $o = undef)}, 'GeneInstance' ),
+                                                                '69',
+                                                                '188'
+                                                              ],
+                                                              [
+                                                                bless( do{\(my $o = undef)}, 'GeneInstance' ),
+                                                                '263',
+                                                                '188'
+                                                              ],
+                                                              [
+                                                                bless( do{\(my $o = undef)}, 'GeneInstance' ),
+                                                                '691',
+                                                                '188'
+                                                              ]
+                                                            ],
+                                                 'genes_linker' => [
+                                                                     [
+                                                                       '011000',
+                                                                       '257',
+                                                                       '6'
+                                                                     ],
+                                                                     [
+                                                                       '110010100010110000001010000010011000001101111001010110101111000011100101000101110011011110100100011101000111010111110101000011000100001111011000010010010000111011100101101100110001111001101000011110010111110101000000000011011100100101010100',
+                                                                       '451',
+                                                                       '240'
+                                                                     ]
+                                                                   ]
+                                               },
+                        'transcription_valid_flag' => 1,
+                        'upper_ref' => ''
+                      }
+};
+
+name => G0000
+PRE_JUNK => 001111101110111001001100111100100110011101111001010100110100011110100
+genes => 
+  name => G0069
+  START_CODE => 01111110
+  regulated_concentration => 0010
+  UNUSED => 10010000001000001101001101101100
+  domains => 
+    name => D0113
+    allosteric_flag => 0
+    RT_transition_rate => 0101010100
+    TR_transition_rate => 0010101000
+    RT_phi => 1000011001
+    UNUSED => 00010101011000001101000110111101
+    protodomains => 
+      name => PD0176
+      type => 00
+      substrate_polarity => 0
+      binding_profile => 1101
+      kf_profile => 011011
+      kb_profile => 0101
+      kp_profile => 1110
+      Keq_ratio => 0000000000
+      kf_polarity_mask => 101001
+      kb_polarity_mask => 0001
+      kf_conformation_mask => 110101
+      kb_conformation_mask => 0100
+      kp_conformation_mask => 1001
+      UNUSED => 11010000000100111111001
+  STOP_CODE => 111
+genes_linker => 011000
+genes => 
+  name => G0263
+  START_CODE => 01111110
+  regulated_concentration => 1100
+  UNUSED => 11110110100111110010011010011001
+  domains => 
+    name => D0307
+    allosteric_flag => 0
+    RT_transition_rate => 1101011011
+    TR_transition_rate => 0110100010
+    RT_phi => 1101001011
+    UNUSED => 00110000110110110001000110111010
+    protodomains => 
+      name => PD0370
+      type => 11
+      substrate_polarity => 1
+      binding_profile => 0011
+      kf_profile => 001100
+      kb_profile => 0101
+      kp_profile => 1010
+      Keq_ratio => 1010111101
+      kf_polarity_mask => 001000
+      kb_polarity_mask => 1101
+      kf_conformation_mask => 100010
+      kb_conformation_mask => 1011
+      kp_conformation_mask => 0000
+      UNUSED => 10011110101010110010010
+  STOP_CODE => 010
+genes_linker => 110010100010110000001010000010011000001101111001010110101111000011100101000101110011011110100100011101000111010111110101000011000100001111011000010010010000111011100101101100110001111001101000011110010111110101000000000011011100100101010100
+genes => 
+  name => G0691
+  START_CODE => 01111110
+  regulated_concentration => 0001
+  UNUSED => 10000001100110001011001110011111
+  domains => 
+    name => D0735
+    allosteric_flag => 1
+    RT_transition_rate => 0011110010
+    TR_transition_rate => 1100000101
+    RT_phi => 0000110101
+    UNUSED => 00000101000101011011110101100001
+    protodomains => 
+      name => PD0798
+      type => 01
+      substrate_polarity => 1
+      binding_profile => 1101
+      kf_profile => 111101
+      kb_profile => 1101
+      kp_profile => 1010
+      Keq_ratio => 1100100100
+      kf_polarity_mask => 101100
+      kb_polarity_mask => 0100
+      kf_conformation_mask => 000111
+      kb_conformation_mask => 1101
+      kp_conformation_mask => 1101
+      UNUSED => 10000100111111111000101
+  STOP_CODE => 011
+POST_JUNK => 1101011000100011101110100100100101111110010110111110011010010010011010010011011010001000000101010110100111010011010100110
+
+[32m[0m[0m[32m001111101110111001001100111100100110011101111001010100110100011110100[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m0010[0m[31m[0m[0m[31m10010000001000001101001101101100[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m0101010100[0m[33m[0m[0m[33m0010101000[0m[33m[0m[7m[33m1000011001[0m[33m[0m[0m[33m00010101011000001101000110111101[0m[33m[0m[30m[0m[0m[30m00[0m[30m[0m[7m[30m0[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m011011[0m[30m[0m[0m[30m0101[0m[30m[0m[7m[30m1110[0m[30m[0m[0m[30m0000000000[0m[30m[0m[7m[30m101001[0m[30m[0m[0m[30m0001[0m[30m[0m[7m[30m110101[0m[30m[0m[0m[30m0100[0m[30m[0m[7m[30m1001[0m[30m[0m[0m[30m11010000000100111111001[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m011000[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m1100[0m[31m[0m[0m[31m11110110100111110010011010011001[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m1101011011[0m[33m[0m[0m[33m0110100010[0m[33m[0m[7m[33m1101001011[0m[33m[0m[0m[33m00110000110110110001000110111010[0m[33m[0m[30m[0m[0m[30m11[0m[30m[0m[7m[30m1[0m[30m[0m[0m[30m0011[0m[30m[0m[7m[30m001100[0m[30m[0m[0m[30m0101[0m[30m[0m[7m[30m1010[0m[30m[0m[0m[30m1010111101[0m[30m[0m[7m[30m001000[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m100010[0m[30m[0m[0m[30m1011[0m[30m[0m[7m[30m0000[0m[30m[0m[0m[30m10011110101010110010010[0m[33m[0m[31m[0m[31m[0m[7m[31m010[0m[32m110010100010110000001010000010011000001101111001010110101111000011100101000101110011011110100100011101000111010111110101000011000100001111011000010010010000111011100101101100110001111001101000011110010111110101000000000011011100100101010100[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m0001[0m[31m[0m[0m[31m10000001100110001011001110011111[0m[31m[0m[33m[0m[0m[33m1[0m[33m[0m[7m[33m0011110010[0m[33m[0m[0m[33m1100000101[0m[33m[0m[7m[33m0000110101[0m[33m[0m[0m[33m00000101000101011011110101100001[0m[33m[0m[30m[0m[0m[30m01[0m[30m[0m[7m[30m1[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m111101[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m1010[0m[30m[0m[0m[30m1100100100[0m[30m[0m[7m[30m101100[0m[30m[0m[0m[30m0100[0m[30m[0m[7m[30m000111[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m1101[0m[30m[0m[0m[30m10000100111111111000101[0m[33m[0m[31m[0m[31m[0m[7m[31m011[0m[32m[0m[32m[0m[7m[32m1101011000100011101110100100100101111110010110111110011010010010011010010011011010001000000101010110100111010011010100110[0m
+TERMINATION TEST
+terminate_genome: setting all bits from position 876 to 999
+clear_parser_instances: clearing all instances of Genome
+called DEMOLISH on instance G0000 of object Genome of class Genome
+clear_parser_instances: clearing all instances of Gene
+called DEMOLISH on instance G0691 of object Gene of class Gene
+called DEMOLISH on instance G0263 of object Gene of class Gene
+called DEMOLISH on instance G0069 of object Gene of class Gene
+clear_parser_instances: clearing all instances of Domain
+called DEMOLISH on instance D0735 of object Domain of class Domain
+called DEMOLISH on instance D0307 of object Domain of class Domain
+called DEMOLISH on instance D0113 of object Domain of class Domain
+clear_parser_instances: clearing all instances of ProtoDomain
+called DEMOLISH on instance PD0798 of object ProtoDomain of class ProtoDomain
+called DEMOLISH on instance PD0370 of object ProtoDomain of class ProtoDomain
+called DEMOLISH on instance PD0176 of object ProtoDomain of class ProtoDomain
+name => G0000
+PRE_JUNK => 001111101110111001001100111100100110011101111001010100110100011110100
+genes => 
+  name => G0069
+  START_CODE => 01111110
+  regulated_concentration => 0010
+  UNUSED => 10010000001000001101001101101100
+  domains => 
+    name => D0113
+    allosteric_flag => 0
+    RT_transition_rate => 0101010100
+    TR_transition_rate => 0010101000
+    RT_phi => 1000011001
+    UNUSED => 00010101011000001101000110111101
+    protodomains => 
+      name => PD0176
+      type => 00
+      substrate_polarity => 0
+      binding_profile => 1101
+      kf_profile => 011011
+      kb_profile => 0101
+      kp_profile => 1110
+      Keq_ratio => 0000000000
+      kf_polarity_mask => 101001
+      kb_polarity_mask => 0001
+      kf_conformation_mask => 110101
+      kb_conformation_mask => 0100
+      kp_conformation_mask => 1001
+      UNUSED => 11010000000100111111001
+  STOP_CODE => 111
+genes_linker => 011000
+genes => 
+  name => G0263
+  START_CODE => 01111110
+  regulated_concentration => 1100
+  UNUSED => 11110110100111110010011010011001
+  domains => 
+    name => D0307
+    allosteric_flag => 0
+    RT_transition_rate => 1101011011
+    TR_transition_rate => 0110100010
+    RT_phi => 1101001011
+    UNUSED => 00110000110110110001000110111010
+    protodomains => 
+      name => PD0370
+      type => 11
+      substrate_polarity => 1
+      binding_profile => 0011
+      kf_profile => 001100
+      kb_profile => 0101
+      kp_profile => 1010
+      Keq_ratio => 1010111101
+      kf_polarity_mask => 001000
+      kb_polarity_mask => 1101
+      kf_conformation_mask => 100010
+      kb_conformation_mask => 1011
+      kp_conformation_mask => 0000
+      UNUSED => 10011110101010110010010
+  STOP_CODE => 010
+genes_linker => 110010100010110000001010000010011000001101111001010110101111000011100101000101110011011110100100011101000111010111110101000011000100001111011000010010010000111011100101101100110001111001101000011110010111110101000000000011011100100101010100
+genes => 
+  name => G0691
+  START_CODE => 01111110
+  regulated_concentration => 0001
+  UNUSED => 10000001100110001011001110011111
+  domains => 
+    name => D0735
+    allosteric_flag => 1
+    RT_transition_rate => 0011110010
+    TR_transition_rate => 1100000101
+    RT_phi => 0000110101
+    UNUSED => 00000101000101011011110101100001
+    protodomains => 
+      name => PD0798
+      type => 01
+      substrate_polarity => 1
+      binding_profile => 1101
+      kf_profile => 111101
+      kb_profile => 1101
+      kp_profile => 1010
+      Keq_ratio => 1100100100
+      kf_polarity_mask => 101100
+      kb_polarity_mask => 0100
+      kf_conformation_mask => 000111
+      kb_conformation_mask => 1101
+      kp_conformation_mask => 1101
+      UNUSED => 10000100111111111000101
+  STOP_CODE => 111
+POST_JUNK => 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+
+[32m[0m[0m[32m001111101110111001001100111100100110011101111001010100110100011110100[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m0010[0m[31m[0m[0m[31m10010000001000001101001101101100[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m0101010100[0m[33m[0m[0m[33m0010101000[0m[33m[0m[7m[33m1000011001[0m[33m[0m[0m[33m00010101011000001101000110111101[0m[33m[0m[30m[0m[0m[30m00[0m[30m[0m[7m[30m0[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m011011[0m[30m[0m[0m[30m0101[0m[30m[0m[7m[30m1110[0m[30m[0m[0m[30m0000000000[0m[30m[0m[7m[30m101001[0m[30m[0m[0m[30m0001[0m[30m[0m[7m[30m110101[0m[30m[0m[0m[30m0100[0m[30m[0m[7m[30m1001[0m[30m[0m[0m[30m11010000000100111111001[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m011000[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m1100[0m[31m[0m[0m[31m11110110100111110010011010011001[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m1101011011[0m[33m[0m[0m[33m0110100010[0m[33m[0m[7m[33m1101001011[0m[33m[0m[0m[33m00110000110110110001000110111010[0m[33m[0m[30m[0m[0m[30m11[0m[30m[0m[7m[30m1[0m[30m[0m[0m[30m0011[0m[30m[0m[7m[30m001100[0m[30m[0m[0m[30m0101[0m[30m[0m[7m[30m1010[0m[30m[0m[0m[30m1010111101[0m[30m[0m[7m[30m001000[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m100010[0m[30m[0m[0m[30m1011[0m[30m[0m[7m[30m0000[0m[30m[0m[0m[30m10011110101010110010010[0m[33m[0m[31m[0m[31m[0m[7m[31m010[0m[32m110010100010110000001010000010011000001101111001010110101111000011100101000101110011011110100100011101000111010111110101000011000100001111011000010010010000111011100101101100110001111001101000011110010111110101000000000011011100100101010100[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m0001[0m[31m[0m[0m[31m10000001100110001011001110011111[0m[31m[0m[33m[0m[0m[33m1[0m[33m[0m[7m[33m0011110010[0m[33m[0m[0m[33m1100000101[0m[33m[0m[7m[33m0000110101[0m[33m[0m[0m[33m00000101000101011011110101100001[0m[33m[0m[30m[0m[0m[30m01[0m[30m[0m[7m[30m1[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m111101[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m1010[0m[30m[0m[0m[30m1100100100[0m[30m[0m[7m[30m101100[0m[30m[0m[0m[30m0100[0m[30m[0m[7m[30m000111[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m1101[0m[30m[0m[0m[30m10000100111111111000101[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m[0m[32m[0m[7m[32m1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111[0m
+DIRECT MUTATION TEST
+mutate_subseq: mutating 10 sequence bits starting at 0 with probability 1
+mutate_subseq: mutating bit at position 0, 0 -> 1
+mutate_subseq: mutating bit at position 1, 0 -> 1
+mutate_subseq: mutating bit at position 2, 1 -> 0
+mutate_subseq: mutating bit at position 3, 1 -> 0
+mutate_subseq: mutating bit at position 4, 1 -> 0
+mutate_subseq: mutating bit at position 5, 1 -> 0
+mutate_subseq: mutating bit at position 6, 1 -> 0
+mutate_subseq: mutating bit at position 7, 0 -> 1
+mutate_subseq: mutating bit at position 8, 1 -> 0
+mutate_subseq: mutating bit at position 9, 1 -> 0
+mutate_subseq: mutated 10 sequence bits
+1100000100101110010011001111001001100111011110010101001101000111101000111111000101001000000100000110100110110110000101010100001010100010000110010001010101100000110100011011110100011010110110101111000000000001010010001110101010010011101000000010011111100111101100001111110110011110110100111110010011010011001011010110110110100010110100101100110000110110110001000110111010111001100110001011010101011110100100011011000101011000010011110101010110010010010110010100010110000001010000010011000001101111001010110101111000011100101000101110011011110100100011101000111010111110101000011000100001111011000010010010000111011100101101100110001111001101000011110010111110101000000000011011100100101010100011111100001100000011001100010110011100111111001111001011000001010000110101000001010001010110111101011000010111101111101110110101100100100101100010000011111011101100001001111111110001011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+mutate_subseq: mutating 10 sequence bits starting at 0 with probability 1
+mutate_subseq: mutating bit at position 0, 1 -> 0
+mutate_subseq: mutating bit at position 1, 1 -> 0
+mutate_subseq: mutating bit at position 2, 0 -> 1
+mutate_subseq: mutating bit at position 3, 0 -> 1
+mutate_subseq: mutating bit at position 4, 0 -> 1
+mutate_subseq: mutating bit at position 5, 0 -> 1
+mutate_subseq: mutating bit at position 6, 0 -> 1
+mutate_subseq: mutating bit at position 7, 1 -> 0
+mutate_subseq: mutating bit at position 8, 0 -> 1
+mutate_subseq: mutating bit at position 9, 0 -> 1
+mutate_subseq: mutated 10 sequence bits
+GENE BY NAME TESTS
+G0069 G0263 G0691
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m1100[0m[32m[0m[0m[32m11110110100111110010011010011001[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m1101011011[0m[31m[0m[0m[31m0110100010[0m[31m[0m[7m[31m1101001011[0m[31m[0m[0m[31m00110000110110110001000110111010[0m[31m[0m[33m[0m[0m[33m11[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m0011[0m[33m[0m[7m[33m001100[0m[33m[0m[0m[33m0101[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1010111101[0m[33m[0m[7m[33m001000[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m100010[0m[33m[0m[0m[33m1011[0m[33m[0m[7m[33m0000[0m[33m[0m[0m[33m10011110101010110010010[0m[31m[0m[32m[0m[32m[0m[7m[32m010[0m
+name => G0263
+START_CODE => 01111110
+regulated_concentration => 1100
+UNUSED => 11110110100111110010011010011001
+domains => 
+  name => D0307
+  allosteric_flag => 0
+  RT_transition_rate => 1101011011
+  TR_transition_rate => 0110100010
+  RT_phi => 1101001011
+  UNUSED => 00110000110110110001000110111010
+  protodomains => 
+    name => PD0370
+    type => 11
+    substrate_polarity => 1
+    binding_profile => 0011
+    kf_profile => 001100
+    kb_profile => 0101
+    kp_profile => 1010
+    Keq_ratio => 1010111101
+    kf_polarity_mask => 001000
+    kb_polarity_mask => 1101
+    kf_conformation_mask => 100010
+    kb_conformation_mask => 1011
+    kp_conformation_mask => 0000
+    UNUSED => 10011110101010110010010
+STOP_CODE => 010
+
+MUTATION TESTS
+G0069 G0263 G0691
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m0010[0m[32m[0m[0m[32m10010000001000001101001101101100[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m0101010100[0m[31m[0m[0m[31m0010101000[0m[31m[0m[7m[31m1000011001[0m[31m[0m[0m[31m00010101011000001101000110111101[0m[31m[0m[33m[0m[0m[33m00[0m[33m[0m[7m[33m0[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m011011[0m[33m[0m[0m[33m0101[0m[33m[0m[7m[33m1110[0m[33m[0m[0m[33m0000000000[0m[33m[0m[7m[33m101001[0m[33m[0m[0m[33m0001[0m[33m[0m[7m[33m110101[0m[33m[0m[0m[33m0100[0m[33m[0m[7m[33m1001[0m[33m[0m[0m[33m11010000000100111111001[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m1100[0m[32m[0m[0m[32m11110110100111110010011010011001[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m1101011011[0m[31m[0m[0m[31m0110100010[0m[31m[0m[7m[31m1101001011[0m[31m[0m[0m[31m00110000110110110001000110111010[0m[31m[0m[33m[0m[0m[33m11[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m0011[0m[33m[0m[7m[33m001100[0m[33m[0m[0m[33m0101[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1010111101[0m[33m[0m[7m[33m001000[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m100010[0m[33m[0m[0m[33m1011[0m[33m[0m[7m[33m0000[0m[33m[0m[0m[33m10011110101010110010010[0m[31m[0m[32m[0m[32m[0m[7m[32m010[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m0001[0m[32m[0m[0m[32m10000001100110001011001110011111[0m[32m[0m[31m[0m[0m[31m1[0m[31m[0m[7m[31m0011110010[0m[31m[0m[0m[31m1100000101[0m[31m[0m[7m[31m0000110101[0m[31m[0m[0m[31m00000101000101011011110101100001[0m[31m[0m[33m[0m[0m[33m01[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m111101[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1100100100[0m[33m[0m[7m[33m101100[0m[33m[0m[0m[33m0100[0m[33m[0m[7m[33m000111[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m1101[0m[33m[0m[0m[33m10000100111111111000101[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+G0069,9,G0263,10,G0691,5
+G0069 G0263 G0691
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m0110[0m[32m[0m[0m[32m10010000001000001101001101101100[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m0101010101[0m[31m[0m[0m[31m0000101000[0m[31m[0m[7m[31m1101011001[0m[31m[0m[0m[31m00010101011000001101000110111101[0m[31m[0m[33m[0m[0m[33m00[0m[33m[0m[7m[33m0[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m011011[0m[33m[0m[0m[33m0101[0m[33m[0m[7m[33m1110[0m[33m[0m[0m[33m1000000000[0m[33m[0m[7m[33m101001[0m[33m[0m[0m[33m0001[0m[33m[0m[7m[33m100101[0m[33m[0m[0m[33m0110[0m[33m[0m[7m[33m1011[0m[33m[0m[0m[33m11010000000100111111001[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m1100[0m[32m[0m[0m[32m11110110100111110010011010011001[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m1001011011[0m[31m[0m[0m[31m1101100010[0m[31m[0m[7m[31m1101001011[0m[31m[0m[0m[31m00110000110110110001000110111010[0m[31m[0m[33m[0m[0m[33m11[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m0011[0m[33m[0m[7m[33m001100[0m[33m[0m[0m[33m0111[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1010011101[0m[33m[0m[7m[33m101010[0m[33m[0m[0m[33m1100[0m[33m[0m[7m[33m100010[0m[33m[0m[0m[33m1011[0m[33m[0m[7m[33m0001[0m[33m[0m[0m[33m10011110101010110010010[0m[31m[0m[32m[0m[32m[0m[7m[32m010[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m1001[0m[32m[0m[0m[32m10000001100110001011001110011111[0m[32m[0m[31m[0m[0m[31m1[0m[31m[0m[7m[31m0011110010[0m[31m[0m[0m[31m0100000101[0m[31m[0m[7m[31m0000100101[0m[31m[0m[0m[31m00000101000101011011110101100001[0m[31m[0m[33m[0m[0m[33m01[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m111101[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1100100100[0m[33m[0m[7m[33m101000[0m[33m[0m[0m[33m0100[0m[33m[0m[7m[33m010111[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m1101[0m[33m[0m[0m[33m10000100111111111000101[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+DUPLICATION TESTS
+duplicate_gene: duplicating gene G0263
+AUTOMETHOD get_STOP_linker_code called on GeneInstance=SCALAR(G0263)
+G0263,1000
+duplicate_gene: duplicating gene G0069
+G0069,1188
+[32m[0m[0m[32m001111101110111001001100111100100110011101111001010100110100011110100[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m0110[0m[31m[0m[0m[31m10010000001000001101001101101100[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m0101010101[0m[33m[0m[0m[33m0000101000[0m[33m[0m[7m[33m1101011001[0m[33m[0m[0m[33m00010101011000001101000110111101[0m[33m[0m[30m[0m[0m[30m00[0m[30m[0m[7m[30m0[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m011011[0m[30m[0m[0m[30m0101[0m[30m[0m[7m[30m1110[0m[30m[0m[0m[30m1000000000[0m[30m[0m[7m[30m101001[0m[30m[0m[0m[30m0001[0m[30m[0m[7m[30m100101[0m[30m[0m[0m[30m0110[0m[30m[0m[7m[30m1011[0m[30m[0m[0m[30m11010000000100111111001[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m011000[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m1100[0m[31m[0m[0m[31m11110110100111110010011010011001[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m1001011011[0m[33m[0m[0m[33m1101100010[0m[33m[0m[7m[33m1101001011[0m[33m[0m[0m[33m00110000110110110001000110111010[0m[33m[0m[30m[0m[0m[30m11[0m[30m[0m[7m[30m1[0m[30m[0m[0m[30m0011[0m[30m[0m[7m[30m001100[0m[30m[0m[0m[30m0111[0m[30m[0m[7m[30m1010[0m[30m[0m[0m[30m1010011101[0m[30m[0m[7m[30m101010[0m[30m[0m[0m[30m1100[0m[30m[0m[7m[30m100010[0m[30m[0m[0m[30m1011[0m[30m[0m[7m[30m0001[0m[30m[0m[0m[30m10011110101010110010010[0m[33m[0m[31m[0m[31m[0m[7m[31m010[0m[32m110010100010110000001010000010011000001101111001010110101111000011100101000101110011011110100100011101000111010111110101000011000100001111011000010010010000111011100101101100110001111001101000011110010111110101000000000011011100100101010100[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m1001[0m[31m[0m[0m[31m10000001100110001011001110011111[0m[31m[0m[33m[0m[0m[33m1[0m[33m[0m[7m[33m0011110010[0m[33m[0m[0m[33m0100000101[0m[33m[0m[7m[33m0000100101[0m[33m[0m[0m[33m00000101000101011011110101100001[0m[33m[0m[30m[0m[0m[30m01[0m[30m[0m[7m[30m1[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m111101[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m1010[0m[30m[0m[0m[30m1100100100[0m[30m[0m[7m[30m101000[0m[30m[0m[0m[30m0100[0m[30m[0m[7m[30m010111[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m1101[0m[30m[0m[0m[30m10000100111111111000101[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m1100[0m[31m[0m[0m[31m11110110100111110010011010011001[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m1001011011[0m[33m[0m[0m[33m1101100010[0m[33m[0m[7m[33m1101001011[0m[33m[0m[0m[33m00110000110110110001000110111010[0m[33m[0m[30m[0m[0m[30m11[0m[30m[0m[7m[30m1[0m[30m[0m[0m[30m0011[0m[30m[0m[7m[30m001100[0m[30m[0m[0m[30m0111[0m[30m[0m[7m[30m1010[0m[30m[0m[0m[30m1010011101[0m[30m[0m[7m[30m101010[0m[30m[0m[0m[30m1100[0m[30m[0m[7m[30m100010[0m[30m[0m[0m[30m1011[0m[30m[0m[7m[30m0001[0m[30m[0m[0m[30m10011110101010110010010[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m0110[0m[31m[0m[0m[31m10010000001000001101001101101100[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m0101010101[0m[33m[0m[0m[33m0000101000[0m[33m[0m[7m[33m1101011001[0m[33m[0m[0m[33m00010101011000001101000110111101[0m[33m[0m[30m[0m[0m[30m00[0m[30m[0m[7m[30m0[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m011011[0m[30m[0m[0m[30m0101[0m[30m[0m[7m[30m1110[0m[30m[0m[0m[30m1000000000[0m[30m[0m[7m[30m101001[0m[30m[0m[0m[30m0001[0m[30m[0m[7m[30m100101[0m[30m[0m[0m[30m0110[0m[30m[0m[7m[30m1011[0m[30m[0m[0m[30m11010000000100111111001[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m[0m[32m[0m[7m[32m[0m
+00111110111011100100110011110010011001110111100101010011010001111010001111110011010010000001000001101001101101100001010101010000101000110101100100010101011000001101000110111101000110101101101011110100000000010100100011001010110101111010000000100111111001111011000011111101100111101101001111100100110100110010100101101111011000101101001011001100001101101100010001101110101110011001100011110101010011101101010110010001010110001100111101010101100100100101100101000101100000010100000100110000011011110010101101011110000111001010001011100110111101001000111010001110101111101010000110001000011110110000100100100001110111001011011001100011110011010000111100101111101010000000000110111001001010101000111111010011000000110011000101100111001111110011110010010000010100001001010000010100010101101111010110000101111011111011101101011001001001010000100010111110111011000010011111111100010111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110111111011001111011010011111001001101001100101001011011110110001011010010110011000011011011000100011011101011100110011000111101010100111011010101100100010101100011001111010101011001001011101111110011010010000001000001101001101101100001010101010000101000110101100100010101011000001101000110111101000110101101101011110100000000010100100011001010110101111010000000100111111001111
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m0110[0m[32m[0m[0m[32m10010000001000001101001101101100[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m0101010101[0m[31m[0m[0m[31m0000101000[0m[31m[0m[7m[31m1101011001[0m[31m[0m[0m[31m00010101011000001101000110111101[0m[31m[0m[33m[0m[0m[33m00[0m[33m[0m[7m[33m0[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m011011[0m[33m[0m[0m[33m0101[0m[33m[0m[7m[33m1110[0m[33m[0m[0m[33m1000000000[0m[33m[0m[7m[33m101001[0m[33m[0m[0m[33m0001[0m[33m[0m[7m[33m100101[0m[33m[0m[0m[33m0110[0m[33m[0m[7m[33m1011[0m[33m[0m[0m[33m11010000000100111111001[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m1100[0m[32m[0m[0m[32m11110110100111110010011010011001[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m1001011011[0m[31m[0m[0m[31m1101100010[0m[31m[0m[7m[31m1101001011[0m[31m[0m[0m[31m00110000110110110001000110111010[0m[31m[0m[33m[0m[0m[33m11[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m0011[0m[33m[0m[7m[33m001100[0m[33m[0m[0m[33m0111[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1010011101[0m[33m[0m[7m[33m101010[0m[33m[0m[0m[33m1100[0m[33m[0m[7m[33m100010[0m[33m[0m[0m[33m1011[0m[33m[0m[7m[33m0001[0m[33m[0m[0m[33m10011110101010110010010[0m[31m[0m[32m[0m[32m[0m[7m[32m010[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m1001[0m[32m[0m[0m[32m10000001100110001011001110011111[0m[32m[0m[31m[0m[0m[31m1[0m[31m[0m[7m[31m0011110010[0m[31m[0m[0m[31m0100000101[0m[31m[0m[7m[31m0000100101[0m[31m[0m[0m[31m00000101000101011011110101100001[0m[31m[0m[33m[0m[0m[33m01[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m111101[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1100100100[0m[33m[0m[7m[33m101000[0m[33m[0m[0m[33m0100[0m[33m[0m[7m[33m010111[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m1101[0m[33m[0m[0m[33m10000100111111111000101[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m1100[0m[32m[0m[0m[32m11110110100111110010011010011001[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m1001011011[0m[31m[0m[0m[31m1101100010[0m[31m[0m[7m[31m1101001011[0m[31m[0m[0m[31m00110000110110110001000110111010[0m[31m[0m[33m[0m[0m[33m11[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m0011[0m[33m[0m[7m[33m001100[0m[33m[0m[0m[33m0111[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1010011101[0m[33m[0m[7m[33m101010[0m[33m[0m[0m[33m1100[0m[33m[0m[7m[33m100010[0m[33m[0m[0m[33m1011[0m[33m[0m[7m[33m0001[0m[33m[0m[0m[33m10011110101010110010010[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m0110[0m[32m[0m[0m[32m10010000001000001101001101101100[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m0101010101[0m[31m[0m[0m[31m0000101000[0m[31m[0m[7m[31m1101011001[0m[31m[0m[0m[31m00010101011000001101000110111101[0m[31m[0m[33m[0m[0m[33m00[0m[33m[0m[7m[33m0[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m011011[0m[33m[0m[0m[33m0101[0m[33m[0m[7m[33m1110[0m[33m[0m[0m[33m1000000000[0m[33m[0m[7m[33m101001[0m[33m[0m[0m[33m0001[0m[33m[0m[7m[33m100101[0m[33m[0m[0m[33m0110[0m[33m[0m[7m[33m1011[0m[33m[0m[0m[33m11010000000100111111001[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+RECOMBINATION TESTS
+010010110111101100010110100101100110000110110110001000110111010111001100110001111010101001110110101011001000101011000110011110101010110010010
+001010101010000101000110101100100010101011000001101000110111101000110101101101011110100000000010100100011001010110101111010000000100111111001
+recombine_genes: recombining G0263(1, 1 domains) and G0069(0, 1 domains)
+recombine_genes: G0263 sequence = 01111110110011110110100111110010011010011001010010110111101100010110100101100110000110110110001000110111010111001100110001111010101001110110101011001000101011000110011110101010110010010010
+recombine_genes: G0069 sequence = 01111110011010010000001000001101001101101100001010101010000101000110101100100010101011000001101000110111101000110101101101011110100000000010100100011001010110101111010000000100111111001111
+recombine_genes: using domains G0263(0) and G0069(0)
+recombine_genes: domain1_sequence = 010010110111101100010110100101100110000110110110001000110111010111001100110001111010101001110110101011001000101011000110011110101010110010010
+recombine_genes: domain2_sequence = 001010101010000101000110101100100010101011000001101000110111101000110101101101011110100000000010100100011001010110101111010000000100111111001
+generate_random_sequence: generating sequence of length 4
+generate_random_sequence: generating sequence of length 32
+recombine_genes: new gene sequence = 01111110100111111011011110011001010101100010010010110111101100010110100101100110000110110110001000110111010111001100110001111010101001110110101011001000101011000110011110101010110010010001001010101010000101000110101100100010101011000001101000110111101000110101101101011110100000000010100100011001010110101111010000000100111111001111
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m0110[0m[32m[0m[0m[32m10010000001000001101001101101100[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m0101010101[0m[31m[0m[0m[31m0000101000[0m[31m[0m[7m[31m1101011001[0m[31m[0m[0m[31m00010101011000001101000110111101[0m[31m[0m[33m[0m[0m[33m00[0m[33m[0m[7m[33m0[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m011011[0m[33m[0m[0m[33m0101[0m[33m[0m[7m[33m1110[0m[33m[0m[0m[33m1000000000[0m[33m[0m[7m[33m101001[0m[33m[0m[0m[33m0001[0m[33m[0m[7m[33m100101[0m[33m[0m[0m[33m0110[0m[33m[0m[7m[33m1011[0m[33m[0m[0m[33m11010000000100111111001[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m1100[0m[32m[0m[0m[32m11110110100111110010011010011001[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m1001011011[0m[31m[0m[0m[31m1101100010[0m[31m[0m[7m[31m1101001011[0m[31m[0m[0m[31m00110000110110110001000110111010[0m[31m[0m[33m[0m[0m[33m11[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m0011[0m[33m[0m[7m[33m001100[0m[33m[0m[0m[33m0111[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1010011101[0m[33m[0m[7m[33m101010[0m[33m[0m[0m[33m1100[0m[33m[0m[7m[33m100010[0m[33m[0m[0m[33m1011[0m[33m[0m[7m[33m0001[0m[33m[0m[0m[33m10011110101010110010010[0m[31m[0m[32m[0m[32m[0m[7m[32m010[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m1001[0m[32m[0m[0m[32m10000001100110001011001110011111[0m[32m[0m[31m[0m[0m[31m1[0m[31m[0m[7m[31m0011110010[0m[31m[0m[0m[31m0100000101[0m[31m[0m[7m[31m0000100101[0m[31m[0m[0m[31m00000101000101011011110101100001[0m[31m[0m[33m[0m[0m[33m01[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m111101[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1100100100[0m[33m[0m[7m[33m101000[0m[33m[0m[0m[33m0100[0m[33m[0m[7m[33m010111[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m1101[0m[33m[0m[0m[33m10000100111111111000101[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m1100[0m[32m[0m[0m[32m11110110100111110010011010011001[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m1001011011[0m[31m[0m[0m[31m1101100010[0m[31m[0m[7m[31m1101001011[0m[31m[0m[0m[31m00110000110110110001000110111010[0m[31m[0m[33m[0m[0m[33m11[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m0011[0m[33m[0m[7m[33m001100[0m[33m[0m[0m[33m0111[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1010011101[0m[33m[0m[7m[33m101010[0m[33m[0m[0m[33m1100[0m[33m[0m[7m[33m100010[0m[33m[0m[0m[33m1011[0m[33m[0m[7m[33m0001[0m[33m[0m[0m[33m10011110101010110010010[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m0110[0m[32m[0m[0m[32m10010000001000001101001101101100[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m0101010101[0m[31m[0m[0m[31m0000101000[0m[31m[0m[7m[31m1101011001[0m[31m[0m[0m[31m00010101011000001101000110111101[0m[31m[0m[33m[0m[0m[33m00[0m[33m[0m[7m[33m0[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m011011[0m[33m[0m[0m[33m0101[0m[33m[0m[7m[33m1110[0m[33m[0m[0m[33m1000000000[0m[33m[0m[7m[33m101001[0m[33m[0m[0m[33m0001[0m[33m[0m[7m[33m100101[0m[33m[0m[0m[33m0110[0m[33m[0m[7m[33m1011[0m[33m[0m[0m[33m11010000000100111111001[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+[32m[0m[0m[32m01111110[0m[32m[0m[7m[32m1001[0m[32m[0m[0m[32m11111011011110011001010101100010[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m1001011011[0m[31m[0m[0m[31m1101100010[0m[31m[0m[7m[31m1101001011[0m[31m[0m[0m[31m00110000110110110001000110111010[0m[31m[0m[33m[0m[0m[33m11[0m[33m[0m[7m[33m1[0m[33m[0m[0m[33m0011[0m[33m[0m[7m[33m001100[0m[33m[0m[0m[33m0111[0m[33m[0m[7m[33m1010[0m[33m[0m[0m[33m1010011101[0m[33m[0m[7m[33m101010[0m[33m[0m[0m[33m1100[0m[33m[0m[7m[33m100010[0m[33m[0m[0m[33m1011[0m[33m[0m[7m[33m0001[0m[33m[0m[0m[33m10011110101010110010010[0m[31m[0m[32m001[0m[32m[0m[31m[0m[0m[31m0[0m[31m[0m[7m[31m0101010101[0m[31m[0m[0m[31m0000101000[0m[31m[0m[7m[31m1101011001[0m[31m[0m[0m[31m00010101011000001101000110111101[0m[31m[0m[33m[0m[0m[33m00[0m[33m[0m[7m[33m0[0m[33m[0m[0m[33m1101[0m[33m[0m[7m[33m011011[0m[33m[0m[0m[33m0101[0m[33m[0m[7m[33m1110[0m[33m[0m[0m[33m1000000000[0m[33m[0m[7m[33m101001[0m[33m[0m[0m[33m0001[0m[33m[0m[7m[33m100101[0m[33m[0m[0m[33m0110[0m[33m[0m[7m[33m1011[0m[33m[0m[0m[33m11010000000100111111001[0m[31m[0m[32m[0m[32m[0m[7m[32m111[0m
+[32m[0m[0m[32m001111101110111001001100111100100110011101111001010100110100011110100[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m0110[0m[31m[0m[0m[31m10010000001000001101001101101100[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m0101010101[0m[33m[0m[0m[33m0000101000[0m[33m[0m[7m[33m1101011001[0m[33m[0m[0m[33m00010101011000001101000110111101[0m[33m[0m[30m[0m[0m[30m00[0m[30m[0m[7m[30m0[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m011011[0m[30m[0m[0m[30m0101[0m[30m[0m[7m[30m1110[0m[30m[0m[0m[30m1000000000[0m[30m[0m[7m[30m101001[0m[30m[0m[0m[30m0001[0m[30m[0m[7m[30m100101[0m[30m[0m[0m[30m0110[0m[30m[0m[7m[30m1011[0m[30m[0m[0m[30m11010000000100111111001[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m011000[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m1100[0m[31m[0m[0m[31m11110110100111110010011010011001[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m1001011011[0m[33m[0m[0m[33m1101100010[0m[33m[0m[7m[33m1101001011[0m[33m[0m[0m[33m00110000110110110001000110111010[0m[33m[0m[30m[0m[0m[30m11[0m[30m[0m[7m[30m1[0m[30m[0m[0m[30m0011[0m[30m[0m[7m[30m001100[0m[30m[0m[0m[30m0111[0m[30m[0m[7m[30m1010[0m[30m[0m[0m[30m1010011101[0m[30m[0m[7m[30m101010[0m[30m[0m[0m[30m1100[0m[30m[0m[7m[30m100010[0m[30m[0m[0m[30m1011[0m[30m[0m[7m[30m0001[0m[30m[0m[0m[30m10011110101010110010010[0m[33m[0m[31m[0m[31m[0m[7m[31m010[0m[32m110010100010110000001010000010011000001101111001010110101111000011100101000101110011011110100100011101000111010111110101000011000100001111011000010010010000111011100101101100110001111001101000011110010111110101000000000011011100100101010100[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m1001[0m[31m[0m[0m[31m10000001100110001011001110011111[0m[31m[0m[33m[0m[0m[33m1[0m[33m[0m[7m[33m0011110010[0m[33m[0m[0m[33m0100000101[0m[33m[0m[7m[33m0000100101[0m[33m[0m[0m[33m00000101000101011011110101100001[0m[33m[0m[30m[0m[0m[30m01[0m[30m[0m[7m[30m1[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m111101[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m1010[0m[30m[0m[0m[30m1100100100[0m[30m[0m[7m[30m101000[0m[30m[0m[0m[30m0100[0m[30m[0m[7m[30m010111[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m1101[0m[30m[0m[0m[30m10000100111111111000101[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m1100[0m[31m[0m[0m[31m11110110100111110010011010011001[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m1001011011[0m[33m[0m[0m[33m1101100010[0m[33m[0m[7m[33m1101001011[0m[33m[0m[0m[33m00110000110110110001000110111010[0m[33m[0m[30m[0m[0m[30m11[0m[30m[0m[7m[30m1[0m[30m[0m[0m[30m0011[0m[30m[0m[7m[30m001100[0m[30m[0m[0m[30m0111[0m[30m[0m[7m[30m1010[0m[30m[0m[0m[30m1010011101[0m[30m[0m[7m[30m101010[0m[30m[0m[0m[30m1100[0m[30m[0m[7m[30m100010[0m[30m[0m[0m[30m1011[0m[30m[0m[7m[30m0001[0m[30m[0m[0m[30m10011110101010110010010[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m0110[0m[31m[0m[0m[31m10010000001000001101001101101100[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m0101010101[0m[33m[0m[0m[33m0000101000[0m[33m[0m[7m[33m1101011001[0m[33m[0m[0m[33m00010101011000001101000110111101[0m[33m[0m[30m[0m[0m[30m00[0m[30m[0m[7m[30m0[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m011011[0m[30m[0m[0m[30m0101[0m[30m[0m[7m[30m1110[0m[30m[0m[0m[30m1000000000[0m[30m[0m[7m[30m101001[0m[30m[0m[0m[30m0001[0m[30m[0m[7m[30m100101[0m[30m[0m[0m[30m0110[0m[30m[0m[7m[30m1011[0m[30m[0m[0m[30m11010000000100111111001[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m00000000[0m[32m[0m[31m[0m[0m[31m01111110[0m[31m[0m[7m[31m1001[0m[31m[0m[0m[31m11111011011110011001010101100010[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m1001011011[0m[33m[0m[0m[33m1101100010[0m[33m[0m[7m[33m1101001011[0m[33m[0m[0m[33m00110000110110110001000110111010[0m[33m[0m[30m[0m[0m[30m11[0m[30m[0m[7m[30m1[0m[30m[0m[0m[30m0011[0m[30m[0m[7m[30m001100[0m[30m[0m[0m[30m0111[0m[30m[0m[7m[30m1010[0m[30m[0m[0m[30m1010011101[0m[30m[0m[7m[30m101010[0m[30m[0m[0m[30m1100[0m[30m[0m[7m[30m100010[0m[30m[0m[0m[30m1011[0m[30m[0m[7m[30m0001[0m[30m[0m[0m[30m10011110101010110010010[0m[33m[0m[31m001[0m[31m[0m[33m[0m[0m[33m0[0m[33m[0m[7m[33m0101010101[0m[33m[0m[0m[33m0000101000[0m[33m[0m[7m[33m1101011001[0m[33m[0m[0m[33m00010101011000001101000110111101[0m[33m[0m[30m[0m[0m[30m00[0m[30m[0m[7m[30m0[0m[30m[0m[0m[30m1101[0m[30m[0m[7m[30m011011[0m[30m[0m[0m[30m0101[0m[30m[0m[7m[30m1110[0m[30m[0m[0m[30m1000000000[0m[30m[0m[7m[30m101001[0m[30m[0m[0m[30m0001[0m[30m[0m[7m[30m100101[0m[30m[0m[0m[30m0110[0m[30m[0m[7m[30m1011[0m[30m[0m[0m[30m11010000000100111111001[0m[33m[0m[31m[0m[31m[0m[7m[31m111[0m[32m[0m[32m[0m[7m[32m[0m
+001111101110111001001100111100100110011101111001010100110100011110100011111100110100100000010000011010011011011000010101010100001010001101011001000101010110000011010001101111010001101011011010111101000000000101001000110010101101011110100000001001111110011110110000111111011001111011010011111001001101001100101001011011110110001011010010110011000011011011000100011011101011100110011000111101010100111011010101100100010101100011001111010101011001001001011001010001011000000101000001001100000110111100101011010111100001110010100010111001101111010010001110100011101011111010100001100010000111101100001001001000011101110010110110011000111100110100001111001011111010100000000001101110010010101010001111110100110000001100110001011001110011111100111100100100000101000010010100000101000101011011110101100001011110111110111011010110010010010100001000101111101110110000100111111111000101111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111101111110110011110110100111110010011010011001010010110111101100010110100101100110000110110110001000110111010111001100110001111010101001110110101011001000101011000110011110101010110010010111011111100110100100000010000011010011011011000010101010100001010001101011001000101010110000011010001101111010001101011011010111101000000000101001000110010101101011110100000001001111110011110000000001111110100111111011011110011001010101100010010010110111101100010110100101100110000110110110001000110111010111001100110001111010101001110110101011001000101011000110011110101010110010010001001010101010000101000110101100100010101011000001101000110111101000110101101101011110100000000010100100011001010110101111010000000100111111001111
+STORABLE TEST
+clear_parser_instances: clearing all instances of Genome
+called DEMOLISH on instance G0000 of object Genome of class Genome
+clear_parser_instances: clearing all instances of Gene
+called DEMOLISH on instance G1384 of object Gene of class Gene
+called DEMOLISH on instance G1188 of object Gene of class Gene
+called DEMOLISH on instance G1000 of object Gene of class Gene
+called DEMOLISH on instance G0691 of object Gene of class Gene
+called DEMOLISH on instance G0263 of object Gene of class Gene
+called DEMOLISH on instance G0069 of object Gene of class Gene
+clear_parser_instances: clearing all instances of Domain
+called DEMOLISH on instance D1572 of object Domain of class Domain
+called DEMOLISH on instance D1428 of object Domain of class Domain
+called DEMOLISH on instance D1232 of object Domain of class Domain
+called DEMOLISH on instance D1044 of object Domain of class Domain
+called DEMOLISH on instance D0735 of object Domain of class Domain
+called DEMOLISH on instance D0307 of object Domain of class Domain
+called DEMOLISH on instance D0113 of object Domain of class Domain
+clear_parser_instances: clearing all instances of ProtoDomain
+called DEMOLISH on instance PD1635 of object ProtoDomain of class ProtoDomain
+called DEMOLISH on instance PD1491 of object ProtoDomain of class ProtoDomain
+called DEMOLISH on instance PD1295 of object ProtoDomain of class ProtoDomain
+called DEMOLISH on instance PD1107 of object ProtoDomain of class ProtoDomain
+called DEMOLISH on instance PD0798 of object ProtoDomain of class ProtoDomain
+called DEMOLISH on instance PD0370 of object ProtoDomain of class ProtoDomain
+called DEMOLISH on instance PD0176 of object ProtoDomain of class ProtoDomain
+clear_parser_instances: clearing all instances of Gene
+clear_parser_instances: clearing all instances of Domain
+clear_parser_instances: clearing all instances of ProtoDomain
+clear_parser_instances: clearing all instances of Domain
+clear_parser_instances: clearing all instances of ProtoDomain
+clear_parser_instances: clearing all instances of ProtoDomain
+{
+  'GenomeModel' => {
+                     'elite_flag' => 0,
+                     'history_ref' => [],
+                     'stats_ref' => {}
+                   },
+  'Model' => {
+               'parser_ref' => bless( do{\(my $o = undef)}, 'Genome' ),
+               'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' )
+             },
+  'Named' => {
+               'name' => 'GenomeModel'
+             }
+};
+
+{
+  'GenomeModel' => {
+                     'elite_flag' => 0,
+                     'history_ref' => [],
+                     'stats_ref' => {}
+                   },
+  'Model' => {
+               'parser_ref' => bless( do{\(my $o = undef)}, 'Genome' ),
+               'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' )
+             },
+  'Named' => {
+               'name' => 'GenomeModel'
+             }
+};
+

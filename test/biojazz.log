@@ -1,0 +1,163 @@
+##############################################################################
+# BioJazz -- A biochemical network evolution/design tool
+# Copyright (c) 2005-2012
+# All rights reserved
+# Author: Julien F. Ollivier
+# Version: ALPHA-02
+# Release Date: 2012/06/15
+##############################################################################
+BioJazz running with tag "test_main"
+ANC_HOME=/Users/Song/workspace/rule-based-modelling/anc
+FACILE_HOME=/Users/Song/workspace/rule-based-modelling/facile
+WORKSPACE=/Users/Song/workspace/rule-based-modelling/biojazz
+BioJazz using configuration file config/template.cfg
+read_config: reading config/template.cfg
+read_config: (ignoring cluster_type = LOCAL because noclobber set)
+read_config: (ignoring cluster_size = 2 because noclobber set)
+read_config: nice = 15
+read_config: vmem = 1200000
+read_config: local_dir = template/localdir
+read_config: scoring_class = Template
+read_config: work_dir = template
+read_config: radius = 1
+read_config: kf_max = 1e3
+read_config: kf_min = 1e-3
+read_config: kb_max = 1e3
+read_config: kb_min = 1e-3
+read_config: kp_max = 1e3
+read_config: kp_min = 1e-3
+read_config: regulated_concentration_width = 10
+read_config: gene_unused_width = 4
+read_config: regulated_concentration_max = 1e3
+read_config: regulated_concentration_min = 1e-3
+read_config: RT_transition_rate_width = 10
+read_config: TR_transition_rate_width = 10
+read_config: RT_phi_width = 10
+read_config: domain_unused_width = 4
+read_config: RT_transition_rate_max = 1e2
+read_config: RT_transition_rate_min = 1e-2
+read_config: TR_transition_rate_max = 1e2
+read_config: TR_transition_rate_min = 1e-2
+read_config: RT_phi_max = 1.0
+read_config: RT_phi_min = 0.0
+read_config: binding_profile_width = 8
+read_config: kf_profile_width = 20
+read_config: kb_profile_width = 20
+read_config: kp_profile_width = 10
+read_config: Keq_profile_width = 10
+read_config: protodomain_unused_width = 4
+read_config: Keq_ratio_max = 1e2
+read_config: Keq_ratio_min = 1e-2
+read_config: inum_genomes = 2
+read_config: max_population = 4
+read_config: elite_pool_size = 1
+read_config: num_generations = 2
+read_config: first_generation = 0
+read_config: remove_old_files = 0
+read_config: score_initial_generation = 1
+read_config: rescore_elite = 0
+read_config: initial_genome = random
+read_config: selection_method = random_walk
+read_config: effective_population_size = 1e6
+read_config: ranking_nonviable = 0.2
+read_config: ranking_pressure = 1.2
+read_config: prob_mutate_params = 0.6
+read_config: prob_mutate_global = 0.2
+read_config: prob_recombination = 0.05
+read_config: prob_duplicate = 0.05
+read_config: prob_delete = 0.1
+read_config: mutation_rate = 0.01
+read_config: max_external_iterations = -1
+read_config: max_internal_iterations = -1
+read_config: max_complex_size = 4
+read_config: max_species = 80
+read_config: max_csite_bound_to_msite_number = 1
+read_config: default_max_count = 2
+read_config: default_steric_factor = 1e3
+read_config: export_graphviz = nothing
+read_config: solver = ode23s
+read_config: sampling_interval = 1.0
+read_config: t_final = 100
+read_config: InitialStep = 1e-8
+read_config: AbsTol = 1e-9
+read_config: RelTol = 1e-3
+read_config: MaxStep = 10.0
+read_config: plot_input = 0
+read_config: plot_output = 0
+read_config: plot_species = 0
+read_config: plot_phase = 0
+read_config: plot_min = 0
+Start time: Mon 17 Sep 2012 14:13:41 BST
+BioJazz running with initial number of genomes equal to 2
+BioJazz running with mutation rate of 0.01
+BioJazz using cluster_type LOCAL
+BioJazz using cluster_size 2
+BioJazz using nice 15
+Keeping old files in template/test_main
+Creating output directories
+ScorCluster::new() -- New ScorCluster cluster_size=2, work_dir=template, scoring_class=Template, cluster_type=LOCAL
+Creating ScorNode ID=0 logfile=template/localdir/Template/test_main/ScorNode.0.20120917_141341.log cluster_type=LOCAL
+Creating ScorNode ID=1 logfile=template/localdir/Template/test_main/ScorNode.1.20120917_141341.log cluster_type=LOCAL
+ScorCluster::start -- parent process started (pid=2191, child=2214)
+ScorCluster::start -- child process started (pid=2214, parent=2191)
+ScorNode::spawn spawning local node
+ScorNode::spawn spawning local node
+ScorCluster::start -- child process done spawning, started multitask
+ScorCluster::start -- parent process returning
+Seed was passed as parameter
+Using seed 1092946010
+First random number is 0.925671409423561
+create_initial_generation: starting...
+create_initial_generation: creating 2 individuals
+create_initial_generation: done
+save_generation: saving generation 0, with 2 individuals
+score_current_generation: scoring generation 0 ....
+score_current_generation: scoring file template/test_main/obj/G000_I00.obj
+ScorCluster::get_free_node -- looking for free node...
+ScorCluster::get_free_node -- node 1 is free
+score_current_generation: scoring file template/test_main/obj/G000_I01.obj
+ScorCluster::get_free_node -- looking for free node...
+ScorCluster::get_free_node -- node 0 is free
+score_current_generation: waiting on nodes... 1 0
+score_current_generation: waiting on nodes... 1 0
+score_current_generation: waiting on nodes... 1 0
+
+WARNING: tickle (matched WARNING) -- node 0 appears to have a problem -- expect.before:
+	==> WARNING: ReactionNetwork::compile_external_reactions -- max # of species (80) reached!!!
+	==> ReactionNetwork::compile_network: DONE EXTERNAL iteration=2 total_species=80
+score_current_generation: waiting on nodes... 1 0
+score_current_generation: waiting on nodes... 1 0
+score_current_generation: waiting on nodes... 1 0
+score_current_generation: waiting on nodes... 0
+score_current_generation: waiting on nodes... 0
+score_current_generation: waiting on nodes... 0
+score_current_generation: waiting on nodes... 0
+score_current_generation: waiting on nodes... 0
+score_current_generation: waiting on nodes... 0
+score_current_generation: waiting on nodes... 
+score_current_generation: done waiting on nodes...
+GEN_ALG: generation 0
+load_generation: loading generation 0, with 2 individuals
+report_current_generation: generation 0
+individual 0  : score=94, stat1=27, stat2=3
+individual 1  : score=87, stat1=25, stat2=42
+ERROR: there is more than 1 genomes in the generation 0
+ScorCluster::DEMOLISH called (pid 2191, ctrl_C_flag=0, sigusr1_flag=0)
+---------------------------------------
+Shutting down the cluster
+---------------------------------------
+ScorCluster::DEMOLISH am parent (pid 2191), shutting down child and waiting...
+ScorCluster: Child process 2214 received SIGUSR1 (shutting down)
+
+ScorCluster::DEMOLISH called (pid 2214, ctrl_C_flag=0, sigusr1_flag=1)
+ScorCluster::DEMOLISH am child (pid 2214)
+ScorNode::DEMOLISH called (pid 2214)
+Moving template/localdir/Template/test_main/ScorNode.1.20120917_141341.log to template/test_main/ScorNode.1.20120917_141341.log
+ScorNode::DEMOLISH called (pid 2214)
+Moving template/localdir/Template/test_main/ScorNode.0.20120917_141341.log to template/test_main/ScorNode.0.20120917_141341.log
+ScorCluster::DEMOLISH am parent (pid 2191), done cleanup...
+---------------------------------------
+Shutdown complete
+---------------------------------------
+ScorNode::DEMOLISH called (pid 2191)
+ScorNode::DEMOLISH called (pid 2191)

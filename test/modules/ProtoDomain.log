@@ -1,0 +1,741 @@
+generate_random_sequence: generating sequence of length 1000
+{
+  'Instantiable' => {
+                      'instances' => [],
+                      'instances_index' => {}
+                    },
+  'Named' => {
+               'name' => 'ProtoDomain'
+             },
+  'Parser' => {
+                'mutation_rate_ref' => {
+                                         'Keq_ratio' => '1',
+                                         'UNUSED' => '1',
+                                         'binding_profile' => '1',
+                                         'kb_conformation_mask' => '1',
+                                         'kb_polarity_mask' => '1',
+                                         'kb_profile' => '1',
+                                         'kf_conformation_mask' => '1',
+                                         'kf_polarity_mask' => '1',
+                                         'kf_profile' => '1',
+                                         'kp_conformation_mask' => '1',
+                                         'kp_profile' => '1',
+                                         'substrate_polarity' => '1',
+                                         'type' => '1'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'type',
+                                       '\\G.{2}'
+                                     ],
+                                     [
+                                       'substrate_polarity',
+                                       '\\G.{1}'
+                                     ],
+                                     [
+                                       'binding_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kf_profile',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kp_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'Keq_ratio',
+                                       '\\G.{10}'
+                                     ],
+                                     [
+                                       'kf_polarity_mask',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_polarity_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kf_conformation_mask',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_conformation_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kp_conformation_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'UNUSED',
+                                       '\\G.{23}'
+                                     ]
+                                   ]
+              },
+  'ProtoDomain' => {
+                     'Keq_ratio_max' => '1000',
+                     'Keq_ratio_min' => '0.001',
+                     'Keq_ratio_width' => 10,
+                     'binding_profile_width' => 4,
+                     'kb_profile_width' => 4,
+                     'kf_profile_width' => 6,
+                     'kp_profile_width' => 4,
+                     'substrate_polarity_width' => 1,
+                     'type_width' => 2,
+                     'unused_width' => 23
+                   },
+  'Set' => {
+             'element_class' => 'NONE',
+             'elements_ref' => []
+           }
+};
+
+Protodomain length is: 78
+clear_parser_instances: clearing all instances of ProtoDomain
+Creating NEW ProtoDomainInstance       of object ProtoDomain, class ProtoDomain
+Matched field type=10 at 0 using RE \G.{2}
+Matched field substrate_polarity=0 at 2 using RE \G.{1}
+Matched field binding_profile=1111 at 3 using RE \G.{4}
+Matched field kf_profile=101100 at 7 using RE \G.{6}
+Matched field kb_profile=0110 at 13 using RE \G.{4}
+Matched field kp_profile=0111 at 17 using RE \G.{4}
+Matched field Keq_ratio=0000100111 at 21 using RE \G.{10}
+Matched field kf_polarity_mask=110100 at 31 using RE \G.{6}
+Matched field kb_polarity_mask=0011 at 37 using RE \G.{4}
+Matched field kf_conformation_mask=100000 at 41 using RE \G.{6}
+Matched field kb_conformation_mask=0111 at 47 using RE \G.{4}
+Matched field kp_conformation_mask=0000 at 51 using RE \G.{4}
+Matched field UNUSED=10011000001111001010101 at 55 using RE \G.{23}
+Registering instance PD0000                    of object ProtoDomain
+{
+  'Instance' => {
+                  'parent_class' => 'ProtoDomain',
+                  'parent_name' => 'ProtoDomain',
+                  'parent_ref' => bless( do{\(my $o = undef)}, 'ProtoDomain' )
+                },
+  'Named' => {
+               'name' => 'PD0000'
+             },
+  'ParserInstance' => {
+                        'length' => '78',
+                        'locus' => '0',
+                        'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' ),
+                        'start_pos' => 0,
+                        'transcription_ref' => {
+                                                 'Keq_ratio' => [
+                                                                  '0000100111',
+                                                                  '21',
+                                                                  '10'
+                                                                ],
+                                                 'UNUSED' => [
+                                                               '10011000001111001010101',
+                                                               '55',
+                                                               '23'
+                                                             ],
+                                                 'binding_profile' => [
+                                                                        '1111',
+                                                                        '3',
+                                                                        '4'
+                                                                      ],
+                                                 'kb_conformation_mask' => [
+                                                                             '0111',
+                                                                             '47',
+                                                                             '4'
+                                                                           ],
+                                                 'kb_polarity_mask' => [
+                                                                         '0011',
+                                                                         '37',
+                                                                         '4'
+                                                                       ],
+                                                 'kb_profile' => [
+                                                                   '0110',
+                                                                   '13',
+                                                                   '4'
+                                                                 ],
+                                                 'kf_conformation_mask' => [
+                                                                             '100000',
+                                                                             '41',
+                                                                             '6'
+                                                                           ],
+                                                 'kf_polarity_mask' => [
+                                                                         '110100',
+                                                                         '31',
+                                                                         '6'
+                                                                       ],
+                                                 'kf_profile' => [
+                                                                   '101100',
+                                                                   '7',
+                                                                   '6'
+                                                                 ],
+                                                 'kp_conformation_mask' => [
+                                                                             '0000',
+                                                                             '51',
+                                                                             '4'
+                                                                           ],
+                                                 'kp_profile' => [
+                                                                   '0111',
+                                                                   '17',
+                                                                   '4'
+                                                                 ],
+                                                 'substrate_polarity' => [
+                                                                           '0',
+                                                                           '2',
+                                                                           '1'
+                                                                         ],
+                                                 'type' => [
+                                                             '10',
+                                                             '0',
+                                                             '2'
+                                                           ]
+                                               },
+                        'transcription_valid_flag' => 1,
+                        'translation_ref' => {
+                                               'Keq_ratio' => '0.00169331986362557',
+                                               'UNUSED' => '10011000001111001010101',
+                                               'binding_profile' => '1111',
+                                               'kb_conformation_mask' => '0111',
+                                               'kb_polarity_mask' => '0011',
+                                               'kb_profile' => '0110',
+                                               'kf_conformation_mask' => '100000',
+                                               'kf_polarity_mask' => '110100',
+                                               'kf_profile' => '101100',
+                                               'kp_conformation_mask' => '0000',
+                                               'kp_profile' => '0111',
+                                               'substrate_polarity' => '0',
+                                               'type' => 'csite'
+                                             },
+                        'translation_valid_flag' => 1,
+                        'upper_ref' => ''
+                      },
+  'ProtoDomainInstance' => {
+                             'allosteric_flag' => 0
+                           }
+};
+
+ReactionSite : {
+    name => "PD0000",
+    type => "csite",
+    Keq_ratio => 0.00169331986362557,
+}
+
+Creating NEW ProtoDomainInstance       of object ProtoDomain, class ProtoDomain
+Matched field type=01 at 200 using RE \G.{2}
+Matched field substrate_polarity=1 at 202 using RE \G.{1}
+Matched field binding_profile=1101 at 203 using RE \G.{4}
+Matched field kf_profile=110110 at 207 using RE \G.{6}
+Matched field kb_profile=1101 at 213 using RE \G.{4}
+Matched field kp_profile=1010 at 217 using RE \G.{4}
+Matched field Keq_ratio=1110011000 at 221 using RE \G.{10}
+Matched field kf_polarity_mask=010011 at 231 using RE \G.{6}
+Matched field kb_polarity_mask=0010 at 237 using RE \G.{4}
+Matched field kf_conformation_mask=101110 at 241 using RE \G.{6}
+Matched field kb_conformation_mask=0011 at 247 using RE \G.{4}
+Matched field kp_conformation_mask=1011 at 251 using RE \G.{4}
+Matched field UNUSED=10100010111011001010111 at 255 using RE \G.{23}
+Registering instance PD0200                    of object ProtoDomain
+{
+  'Instance' => {
+                  'parent_class' => 'ProtoDomain',
+                  'parent_name' => 'ProtoDomain',
+                  'parent_ref' => bless( do{\(my $o = undef)}, 'ProtoDomain' )
+                },
+  'Named' => {
+               'name' => 'PD0200'
+             },
+  'ParserInstance' => {
+                        'length' => '78',
+                        'locus' => '200',
+                        'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' ),
+                        'start_pos' => 200,
+                        'transcription_ref' => {
+                                                 'Keq_ratio' => [
+                                                                  '1110011000',
+                                                                  '221',
+                                                                  '10'
+                                                                ],
+                                                 'UNUSED' => [
+                                                               '10100010111011001010111',
+                                                               '255',
+                                                               '23'
+                                                             ],
+                                                 'binding_profile' => [
+                                                                        '1101',
+                                                                        '203',
+                                                                        '4'
+                                                                      ],
+                                                 'kb_conformation_mask' => [
+                                                                             '0011',
+                                                                             '247',
+                                                                             '4'
+                                                                           ],
+                                                 'kb_polarity_mask' => [
+                                                                         '0010',
+                                                                         '237',
+                                                                         '4'
+                                                                       ],
+                                                 'kb_profile' => [
+                                                                   '1101',
+                                                                   '213',
+                                                                   '4'
+                                                                 ],
+                                                 'kf_conformation_mask' => [
+                                                                             '101110',
+                                                                             '241',
+                                                                             '6'
+                                                                           ],
+                                                 'kf_polarity_mask' => [
+                                                                         '010011',
+                                                                         '231',
+                                                                         '6'
+                                                                       ],
+                                                 'kf_profile' => [
+                                                                   '110110',
+                                                                   '207',
+                                                                   '6'
+                                                                 ],
+                                                 'kp_conformation_mask' => [
+                                                                             '1011',
+                                                                             '251',
+                                                                             '4'
+                                                                           ],
+                                                 'kp_profile' => [
+                                                                   '1010',
+                                                                   '217',
+                                                                   '4'
+                                                                 ],
+                                                 'substrate_polarity' => [
+                                                                           '1',
+                                                                           '202',
+                                                                           '1'
+                                                                         ],
+                                                 'type' => [
+                                                             '01',
+                                                             '200',
+                                                             '2'
+                                                           ]
+                                               },
+                        'transcription_valid_flag' => 1,
+                        'translation_ref' => {
+                                               'Keq_ratio' => '248.825238006027',
+                                               'UNUSED' => '10100010111011001010111',
+                                               'binding_profile' => '1101',
+                                               'kb_conformation_mask' => '0011',
+                                               'kb_polarity_mask' => '0010',
+                                               'kb_profile' => '1101',
+                                               'kf_conformation_mask' => '101110',
+                                               'kf_polarity_mask' => '010011',
+                                               'kf_profile' => '110110',
+                                               'kp_conformation_mask' => '1011',
+                                               'kp_profile' => '1010',
+                                               'substrate_polarity' => '1',
+                                               'type' => 'msite'
+                                             },
+                        'translation_valid_flag' => 1,
+                        'upper_ref' => ''
+                      },
+  'ProtoDomainInstance' => {
+                             'allosteric_flag' => 0
+                           }
+};
+
+ReactionSite : {
+    name => "PD0200",
+    type => "msite",
+    Keq_ratio => 248.825238006027,
+}
+
+create_canbindrule: binding_profile_mismatch=3 for PD0000(1111) and PD0200(1101)
+create_canbindrules: PD0000(1111) and PD0200(1101) interact (binding_profile_mismatch=3)
+create_canbindrule: state=(0 R 0 R) kf=10000 kf_profile_mismatch=1 for PD0000(101100, 000000, 000000) and PD0200(110110, 000000, 000000)
+create_canbindrule: state=(0 R 0 R) kb=0.01 kb_mismatch=1 for PD0000(0110, 0000, 0000) and PD0200(1101, 0000, 0000)
+create_canbindrule: state=(0 R 0 R) kp_final = 21.5443469003188 kp_masked=0111 for PD0000(0111, 0000)
+create_canbindrule: state=(0 R 0 T) kf=100 kf_profile_mismatch=3 for PD0000(101100, 000000, 000000) and PD0200(110110, 000000, 101110)
+create_canbindrule: state=(0 R 0 T) kb=1 kb_mismatch=3 for PD0000(0110, 0000, 0000) and PD0200(1101, 0000, 0011)
+create_canbindrule: state=(0 R 0 T) kp_final = 21.5443469003188 kp_masked=0111 for PD0000(0111, 0000)
+create_canbindrule: state=(0 T 0 R) kf=1000 kf_profile_mismatch=2 for PD0000(101100, 000000, 100000) and PD0200(110110, 000000, 000000)
+create_canbindrule: state=(0 T 0 R) kb=0.1 kb_mismatch=2 for PD0000(0110, 0000, 0111) and PD0200(1101, 0000, 0000)
+create_canbindrule: state=(0 T 0 R) kp_final = 21.5443469003188 kp_masked=0111 for PD0000(0111, 0000)
+create_canbindrule: state=(0 T 0 T) kf=10 kf_profile_mismatch=4 for PD0000(101100, 000000, 100000) and PD0200(110110, 000000, 101110)
+create_canbindrule: state=(0 T 0 T) kb=0.1 kb_mismatch=2 for PD0000(0110, 0000, 0111) and PD0200(1101, 0000, 0011)
+create_canbindrule: state=(0 T 0 T) kp_final = 21.5443469003188 kp_masked=0111 for PD0000(0111, 0000)
+CanBindRule : {
+  name => "PD0000 PD0200 (0 R 0 R)",
+  ligand_names => ["PD0000", "PD0200"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["R", "R"],
+  kf => 10000,
+  kb => 0.01,
+  kp => 21.5443469003188,
+}
+
+CanBindRule : {
+  name => "PD0000 PD0200 (0 R 0 T)",
+  ligand_names => ["PD0000", "PD0200"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["R", "T"],
+  kf => 100,
+  kb => 1,
+  kp => 21.5443469003188,
+}
+
+CanBindRule : {
+  name => "PD0000 PD0200 (0 T 0 R)",
+  ligand_names => ["PD0000", "PD0200"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["T", "R"],
+  kf => 1000,
+  kb => 0.1,
+  kp => 21.5443469003188,
+}
+
+CanBindRule : {
+  name => "PD0000 PD0200 (0 T 0 T)",
+  ligand_names => ["PD0000", "PD0200"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["T", "T"],
+  kf => 10,
+  kb => 0.1,
+  kp => 21.5443469003188,
+}
+
+STORABLE TEST
+clear_parser_instances: clearing all instances of ProtoDomain
+{
+  'Instantiable' => {
+                      'instances' => [],
+                      'instances_index' => {}
+                    },
+  'Named' => {
+               'name' => 'ProtoDomain'
+             },
+  'Parser' => {
+                'mutation_rate_ref' => {
+                                         'Keq_ratio' => '1',
+                                         'UNUSED' => '1',
+                                         'binding_profile' => '1',
+                                         'kb_conformation_mask' => '1',
+                                         'kb_polarity_mask' => '1',
+                                         'kb_profile' => '1',
+                                         'kf_conformation_mask' => '1',
+                                         'kf_polarity_mask' => '1',
+                                         'kf_profile' => '1',
+                                         'kp_conformation_mask' => '1',
+                                         'kp_profile' => '1',
+                                         'substrate_polarity' => '1',
+                                         'type' => '1'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'type',
+                                       '\\G.{2}'
+                                     ],
+                                     [
+                                       'substrate_polarity',
+                                       '\\G.{1}'
+                                     ],
+                                     [
+                                       'binding_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kf_profile',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kp_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'Keq_ratio',
+                                       '\\G.{10}'
+                                     ],
+                                     [
+                                       'kf_polarity_mask',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_polarity_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kf_conformation_mask',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_conformation_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kp_conformation_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'UNUSED',
+                                       '\\G.{23}'
+                                     ]
+                                   ]
+              },
+  'ProtoDomain' => {
+                     'Keq_ratio_max' => '1000',
+                     'Keq_ratio_min' => '0.001',
+                     'Keq_ratio_width' => 10,
+                     'binding_profile_width' => 4,
+                     'kb_profile_width' => 4,
+                     'kf_profile_width' => 6,
+                     'kp_profile_width' => 4,
+                     'substrate_polarity_width' => 1,
+                     'type_width' => 2,
+                     'unused_width' => 23
+                   },
+  'Set' => {
+             'element_class' => 'NONE',
+             'elements_ref' => []
+           }
+};
+
+{
+  'Instantiable' => {
+                      'instances' => [],
+                      'instances_index' => {}
+                    },
+  'Named' => {
+               'name' => 'ProtoDomain'
+             },
+  'Parser' => {
+                'mutation_rate_ref' => {
+                                         'Keq_ratio' => '1',
+                                         'UNUSED' => '1',
+                                         'binding_profile' => '1',
+                                         'kb_conformation_mask' => '1',
+                                         'kb_polarity_mask' => '1',
+                                         'kb_profile' => '1',
+                                         'kf_conformation_mask' => '1',
+                                         'kf_polarity_mask' => '1',
+                                         'kf_profile' => '1',
+                                         'kp_conformation_mask' => '1',
+                                         'kp_profile' => '1',
+                                         'substrate_polarity' => '1',
+                                         'type' => '1'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'type',
+                                       '\\G.{2}'
+                                     ],
+                                     [
+                                       'substrate_polarity',
+                                       '\\G.{1}'
+                                     ],
+                                     [
+                                       'binding_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kf_profile',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kp_profile',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'Keq_ratio',
+                                       '\\G.{10}'
+                                     ],
+                                     [
+                                       'kf_polarity_mask',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_polarity_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kf_conformation_mask',
+                                       '\\G.{6}'
+                                     ],
+                                     [
+                                       'kb_conformation_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'kp_conformation_mask',
+                                       '\\G.{4}'
+                                     ],
+                                     [
+                                       'UNUSED',
+                                       '\\G.{23}'
+                                     ]
+                                   ]
+              },
+  'ProtoDomain' => {
+                     'Keq_ratio_max' => 1000,
+                     'Keq_ratio_min' => '0.001',
+                     'Keq_ratio_width' => '10',
+                     'binding_profile_width' => '4',
+                     'kb_profile_width' => '4',
+                     'kf_profile_width' => '6',
+                     'kp_profile_width' => '4',
+                     'substrate_polarity_width' => '1',
+                     'type_width' => '2',
+                     'unused_width' => '23'
+                   },
+  'Set' => {
+             'element_class' => 'NONE',
+             'elements_ref' => []
+           }
+};
+
+UNTRANSLATE TEST
+$VAR1 = {
+          'Keq_ratio' => '0000000000',
+          'UNUSED' => '00000000000001000000001',
+          'binding_profile' => '0110',
+          'kb_conformation_mask' => '1100',
+          'kb_polarity_mask' => '0011',
+          'kb_profile' => '1011',
+          'kf_conformation_mask' => '001111',
+          'kf_polarity_mask' => '000000',
+          'kf_profile' => '000011',
+          'kp_conformation_mask' => '0101',
+          'kp_profile' => '0011',
+          'substrate_polarity' => '1',
+          'type' => '10'
+        };
+
+101011000001110110011000000000000000000110011111100010100000000000001000000001
+clear_parser_instances: clearing all instances of ProtoDomain
+Creating NEW ProtoDomainInstance       of object ProtoDomain, class ProtoDomain
+Matched field type=10 at 0 using RE \G.{2}
+Matched field substrate_polarity=1 at 2 using RE \G.{1}
+Matched field binding_profile=0110 at 3 using RE \G.{4}
+Matched field kf_profile=000011 at 7 using RE \G.{6}
+Matched field kb_profile=1011 at 13 using RE \G.{4}
+Matched field kp_profile=0011 at 17 using RE \G.{4}
+Matched field Keq_ratio=0000000000 at 21 using RE \G.{10}
+Matched field kf_polarity_mask=000000 at 31 using RE \G.{6}
+Matched field kb_polarity_mask=0011 at 37 using RE \G.{4}
+Matched field kf_conformation_mask=001111 at 41 using RE \G.{6}
+Matched field kb_conformation_mask=1100 at 47 using RE \G.{4}
+Matched field kp_conformation_mask=0101 at 51 using RE \G.{4}
+Matched field UNUSED=00000000000001000000001 at 55 using RE \G.{23}
+Registering instance PD0000                    of object ProtoDomain
+{
+  'Instance' => {
+                  'parent_class' => 'ProtoDomain',
+                  'parent_name' => 'ProtoDomain',
+                  'parent_ref' => bless( do{\(my $o = undef)}, 'ProtoDomain' )
+                },
+  'Named' => {
+               'name' => 'PD0000'
+             },
+  'ParserInstance' => {
+                        'length' => '78',
+                        'locus' => '0',
+                        'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' ),
+                        'start_pos' => 0,
+                        'transcription_ref' => {
+                                                 'Keq_ratio' => [
+                                                                  '0000000000',
+                                                                  '21',
+                                                                  '10'
+                                                                ],
+                                                 'UNUSED' => [
+                                                               '00000000000001000000001',
+                                                               '55',
+                                                               '23'
+                                                             ],
+                                                 'binding_profile' => [
+                                                                        '0110',
+                                                                        '3',
+                                                                        '4'
+                                                                      ],
+                                                 'kb_conformation_mask' => [
+                                                                             '1100',
+                                                                             '47',
+                                                                             '4'
+                                                                           ],
+                                                 'kb_polarity_mask' => [
+                                                                         '0011',
+                                                                         '37',
+                                                                         '4'
+                                                                       ],
+                                                 'kb_profile' => [
+                                                                   '1011',
+                                                                   '13',
+                                                                   '4'
+                                                                 ],
+                                                 'kf_conformation_mask' => [
+                                                                             '001111',
+                                                                             '41',
+                                                                             '6'
+                                                                           ],
+                                                 'kf_polarity_mask' => [
+                                                                         '000000',
+                                                                         '31',
+                                                                         '6'
+                                                                       ],
+                                                 'kf_profile' => [
+                                                                   '000011',
+                                                                   '7',
+                                                                   '6'
+                                                                 ],
+                                                 'kp_conformation_mask' => [
+                                                                             '0101',
+                                                                             '51',
+                                                                             '4'
+                                                                           ],
+                                                 'kp_profile' => [
+                                                                   '0011',
+                                                                   '17',
+                                                                   '4'
+                                                                 ],
+                                                 'substrate_polarity' => [
+                                                                           '1',
+                                                                           '2',
+                                                                           '1'
+                                                                         ],
+                                                 'type' => [
+                                                             '10',
+                                                             '0',
+                                                             '2'
+                                                           ]
+                                               },
+                        'transcription_valid_flag' => 1,
+                        'translation_ref' => {
+                                               'Keq_ratio' => '0.001',
+                                               'UNUSED' => '00000000000001000000001',
+                                               'binding_profile' => '0110',
+                                               'kb_conformation_mask' => '1100',
+                                               'kb_polarity_mask' => '0011',
+                                               'kb_profile' => '1011',
+                                               'kf_conformation_mask' => '001111',
+                                               'kf_polarity_mask' => '000000',
+                                               'kf_profile' => '000011',
+                                               'kp_conformation_mask' => '0101',
+                                               'kp_profile' => '0011',
+                                               'substrate_polarity' => '1',
+                                               'type' => 'csite'
+                                             },
+                        'translation_valid_flag' => 1,
+                        'upper_ref' => ''
+                      },
+  'ProtoDomainInstance' => {
+                             'allosteric_flag' => 0
+                           }
+};
+
