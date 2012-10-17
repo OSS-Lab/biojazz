@@ -1,0 +1,1209 @@
+CREATION
+generate_random_sequence: generating sequence of length 2000
+{
+  'Genome' => {
+                'kb_max' => 10,
+                'kb_min' => '0.001',
+                'kf_max' => '100000',
+                'kf_min' => '0.1',
+                'kp_max' => 1000,
+                'kp_min' => 1,
+                'radius' => 1
+              },
+  'Instantiable' => {
+                      'instances' => [],
+                      'instances_index' => {}
+                    },
+  'Named' => {
+               'name' => 'Genome'
+             },
+  'Parser' => {
+                'linker_ref' => {
+                                  'genes' => '0000'
+                                },
+                'mutation_rate_ref' => {
+                                         'POST_JUNK' => '0',
+                                         'PRE_JUNK' => '0',
+                                         'genes' => '1',
+                                         'genes_linker' => '0'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'PRE_JUNK',
+                                       '^.*?(?=01111110)'
+                                     ],
+                                     [
+                                       'genes',
+                                       bless( do{\(my $o = undef)}, 'Gene' ),
+                                       '\\G.*?(?=01111110.{177})'
+                                     ],
+                                     [
+                                       'POST_JUNK',
+                                       '\\G.*'
+                                     ]
+                                   ]
+              },
+  'Set' => {
+             'element_class' => 'Gene',
+             'elements_ref' => [
+                                 $VAR1->{'Parser'}{'structure_ref'}[1][1]
+                               ]
+           }
+};
+
+clear_parser_instances: clearing all instances of Genome
+clear_parser_instances: clearing all instances of Gene
+clear_parser_instances: clearing all instances of Domain
+clear_parser_instances: clearing all instances of ProtoDomain
+Creating NEW GenomeInstance            of object Genome, class Genome
+Matched field PRE_JUNK=00111011000001010001011100111000001111100101111001001011011110111001110111011100001110101010101011000000000000 at 0 using RE ^.*?(?=01111110)
+Matching subfield genes
+Creating NEW GeneInstance              of object Gene, class Gene
+Matched field START_CODE=01111110 at 110 using RE 01111110
+Matched field regulated_concentration=1000 at 118 using RE \G.{4}
+Matched field UNUSED=00011111010011100101110000110101 at 122 using RE \G.{32}
+Matching subfield domains
+Creating NEW DomainInstance            of object Domain, class Domain
+Matched field allosteric_flag=0 at 154 using RE \G.{1}
+Matched field RT_transition_rate=0000011100 at 155 using RE \G.{10}
+Matched field TR_transition_rate=1101101001 at 165 using RE \G.{10}
+Matched field RT_phi=1101100010 at 175 using RE \G.{10}
+Matched field UNUSED=01001111100100100000111001010010 at 185 using RE \G.{32}
+Matching subfield protodomains
+Creating NEW ProtoDomainInstance       of object ProtoDomain, class ProtoDomain
+Matched field type=10 at 217 using RE \G.{2}
+Matched field substrate_polarity=0 at 219 using RE \G.{1}
+Matched field binding_profile=1100 at 220 using RE \G.{4}
+Matched field kf_profile=110100 at 224 using RE \G.{6}
+Matched field kb_profile=0110 at 230 using RE \G.{4}
+Matched field kp_profile=1000 at 234 using RE \G.{4}
+Matched field Keq_ratio=1001010010 at 238 using RE \G.{10}
+Matched field kf_polarity_mask=001111 at 248 using RE \G.{6}
+Matched field kb_polarity_mask=1010 at 254 using RE \G.{4}
+Matched field kf_conformation_mask=000111 at 258 using RE \G.{6}
+Matched field kb_conformation_mask=1111 at 264 using RE \G.{4}
+Matched field kp_conformation_mask=0010 at 268 using RE \G.{4}
+Matched field UNUSED=00011100011110100000111 at 272 using RE \G.{23}
+Matched subfield protodomains
+Matched subfield domains
+Matched field STOP_CODE=010 at 295 using RE \G.{0,3}
+Matched subfield genes
+Matching subfield genes
+Creating NEW GeneInstance              of object Gene, class Gene
+Matched field START_CODE=01111110 at 389 using RE 01111110
+Matched field regulated_concentration=0010 at 397 using RE \G.{4}
+Matched field UNUSED=11100110111010001101100001011110 at 401 using RE \G.{32}
+Matching subfield domains
+Creating NEW DomainInstance            of object Domain, class Domain
+Matched field allosteric_flag=0 at 433 using RE \G.{1}
+Matched field RT_transition_rate=0110011100 at 434 using RE \G.{10}
+Matched field TR_transition_rate=1110010011 at 444 using RE \G.{10}
+Matched field RT_phi=0000001000 at 454 using RE \G.{10}
+Matched field UNUSED=01010101000001001101101101001111 at 464 using RE \G.{32}
+Matching subfield protodomains
+Creating NEW ProtoDomainInstance       of object ProtoDomain, class ProtoDomain
+Matched field type=00 at 496 using RE \G.{2}
+Matched field substrate_polarity=1 at 498 using RE \G.{1}
+Matched field binding_profile=0010 at 499 using RE \G.{4}
+Matched field kf_profile=000011 at 503 using RE \G.{6}
+Matched field kb_profile=1000 at 509 using RE \G.{4}
+Matched field kp_profile=0001 at 513 using RE \G.{4}
+Matched field Keq_ratio=1011110101 at 517 using RE \G.{10}
+Matched field kf_polarity_mask=100100 at 527 using RE \G.{6}
+Matched field kb_polarity_mask=1110 at 533 using RE \G.{4}
+Matched field kf_conformation_mask=000101 at 537 using RE \G.{6}
+Matched field kb_conformation_mask=1100 at 543 using RE \G.{4}
+Matched field kp_conformation_mask=1000 at 547 using RE \G.{4}
+Matched field UNUSED=01011011101110101111101 at 551 using RE \G.{23}
+Matched subfield protodomains
+Matched subfield domains
+Matched field STOP_CODE=110 at 574 using RE \G.{0,3}
+Matched subfield genes
+Matching subfield genes
+Creating NEW GeneInstance              of object Gene, class Gene
+Matched field START_CODE=01111110 at 582 using RE 01111110
+Matched field regulated_concentration=1100 at 590 using RE \G.{4}
+Matched field UNUSED=00101011101100010010110111101001 at 594 using RE \G.{32}
+Matching subfield domains
+Creating NEW DomainInstance            of object Domain, class Domain
+Matched field allosteric_flag=1 at 626 using RE \G.{1}
+Matched field RT_transition_rate=0111100000 at 627 using RE \G.{10}
+Matched field TR_transition_rate=0010011010 at 637 using RE \G.{10}
+Matched field RT_phi=1010000101 at 647 using RE \G.{10}
+Matched field UNUSED=00111001110111011000011101010100 at 657 using RE \G.{32}
+Matching subfield protodomains
+Creating NEW ProtoDomainInstance       of object ProtoDomain, class ProtoDomain
+Matched field type=11 at 689 using RE \G.{2}
+Matched field substrate_polarity=0 at 691 using RE \G.{1}
+Matched field binding_profile=0111 at 692 using RE \G.{4}
+Matched field kf_profile=010010 at 696 using RE \G.{6}
+Matched field kb_profile=1110 at 702 using RE \G.{4}
+Matched field kp_profile=0011 at 706 using RE \G.{4}
+Matched field Keq_ratio=0111000000 at 710 using RE \G.{10}
+Matched field kf_polarity_mask=100000 at 720 using RE \G.{6}
+Matched field kb_polarity_mask=0000 at 726 using RE \G.{4}
+Matched field kf_conformation_mask=000110 at 730 using RE \G.{6}
+Matched field kb_conformation_mask=0100 at 736 using RE \G.{4}
+Matched field kp_conformation_mask=1001 at 740 using RE \G.{4}
+Matched field UNUSED=01011011101001101111110 at 744 using RE \G.{23}
+Matched subfield protodomains
+Matched subfield domains
+Matched field STOP_CODE=111 at 767 using RE \G.{0,3}
+Matched subfield genes
+Matching subfield genes
+Creating NEW GeneInstance              of object Gene, class Gene
+Matched field START_CODE=01111110 at 881 using RE 01111110
+Matched field regulated_concentration=0000 at 889 using RE \G.{4}
+Matched field UNUSED=11010001011010001100010100011100 at 893 using RE \G.{32}
+Matching subfield domains
+Creating NEW DomainInstance            of object Domain, class Domain
+Matched field allosteric_flag=1 at 925 using RE \G.{1}
+Matched field RT_transition_rate=0111101101 at 926 using RE \G.{10}
+Matched field TR_transition_rate=1101101101 at 936 using RE \G.{10}
+Matched field RT_phi=0010100101 at 946 using RE \G.{10}
+Matched field UNUSED=00100110111110101101101011110000 at 956 using RE \G.{32}
+Matching subfield protodomains
+Creating NEW ProtoDomainInstance       of object ProtoDomain, class ProtoDomain
+Matched field type=00 at 988 using RE \G.{2}
+Matched field substrate_polarity=1 at 990 using RE \G.{1}
+Matched field binding_profile=0001 at 991 using RE \G.{4}
+Matched field kf_profile=001111 at 995 using RE \G.{6}
+Matched field kb_profile=1111 at 1001 using RE \G.{4}
+Matched field kp_profile=1110 at 1005 using RE \G.{4}
+Matched field Keq_ratio=0001101000 at 1009 using RE \G.{10}
+Matched field kf_polarity_mask=011111 at 1019 using RE \G.{6}
+Matched field kb_polarity_mask=1110 at 1025 using RE \G.{4}
+Matched field kf_conformation_mask=100101 at 1029 using RE \G.{6}
+Matched field kb_conformation_mask=1000 at 1035 using RE \G.{4}
+Matched field kp_conformation_mask=1011 at 1039 using RE \G.{4}
+Matched field UNUSED=10101001001111111110000 at 1043 using RE \G.{23}
+Matched subfield protodomains
+Matched subfield domains
+Matched field STOP_CODE=100 at 1066 using RE \G.{0,3}
+Matched subfield genes
+Matching subfield genes
+Creating NEW GeneInstance              of object Gene, class Gene
+Matched field START_CODE=01111110 at 1651 using RE 01111110
+Matched field regulated_concentration=0010 at 1659 using RE \G.{4}
+Matched field UNUSED=00000010111111000010001001011001 at 1663 using RE \G.{32}
+Matching subfield domains
+Creating NEW DomainInstance            of object Domain, class Domain
+Matched field allosteric_flag=1 at 1695 using RE \G.{1}
+Matched field RT_transition_rate=0111100110 at 1696 using RE \G.{10}
+Matched field TR_transition_rate=1110110001 at 1706 using RE \G.{10}
+Matched field RT_phi=0010000010 at 1716 using RE \G.{10}
+Matched field UNUSED=10011100111101101011100011001000 at 1726 using RE \G.{32}
+Matching subfield protodomains
+Creating NEW ProtoDomainInstance       of object ProtoDomain, class ProtoDomain
+Matched field type=10 at 1758 using RE \G.{2}
+Matched field substrate_polarity=1 at 1760 using RE \G.{1}
+Matched field binding_profile=0000 at 1761 using RE \G.{4}
+Matched field kf_profile=001100 at 1765 using RE \G.{6}
+Matched field kb_profile=1110 at 1771 using RE \G.{4}
+Matched field kp_profile=1101 at 1775 using RE \G.{4}
+Matched field Keq_ratio=1001000000 at 1779 using RE \G.{10}
+Matched field kf_polarity_mask=110000 at 1789 using RE \G.{6}
+Matched field kb_polarity_mask=0111 at 1795 using RE \G.{4}
+Matched field kf_conformation_mask=100011 at 1799 using RE \G.{6}
+Matched field kb_conformation_mask=0011 at 1805 using RE \G.{4}
+Matched field kp_conformation_mask=1101 at 1809 using RE \G.{4}
+Matched field UNUSED=11011101000111000010100 at 1813 using RE \G.{23}
+Matched subfield protodomains
+Matched subfield domains
+Matched field STOP_CODE=101 at 1836 using RE \G.{0,3}
+Matched subfield genes
+Matched field POST_JUNK=01101100000001100010110110011110000001000010001111000000001111111111110011101101110100001110110000100001100101011000101011011001100100010011101010011010111101111 at 1839 using RE \G.*
+Registering instance G0000                     of object Genome
+Registering instance G0110                     of object Gene
+Registering instance D0154                     of object Domain
+Registering instance PD0217                    of object ProtoDomain
+Registering instance G0389                     of object Gene
+Registering instance D0433                     of object Domain
+Registering instance PD0496                    of object ProtoDomain
+Registering instance G0582                     of object Gene
+Registering instance D0626                     of object Domain
+Registering instance PD0689                    of object ProtoDomain
+Registering instance G0881                     of object Gene
+Registering instance D0925                     of object Domain
+Registering instance PD0988                    of object ProtoDomain
+Registering instance G1651                     of object Gene
+Registering instance D1695                     of object Domain
+Registering instance PD1758                    of object ProtoDomain
+{
+  'Instance' => {
+                  'parent_class' => 'Genome',
+                  'parent_name' => 'Genome',
+                  'parent_ref' => bless( do{\(my $o = undef)}, 'Genome' )
+                },
+  'Named' => {
+               'name' => 'G0000'
+             },
+  'ParserInstance' => {
+                        'length' => '2000',
+                        'locus' => '0',
+                        'sequence_ref' => bless( do{\(my $o = undef)}, 'Sequence' ),
+                        'start_pos' => 0,
+                        'transcription_ref' => {
+                                                 'POST_JUNK' => [
+                                                                  '01101100000001100010110110011110000001000010001111000000001111111111110011101101110100001110110000100001100101011000101011011001100100010011101010011010111101111',
+                                                                  '1839',
+                                                                  '161'
+                                                                ],
+                                                 'PRE_JUNK' => [
+                                                                 '00111011000001010001011100111000001111100101111001001011011110111001110111011100001110101010101011000000000000',
+                                                                 '0',
+                                                                 '110'
+                                                               ],
+                                                 'genes' => [
+                                                              [
+                                                                bless( do{\(my $o = undef)}, 'GeneInstance' ),
+                                                                '110',
+                                                                '188'
+                                                              ],
+                                                              [
+                                                                bless( do{\(my $o = undef)}, 'GeneInstance' ),
+                                                                '389',
+                                                                '188'
+                                                              ],
+                                                              [
+                                                                bless( do{\(my $o = undef)}, 'GeneInstance' ),
+                                                                '582',
+                                                                '188'
+                                                              ],
+                                                              [
+                                                                bless( do{\(my $o = undef)}, 'GeneInstance' ),
+                                                                '881',
+                                                                '188'
+                                                              ],
+                                                              [
+                                                                bless( do{\(my $o = undef)}, 'GeneInstance' ),
+                                                                '1651',
+                                                                '188'
+                                                              ]
+                                                            ],
+                                                 'genes_linker' => [
+                                                                     [
+                                                                       '1001001011001000000000001011011110001011101010011010101101101100001000101100101101000000000',
+                                                                       '298',
+                                                                       '91'
+                                                                     ],
+                                                                     [
+                                                                       '01001',
+                                                                       '577',
+                                                                       '5'
+                                                                     ],
+                                                                     [
+                                                                       '001110111101000011010110000101011110101001100011000101100010110001000010011011100011100101000011110100010110111',
+                                                                       '770',
+                                                                       '111'
+                                                                     ],
+                                                                     [
+                                                                       '111100100110101111100100001110111101001110000001110110011000111010110010001101001110110101111101101010101011011111010101011111110100101101110011010111100101110011111001001101111100111001000011011001100110000100000001100101010010000010100101100111110111110000111000001001101100111101100010100001000011101101110100100000010110111100111110100001110100000001110101011101001011101110100011111111000110010101001101010100101000010111101101001110110101011110110110000111000010001110110001101100100100000010111101010010100101100011001100000011011010001011111001001110011000101001011001110000',
+                                                                       '1069',
+                                                                       '582'
+                                                                     ]
+                                                                   ]
+                                               },
+                        'transcription_valid_flag' => 1,
+                        'translation_ref' => {
+                                               'POST_JUNK' => '01101100000001100010110110011110000001000010001111000000001111111111110011101101110100001110110000100001100101011000101011011001100100010011101010011010111101111',
+                                               'PRE_JUNK' => '00111011000001010001011100111000001111100101111001001011011110111001110111011100001110101010101011000000000000',
+                                               'genes' => [
+                                                            {
+                                                              'START_CODE' => '01111110',
+                                                              'STOP_CODE' => '010',
+                                                              'UNUSED' => '00011111010011100101110000110101',
+                                                              'domains' => [
+                                                                             {
+                                                                               'RT_phi' => '0.84652981427175',
+                                                                               'RT_transition_rate' => '0.00145956309563553',
+                                                                               'TR_transition_rate' => '131.89690478391',
+                                                                               'UNUSED' => '01001111100100100000111001010010',
+                                                                               'allosteric_flag' => '0',
+                                                                               'protodomains' => [
+                                                                                                   {
+                                                                                                     'Keq_ratio' => '3.04698957090351',
+                                                                                                     'UNUSED' => '00011100011110100000111',
+                                                                                                     'binding_profile' => '1100',
+                                                                                                     'kb_conformation_mask' => '1111',
+                                                                                                     'kb_polarity_mask' => '1010',
+                                                                                                     'kb_profile' => '0110',
+                                                                                                     'kf_conformation_mask' => '000111',
+                                                                                                     'kf_polarity_mask' => '001111',
+                                                                                                     'kf_profile' => '110100',
+                                                                                                     'kp_conformation_mask' => '0010',
+                                                                                                     'kp_profile' => '1000',
+                                                                                                     'substrate_polarity' => '0',
+                                                                                                     'type' => 'csite'
+                                                                                                   }
+                                                                                                 ]
+                                                                             }
+                                                                           ],
+                                                              'regulated_concentration' => '6.30957344480193e-08'
+                                                            },
+                                                            {
+                                                              'START_CODE' => '01111110',
+                                                              'STOP_CODE' => '110',
+                                                              'UNUSED' => '11100110111010001101100001011110',
+                                                              'domains' => [
+                                                                             {
+                                                                               'RT_phi' => '0.00782013685239492',
+                                                                               'RT_transition_rate' => '0.260868888272655',
+                                                                               'TR_transition_rate' => '232.578151753603',
+                                                                               'UNUSED' => '01010101000001001101101101001111',
+                                                                               'allosteric_flag' => '0',
+                                                                               'protodomains' => [
+                                                                                                   {
+                                                                                                     'Keq_ratio' => '27.5348489224465',
+                                                                                                     'UNUSED' => '01011011101110101111101',
+                                                                                                     'binding_profile' => '0010',
+                                                                                                     'kb_conformation_mask' => '1100',
+                                                                                                     'kb_polarity_mask' => '1110',
+                                                                                                     'kb_profile' => '1000',
+                                                                                                     'kf_conformation_mask' => '000101',
+                                                                                                     'kf_polarity_mask' => '100100',
+                                                                                                     'kf_profile' => '000011',
+                                                                                                     'kp_conformation_mask' => '1000',
+                                                                                                     'kp_profile' => '0001',
+                                                                                                     'substrate_polarity' => '1',
+                                                                                                     'type' => 'bsite'
+                                                                                                   }
+                                                                                                 ]
+                                                                             }
+                                                                           ],
+                                                              'regulated_concentration' => '1.58489319246111e-11'
+                                                            },
+                                                            {
+                                                              'START_CODE' => '01111110',
+                                                              'STOP_CODE' => '111',
+                                                              'UNUSED' => '00101011101100010010110111101001',
+                                                              'domains' => [
+                                                                             {
+                                                                               'RT_phi' => '0.63049853372434',
+                                                                               'RT_transition_rate' => '0.653505529858691',
+                                                                               'TR_transition_rate' => '0.00800250227816105',
+                                                                               'UNUSED' => '00111001110111011000011101010100',
+                                                                               'allosteric_flag' => '1',
+                                                                               'protodomains' => [
+                                                                                                   {
+                                                                                                     'Keq_ratio' => '0.424195427069203',
+                                                                                                     'UNUSED' => '01011011101001101111110',
+                                                                                                     'binding_profile' => '0111',
+                                                                                                     'kb_conformation_mask' => '0100',
+                                                                                                     'kb_polarity_mask' => '0000',
+                                                                                                     'kb_profile' => '1110',
+                                                                                                     'kf_conformation_mask' => '000110',
+                                                                                                     'kf_polarity_mask' => '100000',
+                                                                                                     'kf_profile' => '010010',
+                                                                                                     'kp_conformation_mask' => '1001',
+                                                                                                     'kp_profile' => '0011',
+                                                                                                     'substrate_polarity' => '0',
+                                                                                                     'type' => 'csite'
+                                                                                                   }
+                                                                                                 ]
+                                                                             }
+                                                                           ],
+                                                              'regulated_concentration' => '1.58489319246111e-05'
+                                                            },
+                                                            {
+                                                              'START_CODE' => '01111110',
+                                                              'STOP_CODE' => '100',
+                                                              'UNUSED' => '11010001011010001100010100011100',
+                                                              'domains' => [
+                                                                             {
+                                                                               'RT_phi' => '0.161290322580645',
+                                                                               'RT_transition_rate' => '0.778924925037525',
+                                                                               'TR_transition_rate' => '139.217879549033',
+                                                                               'UNUSED' => '00100110111110101101101011110000',
+                                                                               'allosteric_flag' => '1',
+                                                                               'protodomains' => [
+                                                                                                   {
+                                                                                                     'Keq_ratio' => '0.00407352770587525',
+                                                                                                     'UNUSED' => '10101001001111111110000',
+                                                                                                     'binding_profile' => '0001',
+                                                                                                     'kb_conformation_mask' => '1000',
+                                                                                                     'kb_polarity_mask' => '1110',
+                                                                                                     'kb_profile' => '1111',
+                                                                                                     'kf_conformation_mask' => '100101',
+                                                                                                     'kf_polarity_mask' => '011111',
+                                                                                                     'kf_profile' => '001111',
+                                                                                                     'kp_conformation_mask' => '1011',
+                                                                                                     'kp_profile' => '1110',
+                                                                                                     'substrate_polarity' => '1',
+                                                                                                     'type' => 'bsite'
+                                                                                                   }
+                                                                                                 ]
+                                                                             }
+                                                                           ],
+                                                              'regulated_concentration' => '1e-12'
+                                                            },
+                                                            {
+                                                              'START_CODE' => '01111110',
+                                                              'STOP_CODE' => '101',
+                                                              'UNUSED' => '00000010111111000010001001011001',
+                                                              'domains' => [
+                                                                             {
+                                                                               'RT_phi' => '0.127077223851417',
+                                                                               'RT_transition_rate' => '0.708663202813242',
+                                                                               'TR_transition_rate' => '348.756245878594',
+                                                                               'UNUSED' => '10011100111101101011100011001000',
+                                                                               'allosteric_flag' => '1',
+                                                                               'protodomains' => [
+                                                                                                   {
+                                                                                                     'Keq_ratio' => '2.38945645393108',
+                                                                                                     'UNUSED' => '11011101000111000010100',
+                                                                                                     'binding_profile' => '0000',
+                                                                                                     'kb_conformation_mask' => '0011',
+                                                                                                     'kb_polarity_mask' => '0111',
+                                                                                                     'kb_profile' => '1110',
+                                                                                                     'kf_conformation_mask' => '100011',
+                                                                                                     'kf_polarity_mask' => '110000',
+                                                                                                     'kf_profile' => '001100',
+                                                                                                     'kp_conformation_mask' => '1101',
+                                                                                                     'kp_profile' => '1101',
+                                                                                                     'substrate_polarity' => '1',
+                                                                                                     'type' => 'csite'
+                                                                                                   }
+                                                                                                 ]
+                                                                             }
+                                                                           ],
+                                                              'regulated_concentration' => '1.58489319246111e-11'
+                                                            }
+                                                          ]
+                                             },
+                        'translation_valid_flag' => 1,
+                        'upper_ref' => ''
+                      }
+};
+
+ANC EXPORT
+create_canbindrule: binding_profile_mismatch=0 for PD0217(1100) and PD0217(1100)
+create_canbindrules: PD0217(1100) and PD0217(1100) interact (binding_profile_mismatch=0)
+create_canbindrule: state=(0 . 0 .) kf=100000 kf_profile_mismatch=0 for PD0217(110100, 000000, 000000) and PD0217(110100, 000000, 000000)
+create_canbindrule: state=(0 . 0 .) kb=10 kb_mismatch=4 for PD0217(0110, 0000, 0000) and PD0217(0110, 0000, 0000)
+create_canbindrule: binding_profile_mismatch=3 for PD0217(1100) and PD0496(0010)
+create_canbindrule: binding_profile_mismatch=3 for PD0217(1100) and PD0689(0111)
+create_canbindrule: binding_profile_mismatch=3 for PD0217(1100) and PD0988(0001)
+create_canbindrule: binding_profile_mismatch=2 for PD0217(1100) and PD1758(0000)
+create_canbindrule: binding_profile_mismatch=2 for PD0496(0010) and PD0496(0010)
+create_canbindrule: binding_profile_mismatch=2 for PD0689(0111) and PD0496(0010)
+create_canbindrule: binding_profile_mismatch=2 for PD0496(0010) and PD0988(0001)
+create_canbindrule: binding_profile_mismatch=3 for PD1758(0000) and PD0496(0010)
+create_canbindrule: binding_profile_mismatch=2 for PD0689(0111) and PD0689(0111)
+create_canbindrule: binding_profile_mismatch=0 for PD0689(0111) and PD0988(0001)
+create_canbindrules: PD0689(0111) and PD0988(0001) interact (binding_profile_mismatch=0)
+create_canbindrule: state=(0 R 0 R) kf=1000 kf_profile_mismatch=2 for PD0689(010010, 000000, 000000) and PD0988(001111, 000000, 000000)
+create_canbindrule: state=(0 R 0 R) kb=1 kb_mismatch=3 for PD0689(1110, 0000, 0000) and PD0988(1111, 0000, 0000)
+create_canbindrule: state=(0 R 0 T) kf=100 kf_profile_mismatch=3 for PD0689(010010, 000000, 000000) and PD0988(001111, 000000, 100101)
+create_canbindrule: state=(0 R 0 T) kb=10 kb_mismatch=4 for PD0689(1110, 0000, 0000) and PD0988(1111, 0000, 1000)
+create_canbindrule: state=(0 T 0 R) kf=10 kf_profile_mismatch=4 for PD0689(010010, 000000, 000110) and PD0988(001111, 000000, 000000)
+create_canbindrule: state=(0 T 0 R) kb=0.1 kb_mismatch=2 for PD0689(1110, 0000, 0100) and PD0988(1111, 0000, 0000)
+create_canbindrule: state=(0 T 0 T) kf=1 kf_profile_mismatch=5 for PD0689(010010, 000000, 000110) and PD0988(001111, 000000, 100101)
+create_canbindrule: state=(0 T 0 T) kb=1 kb_mismatch=3 for PD0689(1110, 0000, 0100) and PD0988(1111, 0000, 1000)
+create_canbindrule: binding_profile_mismatch=1 for PD0689(0111) and PD1758(0000)
+create_canbindrules: PD0689(0111) and PD1758(0000) interact (binding_profile_mismatch=1)
+create_canbindrule: state=(0 R 0 R) kf=1000 kf_profile_mismatch=2 for PD0689(010010, 000000, 000000) and PD1758(001100, 000000, 000000)
+create_canbindrule: state=(0 R 0 R) kb=0.1 kb_mismatch=2 for PD0689(1110, 0000, 0000) and PD1758(1110, 0000, 0000)
+create_canbindrule: state=(0 R 0 T) kf=10000 kf_profile_mismatch=1 for PD0689(010010, 000000, 000000) and PD1758(001100, 000000, 100011)
+create_canbindrule: state=(0 R 0 T) kb=0.1 kb_mismatch=2 for PD0689(1110, 0000, 0000) and PD1758(1110, 0000, 0011)
+create_canbindrule: state=(0 T 0 R) kf=10 kf_profile_mismatch=4 for PD0689(010010, 000000, 000110) and PD1758(001100, 000000, 000000)
+create_canbindrule: state=(0 T 0 R) kb=0.01 kb_mismatch=1 for PD0689(1110, 0000, 0100) and PD1758(1110, 0000, 0000)
+create_canbindrule: state=(0 T 0 T) kf=100 kf_profile_mismatch=3 for PD0689(010010, 000000, 000110) and PD1758(001100, 000000, 100011)
+create_canbindrule: state=(0 T 0 T) kb=1 kb_mismatch=3 for PD0689(1110, 0000, 0100) and PD1758(1110, 0000, 0011)
+create_canbindrule: binding_profile_mismatch=2 for PD0988(0001) and PD0988(0001)
+create_canbindrule: binding_profile_mismatch=3 for PD1758(0000) and PD0988(0001)
+create_canbindrule: binding_profile_mismatch=4 for PD1758(0000) and PD1758(0000)
+export_anc: created 9 rules
+##########################################################################
+# Allosteric Network Compiler (ANC) model file
+# Created by BioJazz version UNKNOWN released on UNKNOWN
+# Mon 17 Sep 2012 14:10:19 BST
+##########################################################################
+
+##########################################################################
+# PARAMETERS
+##########################################################################
+$max_external_iterations = -1
+$max_internal_iterations = -1
+$max_complex_size = -1
+$max_species = 200
+$max_csite_bound_to_msite_number = 1
+$default_steric_factor = 0.001
+$export_graphviz = "nothing"
+
+
+##########################################################################
+# OBJECTS:
+##########################################################################
+#-------------------------
+MODEL:  # G0000
+#-------------------------
+ReactionSite : {
+    name => "PD0217",
+    type => "csite",
+    Keq_ratio => 3.04698957090351,
+}
+AllostericStructure : {
+    name => "D0154",
+    allosteric_flag => 0,
+    allosteric_transition_rates => [0.00145956309563553,131.89690478391],
+    Phi => 0.84652981427175,
+    elements => [PD0217],
+}
+Structure : {  # IC of G0110 = 6.30957344480193e-08
+    name => "G0110",
+    elements => [D0154],
+    max_count => -1,
+}
+
+
+ReactionSite : {
+    name => "PD0496",
+    type => "bsite",
+    Keq_ratio => 27.5348489224465,
+}
+AllostericStructure : {
+    name => "D0433",
+    allosteric_flag => 0,
+    allosteric_transition_rates => [0.260868888272655,232.578151753603],
+    Phi => 0.00782013685239492,
+    elements => [PD0496],
+}
+Structure : {  # IC of G0389 = 1.58489319246111e-11
+    name => "G0389",
+    elements => [D0433],
+    max_count => -1,
+}
+
+
+ReactionSite : {
+    name => "PD0689",
+    type => "csite",
+    Keq_ratio => 0.424195427069203,
+}
+AllostericStructure : {
+    name => "D0626",
+    allosteric_flag => 1,
+    allosteric_transition_rates => [0.653505529858691,0.00800250227816105],
+    Phi => 0.63049853372434,
+    elements => [PD0689],
+}
+Structure : {  # IC of G0582 = 1.58489319246111e-05
+    name => "G0582",
+    elements => [D0626],
+    max_count => -1,
+}
+
+
+ReactionSite : {
+    name => "PD0988",
+    type => "bsite",
+    Keq_ratio => 0.00407352770587525,
+}
+AllostericStructure : {
+    name => "D0925",
+    allosteric_flag => 1,
+    allosteric_transition_rates => [0.778924925037525,139.217879549033],
+    Phi => 0.161290322580645,
+    elements => [PD0988],
+}
+Structure : {  # IC of G0881 = 1e-12
+    name => "G0881",
+    elements => [D0925],
+    max_count => -1,
+}
+
+
+ReactionSite : {
+    name => "PD1758",
+    type => "csite",
+    Keq_ratio => 2.38945645393108,
+}
+AllostericStructure : {
+    name => "D1695",
+    allosteric_flag => 1,
+    allosteric_transition_rates => [0.708663202813242,348.756245878594],
+    Phi => 0.127077223851417,
+    elements => [PD1758],
+}
+Structure : {  # IC of G1651 = 1.58489319246111e-11
+    name => "G1651",
+    elements => [D1695],
+    max_count => -1,
+}
+
+
+# Initial concentrations
+Init : {
+	structure => G0110,
+	IC => 6.30957344480193e-08,
+}
+Init : {
+	structure => G0389,
+	IC => 1.58489319246111e-11,
+}
+Init : {
+	structure => G0582,
+	IC => 1.58489319246111e-05,
+}
+Init : {
+	structure => G0881,
+	IC => 1e-12,
+}
+Init : {
+	structure => G1651,
+	IC => 1.58489319246111e-11,
+}
+
+
+
+##########################################################################
+# RULES:
+##########################################################################
+MODEL:
+
+CanBindRule : {
+  name => "PD0217 PD0217 (0 . 0 .)",
+  ligand_names => ["PD0217", "PD0217"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => [".", "."],
+  kf => 100000,
+  kb => 10,
+}
+
+CanBindRule : {
+  name => "PD0689 PD0988 (0 R 0 R)",
+  ligand_names => ["PD0689", "PD0988"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["R", "R"],
+  kf => 1000,
+  kb => 1,
+}
+
+CanBindRule : {
+  name => "PD0689 PD0988 (0 R 0 T)",
+  ligand_names => ["PD0689", "PD0988"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["R", "T"],
+  kf => 100,
+  kb => 10,
+}
+
+CanBindRule : {
+  name => "PD0689 PD0988 (0 T 0 R)",
+  ligand_names => ["PD0689", "PD0988"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["T", "R"],
+  kf => 10,
+  kb => 0.1,
+}
+
+CanBindRule : {
+  name => "PD0689 PD0988 (0 T 0 T)",
+  ligand_names => ["PD0689", "PD0988"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["T", "T"],
+  kf => 1,
+  kb => 1,
+}
+
+CanBindRule : {
+  name => "PD0689 PD1758 (0 R 0 R)",
+  ligand_names => ["PD0689", "PD1758"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["R", "R"],
+  kf => 1000,
+  kb => 0.1,
+}
+
+CanBindRule : {
+  name => "PD0689 PD1758 (0 R 0 T)",
+  ligand_names => ["PD0689", "PD1758"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["R", "T"],
+  kf => 10000,
+  kb => 0.1,
+}
+
+CanBindRule : {
+  name => "PD0689 PD1758 (0 T 0 R)",
+  ligand_names => ["PD0689", "PD1758"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["T", "R"],
+  kf => 10,
+  kb => 0.01,
+}
+
+CanBindRule : {
+  name => "PD0689 PD1758 (0 T 0 T)",
+  ligand_names => ["PD0689", "PD1758"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["T", "T"],
+  kf => 100,
+  kb => 1,
+}
+
+
+##########################################################################
+# EQUATIONS:
+##########################################################################
+EQN:
+
+
+
+##########################################################################
+# CONFIG:
+##########################################################################
+CONFIG:
+
+
+TEST ADJACENCY/CONNECTIVITY MATRIX
+compute_high_order_adjacency_matrix: computing to order 12
+compute_connectivity_matrix: computing
+compute_high_order_adjacency_matrix: computing to order 8
+compute_connectivity_matrix: computing
+PD0217,PD0496,PD0689,PD0988,PD1758
+ | 1    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 1    | 1   
+ | 0    | 0    | 1    | 0    | 0   
+ | 0    | 0    | 1    | 0    | 0   
+
+D0154,D0433,D0626,D0925,D1695
+ | 1    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 1    | 1   
+ | 0    | 0    | 1    | 0    | 0   
+ | 0    | 0    | 1    | 0    | 0   
+
+G0110,G0389,G0582,G0881,G1651
+ | 1    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 1    | 1   
+ | 0    | 0    | 1    | 0    | 0   
+ | 0    | 0    | 1    | 0    | 0   
+
+compute_high_order_adjacency_matrix: computing to order 4
+ | 1    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 2    | 0    | 0   
+ | 0    | 0    | 0    | 1    | 1   
+ | 0    | 0    | 0    | 1    | 1   
+
+ | 1    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 2    | 2   
+ | 0    | 0    | 2    | 0    | 0   
+ | 0    | 0    | 2    | 0    | 0   
+
+ | 1    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 4    | 0    | 0   
+ | 0    | 0    | 0    | 2    | 2   
+ | 0    | 0    | 0    | 2    | 2   
+
+compute_connectivity_matrix: computing
+ | 1    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 0    | 0    | 0   
+ | 0    | 0    | 1    | 1    | 1   
+ | 0    | 0    | 1    | 1    | 1   
+ | 0    | 0    | 1    | 1    | 1   
+
+TEST GET_ADJACENT_*()
+PD0689
+PD0988/0,PD1758/0
+G0582
+G0881,G1651
+G0582,G0881,G1651
+TEST ISOLATED GENE FIND/EXPORT
+prune_isolated_genes: pruned genes: G0389
+export_anc: created 9 rules
+##########################################################################
+# Allosteric Network Compiler (ANC) model file
+# Created by BioJazz version UNKNOWN released on UNKNOWN
+# Mon 17 Sep 2012 14:10:19 BST
+##########################################################################
+
+##########################################################################
+# PARAMETERS
+##########################################################################
+$max_external_iterations = -1
+$max_internal_iterations = -1
+$max_complex_size = -1
+$max_species = 200
+$max_csite_bound_to_msite_number = 1
+$default_steric_factor = 0.001
+$export_graphviz = "nothing"
+
+
+##########################################################################
+# OBJECTS:
+##########################################################################
+#-------------------------
+MODEL:  # G0000
+#-------------------------
+ReactionSite : {
+    name => "PD0217",
+    type => "csite",
+    Keq_ratio => 3.04698957090351,
+}
+AllostericStructure : {
+    name => "D0154",
+    allosteric_flag => 0,
+    allosteric_transition_rates => [0.00145956309563553,131.89690478391],
+    Phi => 0.84652981427175,
+    elements => [PD0217],
+}
+Structure : {  # IC of G0110 = 6.30957344480193e-08
+    name => "G0110",
+    elements => [D0154],
+    max_count => -1,
+}
+
+
+ReactionSite : {
+    name => "PD0689",
+    type => "csite",
+    Keq_ratio => 0.424195427069203,
+}
+AllostericStructure : {
+    name => "D0626",
+    allosteric_flag => 1,
+    allosteric_transition_rates => [0.653505529858691,0.00800250227816105],
+    Phi => 0.63049853372434,
+    elements => [PD0689],
+}
+Structure : {  # IC of G0582 = 1.58489319246111e-05
+    name => "G0582",
+    elements => [D0626],
+    max_count => -1,
+}
+
+
+ReactionSite : {
+    name => "PD0988",
+    type => "bsite",
+    Keq_ratio => 0.00407352770587525,
+}
+AllostericStructure : {
+    name => "D0925",
+    allosteric_flag => 1,
+    allosteric_transition_rates => [0.778924925037525,139.217879549033],
+    Phi => 0.161290322580645,
+    elements => [PD0988],
+}
+Structure : {  # IC of G0881 = 1e-12
+    name => "G0881",
+    elements => [D0925],
+    max_count => -1,
+}
+
+
+ReactionSite : {
+    name => "PD1758",
+    type => "csite",
+    Keq_ratio => 2.38945645393108,
+}
+AllostericStructure : {
+    name => "D1695",
+    allosteric_flag => 1,
+    allosteric_transition_rates => [0.708663202813242,348.756245878594],
+    Phi => 0.127077223851417,
+    elements => [PD1758],
+}
+Structure : {  # IC of G1651 = 1.58489319246111e-11
+    name => "G1651",
+    elements => [D1695],
+    max_count => -1,
+}
+
+
+# Initial concentrations
+Init : {
+	structure => G0110,
+	IC => 6.30957344480193e-08,
+}
+Init : {
+	structure => G0582,
+	IC => 1.58489319246111e-05,
+}
+Init : {
+	structure => G0881,
+	IC => 1e-12,
+}
+Init : {
+	structure => G1651,
+	IC => 1.58489319246111e-11,
+}
+
+
+
+##########################################################################
+# RULES:
+##########################################################################
+MODEL:
+
+CanBindRule : {
+  name => "PD0217 PD0217 (0 . 0 .)",
+  ligand_names => ["PD0217", "PD0217"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => [".", "."],
+  kf => 100000,
+  kb => 10,
+}
+
+CanBindRule : {
+  name => "PD0689 PD0988 (0 R 0 R)",
+  ligand_names => ["PD0689", "PD0988"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["R", "R"],
+  kf => 1000,
+  kb => 1,
+}
+
+CanBindRule : {
+  name => "PD0689 PD0988 (0 R 0 T)",
+  ligand_names => ["PD0689", "PD0988"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["R", "T"],
+  kf => 100,
+  kb => 10,
+}
+
+CanBindRule : {
+  name => "PD0689 PD0988 (0 T 0 R)",
+  ligand_names => ["PD0689", "PD0988"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["T", "R"],
+  kf => 10,
+  kb => 0.1,
+}
+
+CanBindRule : {
+  name => "PD0689 PD0988 (0 T 0 T)",
+  ligand_names => ["PD0689", "PD0988"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["T", "T"],
+  kf => 1,
+  kb => 1,
+}
+
+CanBindRule : {
+  name => "PD0689 PD1758 (0 R 0 R)",
+  ligand_names => ["PD0689", "PD1758"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["R", "R"],
+  kf => 1000,
+  kb => 0.1,
+}
+
+CanBindRule : {
+  name => "PD0689 PD1758 (0 R 0 T)",
+  ligand_names => ["PD0689", "PD1758"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["R", "T"],
+  kf => 10000,
+  kb => 0.1,
+}
+
+CanBindRule : {
+  name => "PD0689 PD1758 (0 T 0 R)",
+  ligand_names => ["PD0689", "PD1758"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["T", "R"],
+  kf => 10,
+  kb => 0.01,
+}
+
+CanBindRule : {
+  name => "PD0689 PD1758 (0 T 0 T)",
+  ligand_names => ["PD0689", "PD1758"],
+  ligand_msite_states => ["0", "0"],
+  ligand_allosteric_labels => ["T", "T"],
+  kf => 100,
+  kb => 1,
+}
+
+
+##########################################################################
+# EQUATIONS:
+##########################################################################
+EQN:
+
+
+
+##########################################################################
+# CONFIG:
+##########################################################################
+CONFIG:
+
+
+Can't exec "tkdiff": No such file or directory at
+	/Users/Song/workspace/rule-based-modelling/biojazz/modules/Genome.pm line 341 (#1)
+    (W exec) A system(), exec(), or piped open call could not execute the
+    named program for the indicated reason.  Typical reasons include: the
+    permissions were wrong on the file, the file wasn't found in
+    $ENV{PATH}, the executable in question was compiled for another
+    architecture, or the #! line in a script points to an interpreter that
+    can't be run for similar reasons.  (Or maybe your system doesn't support
+    #! at all.)
+    
+STORABLE TEST
+{
+  'Genome' => {
+                'kb_max' => 10,
+                'kb_min' => '0.001',
+                'kf_max' => '100000',
+                'kf_min' => '0.1',
+                'kp_max' => 1000,
+                'kp_min' => 1,
+                'radius' => 1,
+                'rules' => undef
+              },
+  'Instantiable' => {
+                      'instances' => [],
+                      'instances_index' => {}
+                    },
+  'Named' => {
+               'name' => 'Genome'
+             },
+  'Network' => {
+                 'adjacency_matrix_node_refs' => {
+                                                   'domains' => [],
+                                                   'genes' => [],
+                                                   'protodomains' => []
+                                                 },
+                 'adjacency_matrix_node_states' => {
+                                                     'domains' => [],
+                                                     'genes' => [],
+                                                     'protodomains' => []
+                                                   },
+                 'adjacency_matrix_ref' => {
+                                             'domains' => [
+                                                            bless( do{\(my $o = undef)}, 'Matrix' )
+                                                          ],
+                                             'genes' => [
+                                                          bless( do{\(my $o = undef)}, 'Matrix' )
+                                                        ],
+                                             'protodomains' => [
+                                                                 bless( do{\(my $o = undef)}, 'Matrix' )
+                                                               ]
+                                           },
+                 'connectivity_matrix_ref' => {
+                                                'genes' => bless( do{\(my $o = undef)}, 'Matrix' ),
+                                                'protodomains' => bless( do{\(my $o = undef)}, 'Matrix' )
+                                              }
+               },
+  'Parser' => {
+                'linker_ref' => {
+                                  'genes' => '0000'
+                                },
+                'mutation_rate_ref' => {
+                                         'POST_JUNK' => '0',
+                                         'PRE_JUNK' => '0',
+                                         'genes' => '1',
+                                         'genes_linker' => '0'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'PRE_JUNK',
+                                       '^.*?(?=01111110)'
+                                     ],
+                                     [
+                                       'genes',
+                                       bless( do{\(my $o = undef)}, 'Gene' ),
+                                       '\\G.*?(?=01111110.{177})'
+                                     ],
+                                     [
+                                       'POST_JUNK',
+                                       '\\G.*'
+                                     ]
+                                   ]
+              },
+  'Set' => {
+             'element_class' => 'Gene',
+             'elements_ref' => [
+                                 $VAR1->{'Parser'}{'structure_ref'}[1][1]
+                               ]
+           }
+};
+
+{
+  'Genome' => {
+                'kb_max' => 10,
+                'kb_min' => '0.001',
+                'kf_max' => 100000,
+                'kf_min' => '0.1',
+                'kp_max' => 1000,
+                'kp_min' => 1,
+                'radius' => 1,
+                'rules' => undef
+              },
+  'Instantiable' => {
+                      'instances' => [],
+                      'instances_index' => {}
+                    },
+  'Named' => {
+               'name' => 'Genome'
+             },
+  'Network' => {
+                 'adjacency_matrix_node_refs' => {
+                                                   'domains' => [],
+                                                   'genes' => [],
+                                                   'protodomains' => []
+                                                 },
+                 'adjacency_matrix_node_states' => {
+                                                     'domains' => [],
+                                                     'genes' => [],
+                                                     'protodomains' => []
+                                                   },
+                 'adjacency_matrix_ref' => {
+                                             'domains' => [
+                                                            bless( do{\(my $o = undef)}, 'Matrix' )
+                                                          ],
+                                             'genes' => [
+                                                          bless( do{\(my $o = undef)}, 'Matrix' )
+                                                        ],
+                                             'protodomains' => [
+                                                                 bless( do{\(my $o = undef)}, 'Matrix' )
+                                                               ]
+                                           },
+                 'connectivity_matrix_ref' => {
+                                                'genes' => bless( do{\(my $o = undef)}, 'Matrix' ),
+                                                'protodomains' => bless( do{\(my $o = undef)}, 'Matrix' )
+                                              }
+               },
+  'Parser' => {
+                'linker_ref' => {
+                                  'genes' => '0000'
+                                },
+                'mutation_rate_ref' => {
+                                         'POST_JUNK' => '0',
+                                         'PRE_JUNK' => '0',
+                                         'genes' => '1',
+                                         'genes_linker' => '0'
+                                       },
+                'structure_ref' => [
+                                     [
+                                       'PRE_JUNK',
+                                       '^.*?(?=01111110)'
+                                     ],
+                                     [
+                                       'genes',
+                                       bless( do{\(my $o = undef)}, 'Gene' ),
+                                       '\\G.*?(?=01111110.{177})'
+                                     ],
+                                     [
+                                       'POST_JUNK',
+                                       '\\G.*'
+                                     ]
+                                   ]
+              },
+  'Set' => {
+             'element_class' => 'Gene',
+             'elements_ref' => [
+                                 $VAR1->{'Parser'}{'structure_ref'}[1][1]
+                               ]
+           }
+};
+

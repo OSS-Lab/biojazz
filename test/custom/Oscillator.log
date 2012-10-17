@@ -1,0 +1,313 @@
+read_config: reading test/modules/Oscillator.cfg
+read_config: nice = 15
+read_config: vmem = 450000
+read_config: scoring_class = Oscillator
+read_config: work_dir = oscillator
+read_config: radius = 1
+read_config: kf_max = 1e3
+read_config: kf_min = 1e-3
+read_config: kb_max = 1e3
+read_config: kb_min = 1e-3
+read_config: kp_max = 1e3
+read_config: kp_min = 1e-3
+read_config: regulated_concentration_width = 8
+read_config: gene_unused_width = 8
+read_config: regulated_concentration_max = 1e3
+read_config: regulated_concentration_min = 1e-3
+read_config: RT_transition_rate_width = 8
+read_config: TR_transition_rate_width = 8
+read_config: RT_phi_width = 8
+read_config: domain_unused_width = 8
+read_config: RT_transition_rate_max = 1e2
+read_config: RT_transition_rate_min = 1e-2
+read_config: TR_transition_rate_max = 1e2
+read_config: TR_transition_rate_min = 1e-2
+read_config: RT_phi_max = 1.0
+read_config: RT_phi_min = 0.0
+read_config: binding_profile_width = 8
+read_config: kf_profile_width = 8
+read_config: kb_profile_width = 8
+read_config: kp_profile_width = 8
+read_config: Keq_profile_width = 8
+read_config: protodomain_unused_width = 8
+read_config: Keq_ratio_max = 1e2
+read_config: Keq_ratio_min = 1e-2
+read_config: max_external_iterations = -1
+read_config: max_internal_iterations = -1
+read_config: max_complex_size = 4
+read_config: max_species = 160
+read_config: max_csite_bound_to_msite_number = 1
+read_config: default_max_count = 2
+read_config: default_steric_factor = 1e3
+read_config: export_graphviz = [network,collapse_states,collapse_complexes]
+read_config: plot_input = 1
+read_config: plot_output = 1
+read_config: plot_species = 0
+read_config: plot_phase = 1
+read_config: plot_min = -1
+read_config: sprint_transcript = 1
+read_config: solver = ode23s
+read_config: InitialStep = 1e-8
+read_config: AbsTol = 1e-9
+read_config: RelTol = 1e-3
+read_config: MaxStep = 1.0
+read_config: sampling_interval = 0.1
+read_config: lg_binding_profile = 01000011
+read_config: tg_binding_profile = 10100011
+read_config: steady_state_threshold = 0.01
+read_config: steady_state_delta_t = 20
+read_config: iss_check_time = 200.0
+read_config: iss_check_score_threshold = 0.99
+read_config: delta_threshold = 0.02
+read_config: LG_level = 10
+read_config: LG_period = 4000
+read_config: LG_strength = 0.5
+read_config: LG_duty = 62.5
+read_config: LG_rftime = 1000
+read_config: LG_delay = 1000
+read_config: LG_steps = 3
+read_config: TG_init = 200
+read_config: hill_n = 8
+read_config: hill_k = 5
+read_config: stimulus = staircase_equation
+MatlabDriver::START: starting matlab(98) on localhost (Mon 17 Sep 2012 14:13:36 BST)
+MatlabDriver::START: logfile is test/modules/matlab/matlab.98.log
+MatlabDriver::START: executing "ulimit -S -v 450000; ulimit -a; matlab -nodesktop -nosplash"
+2012-09-17 14:13:37.190 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.194 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.197 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.198 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.200 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.205 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.206 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.239 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.240 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.241 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.250 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.251 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.252 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.263 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.264 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:37.265 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.476 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.477 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.478 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.478 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.479 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.480 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.481 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.482 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.483 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.483 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.484 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.485 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.486 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.487 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.488 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.488 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.489 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.490 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.491 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.492 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.492 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.493 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.494 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.495 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.496 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.496 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.497 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.498 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.499 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.500 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.500 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.501 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.502 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.503 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.504 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.504 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.505 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.506 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.507 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.508 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.508 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.509 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+2012-09-17 14:13:39.510 MATLAB_maci64[2106:9503] This process is attempting to exclude an item from Time Machine by path without administrator privileges. This is not supported.
+MatlabDriver::START: MATLAB shell pid=2105
+{
+  'Scoring' => {
+                 'anc_ref' => {},
+                 'config_file' => 'test/modules/Oscillator.cfg',
+                 'config_ref' => {
+                                   'AbsTol' => '1e-9',
+                                   'InitialStep' => '1e-8',
+                                   'Keq_profile_width' => '8',
+                                   'Keq_ratio_max' => '1e2',
+                                   'Keq_ratio_min' => '1e-2',
+                                   'LG_delay' => '1000',
+                                   'LG_duty' => '62.5',
+                                   'LG_level' => '10',
+                                   'LG_period' => '4000',
+                                   'LG_rftime' => '1000',
+                                   'LG_steps' => '3',
+                                   'LG_strength' => '0.5',
+                                   'MaxStep' => '1.0',
+                                   'RT_phi_max' => '1.0',
+                                   'RT_phi_min' => '0.0',
+                                   'RT_phi_width' => '8',
+                                   'RT_transition_rate_max' => '1e2',
+                                   'RT_transition_rate_min' => '1e-2',
+                                   'RT_transition_rate_width' => '8',
+                                   'RelTol' => '1e-3',
+                                   'TG_init' => '200',
+                                   'TR_transition_rate_max' => '1e2',
+                                   'TR_transition_rate_min' => '1e-2',
+                                   'TR_transition_rate_width' => '8',
+                                   'binding_profile_width' => '8',
+                                   'default_max_count' => '2',
+                                   'default_steric_factor' => '1e3',
+                                   'delta_threshold' => '0.02',
+                                   'domain_unused_width' => '8',
+                                   'export_graphviz' => [
+                                                          'network',
+                                                          'collapse_states',
+                                                          'collapse_complexes'
+                                                        ],
+                                   'gene_unused_width' => '8',
+                                   'hill_k' => '5',
+                                   'hill_n' => '8',
+                                   'iss_check_score_threshold' => '0.99',
+                                   'iss_check_time' => '200.0',
+                                   'kb_max' => '1e3',
+                                   'kb_min' => '1e-3',
+                                   'kb_profile_width' => '8',
+                                   'kf_max' => '1e3',
+                                   'kf_min' => '1e-3',
+                                   'kf_profile_width' => '8',
+                                   'kp_max' => '1e3',
+                                   'kp_min' => '1e-3',
+                                   'kp_profile_width' => '8',
+                                   'lg_binding_profile' => '01000011',
+                                   'max_complex_size' => '4',
+                                   'max_csite_bound_to_msite_number' => '1',
+                                   'max_external_iterations' => '-1',
+                                   'max_internal_iterations' => '-1',
+                                   'max_species' => '160',
+                                   'nice' => '15',
+                                   'plot_input' => '1',
+                                   'plot_min' => '-1',
+                                   'plot_output' => '1',
+                                   'plot_phase' => '1',
+                                   'plot_species' => '0',
+                                   'protodomain_unused_width' => '8',
+                                   'radius' => '1',
+                                   'regulated_concentration_max' => '1e3',
+                                   'regulated_concentration_min' => '1e-3',
+                                   'regulated_concentration_width' => '8',
+                                   'sampling_interval' => '0.1',
+                                   'scoring_class' => 'Oscillator',
+                                   'solver' => 'ode23s',
+                                   'sprint_transcript' => '1',
+                                   'steady_state_delta_t' => '20',
+                                   'steady_state_threshold' => '0.01',
+                                   'stimulus' => 'staircase_equation',
+                                   'tg_binding_profile' => '10100011',
+                                   'vmem' => '450000',
+                                   'work_dir' => 'oscillator'
+                                 },
+                 'logfile' => 'matlab.98.log',
+                 'matlab_ref' => bless( do{\(my $o = undef)}, 'MatlabDriver' ),
+                 'matlab_work' => 'test/modules/matlab',
+                 'node_ID' => 98,
+                 'work_dir' => 'test/modules'
+               }
+};
+
+read_config: reading test/modules/Oscillator.cfg
+read_config: nice = 15
+read_config: vmem = 450000
+read_config: scoring_class = Oscillator
+read_config: work_dir = oscillator
+read_config: radius = 1
+read_config: kf_max = 1e3
+read_config: kf_min = 1e-3
+read_config: kb_max = 1e3
+read_config: kb_min = 1e-3
+read_config: kp_max = 1e3
+read_config: kp_min = 1e-3
+read_config: regulated_concentration_width = 8
+read_config: gene_unused_width = 8
+read_config: regulated_concentration_max = 1e3
+read_config: regulated_concentration_min = 1e-3
+read_config: RT_transition_rate_width = 8
+read_config: TR_transition_rate_width = 8
+read_config: RT_phi_width = 8
+read_config: domain_unused_width = 8
+read_config: RT_transition_rate_max = 1e2
+read_config: RT_transition_rate_min = 1e-2
+read_config: TR_transition_rate_max = 1e2
+read_config: TR_transition_rate_min = 1e-2
+read_config: RT_phi_max = 1.0
+read_config: RT_phi_min = 0.0
+read_config: binding_profile_width = 8
+read_config: kf_profile_width = 8
+read_config: kb_profile_width = 8
+read_config: kp_profile_width = 8
+read_config: Keq_profile_width = 8
+read_config: protodomain_unused_width = 8
+read_config: Keq_ratio_max = 1e2
+read_config: Keq_ratio_min = 1e-2
+read_config: max_external_iterations = -1
+read_config: max_internal_iterations = -1
+read_config: max_complex_size = 4
+read_config: max_species = 160
+read_config: max_csite_bound_to_msite_number = 1
+read_config: default_max_count = 2
+read_config: default_steric_factor = 1e3
+read_config: export_graphviz = [network,collapse_states,collapse_complexes]
+read_config: plot_input = 1
+read_config: plot_output = 1
+read_config: plot_species = 0
+read_config: plot_phase = 1
+read_config: plot_min = -1
+read_config: sprint_transcript = 1
+read_config: solver = ode23s
+read_config: InitialStep = 1e-8
+read_config: AbsTol = 1e-9
+read_config: RelTol = 1e-3
+read_config: MaxStep = 1.0
+read_config: sampling_interval = 0.1
+read_config: lg_binding_profile = 01000011
+read_config: tg_binding_profile = 10100011
+read_config: steady_state_threshold = 0.01
+read_config: steady_state_delta_t = 20
+read_config: iss_check_time = 200.0
+read_config: iss_check_score_threshold = 0.99
+read_config: delta_threshold = 0.02
+read_config: LG_level = 10
+read_config: LG_period = 4000
+read_config: LG_strength = 0.5
+read_config: LG_duty = 62.5
+read_config: LG_rftime = 1000
+read_config: LG_delay = 1000
+read_config: LG_steps = 3
+read_config: TG_init = 200
+read_config: hill_n = 8
+read_config: hill_k = 5
+read_config: stimulus = staircase_equation
+sequence=01111110100011000000000010000000010000000111111110000000000000111101000000001100000000011111100000000000000000000000001111111100110000000000000000000000010100111010111111111100000011100000100000000000000000000000001111110011000000000000000000000011100000111111010000000000000000100000001000000000000000000000001000011101011111111110000001110000010010011000000000000000000000000000000000000000000000000001110000
+Ultrasensitive::score_genome scoring genome Oscillator
+UlUncaught exception from user code:
+	ERROR: Stimulus::staircase_equation -- must specify CONCENTRATION at /Users/Song/workspace/rule-based-modelling/anc/base/Utils.pm line 196.
+	Utils::check_args('HASH(0x7f7fa8a018a8)', 8) called at /Users/Song/workspace/rule-based-modelling/biojazz/modules/Stimulus.pm line 181
+	Stimulus::staircase_equation('NODE', 'LG0000', 'PERIOD', 4000, 'DELAY', 1000, 'STRENGTH', 0.5, 'CONCENTRATION', ...) called at custom/Ultrasensitive.pm line 167
+	Ultrasensitive::score_genome('Oscillator=SCALAR(0x7f7fa8884080)', 'GenomeModel=SCALAR(0x7f7fa8832a18)') called at custom/Oscillator.pm line 337
+	Oscillator::run_testcases() called at -e line 1
+ at /Users/Song/workspace/rule-based-modelling/anc/base/Utils.pm line 196.
+	Utils::check_args('HASH(0x7f7fa8a018a8)', 8) called at /Users/Song/workspace/rule-based-modelling/biojazz/modules/Stimulus.pm line 181
+	Stimulus::staircase_equation('NODE', 'LG0000', 'PERIOD', 4000, 'DELAY', 1000, 'STRENGTH', 0.5, 'CONCENTRATION', ...) called at custom/Ultrasensitive.pm line 167
+	Ultrasensitive::score_genome('Oscillator=SCALAR(0x7f7fa8884080)', 'GenomeModel=SCALAR(0x7f7fa8832a18)') called at custom/Oscillator.pm line 337
+	Oscillator::run_testcases() called at -e line 1
+trasensitive::score_genome scoring non-elite individual...
+Scoring::DEMOLISH: called
+MatlabDriver::DEMOLISH: Closing matlab(98)
+Scoring::DEMOLISH: done
