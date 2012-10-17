@@ -181,7 +181,7 @@ sub run_testcases {
 	name => "driver1",
 	logfile => "test/modules/MatlabDriver.localhost1.log",
 	host => "localhost",
-	vmem => 750000,
+	vmem => 1200000,
 	echo => 1,
     });
 	
@@ -192,7 +192,7 @@ sub run_testcases {
 	name => "driver2",
 	logfile => "test/modules/MatlabDriver.localhost2.log",
 	host => "localhost",
-	vmem => 700000,
+	vmem => 1200000,
 	echo => 1,
     });
 	

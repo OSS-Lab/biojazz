@@ -425,8 +425,7 @@ use base qw(Scoring);
 		    max_internal_iterations => $config_ref->{max_internal_iterations},
 		    max_complex_size => $config_ref->{max_complex_size},
 		    max_species => $config_ref->{max_species},
-		    max_csite_bound_to_msite_number => $config_ref->{max_csite_bound_to_msite_number},
-		    default_max_count => $config_ref->{default_max_count},
+		    max_csite_bound_to_msite_number => $config_ref->{max_csite_bound_to_msite_number},		    default_max_count => $config_ref->{default_max_count},
 		    default_steric_factor => $config_ref->{default_steric_factor},
 		    export_graphviz => ref $config_ref->{export_graphviz} ? (join ",",@{$config_ref->{export_graphviz}}) : $config_ref->{export_graphviz},
 		    equations => [$lg_source_eqn, $lg_sink_eqn],
@@ -821,7 +820,7 @@ sub run_testcases {
 # CPU AND CLUSTER SETTINGS
 #----------------------------------------
 nice = 10
-vmem = 750000
+vmem = 1200000
 
 #----------------------------------------
 # WORKSPACE AND CUSTOM SCORING MODULE
@@ -863,7 +862,7 @@ RT_phi_max = 1.0
 RT_phi_min = 0.0
 
 # ProtoDomain class
-binding_profile_width = 8
+binding_profile_width = 10
 kf_profile_width = 20
 kb_profile_width = 20
 kp_profile_width = 10
