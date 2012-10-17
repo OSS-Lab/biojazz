@@ -57,9 +57,7 @@ calculateEpistasis <-
     if (scalingMethod == "logLinearField") {
       scaledVector <- sapply(decVector, function(x) {min * (max / min) ^ (x/(vectorLength-1))});
       
-      Rm0 = NULL;
-      Rm1 = NULL;
-      Rm2 = NULL;
+
       epista = NULL;
       mCal = 1;
       for (i in c(1:vectorLength)) {
@@ -71,10 +69,11 @@ calculateEpistasis <-
         }
         for (k in c(1:(stringLength - 1))) {
           for (l in c(1:(stringLength - k))) {
-            Rm1[mCal] = binStrToDec(mutationPool[k,]);
-            Rm2[mCal] = binStrToDec(mutationPool[l,]);
-            Rm0[mCal] = findRm0(binVectorAsInt[i,], mutationPool[k,], mutationPool[l,]);
-            epista[mCal] = (scaledVector[(Rm1[mCal]+1)] - scaledVector[(WT+1)]) * (scaledVector[(Rm2[mCal] + 1)] - scaledVector[(WT+1)]) - (scaledVector[(Rm0[mCal]+1)] - scaledVector[(WT+1)]);
+            Rm1 = binStrToDec(mutationPool[k,]);
+            Rm2 = binStrToDec(mutationPool[l,]);
+            Rm0 = findRm0(binVectorAsInt[i,], mutationPool[k,], mutationPool[l,]);
+#            epista[mCal] = (scaledVector[(Rm1+1)] - scaledVector[(WT+1)]) * (scaledVector[(Rm2 + 1)] - scaledVector[(WT+1)]) - (scaledVector[(Rm0+1)] - scaledVector[(WT+1)]);
+            epista[mCal] = ((scaledVector[(Rm1+1)] + 1e-4) / (scaledVector[(WT+1)]+ 1e-4)) * ((scaledVector[(Rm2 + 1)] + 1e-4) - (scaledVector[(WT+1)]+ 1e-4)) - ((scaledVector[(Rm0+1)]+ 1e-4) - (scaledVector[(WT+1)]+ 1e-4));
             mCal = mCal + 1;
           }        
         }
@@ -98,7 +97,8 @@ calculateEpistasis <-
             Rm1 = binStrToDec(mutationPool[k,]);
             Rm2 = binStrToDec(mutationPool[l,]);
             Rm0 = findRm0(binVectorAsInt[i,], mutationPool[k,], mutationPool[l,]);
-            epista[mCal] = (scaledVector[(Rm1+1)] - scaledVector[(WT+1)]) * (scaledVector[(Rm2 + 1)] - scaledVector[(WT+1)]) - (scaledVector[(Rm0+1)] - scaledVector[(WT+1)]);
+#            epista[mCal] = (scaledVector[(Rm1+1)] - scaledVector[(WT+1)]) * (scaledVector[(Rm2 + 1)] - scaledVector[(WT+1)]) - (scaledVector[(Rm0+1)] - scaledVector[(WT+1)]);
+            epista[mCal] = ((scaledVector[(Rm1+1)] + 1e-4) / (scaledVector[(WT+1)]+ 1e-4)) * ((scaledVector[(Rm2 + 1)] + 1e-4) - (scaledVector[(WT+1)]+ 1e-4)) - ((scaledVector[(Rm0+1)]+ 1e-4) - (scaledVector[(WT+1)]+ 1e-4));
             mCal = mCal + 1;
           }        
         }
@@ -117,7 +117,7 @@ calculateEpistasis <-
   }
 
 
-epistasis = calculateEpistasis(5, "logLinearField", 1e-2, 1e1);
+epistasis = calculateEpistasis(5, "logLinearField", 1e-3, 1e3);
 
 plot(density(epistasis));
 
