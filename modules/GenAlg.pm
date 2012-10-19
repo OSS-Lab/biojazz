@@ -232,22 +232,8 @@ use base qw();
 	
 	printn "@scores";
 
-#	my $temp_obj_dir = "$config_ref->{work_dir}/$TAG/obj";
+	my $temp_obj_dir = "$config_ref->{work_dir}/$TAG/obj";
 
-	my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
-	my $defined_local_dir = (defined $local_dir ? $local_dir : "");
-
-
-	eval("use $config_ref->{scoring_class};");
-	if ($@) {print $@; return;}
-
-	$scoring_ref = $config_ref->{scoring_class}->new({
-	    config_file => $config_ref->{config_file},
-	    node_ID => 999,
-	    work_dir => $config_ref->{work_dir},
-	    local_dir => $defined_local_dir,
-	    matlab_startup_options => "-nodesktop -nosplash",  # need jvm
-							 });
 
 	# start to generate new generation 
 	my $effective_population_size = $config_ref->{effective_population_size};

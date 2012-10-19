@@ -119,7 +119,7 @@ $OUTPUT_AUTOFLUSH = 1;
 #======================================================================================
 # CMD-LINE ARGUMENT PROCESSING AND DEFAULTS
 #======================================================================================
-use vars qw($HELP $SHELL $SCRIPT $COMMAND $SEED $GENOME $SCORE $INITIATE_GENOME);
+use vars qw($HELP $SHELL $SCRIPT $COMMAND $SEED $GENOME $SCORE);
 use vars qw($version_flag);
 
 GetOptions("help"            => \$HELP,
@@ -137,7 +137,6 @@ GetOptions("help"            => \$HELP,
 	   "score"           => \$SCORE,
 	   "inumg=i"         => \$config_ref->{inum_genomes},
 	   "mrate=f"         => \$config_ref->{mutation_rate},
-	   "initiate_genome" => \$INITIATE_GENOME,
 	  );
 
 exit if ($version_flag);
@@ -177,9 +176,7 @@ if (!defined $config_ref->{config_file}) {
 #======================================================================================
 # RUN COMMANDS AND SCRIPTS
 #======================================================================================
-initiate_genome() if $INITIATE_GENOME && defined $config_ref->{config_file};
-
-evolve(seed => defined $SEED ? $SEED : -1) if !$SHELL &&!$SCORE && !$GENOME && !$COMMAND && !$INITIATE_GENOME && defined $config_ref->{config_file};
+evolve(seed => defined $SEED ? $SEED : -1) if !$SHELL && !$COMMAND && defined $config_ref->{config_file};
 
 load_genome($GENOME) if $GENOME || $SCORE && defined $config_ref->{config_file};
 
