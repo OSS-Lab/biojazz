@@ -232,12 +232,66 @@ use base qw();
 	
 	printn "@scores";
 
-	my $temp_obj_dir = "$config_ref->{work_dir}/$TAG/obj";
+	my $temp_file_glob = Generation->get_generation_temp(
+	    dir => "$config_ref->{work_dir}/$TAG/obj",
+	    cluster_size => $config_ref->{cluster_size},
+	    );
+
+	my @temp_genome_files = (glob $temp_file_glob);
+
+
+
+	my $file_glob = Generation->get_generation_glob(
+	    dir => "$config_ref->{work_dir}/$TAG/obj",
+	    number => $current_generation_number,
+	   );
+
+	my @genome_files = (glob $file_glob);
+
+	printn "evolve_current_generation: evolving generation $current_generation_number ....";
+
+	my $effective_population_size = $config_ref->{effective_population_size};
+	my $amplifier_alpha = $config_ref->{amplifier_alpha};
+
+	for (my $i=0; $i < @genome_files; $i++) {
+	    my $genome_file = $genome_files[$i];
+	    printn "score_current_generation: scoring file $genome_file";
+
+	    my %used_nodes = ();
+
+	    my $fixation_p = -1;
+	    my $mutated_score;
+
+	    do {
+		for (my $j=0; $j < @temp_genome_files; $j++) {
+		    my $temp_genome_file = $temp_genome_files[$j];
+		    my $node_ref = $cluster_ref->get_free_node();
+		    # ensure reproducibility independent of node scoring if there is element of randomness
+		    # by deriving node scoring seed from main random generator
+		    my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
+		    $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); \$scoring_ref->score_genome(\$genome_ref); store(\$genome_ref, \"$temp_genome_file\");\n");
+		    $node_ref->node_expect(undef, 'PERL_SHELL');
+		    $node_ref->node_print("NODE_READY");
+		    $used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on
+		}
+		while (1) {
+		    my @used_list = keys %used_nodes;
+		    my @busy_list = $cluster_ref->get_busy_node_id_list();
+		    my @wait_list = intersection(\@busy_list, \@used_list);
+		    printn "score_current_generation: waiting on nodes... @wait_list";
+		    last if (@wait_list == 0);
+		    sleep 5;		# poll again in 5 seconds....
+		}
+
+		
+
+	    } until {}
+
+	}
+
 
 
 	# start to generate new generation 
-	my $effective_population_size = $config_ref->{effective_population_size};
-	my $amplifier_alpha = $config_ref->{amplifier_alpha};
 	for (my $i = 0; $i < $current_generation_size; $i++) {
 
 	    my $parent_ref = $current_generation_ref->get_element($i);
@@ -246,12 +300,11 @@ use base qw();
 	    printn "create_next_generation: creating child of individual $parent_name";
 
 	    ######################################################
+	    
 
 
 	    # start the kimura selection (random walk)
 	    my $child_ref;
-	    my $fixation_p = -1;
-	    my $mutated_score;
 	    while ($fixation_p < rand) {
 	    
 		$child_ref = $parent_ref->duplicate();
@@ -276,7 +329,7 @@ use base qw();
 
 		printn "the child's score is; $child_score";
 		
-		$mutated_score = $child_score - $scores[$i];
+		$mutated_score = ($child_score - $scores[$i]) / $scores[$i];
 
 		if ($mutated_score == 0.0) {
 		    $fixation_p = 1 / (2 * $effective_population_size);  # test if fix the neutral selection

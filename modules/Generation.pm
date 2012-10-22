@@ -60,6 +60,28 @@ use base qw(Set ClassData);
 	return $file_glob;
     }
 
+    #--------------------------------------------------------------------------------------
+    # Function: get_generation_glob
+    # Synopsys: 
+    #--------------------------------------------------------------------------------------
+    sub get_generation_temp {
+	my $class = shift;
+
+	my %args = (
+	    dir => undef,
+	    cluster_size => undef,
+	    @_,
+	   );
+	check_args(\%args, 2);
+
+	my $number = $args{cluster_size};
+	my $dir = $args{dir};
+
+	my $temp_file_glob = sprintf("$dir/Temp_G%03d_I*.obj", $number);
+
+	return $temp_file_glob;
+    }
+
     #######################################################################################
     # INSTANCE METHODS
     #######################################################################################
