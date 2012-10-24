@@ -61,7 +61,7 @@ use base qw(Set ClassData);
     }
 
     #--------------------------------------------------------------------------------------
-    # Function: get_generation_glob
+    # Function: get_generation_temp
     # Synopsys: 
     #--------------------------------------------------------------------------------------
     sub get_generation_temp {
@@ -77,7 +77,7 @@ use base qw(Set ClassData);
 	my $number = $args{cluster_size};
 	my $dir = $args{dir};
 	
-	my @temp_genome_files = undef;
+	my @temp_genome_files;
 	for (my $i = 0; $i < $number; $i++) {
 	    my $temp_file = sprintf("$dir/Gtemp_I%03d.obj", $i);
 	    push(@temp_genome_files, $temp_file);

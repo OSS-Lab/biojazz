@@ -239,7 +239,8 @@ use base qw();
 	    dir => "$config_ref->{work_dir}/$TAG/obj",
 	    cluster_size => $config_ref->{cluster_size},
 	    );
-
+	
+	print join("\n", @temp_genome_files);
 
 	my $file_glob = Generation->get_generation_glob(
 	    dir => "$config_ref->{work_dir}/$TAG/obj",
@@ -255,7 +256,7 @@ use base qw();
 
 	for (my $i=0; $i < @genome_files; $i++) {
 	    my $genome_file = $genome_files[$i];
-	    printn "score_current_generation: scoring file $genome_file";
+	    printn "score_current_generation: evolving $genome_file";
 
 	    my %used_nodes = ();
 
@@ -267,20 +268,21 @@ use base qw();
 	    do {
 		for (my $j=0; $j < @temp_genome_files; $j++) {
 		    my $temp_genome_file = $temp_genome_files[$j];
+		    print "using temp genome file $temp_genome_file \n";
 		    my $node_ref = $cluster_ref->get_free_node();
 		    # ensure reproducibility independent of node scoring if there is element of randomness
 		    # by deriving node scoring seed from main random generator
 		    my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
-		    $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); ".
+		    $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); " .
 					  "\$genome_ref->mutate(".
-					  "prob_mutate_params => $config_ref->{prob_mutate_params}, ".
-					  "prob_mutate_global => $config_ref->{prob_mutate_global}, ".
-					  "prob_recombination => $config_ref->{prob_recombination}, ".
-					  "prob_duplicate => $config_ref->{prob_duplicate}, ".
-					  "prob_delete => $config_ref->{prob_delete}, ".
-					  "mutation_rate => $config_ref->{mutation_rate},); ".
-					  " \$scoring_ref->score_genome(\$genome_ref); ".
-					  " store(\$genome_ref, \"$temp_genome_file\");\n");
+					  "prob_mutate_params => " . $config_ref->{prob_mutate_params} . "," .
+					  "prob_mutate_global => " . $config_ref->{prob_mutate_global} . "," .
+					  "prob_recombination => " . $config_ref->{prob_recombination} . "," .
+					  "prob_duplicate => " . $config_ref->{prob_duplicate} . "," .
+					  "prob_delete => " . $config_ref->{prob_delete} . "," .
+					  "mutation_rate => " . $config_ref->{mutation_rate} . ",); " .
+					  "\$scoring_ref->score_genome(\$genome_ref); " .
+					  "store(\$genome_ref, \"$temp_genome_file\");\n");
 		    $node_ref->node_expect(undef, 'PERL_SHELL');
 		    $node_ref->node_print("NODE_READY");
 		    $used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on
