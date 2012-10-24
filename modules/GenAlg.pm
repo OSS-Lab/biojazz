@@ -27,6 +27,8 @@ use base qw();
     use ScorCluster;
     use Generation;
 
+    use GenomeModel;
+
     use Scoring;
     
     # added for $scoring_ref
@@ -204,6 +206,7 @@ use base qw();
 	my $self = shift; my $obj_ID = ident $self;
 
 	my $config_ref = $config_ref_of{$obj_ID};
+	my $cluster_ref = $cluster_ref_of{$obj_ID};
 
 	my $current_generation_ref = $current_generation_ref_of{$obj_ID};
 	my $current_generation_number = $current_generation_number_of{$obj_ID};
@@ -232,65 +235,73 @@ use base qw();
 	
 	printn "@scores";
 
-#	my $temp_obj_dir = "$config_ref->{work_dir}/$TAG/obj";
+	my @temp_genome_files = Generation->get_generation_temp(
+	    dir => "$config_ref->{work_dir}/$TAG/obj",
+	    cluster_size => $config_ref->{cluster_size},
+	    );
 
-	my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
-	my $defined_local_dir = (defined $local_dir ? $local_dir : "");
 
+	my $file_glob = Generation->get_generation_glob(
+	    dir => "$config_ref->{work_dir}/$TAG/obj",
+	    number => $current_generation_number,
+	   );
 
-	eval("use $config_ref->{scoring_class};");
-	if ($@) {print $@; return;}
+	my @genome_files = (glob $file_glob);
 
-	$scoring_ref = $config_ref->{scoring_class}->new({
-	    config_file => $config_ref->{config_file},
-	    node_ID => 999,
-	    work_dir => $config_ref->{work_dir},
-	    local_dir => $defined_local_dir,
-	    matlab_startup_options => "-nodesktop -nosplash",  # need jvm
-							 });
+	printn "evolve_current_generation: evolving generation $current_generation_number ....";
 
-	# start to generate new generation 
 	my $effective_population_size = $config_ref->{effective_population_size};
 	my $amplifier_alpha = $config_ref->{amplifier_alpha};
-	for (my $i = 0; $i < $current_generation_size; $i++) {
 
-	    my $parent_ref = $current_generation_ref->get_element($i);
-	    printn "create_next_generation: individual $i as parent";
-	    my $parent_name = $parent_ref->get_name();
-	    printn "create_next_generation: creating child of individual $parent_name";
+	for (my $i=0; $i < @genome_files; $i++) {
+	    my $genome_file = $genome_files[$i];
+	    printn "score_current_generation: scoring file $genome_file";
 
-	    ######################################################
+	    my %used_nodes = ();
 
-
-	    # start the kimura selection (random walk)
-	    my $child_ref;
-	    my $fixation_p = -1;
-	    my $mutated_score;
-	    while ($fixation_p < rand) {
+	    my $fixation_p = 0;
+	    my $mutated_score = 0;
 	    
-		$child_ref = $parent_ref->duplicate();
-	    
-		$child_ref->set_elite_flag(0);
-		$child_ref->mutate(
-		    prob_mutate_params => $config_ref->{prob_mutate_params},
-		    prob_mutate_global => $config_ref->{prob_mutate_global},
-		    prob_recombination => $config_ref->{prob_recombination},
-		    prob_duplicate => $config_ref->{prob_duplicate},
-		    prob_delete => $config_ref->{prob_delete},
-		    mutation_rate => $config_ref->{mutation_rate},
+	    my $mutated_score_ref;
+
+	    do {
+		for (my $j=0; $j < @temp_genome_files; $j++) {
+		    my $temp_genome_file = $temp_genome_files[$j];
+		    my $node_ref = $cluster_ref->get_free_node();
+		    # ensure reproducibility independent of node scoring if there is element of randomness
+		    # by deriving node scoring seed from main random generator
+		    my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
+		    $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); ".
+					  "\$genome_ref->mutate(".
+					  "prob_mutate_params => $config_ref->{prob_mutate_params}, ".
+					  "prob_mutate_global => $config_ref->{prob_mutate_global}, ".
+					  "prob_recombination => $config_ref->{prob_recombination}, ".
+					  "prob_duplicate => $config_ref->{prob_duplicate}, ".
+					  "prob_delete => $config_ref->{prob_delete}, ".
+					  "mutation_rate => $config_ref->{mutation_rate},); ".
+					  " \$scoring_ref->score_genome(\$genome_ref); ".
+					  " store(\$genome_ref, \"$temp_genome_file\");\n");
+		    $node_ref->node_expect(undef, 'PERL_SHELL');
+		    $node_ref->node_print("NODE_READY");
+		    $used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on
+		}
+		while (1) {
+		    my @used_list = keys %used_nodes;
+		    my @busy_list = $cluster_ref->get_busy_node_id_list();
+		    my @wait_list = intersection(\@busy_list, \@used_list);
+		    printn "score_current_generation: waiting on nodes... @wait_list";
+		    last if (@wait_list == 0);
+		    sleep 5;		# poll again in 5 seconds....
+		}
+
+		### need to initialize reference first then you can assign values to the reference
+
+		$mutated_score_ref = Generation->retrieve_largest_temp_score(
+		    files => \@temp_genome_files,
 		    );
-		$child_ref->set_score(undef);
-		$child_ref->clear_stats();
+		my $child_score = $mutated_score_ref->{score};
 
-		$scoring_ref->score_genome($child_ref);
-
-		
-		printn "the parent's score is: $scores[$i]";
-		my $child_score = $child_ref->get_score();
-
-		printn "the child's score is; $child_score";
-		
-		$mutated_score = $child_score - $scores[$i];
+		$mutated_score = ($child_score - $scores[$i]) / $scores[$i];
 
 		if ($mutated_score == 0.0) {
 		    $fixation_p = 1 / (2 * $effective_population_size);  # test if fix the neutral selection
@@ -299,16 +310,21 @@ use base qw();
 		}
 		
 		$fixation_p *= $amplifier_alpha;
-
-	    }
+		
+		
+	    } until ($fixation_p > rand);
 	    
 
-	    # after fix the mutation
-	    
-	    $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
+	    my $mutated_score_index = $mutated_score_ref->{index};
+	    my $child_genome_file = $temp_genome_files[$mutated_score_index];
+
+	    my $child_ref = retrieve("$child_genome_file");
+
+	    $child_ref->add_history(sprintf("REPLICATION: G%03d_I%02d", $next_generation_number, $i));
 	    $next_generation_ref->add_element($child_ref);
-	    
+
 	}
+
 
 	
 	# change to next generation
@@ -325,6 +341,7 @@ use base qw();
 	my $self = shift; my $obj_ID = ident $self;
 
 	my $config_ref = $config_ref_of{$obj_ID};
+	my $cluster_ref = $cluster_ref_of{$obj_ID};
 	
 	my $current_generation_ref = $current_generation_ref_of{$obj_ID};
 	my $current_generation_number = $current_generation_number_of{$obj_ID};
@@ -627,7 +644,7 @@ sub run_testcases {
 # CPU AND CLUSTER SETTINGS
 #----------------------------------------
 nice = 15
-vmem = 750000
+vmem = 2000000
 local_dir = scoring/localdir
 
 #----------------------------------------

@@ -60,6 +60,32 @@ use base qw(Set ClassData);
 	return $file_glob;
     }
 
+    #--------------------------------------------------------------------------------------
+    # Function: get_generation_glob
+    # Synopsys: 
+    #--------------------------------------------------------------------------------------
+    sub get_generation_temp {
+	my $class = shift;
+
+	my %args = (
+	    dir => undef,
+	    cluster_size => undef,
+	    @_,
+	   );
+	check_args(\%args, 2);
+
+	my $number = $args{cluster_size};
+	my $dir = $args{dir};
+	
+	my @temp_genome_files = undef;
+	for (my $i = 0; $i < $number; $i++) {
+	    my $temp_file = sprintf("$dir/Gtemp_I%03d.obj", $i);
+	    push(@temp_genome_files, $temp_file);
+	}
+
+	return @temp_genome_files;
+    }
+
     #######################################################################################
     # INSTANCE METHODS
     #######################################################################################
@@ -98,6 +124,31 @@ use base qw(Set ClassData);
 	    $genome_ref->add_history("loaded from $file") if $history_flag;
 	    $self->add_element($genome_ref);
 	}
+    }
+
+    
+    sub retrieve_largest_temp_score {
+	my $self = shift;
+	my %args = (
+	    files => undef,
+	    @_,
+	    );
+	check_args(\%args, 1);
+	my @files = @{$args{files}};
+	my @tempScores = undef;
+	foreach my $file (@files) {
+	    my $genome_ref = retrieve("$file");
+	    push(@tempScores, ($genome_ref->get_score()));
+	}
+	
+	my $index = 0;
+	
+	$tempScores[$index] > $tempScores[$_] or $index = $_ for 1 .. $#tempScores;
+	
+	return {
+	    score => $tempScores[$index],
+	    index => $index,
+	};
     }
 
     #--------------------------------------------------------------------------------------
