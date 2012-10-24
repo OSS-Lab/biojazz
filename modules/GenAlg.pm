@@ -285,7 +285,7 @@ use base qw();
 
 		
 
-	    } until {}
+	    } until {$fixation_p > rand}
 
 	}
 
