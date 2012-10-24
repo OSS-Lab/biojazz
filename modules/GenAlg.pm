@@ -26,6 +26,7 @@ use base qw();
 
     use ScorCluster;
     use Generation;
+
     use GenomeModel;
 
     use Scoring;
@@ -260,6 +261,8 @@ use base qw();
 
 	    my $fixation_p = 0;
 	    my $mutated_score = 0;
+	    
+	    my $mutated_score_ref;
 
 	    do {
 		for (my $j=0; $j < @temp_genome_files; $j++) {
@@ -293,7 +296,7 @@ use base qw();
 
 		### need to initialize reference first then you can assign values to the reference
 
-		my $mutated_score_ref = Generation->retrieve_largest_temp_score(
+		$mutated_score_ref = Generation->retrieve_largest_temp_score(
 		    files => \@temp_genome_files,
 		    );
 		my $child_score = $mutated_score_ref->{score};
@@ -309,15 +312,15 @@ use base qw();
 		$fixation_p *= $amplifier_alpha;
 		
 		
-	    } until {$fixation_p > rand}
+	    } until ($fixation_p > rand);
 	    
 
-            ### need to initialize reference first then you can assign values to the reference
-	    my $child_genome_file = $temp_genome_files[$mutated_score_ref->{index}];
+	    my $mutated_score_index = $mutated_score_ref->{index};
+	    my $child_genome_file = $temp_genome_files[$mutated_score_index];
 
 	    my $child_ref = retrieve("$child_genome_file");
 
-	    $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
+	    $child_ref->add_history(sprintf("REPLICATION: G%03d_I%02d", $next_generation_number, $i));
 	    $next_generation_ref->add_element($child_ref);
 
 	}
