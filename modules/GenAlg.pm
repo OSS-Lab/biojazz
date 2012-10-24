@@ -26,6 +26,7 @@ use base qw();
 
     use ScorCluster;
     use Generation;
+    use GenomeModel;
 
     use Scoring;
     
@@ -204,6 +205,7 @@ use base qw();
 	my $self = shift; my $obj_ID = ident $self;
 
 	my $config_ref = $config_ref_of{$obj_ID};
+	my $cluster_ref = $cluster_ref_of{$obj_ID};
 
 	my $current_generation_ref = $current_generation_ref_of{$obj_ID};
 	my $current_generation_number = $current_generation_number_of{$obj_ID};
@@ -232,13 +234,10 @@ use base qw();
 	
 	printn "@scores";
 
-	my $temp_file_glob = Generation->get_generation_temp(
+	my @temp_genome_files = Generation->get_generation_temp(
 	    dir => "$config_ref->{work_dir}/$TAG/obj",
 	    cluster_size => $config_ref->{cluster_size},
 	    );
-
-	my @temp_genome_files = (glob $temp_file_glob);
-
 
 
 	my $file_glob = Generation->get_generation_glob(
@@ -259,8 +258,8 @@ use base qw();
 
 	    my %used_nodes = ();
 
-	    my $fixation_p = -1;
-	    my $mutated_score;
+	    my $fixation_p = 0;
+	    my $mutated_score = 0;
 
 	    do {
 		for (my $j=0; $j < @temp_genome_files; $j++) {
@@ -269,7 +268,16 @@ use base qw();
 		    # ensure reproducibility independent of node scoring if there is element of randomness
 		    # by deriving node scoring seed from main random generator
 		    my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
-		    $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); \$scoring_ref->score_genome(\$genome_ref); store(\$genome_ref, \"$temp_genome_file\");\n");
+		    $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); ".
+					  "\$genome_ref->mutate(".
+					  "prob_mutate_params => $config_ref->{prob_mutate_params}, ".
+					  "prob_mutate_global => $config_ref->{prob_mutate_global}, ".
+					  "prob_recombination => $config_ref->{prob_recombination}, ".
+					  "prob_duplicate => $config_ref->{prob_duplicate}, ".
+					  "prob_delete => $config_ref->{prob_delete}, ".
+					  "mutation_rate => $config_ref->{mutation_rate},); ".
+					  " \$scoring_ref->score_genome(\$genome_ref); ".
+					  " store(\$genome_ref, \"$temp_genome_file\");\n");
 		    $node_ref->node_expect(undef, 'PERL_SHELL');
 		    $node_ref->node_print("NODE_READY");
 		    $used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on
@@ -283,52 +291,13 @@ use base qw();
 		    sleep 5;		# poll again in 5 seconds....
 		}
 
-		
+		### need to initialize reference first then you can assign values to the reference
 
-	    } until {$fixation_p > rand}
-
-	}
-
-
-
-	# start to generate new generation 
-	for (my $i = 0; $i < $current_generation_size; $i++) {
-
-	    my $parent_ref = $current_generation_ref->get_element($i);
-	    printn "create_next_generation: individual $i as parent";
-	    my $parent_name = $parent_ref->get_name();
-	    printn "create_next_generation: creating child of individual $parent_name";
-
-	    ######################################################
-	    
-
-
-	    # start the kimura selection (random walk)
-	    my $child_ref;
-	    while ($fixation_p < rand) {
-	    
-		$child_ref = $parent_ref->duplicate();
-	    
-		$child_ref->set_elite_flag(0);
-		$child_ref->mutate(
-		    prob_mutate_params => $config_ref->{prob_mutate_params},
-		    prob_mutate_global => $config_ref->{prob_mutate_global},
-		    prob_recombination => $config_ref->{prob_recombination},
-		    prob_duplicate => $config_ref->{prob_duplicate},
-		    prob_delete => $config_ref->{prob_delete},
-		    mutation_rate => $config_ref->{mutation_rate},
+		my $mutated_score_ref = Generation->retrieve_largest_temp_score(
+		    files => \@temp_genome_files,
 		    );
-		$child_ref->set_score(undef);
-		$child_ref->clear_stats();
+		my $child_score = $mutated_score_ref->{score};
 
-		$scoring_ref->score_genome($child_ref);
-
-		
-		printn "the parent's score is: $scores[$i]";
-		my $child_score = $child_ref->get_score();
-
-		printn "the child's score is; $child_score";
-		
 		$mutated_score = ($child_score - $scores[$i]) / $scores[$i];
 
 		if ($mutated_score == 0.0) {
@@ -338,16 +307,21 @@ use base qw();
 		}
 		
 		$fixation_p *= $amplifier_alpha;
-
-	    }
+		
+		
+	    } until {$fixation_p > rand}
 	    
 
-	    # after fix the mutation
-	    
+            ### need to initialize reference first then you can assign values to the reference
+	    my $child_genome_file = $temp_genome_files[$mutated_score_ref->{index}];
+
+	    my $child_ref = retrieve("$child_genome_file");
+
 	    $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
 	    $next_generation_ref->add_element($child_ref);
-	    
+
 	}
+
 
 	
 	# change to next generation
@@ -364,6 +338,7 @@ use base qw();
 	my $self = shift; my $obj_ID = ident $self;
 
 	my $config_ref = $config_ref_of{$obj_ID};
+	my $cluster_ref = $cluster_ref_of{$obj_ID};
 	
 	my $current_generation_ref = $current_generation_ref_of{$obj_ID};
 	my $current_generation_number = $current_generation_number_of{$obj_ID};
