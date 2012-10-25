@@ -128,7 +128,7 @@ use base qw(Set ClassData);
 
     
     sub retrieve_largest_temp_score {
-	my $self = shift;
+	my $class = shift;
 	my %args = (
 	    files => undef,
 	    @_,
@@ -138,6 +138,7 @@ use base qw(Set ClassData);
 	my @tempScores = undef;
 	foreach my $file (@files) {
 	    my $genome_ref = retrieve("$file");
+	    print "retrieving temp genome file: $file \n";
 	    push(@tempScores, ($genome_ref->get_score()));
 	}
 	

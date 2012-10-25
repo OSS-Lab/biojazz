@@ -233,7 +233,7 @@ use base qw();
 	    exit(1);
 	}
 	
-	printn "@scores";
+	printn join ", ", @scores;
 
 	my @temp_genome_files = Generation->get_generation_temp(
 	    dir => "$config_ref->{work_dir}/$TAG/obj",
@@ -249,7 +249,7 @@ use base qw();
 
 	my @genome_files = (glob $file_glob);
 
-	printn "evolve_current_generation: evolving generation $current_generation_number ....";
+	printn "\nevolve_current_generation: evolving generation $current_generation_number ....";
 
 	my $effective_population_size = $config_ref->{effective_population_size};
 	my $amplifier_alpha = $config_ref->{amplifier_alpha};
