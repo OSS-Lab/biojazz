@@ -135,11 +135,13 @@ use base qw(Set ClassData);
 	    );
 	check_args(\%args, 1);
 	my @files = @{$args{files}};
-	my @tempScores = undef;
+	my @tempScores;
 	foreach my $file (@files) {
 	    my $genome_ref = retrieve("$file");
-	    print "retrieving temp genome file: $file \n";
-	    push(@tempScores, ($genome_ref->get_score()));
+	    print "retrieving temp genome file: $file\n";
+	    my $temp_score = $genome_ref->get_score();
+	    print "the temp score is: $temp_score\n";
+	    push(@tempScores, $temp_score);
 	}
 	
 	my $index = 0;
