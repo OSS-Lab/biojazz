@@ -835,7 +835,7 @@ work_dir = ultrasensitive
 # Scaling: all concentrations in uM, all 2nd-order rates in uM^-1 s^-1
 
 # Genome class
-radius = 1
+radius = 3
 kf_max = 1e3    # uM^-1 s^-1
 kf_min = 1e-3
 kb_max = 1e3
