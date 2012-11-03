@@ -941,8 +941,8 @@ hill_k = 5
 TG_init = 1  # uM
 cell_volume = 1e-18             # 1e-18L --> sub-cellular volume
 
-lg_binding_profile = 01010011
-tg_binding_profile = 10100011
+lg_binding_profile = 0101001110
+tg_binding_profile = 1010001110
 
 END
 

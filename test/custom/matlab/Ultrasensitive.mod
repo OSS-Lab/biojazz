@@ -1,7 +1,7 @@
 ##########################################################################
 # Allosteric Network Compiler (ANC) model file
 # Created by BioJazz version UNKNOWN released on UNKNOWN
-# Tue 18 Sep 2012 14:06:48 BST
+# Sat  3 Nov 2012 14:12:33 GMT
 ##########################################################################
 
 ##########################################################################
@@ -29,7 +29,7 @@ ReactionSite : {
 }
 
 ReactionSite : {
-    name => "PD0225",
+    name => "PD0227",
     type => "csite",
     Keq_ratio => 1.00451178020473,
 }
@@ -38,7 +38,7 @@ AllostericStructure : {
     allosteric_flag => 1,
     allosteric_transition_rates => [0.01,1.00451178020473],
     Phi => 1,
-    elements => [PD0057,PD0225],
+    elements => [PD0057,PD0227],
 }
 Structure : {  # IC of G0000 = 1.00677529813686
     name => "G0000",
@@ -48,20 +48,20 @@ Structure : {  # IC of G0000 = 1.00677529813686
 
 
 ReactionSite : {
-    name => "PD0454",
+    name => "PD0458",
     type => "csite",
     Keq_ratio => 1.9912245340072,
 }
 AllostericStructure : {
-    name => "D0419",
+    name => "D0423",
     allosteric_flag => 0,
     allosteric_transition_rates => [1.00451178020473,1.00451178020473],
     Phi => 0,
-    elements => [PD0454],
+    elements => [PD0458],
 }
-Structure : {  # IC of G0397 = 0.1
-    name => "G0397",
-    elements => [D0419],
+Structure : {  # IC of G0401 = 0.1
+    name => "G0401",
+    elements => [D0423],
     max_count => 2,
 }
 
@@ -72,7 +72,7 @@ Init : {
 	IC => 1.00677529813686,
 }
 Init : {
-	structure => G0397,
+	structure => G0401,
 	IC => 0.1,
 }
 
@@ -158,8 +158,8 @@ CanBindRule : {
 }
 
 CanBindRule : {
-  name => "PD0225 TPD0057 (0 R 0 .)",
-  ligand_names => ["PD0225", "TPD0057"],
+  name => "PD0227 TPD0057 (0 R 0 .)",
+  ligand_names => ["PD0227", "TPD0057"],
   ligand_msite_states => ["0", "0"],
   ligand_allosteric_labels => ["R", "."],
   kf => 31.6227766016838,
@@ -168,8 +168,8 @@ CanBindRule : {
 }
 
 CanBindRule : {
-  name => "PD0225 TPD0057 (0 T 0 .)",
-  ligand_names => ["PD0225", "TPD0057"],
+  name => "PD0227 TPD0057 (0 T 0 .)",
+  ligand_names => ["PD0227", "TPD0057"],
   ligand_msite_states => ["0", "0"],
   ligand_allosteric_labels => ["T", "."],
   kf => 0.001,
@@ -178,8 +178,8 @@ CanBindRule : {
 }
 
 CanBindRule : {
-  name => "PD0454 TPD0057 (0 . 1 .)",
-  ligand_names => ["PD0454", "TPD0057"],
+  name => "PD0458 TPD0057 (0 . 1 .)",
+  ligand_names => ["PD0458", "TPD0057"],
   ligand_msite_states => ["0", "1"],
   ligand_allosteric_labels => [".", "."],
   kf => 31.6227766016838,
