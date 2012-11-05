@@ -195,7 +195,7 @@ use base qw();
 	    
 	    if ($inum > $loaded_genome_num) {
 		for (my $i = 0; $i < ($inum - $loaded_genome_num); $i++) {
-		    my $index = rand($loaded_genome_num);
+		    my $index = int(rand($loaded_genome_num));
 		    my $child_ref = $current_generation_ref->get_element($index)->duplicate();
 		    $child_ref->add_history("copied from $files[$index]");
 		    $current_generation_ref->add_element($child_ref);
@@ -428,7 +428,7 @@ use base qw();
 
 	my @mutated_indice;
 	for (my $i = 0; $i < $mutate_num; $i++) {
-	    my $index = rand($current_generation_size);
+	    my $index = int(rand($current_generation_size));
 	    printn "Going to mutate number $index\n";
 	    $current_generation_ref->get_element($index)->mutate(
 		prob_mutate_params => $config_ref->{prob_mutate_params},
