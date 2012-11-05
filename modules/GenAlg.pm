@@ -202,7 +202,7 @@ use base qw();
     # Function: random_walk_selection
     # Synopsys: 
     #--------------------------------------------------------------------------------------
-    sub random_walk_selection {
+    sub kimura_selection {
 	my $self = shift; my $obj_ID = ident $self;
 
 	my $config_ref = $config_ref_of{$obj_ID};
@@ -349,7 +349,7 @@ use base qw();
     # Function: populated_random_selection
     # Synopsys: 
     #--------------------------------------------------------------------------------------
-    sub populated_random_selection {
+    sub population_based_selection {
 	my $self = shift; my $obj_ID = ident $self;
 
 	my $config_ref = $config_ref_of{$obj_ID};
@@ -637,11 +637,11 @@ use base qw();
 
 	    if ($current_generation_number_of{$obj_ID} + 1 < $config_ref->{num_generations}) {
 		if ($config_ref->{selection_method} eq "kimura_selection") {
-		    $self->random_walk_selection();
+		    $self->kimura_selection();
 		    $self->save_current_generation();
 		} elsif ($config_ref->{selection_method} eq "population_based_selection") {
 		    $self->mutate_generation();
-		    $self->populated_random_selection();
+		    $self->population_based_selection();
 		    $self->save_current_generation();
 		    $self->score_current_generation();
 		} elsif (!$config_ref->{selection_method}) {
