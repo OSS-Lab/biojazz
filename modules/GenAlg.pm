@@ -314,7 +314,7 @@ use base qw();
 		$fixation_p *= $amplifier_alpha;
 		
 		
-	    } until ($fixation_p > rand);
+	    } until ($fixation_p > rand());
 	    
 
 	    my $mutated_score_index = $mutated_score_ref->{index};
@@ -335,18 +335,107 @@ use base qw();
 	$current_generation_ref->refresh_individual_names($current_generation_number);	
     }
 
+
     #--------------------------------------------------------------------------------------
-    # Function: mutate_generation
+    # Function: score_mutated_genomes
     # Synopsys: 
     #--------------------------------------------------------------------------------------
 
-    sub mutate_generation {
+    sub score_mutated_genomes {
+	my $self = shift; my $obj_ID = ident $self;
+
+	my $config_ref = $config_ref_of{$obj_ID};
+	my $cluster_ref = $cluster_ref_of{$obj_ID};
+
+	my $current_generation_ref = $current_generation_ref_of{$obj_ID};
+	my $current_generation_number = $current_generation_number_of{$obj_ID};
+	my $current_generation_size = $current_generation_ref->get_num_elements();
+	
+	my $file_glob = Generation->get_generation_glob(
+	    dir => "$config_ref->{work_dir}/$TAG/obj",
+	    number => $current_generation_number,
+	   );
+
+	my @genome_files = (glob $file_glob);
+
+	my @mutated_indice;
+	for (my $i = 0; $i < $current_generation_size; $i++) {
+	    if($current_generation_ref->get_element($i)->get_elite_flag() == 0) {
+		push(@mutated_indice, $i);
+	    }
+
+	}
+
+	my %used_nodes = ();
+	printn "score_current_generation: scoring generation $current_generation_number ....";
+
+	for (my $i=0; $i < @mutated_indice; $i++) {
+	    my $genome_file = $genome_files[$mutated_indice[$i]];
+	    printn "score_current_generation: scoring file $genome_file";
+
+	    my $node_ref = $cluster_ref->get_free_node();
+	    # ensure reproducibility independent of node scoring if there is element of randomness
+	    # by deriving node scoring seed from main random generator
+	    my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
+	    $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); \$scoring_ref->score_genome(\$genome_ref); store(\$genome_ref, \"$genome_file\");\n");
+	    $node_ref->node_expect(undef, 'PERL_SHELL');
+	    $node_ref->node_print("NODE_READY");
+	    $used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on
+	}
+
+	# now wait for scoring to finish
+	while (1) {
+	    my @used_list = keys %used_nodes;
+	    my @busy_list = $cluster_ref->get_busy_node_id_list();
+	    my @wait_list = intersection(\@busy_list, \@used_list);
+	    printn "score_current_generation: waiting on nodes... @wait_list";
+	    last if (@wait_list == 0);
+	    sleep 5;		# poll again in 5 seconds....
+	}
+	printn"score_current_generation: done waiting on nodes...";
+    }
 	
 	
+
+    #--------------------------------------------------------------------------------------
+    # Function: mutate_current_generation
+    # Synopsys: 
+    #--------------------------------------------------------------------------------------
+
+    sub mutate_current_generation {
+	my $self = shift; my $obj_ID = ident $self;
+	my $config_ref = $config_ref_of{$obj_ID};
+
+	my $current_generation_ref = $current_generation_ref_of{$obj_ID};
+	my $current_generation_number = $current_generation_number_of{$obj_ID};
+	my $current_generation_size = $current_generation_ref->get_num_elements();
+
+	my $mutation_rate = $config_ref->{mutation_rate};
+
+	my $mutate_num = int($mutation_rate * $current_generation_size);
+
+	my @mutated_indice;
+	for (my $i = 0; $i < $mutate_num; $i++) {
+	    my $index = rand($current_generation_size);
+	    printn "Going to mutate number $index\n";
+	    $current_generation_ref->get_element($index)->mutate(
+		prob_mutate_params => $config_ref->{prob_mutate_params},
+		prob_mutate_global => $config_ref->{prob_mutate_global},
+		prob_recombination => $config_ref->{prob_recombination},
+		prob_duplicate => $config_ref->{prob_duplicate},
+		prob_delete => $config_ref->{prob_delete},
+		mutation_rate => $config_ref->{mutation_rate},
+		);
+
+	    $current_generation_ref->get_element($index)->set_elite_flag(0);
+	    $current_generation_ref->get_element($index)->set_score(undef);
+	    $current_generation_ref->get_element($index)->clear_stats();
+	}
+
     }
 
     #--------------------------------------------------------------------------------------
-    # Function: populated_random_selection
+    # Function: population_based_selection
     # Synopsys: 
     #--------------------------------------------------------------------------------------
     sub population_based_selection {
@@ -375,6 +464,7 @@ use base qw();
 	    exit(1);
 	}
 	
+	# select the next generation
 	my $total_score = 0;
 	my @cumulative_scores;
 	for (my $i = 0; $i < $current_generation_size; $i++) {
@@ -384,11 +474,35 @@ use base qw();
 
 
 	for (my $i = 0; $i < $current_generation_size; $i++) {
+	    my $threshold = rand() * $total_score;
+	    my $right = 0;
+	    my $left = $current_generation_size - 1;
+	    my $index = 0;
+
+	    while ($right < $left) {
+		$index = int(($left + $right) / 2);
+		if ($cumulative_scores[$index] < $threshold) {
+		    $right = $index + 1;
+		} else {
+		    $left = $index;
+		}
+	    }
 	    
+	    my $parent_ref = $current_generation_ref->get_element($right);
+	    my $parent_name = $parent_ref->get_name();
+	    
+	    my $child_ref = $parent_ref->duplicate();
+	    $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
+	    $child_ref->set_elite_flag(1);
+	    
+	    $next_generation_ref->add_element($child_ref);
 	    
 	}
-	
-	
+
+	# change to next generation
+	$current_generation_number_of{$obj_ID} = $current_generation_number = $next_generation_number;
+	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
+	$current_generation_ref->refresh_individual_names($current_generation_number);
 	
     }
 
@@ -640,10 +754,10 @@ use base qw();
 		    $self->kimura_selection();
 		    $self->save_current_generation();
 		} elsif ($config_ref->{selection_method} eq "population_based_selection") {
-		    $self->mutate_generation();
 		    $self->population_based_selection();
+		    $self->mutate_current_generation();
 		    $self->save_current_generation();
-		    $self->score_current_generation();
+		    $self->score_mutated_genomes();
 		} elsif (!$config_ref->{selection_method}) {
 		    printn "the selection method is not specified";
 		    exit(1);
