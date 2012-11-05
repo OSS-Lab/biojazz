@@ -752,6 +752,7 @@ use base qw();
 	    $self->save_current_generation();
 	    $self->score_current_generation();
 	}
+	$self->report_current_generation();
 
       GEN_ALG: while (1) {
 	    my $current_generation_number = $current_generation_number_of{$obj_ID};
@@ -759,7 +760,6 @@ use base qw();
 	    
 	    $self->load_current_generation($current_generation_number_of{$obj_ID});
 	    
-	    $self->report_current_generation();
 
 	    if ($current_generation_number_of{$obj_ID} + 1 < $config_ref->{num_generations}) {
 		if ($config_ref->{selection_method} eq "kimura_selection") {
