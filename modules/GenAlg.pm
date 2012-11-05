@@ -336,6 +336,16 @@ use base qw();
     }
 
     #--------------------------------------------------------------------------------------
+    # Function: mutate_generation
+    # Synopsys: 
+    #--------------------------------------------------------------------------------------
+
+    sub mutate_generation {
+	
+	
+    }
+
+    #--------------------------------------------------------------------------------------
     # Function: populated_random_selection
     # Synopsys: 
     #--------------------------------------------------------------------------------------
@@ -365,7 +375,18 @@ use base qw();
 	    exit(1);
 	}
 	
-	printn "@scores";
+	my $total_score = 0;
+	my @cumulative_scores;
+	for (my $i = 0; $i < $current_generation_size; $i++) {
+	    $total_score += $scores[$i];
+	    push(@cumulative_scores, $total_score);
+	}
+
+
+	for (my $i = 0; $i < $current_generation_size; $i++) {
+	    
+	    
+	}
 	
 	
 	
@@ -615,12 +636,14 @@ use base qw();
 	    $self->report_current_generation();
 
 	    if ($current_generation_number_of{$obj_ID} + 1 < $config_ref->{num_generations}) {
-		if ($config_ref->{selection_method} eq "random_walk") {
+		if ($config_ref->{selection_method} eq "kimura_selection") {
 		    $self->random_walk_selection();
 		    $self->save_current_generation();
-		} elsif ($config_ref->{selection_method} eq "populated_random") {
+		} elsif ($config_ref->{selection_method} eq "population_based_selection") {
+		    $self->mutate_generation();
 		    $self->populated_random_selection();
 		    $self->save_current_generation();
+		    $self->score_current_generation();
 		} elsif (!$config_ref->{selection_method}) {
 		    printn "the selection method is not specified";
 		    exit(1);
