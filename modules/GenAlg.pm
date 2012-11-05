@@ -189,6 +189,18 @@ use base qw();
 		files => \@files,
 		history_flag => 1,
 	       );
+
+	    my $inum = $config_ref->{inum_genomes};
+	    my $loaded_genome_num = @files;
+	    
+	    if ($inum > $loaded_genome_num) {
+		for (my $i = 0; $i < ($inum - $loaded_genome_num); $i++) {
+		    my $index = rand($loaded_genome_num);
+		    my $child_ref = $current_generation_ref->get_element($index)->duplicate();
+		    $child_ref->add_history("copied from $files[$index]");
+		    $current_generation_ref->add_element($child_ref);
+		}
+	    }
 	} else {
 	    printn "create_initial_generation: creating $config_ref->{inum_genomes} individuals";
 	    $current_generation_ref->create_random_genomes($config_ref);
