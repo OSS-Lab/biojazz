@@ -190,6 +190,33 @@ use base qw();
 		history_flag => 1,
 	       );
 
+	    my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
+	    my $defined_local_dir = (defined $local_dir ? $local_dir : "");
+	    
+	    
+	    eval("use $config_ref->{scoring_class};");
+	    if ($@) {print $@; return;}
+
+	    $scoring_ref = $config_ref->{scoring_class}->new({
+		config_file => $config_ref->{config_file},
+		node_ID => 999,
+		work_dir => $config_ref->{work_dir},
+		local_dir => $defined_local_dir,
+		matlab_startup_options => "-nodesktop -nosplash",  # need jvm
+							     });
+
+	    
+	    if ($config_ref->{score_initial_generation}) {
+		# reset all score/stats for first generation
+		foreach my $genome_model_ref ($current_generation_ref_of{$obj_ID}->get_elements()) {
+		    $genome_model_ref->clear_stats(preserve => []);
+		    $genome_model_ref->set_score(undef);
+		    $genome_model_ref->set_elite_flag(0);
+		    
+		    $scoring_ref->score_genome($genome_model_ref);
+		    $genome_model_ref->set_elite_flag(1);
+		}
+	    }
 
 
 	    my $inum = $config_ref->{inum_genomes};
@@ -546,6 +573,19 @@ use base qw();
 	my $current_generation_number = $current_generation_number_of{$obj_ID};
 	my $current_generation_size = $current_generation_ref->get_num_elements();
 
+	my $next_generation_ref = Generation->new({});
+	my $next_generation_number = $current_generation_number + 1;
+
+	for (my $i = 0; $i < $current_generation_size; $i++) {
+	    my $parent_ref = $current_generation_ref->get_element($i);
+	    my $child_ref = $parent_ref->duplicate();
+
+	    $next_generation_ref->add_element($child_ref);
+	}
+	$current_generation_number_of{$obj_ID} = $current_generation_number = $next_generation_number;
+	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
+	$current_generation_ref->refresh_individual_names($current_generation_number);
+
 	my $mutation_rate = $config_ref->{mutation_rate};
 
 	my $mutate_num = int($mutation_rate * $current_generation_size);
@@ -585,10 +625,10 @@ use base qw();
 	my $current_generation_number = $current_generation_number_of{$obj_ID};
 	my $current_generation_size = $current_generation_ref->get_num_elements();
 	
-	my $next_generation_ref = Generation->new({});
-	my $next_generation_number = $current_generation_number + 1;
+	my $temp_generation_ref = Generation->new({});
+	my $temp_generation_number = $current_generation_number;
 
-	printn "create_next_generation: creating generation $next_generation_number";
+	printn "create_next_generation: selecting generation $temp_generation_number";
 	
 	# check scores to make sure defined and positive
 	my @scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
@@ -629,16 +669,14 @@ use base qw();
 	    my $parent_name = $parent_ref->get_name();
 	    
 	    my $child_ref = $parent_ref->duplicate();
-	    $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
+	    $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $temp_generation_number, $i));
 	    $child_ref->set_elite_flag(1);
 	    
-	    $next_generation_ref->add_element($child_ref);
+	    $temp_generation_ref->add_element($child_ref);
 	    
 	}
-
-	# change to next generation
-	$current_generation_number_of{$obj_ID} = $current_generation_number = $next_generation_number;
-	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
+	$current_generation_number_of{$obj_ID} = $current_generation_number = $temp_generation_number;
+	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $temp_generation_ref;
 	$current_generation_ref->refresh_individual_names($current_generation_number);
 	
     }
@@ -866,17 +904,8 @@ use base qw();
 	my $config_ref = $config_ref_of{$obj_ID};
 
 	$self->create_initial_generation();
+	$self->save_current_generation();
 
-	if ($config_ref->{score_initial_generation}) {
-	    # reset all score/stats for first generation
-	    foreach my $genome_model_ref ($current_generation_ref_of{$obj_ID}->get_elements()) {
-		$genome_model_ref->clear_stats(preserve => []);
-		$genome_model_ref->set_score(undef);
-		$genome_model_ref->set_elite_flag(0);
-	    }
-	    $self->save_current_generation();
-	    $self->score_current_generation();
-	}
 
       GEN_ALG: while (1) {
 	    my $current_generation_number = $current_generation_number_of{$obj_ID};
@@ -891,10 +920,12 @@ use base qw();
 		    $self->random_walk_selection();
 		    $self->save_current_generation();
 		} elsif ($config_ref->{selection_method} eq "population_based_selection") {
-		    $self->population_based_selection();
 		    $self->mutate_current_generation();
 		    $self->save_current_generation();
 		    $self->score_mutated_genomes();
+		    $self->load_current_generation($current_generation_number_of{$obj_ID});
+		    $self->population_based_selection();
+		    $self->save_current_generation();
 		} elsif (!$config_ref->{selection_method}) {
 		    printn "the selection method is not specified";
 		    exit(1);
