@@ -190,6 +190,8 @@ use base qw();
 		history_flag => 1,
 	       );
 
+
+
 	    my $inum = $config_ref->{inum_genomes};
 	    my $loaded_genome_num = @files;
 	    
@@ -201,6 +203,7 @@ use base qw();
 		    $current_generation_ref->add_element($child_ref);
 		}
 	    }
+
 	} else {
 	    printn "create_initial_generation: creating $config_ref->{inum_genomes} individuals";
 	    $current_generation_ref->create_random_genomes($config_ref);
@@ -874,7 +877,6 @@ use base qw();
 	    $self->save_current_generation();
 	    $self->score_current_generation();
 	}
-	$self->report_current_generation();
 
       GEN_ALG: while (1) {
 	    my $current_generation_number = $current_generation_number_of{$obj_ID};
@@ -882,15 +884,11 @@ use base qw();
 	    
 	    $self->load_current_generation($current_generation_number_of{$obj_ID});
 	    
+	    $self->report_current_generation();
 
 	    if ($current_generation_number_of{$obj_ID} + 1 < $config_ref->{num_generations}) {
 		if ($config_ref->{selection_method} eq "kimura_selection") {
-<<<<<<< HEAD
 		    $self->random_walk_selection();
-=======
-		    $self->report_current_generation();
-		    $self->kimura_selection();
->>>>>>> f8785acbb49fd49d6664fa132ee7f8585843930c
 		    $self->save_current_generation();
 		} elsif ($config_ref->{selection_method} eq "population_based_selection") {
 		    $self->population_based_selection();
