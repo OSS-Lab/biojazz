@@ -217,7 +217,8 @@ use base qw();
 		    $genome_model_ref->set_elite_flag(1);
 		}
 	    }
-
+	    
+	    
 
 	    my $inum = $config_ref->{inum_genomes};
 	    my $loaded_genome_num = @files;
@@ -604,8 +605,6 @@ use base qw();
 		);
 
 	    $current_generation_ref->get_element($index)->set_elite_flag(0);
-	    $current_generation_ref->get_element($index)->set_score(undef);
-	    $current_generation_ref->get_element($index)->clear_stats();
 	}
 
     }
