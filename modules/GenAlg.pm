@@ -885,7 +885,12 @@ use base qw();
 
 	    if ($current_generation_number_of{$obj_ID} + 1 < $config_ref->{num_generations}) {
 		if ($config_ref->{selection_method} eq "kimura_selection") {
+<<<<<<< HEAD
 		    $self->random_walk_selection();
+=======
+		    $self->report_current_generation();
+		    $self->kimura_selection();
+>>>>>>> f8785acbb49fd49d6664fa132ee7f8585843930c
 		    $self->save_current_generation();
 		} elsif ($config_ref->{selection_method} eq "population_based_selection") {
 		    $self->population_based_selection();
