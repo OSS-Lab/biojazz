@@ -31,16 +31,7 @@ use base qw();
 
     use Scoring;
     
-    # added for $scoring_ref
-    use vars qw(@ISA @EXPORT);
-    @ISA = qw(Exporter);
-    @EXPORT = qw(
-	     $scoring_ref
-	    );
 
-    use vars qw(
-	    $scoring_ref
-	   );
 
     use FindBin qw($Bin);  # need application path
 
@@ -197,7 +188,7 @@ use base qw();
 	    eval("use $config_ref->{scoring_class};");
 	    if ($@) {print $@; return;}
 
-	    $scoring_ref = $config_ref->{scoring_class}->new({
+	    my $scoring_ref = $config_ref->{scoring_class}->new({
 		config_file => $config_ref->{config_file},
 		node_ID => 999,
 		work_dir => $config_ref->{work_dir},
@@ -286,7 +277,7 @@ use base qw();
 	eval("use $config_ref->{scoring_class};");
 	if ($@) {print $@; return;}
 
-	$scoring_ref = $config_ref->{scoring_class}->new({
+	my $scoring_ref = $config_ref->{scoring_class}->new({
 	    config_file => $config_ref->{config_file},
 	    node_ID => 999,
 	    work_dir => $config_ref->{work_dir},
