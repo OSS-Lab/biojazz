@@ -22,7 +22,7 @@ use base qw();
 
     use Utils;
 
-    use Globals qw ($verbosity $TAG $config_ref);
+    use Globals qw ($verbosity $TAG);
 
     use ScorCluster;
     use Generation;
@@ -574,8 +574,10 @@ use base qw();
 
 	    $next_generation_ref->add_element($child_ref);
 	}
-	$current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
+
+	$current_generation_ref->clear_genomes();
 	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
+	$current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
 	$current_generation_ref->refresh_individual_names($current_generation_number);
 
 	my $mutation_rate = $config_ref->{mutation_rate};
@@ -665,7 +667,9 @@ use base qw();
 	    $temp_generation_ref->add_element($child_ref);
 	    
 	}
-	$current_generation_number_of{$obj_ID} = $current_generation_number = $temp_generation_number;
+
+	$current_generation_ref->clear_genomes();
+	$current_generation_number = $current_generation_number_of{$obj_ID} = $temp_generation_number;
 	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $temp_generation_ref;
 	$current_generation_ref->refresh_individual_names($current_generation_number);
 	
