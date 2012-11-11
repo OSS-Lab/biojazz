@@ -569,12 +569,12 @@ use base qw();
 	my $next_generation_number = $current_generation_number + 1;
 
 	for (my $i = 0; $i < $current_generation_size; $i++) {
-	    my $parent_ref = $current_generation_ref->get_element($i);
-	    my $child_ref = $parent_ref->duplicate();
+	    
+	    my $child_ref = $current_generation_ref->get_element($i)->duplicate();
 
 	    $next_generation_ref->add_element($child_ref);
 	}
-	$current_generation_number_of{$obj_ID} = $current_generation_number = $next_generation_number;
+	$current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
 	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
 	$current_generation_ref->refresh_individual_names($current_generation_number);
 
