@@ -289,25 +289,27 @@ use base qw();
 	my $effective_population_size = $config_ref->{effective_population_size};
 	my $amplifier_alpha = $config_ref->{amplifier_alpha};
 	for (my $i = 0; $i < $current_generation_size; $i++) {
-
+	    
 	    my $parent_ref = $current_generation_ref->get_element($i);
-	    printn "create_next_generation: individual $i as parent";
 	    my $parent_name = $parent_ref->get_name();
-	    printn "create_next_generation: creating child of individual $parent_name";
-
-	    ######################################################
-
-
+	    
 	    # start the kimura selection (random walk)
-	    my $child_ref;
 	    my $fixation_p = -1;
 	    my $mutated_score;
 	    while ($fixation_p < rand) {
 	    
-		$child_ref = $parent_ref->duplicate();
-	    
-		$child_ref->set_elite_flag(0);
-		$child_ref->mutate(
+		$current_generation_ref->clear_genomes();
+		$current_generation_ref->load_generation(
+		    dir => "$config_ref->{work_dir}/$TAG/obj",
+		    number => $current_generation_number,
+		    );
+		$current_generation_number_of{$obj_ID} = $current_generation_number;
+
+		$parent_ref = $current_generation_ref->get_element($i);
+		printn "discard previous mutation and reloaded parent genome to mutate and score\n";
+
+		$parent_ref->set_elite_flag(0);
+		$parent_ref->mutate(
 		    prob_mutate_params => $config_ref->{prob_mutate_params},
 		    prob_mutate_global => $config_ref->{prob_mutate_global},
 		    prob_recombination => $config_ref->{prob_recombination},
@@ -315,21 +317,21 @@ use base qw();
 		    prob_delete => $config_ref->{prob_delete},
 		    mutation_rate => $config_ref->{mutation_rate},
 		    );
-		$child_ref->set_score(undef);
-		$child_ref->clear_stats();
+		$parent_ref->set_score(undef);
+		$parent_ref->clear_stats();
 
-		$scoring_ref->score_genome($child_ref);
+		$scoring_ref->score_genome($parent_ref);
 
 		
 		printn "the parent's score is: $scores[$i]";
-		my $child_score = $child_ref->get_score();
+		my $child_score = $parent_ref->get_score();
 
 		printn "the child's score is; $child_score";
 		
-		$mutated_score = $child_score - $scores[$i];
+		$mutated_score = ($child_score - $scores[$i]) / $scores[$i];
 
 		if ($mutated_score == 0.0) {
-		    $fixation_p = 1 / (2 * $effective_population_size);  # test if fix the neutral selection
+		    $fixation_p = 1 / (2 * $effective_population_size);  # prevent divide by zero
 		} else {
 		    $fixation_p = (1 - exp(-2 * $mutated_score)) / (1 - exp(-4 * $effective_population_size * $mutated_score));
 		}
@@ -338,19 +340,18 @@ use base qw();
 
 	    }
 	    
-
 	    # after fix the mutation
-	    
+	    my $child_ref = $parent_ref->duplicate();
 	    $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
 	    $next_generation_ref->add_element($child_ref);
-	    
 	}
 
 	
 	# change to next generation
-	$current_generation_number_of{$obj_ID} = $current_generation_number = $next_generation_number;
+	$current_generation_ref->clear_genomes();
 	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
-	$current_generation_ref->refresh_individual_names($current_generation_number);	
+	$current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
+	$current_generation_ref->refresh_individual_names($current_generation_number);
     }
 
     #--------------------------------------------------------------------------------------
@@ -482,12 +483,11 @@ use base qw();
 
 	}
 
-
-	
 	# change to next generation
-	$current_generation_number_of{$obj_ID} = $current_generation_number = $next_generation_number;
+	$current_generation_ref->clear_genomes();
 	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
-	$current_generation_ref->refresh_individual_names($current_generation_number);	
+	$current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
+	$current_generation_ref->refresh_individual_names($current_generation_number);
     }
 
 
