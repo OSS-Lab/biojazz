@@ -675,203 +675,6 @@ use base qw();
 	
     }
 
-    
-    #--------------------------------------------------------------------------------------
-    # Function: create_next_generation
-    # Synopsys: 
-    #--------------------------------------------------------------------------------------
-    sub create_next_generation {
-	my $self = shift; my $obj_ID = ident $self;
-
-	my $config_ref = $config_ref_of{$obj_ID};
-
-	my $current_generation_ref = $current_generation_ref_of{$obj_ID};
-	my $current_generation_number = $current_generation_number_of{$obj_ID};
-	my $current_generation_size = $current_generation_ref->get_num_elements();
-
-	my $next_generation_ref = Generation->new({});
-	my $next_generation_number = $current_generation_number + 1;
-
-	printn "create_next_generation: creating generation $next_generation_number";
-
-	# check scores to make sure defined and positive
-	my @scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
-	if (grep {!defined $_} @scores) {
-	    printn "ERROR: not all scores are defined (if this is first generation, check value of score_initial_generation in config file)";
-	    exit(1);
-	}
-	if (grep {$_ < 0} @scores) {
-	    printn "ERROR: all scores must be non-negative";
-	    exit(1);
-	}
-
-	# rank the current population by sorting on score
-	my $ranked_genomes_ref = $current_generation_ref->get_ranked_genomes();
-
-	my @ranked_indices = @{$ranked_genomes_ref->{ranked_indices}};
-	my @ranked_genomes = @{$ranked_genomes_ref->{ranked_genomes}};
-	my @ranking = @{$ranked_genomes_ref->{ranking}};
-
-	printn "ranked indices:  ".join ",", @ranked_indices;
-	printn "ranking:         ".join ",", @ranking;
-
-	# propagate the top genomes unchanged to next generation (elitist strategy)
-	my $num_elite = (@ranked_genomes >= $config_ref->{elite_pool_size}) ? $config_ref->{elite_pool_size} : @ranked_genomes;
-
-	for (my $i = 0; $i < $num_elite; $i++) {
-	    my $elite_ref = $ranked_genomes[$i];
-	    my $elite_name = $elite_ref->get_name();
-	    printn "create_next_generation: creating child from elite genome $elite_name";
-	    my $duplicate_ref = $elite_ref->duplicate();
-	    $duplicate_ref->add_history(sprintf("ELITE REPLICATION: $elite_name -> G%03d_I%02d", $next_generation_number, $i));
-	    $duplicate_ref->set_elite_flag(1);
-	    $next_generation_ref->add_element($duplicate_ref);
-	}
-	my $total_children = $config_ref->{max_population} - $num_elite;
-	printn "create_next_generation: total_children = $total_children";
-
-	# compute rank-based scores
-	my @ranking_scores = ();
-	if (!defined $config_ref->{score_by_rank_flag} || $config_ref->{score_by_rank_flag}) {
-	    printn "create_next_generation: computing parent ranking_scores";
-	    my $ranking_nonviable = $config_ref->{ranking_nonviable};
-	    my $num_nonviable = int $ranking_nonviable * $current_generation_size;
-	    my $rank_nonviable = $current_generation_size - $num_nonviable; # inclusive
-	    my $p1 = ($config_ref->{ranking_pressure})**(1/5);  # per-centile fitness fold-change
-	    my $pr = $p1**(100/$current_generation_size);       # per-rank fitness fold-change
-
-	    for (my $i = 0; $i < $current_generation_size; $i++) {
-		if ($ranking[$i] >= $rank_nonviable) {
-		    $ranking_scores[$i] = 0;
-		} else {
-		    $ranking_scores[$i] = $pr ** ($rank_nonviable - $ranking[$i] - 1);
-		}
-	    }
-	}
-
-	my @fitness_scores = ($config_ref->{score_by_rank_flag}) ? @ranking_scores : @scores;
-	for (my $i = 0; $i < $current_generation_size; $i++) {
-	    printn "fitness_score($i) = $fitness_scores[$i]";
-	}
-
-	my $total_score = 0;
-	for (my $i = 0; $i < $current_generation_size; $i++) {
-	    $total_score += $fitness_scores[$i];
-	}
-
-	printn "create_next_generation: total_score = $total_score";
-
-	# compute scale_factor and rescale scores
-	my $scale_factor;
-	$scale_factor = $total_children / $total_score;
-	my @scaled_fitness_scores = map {$_ * $scale_factor} @fitness_scores;
-
-	# guiding principle for the following is that no. children is proportional to fitness score
-	# (use the roulette wheel sampling approach)
-	my $children_created = 0;
-	my $parent_pointer = 0;
-	my $child_pointer = rand(1);
-	for (my $i = 0; $i < $current_generation_size; $i++) {
-	    my $num_children = 0;
-
-	    $parent_pointer += $scaled_fitness_scores[$i];
-	    while ($parent_pointer > $child_pointer) {
-		$child_pointer++;
-		$num_children++;
-	    }
-
-	    #######################################################
-	    my $parent_ref = $current_generation_ref->get_element($i);
-
-	    printn "create_next_generation: individual $i, ranking=$ranking[$i], fitness_score = $fitness_scores[$i], scaled_fitness_score=$scaled_fitness_scores[$i], num_children=$num_children";
-
-	    #######################################################
-	    printn "create_next_generation: with fixed mutation";
-	    for (my $j = 0; $j < $num_children; $j++) {
-	    #######################################################
-	    my $parent_name = $parent_ref->get_name();
-		printn "create_next_generation: creating child $j of individual $parent_name";
-	    #######################################################
-	    my $child_ref = $parent_ref->duplicate();
-	    $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
-	    $child_ref->set_elite_flag(0);
-	    $child_ref->mutate(
-		prob_mutate_params => $config_ref->{prob_mutate_params},
-		prob_mutate_global => $config_ref->{prob_mutate_global},
-		prob_recombination => $config_ref->{prob_recombination},
-		prob_duplicate => $config_ref->{prob_duplicate},
-		prob_delete => $config_ref->{prob_delete},
-		mutation_rate => $config_ref->{mutation_rate},
-		);
-	    $child_ref->set_score(undef);
-	    $child_ref->clear_stats();
-	    $next_generation_ref->add_element($child_ref);
-	    }
-	    $children_created += $num_children;
-	}
-
-	# number of children created may be different from target due to rounding
-	printn "create_next_generation: children_created = $children_created";
-
-	if ($children_created != $total_children) {
-	    printn "ERROR: create_next_generation -- did not create correct number of children ($children_created != $total_children)";
-	    exit(1);
-	}
-
-	# change to next generation
-	$current_generation_number_of{$obj_ID} = $current_generation_number = $next_generation_number;
-	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
-	$current_generation_ref->refresh_individual_names($current_generation_number);
-    }
-
-    #--------------------------------------------------------------------------------------
-    # Function: score_current_generation
-    # Synopsys: 
-    #--------------------------------------------------------------------------------------
-    sub score_current_generation {
-	my $self = shift; my $obj_ID = ident $self;
-
-	my $config_ref = $config_ref_of{$obj_ID};
-	my $cluster_ref = $cluster_ref_of{$obj_ID};
-
-	my $current_generation_number = $current_generation_number_of{$obj_ID};
-
-	my $file_glob = Generation->get_generation_glob(
-	    dir => "$config_ref->{work_dir}/$TAG/obj",
-	    number => $current_generation_number,
-	   );
-
-	my @genome_files = (glob $file_glob);
-
-	my %used_nodes = ();
-	printn "score_current_generation: scoring generation $current_generation_number ....";
-
-	for (my $i=0; $i < @genome_files; $i++) {
-	    my $genome_file = $genome_files[$i];
-	    printn "score_current_generation: scoring file $genome_file";
-
-	    my $node_ref = $cluster_ref->get_free_node();
-	    # ensure reproducibility independent of node scoring if there is element of randomness
-	    # by deriving node scoring seed from main random generator
-	    my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
-	    $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); \$scoring_ref->score_genome(\$genome_ref); store(\$genome_ref, \"$genome_file\");\n");
-	    $node_ref->node_expect(undef, 'PERL_SHELL');
-	    $node_ref->node_print("NODE_READY");
-	    $used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on
-	}
-
-	# now wait for scoring to finish
-	while (1) {
-	    my @used_list = keys %used_nodes;
-	    my @busy_list = $cluster_ref->get_busy_node_id_list();
-	    my @wait_list = intersection(\@busy_list, \@used_list);
-	    printn "score_current_generation: waiting on nodes... @wait_list";
-	    last if (@wait_list == 0);
-	    sleep 5;		# poll again in 5 seconds....
-	}
-	printn"score_current_generation: done waiting on nodes...";
-    }
-
     #--------------------------------------------------------------------------------------
     # Function: report_current_generation
     # Synopsys: 
@@ -885,7 +688,8 @@ use base qw();
 	printn "report_current_generation: generation $current_generation_number";
 	for (my $i=0; $i < @genomes; $i++) {
 	    my $genome_ref = $genomes[$i];
-	    printn "individual $i  : ".$genome_ref->sprint_stats();
+#	    printn "individual $i  : ".$genome_ref->sprint_stats();
+	    
 	}
     }
 
@@ -907,7 +711,7 @@ use base qw();
 	    
 	    $self->load_current_generation($current_generation_number_of{$obj_ID});
 	    
-#	    $self->report_current_generation();
+	    $self->report_current_generation();
 
 	    if ($current_generation_number_of{$obj_ID} + 1 < $config_ref->{num_generations}) {
 		if ($config_ref->{selection_method} eq "kimura_selection") {
