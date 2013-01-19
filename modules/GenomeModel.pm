@@ -781,7 +781,7 @@ use base qw(Model);
 	  my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene();
 	  my $duplicate_name = sprintf("G%04d",$duplicate_start);
 	  $self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $duplicate_start, dont_clear_flag => 1);  # N.B. this only updates gene_parser_ref not genome_parser_ref
-	  my $num_bits = $self->mutate_gene_by_name($duplicate_name, $mutation_rate); # mutate duplicated gene
+	  my $num_bits = $self->mutate_gene_by_name($duplicate_name, $mutation_rate_global); # mutate duplicated gene
 	  my $history = "DUPLICATION of gene $duplicated_gene to $duplicate_name, with $num_bits mutations";
 	  printn $history if $verbosity >= 1;
 	  $self->add_history($history);
@@ -825,123 +825,6 @@ use base qw(Model);
 	# post-mutation parsing
 	$self->parse();
       }
-
-
-    #--------------------------------------------------------------------------------------
-    # Function: mutate_orig
-    # Synopsys: This is the original implementation of mutation subroutine by Julien
-    #--------------------------------------------------------------------------------------
-    sub mutate_orig {
-	my $self = shift; my $obj_ID = ident $self;
-	my %args = (
-	    prob_mutate_params => undef,
-	    prob_mutate_global => undef,
-	    prob_recombination => undef,
-	    prob_duplicate => undef,
-	    prob_delete => undef,
-	    mutation_rate => undef,
-	    @_,
-	   );
-	check_args(\%args,6);
-
-	my $prob_mutate_params = $args{prob_mutate_params};
-	my $prob_mutate_global = $args{prob_mutate_global};
-	my $prob_recombination = $args{prob_recombination};
-	my $prob_duplicate = $args{prob_duplicate};
-	my $prob_delete = $args{prob_delete};
-	my $mutation_rate = $args{mutation_rate};
-
-	my $evolve_op = rand();
-
-	my $sequence_ref = $self->get_sequence_ref();
-
-	# pre-mutation parsing
-	$self->parse();
-
-	MUTATION_OPERATION : {
-	    my $check_sum = ($prob_mutate_params + $prob_mutate_global +
-			     $prob_recombination + $prob_duplicate + $prob_delete);
-	    if ("$check_sum" ne 1) {
-		printn "ERROR: mutate -- probs do not add up to one (sum=$check_sum)";
-		exit(1);
-	    }
-
-	    if ($evolve_op < $prob_mutate_params) { # mutate gene parameters only
-		printn "mutate: POINT MUTATION (PARAMS)" if $verbosity >= 1;
-		$self->set_field_mutation_rates(
-		    mutate_params_rate => 1.0,
-		    mutate_network_rate => 0.0,
-		   );
-		my @mutated_list = $self->mutate_genes($mutation_rate);
-		my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
-		my $history = "POINT MUTATION (PARAMS) $total_bits bits in genes ". join ",", @mutated_list;
-		printn $history if $verbosity >= 1;
-		$self->add_history($history);
-		last MUTATION_OPERATION;
-	    }
-	    $evolve_op -= $prob_mutate_params;
-
-	    if ($evolve_op < $prob_mutate_global) { # mutate everything
-		printn "mutate: POINT MUTATION (GLOBAL)" if $verbosity >= 1;
-		$self->set_field_mutation_rates(
-		    mutate_params_rate => 1.0,
-		    mutate_network_rate => 1.0,
-		   );
-		my @mutated_list = $self->mutate_genome($mutation_rate);
-		my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
-		my $history = "POINT MUTATION (GLOBAL) $total_bits bits in genes ". join ",", @mutated_list;
-		printn $history if $verbosity >= 1;
-		$self->add_history($history);
-		last MUTATION_OPERATION;
-	    }
-	    $evolve_op -= $prob_mutate_global;
-
-	    if ($evolve_op < $prob_recombination) { # recombine genes
-		printn "mutate: RECOMBINATION" if $verbosity >= 1;
-		my $gene1_index = $self->pick_random_gene();
-		my $gene2_index = $self->pick_random_gene();
-		my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
-		my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
-		my $recombinatory_start = $self->recombine_genes($gene1_index, $gene2_index);
-#		$self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $recombinatory_start, dont_clear_fag => 1); # N.B. this only updates gene_parser_ref not genome_parser_ref
-		my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
-		printn $history if $verbosity >= 1;
-		$self->add_history($history);
-		last MUTATION_OPERATION;
-	    }
-	    $evolve_op -= $prob_recombination;
-
-	    if ($evolve_op < $prob_duplicate) {	# duplicate
-		printn "mutate: DUPLICATION" if $verbosity >= 1;
-		my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene();
-		my $duplicate_name = sprintf("G%04d",$duplicate_start);
-		$self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $duplicate_start, dont_clear_flag => 1);  # N.B. this only updates gene_parser_ref not genome_parser_ref
-		my $num_bits = $self->mutate_gene_by_name($duplicate_name, $mutation_rate); # mutate duplicated gene
-		my $history = "DUPLICATION of gene $duplicated_gene to $duplicate_name, with $num_bits mutations";
-		printn $history if $verbosity >= 1;
-		$self->add_history($history);
-		last MUTATION_OPERATION;
-	    }
-	    $evolve_op -= $prob_duplicate;
-
-	    if ($evolve_op < $prob_delete) { # delete a gene
-		printn "mutate: DELETION" if $verbosity >= 1;
-		my $deleted_gene_ref = $self->delete_random_gene();
-		my $deleted_gene_name = $deleted_gene_ref->get_name();
-		my $history = "DELETION of gene $deleted_gene_name";
-		printn $history if $verbosity >= 1;
-		$self->add_history($history);
-		last MUTATION_OPERATION;
-	    }
-	    $evolve_op -= $prob_delete;
-
-	    printn "ERROR: mutate -- probs are messed up";
-	    exit;
-	}
-
-	# post-mutation parsing
-	$self->parse();
-    }
 
 
     #--------------------------------------------------------------------------------------
