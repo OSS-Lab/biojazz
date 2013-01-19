@@ -310,13 +310,12 @@ use base qw();
 
 		$parent_ref->set_elite_flag(0);
 		$parent_ref->mutate(
-		    prob_mutate_params => $config_ref->{prob_mutate_params},
-		    prob_mutate_global => $config_ref->{prob_mutate_global},
-		    prob_recombination => $config_ref->{prob_recombination},
-		    prob_duplicate => $config_ref->{prob_duplicate},
-		    prob_delete => $config_ref->{prob_delete},
-		    mutation_rate => $config_ref->{mutation_rate},
-		    );
+				    mutation_rate_params => $config_ref->{mutation_rate_params},
+				    mutation_rate_global => $config_ref->{mutation_rate_global},
+				    duplication_rate => $config_ref->{duplication_rate},
+				    deletion_rate => $config_ref->{deletion_rate},
+				    recombination_rate => $config_ref->{recombination_rate},
+				   );
 		$parent_ref->set_score(undef);
 		$parent_ref->clear_stats();
 
@@ -431,12 +430,11 @@ use base qw();
 		    my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
 		    $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); " .
 					  "\$genome_ref->mutate(".
-					  "prob_mutate_params => " . $config_ref->{prob_mutate_params} . "," .
-					  "prob_mutate_global => " . $config_ref->{prob_mutate_global} . "," .
-					  "prob_recombination => " . $config_ref->{prob_recombination} . "," .
-					  "prob_duplicate => " . $config_ref->{prob_duplicate} . "," .
-					  "prob_delete => " . $config_ref->{prob_delete} . "," .
-					  "mutation_rate => " . $config_ref->{mutation_rate} . ",); " .
+					  "mutation_rate_params => " . $config_ref->{mutation_rate_params} . "," .
+					  "mutation_rate_global => " . $config_ref->{mutation_rate_global} . "," .
+					  "duplication_rate => " . $config_ref->{duplication_rate} . "," .
+					  "deletion_rate => " . $config_ref->{deletion_rate} . "," .
+					  "recombination_rate => " . $config_ref->{recombination_rate} . "," .
 					  "\$scoring_ref->score_genome(\$genome_ref); " .
 					  "store(\$genome_ref, \"$temp_genome_file\");\n");
 		    $node_ref->node_expect(undef, 'PERL_SHELL');
@@ -589,13 +587,12 @@ use base qw();
 	    my $index = int(rand($current_generation_size));
 	    printn "Going to mutate number $index\n";
 	    $current_generation_ref->get_element($index)->mutate(
-		prob_mutate_params => $config_ref->{prob_mutate_params},
-		prob_mutate_global => $config_ref->{prob_mutate_global},
-		prob_recombination => $config_ref->{prob_recombination},
-		prob_duplicate => $config_ref->{prob_duplicate},
-		prob_delete => $config_ref->{prob_delete},
-		mutation_rate => $config_ref->{mutation_rate},
-		);
+								 mutation_rate_params => $config_ref->{mutation_rate_params},
+								 mutation_rate_global => $config_ref->{mutation_rate_global},
+								 duplication_rate => $config_ref->{duplication_rate},
+								 deletion_rate => $config_ref->{deletion_rate},
+								 recombination_rate => $config_ref->{recombination_rate},
+								);
 
 	    $current_generation_ref->get_element($index)->set_elite_flag(0);
 	}

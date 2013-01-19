@@ -721,6 +721,119 @@ use base qw(Model);
     sub mutate {
 	my $self = shift; my $obj_ID = ident $self;
 	my %args = (
+		    mutation_rate_params => undef,
+		    mutation_rate_global => undef,
+		    duplication_rate => undef,
+		    deletion_rate => undef,
+		    recombination_rate => undef,
+		    @_,
+		   );
+	check_args(\%args,5);
+	
+	my $mutation_rate_params = $args{mutation_rate_params};
+	my $mutation_rate_global = $args{mutation_rate_global};
+	my $duplication_rate = $args{duplication_rate};
+	my $deletion_rate = $args{deletion_rate};
+	my $recombination_rate = $args{recombination_rate};
+
+	my $sequence_ref = $self->get_sequence_ref();
+
+	# pre-mutation parsing
+	$self->parse();
+
+	if ($mutation_rate_params > 0.0 && $mutation_rate_params <= 1.0) { # mutate parameters
+	  printn "mutate: POINT MUTATION (PARAMS)" if $verbosity >= 1;
+	  $self->set_field_mutation_rates(
+					  mutate_params_rate => 1.0,
+					  mutate_network_rate => 0.0,
+					 );
+	  my @mutated_list = $self->mutate_genes($mutation_rate_params);
+	  my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
+	  my $history = "POINT MUTATION (PARAMS) $total_bits bits in genes ". join ",", @mutated_list;
+	  printn $history if $verbosity >= 1;
+	  $self->add_history($history);
+	}
+	elsif ($mutation_rate_params != 0.0) {
+	  printn "ERROR: mutation_rate_params is not set in proper range";
+	  exit;
+	}
+
+	if ($mutation_rate_global > 0.0 && $mutation_rate_global <= 1.0) { # mutate the whole network
+	  printn "mutate: POINT MUTATION (GLOBAL)" if $verbosity >= 1;
+	  $self->set_field_mutation_rates(
+					  mutate_params_rate => 1.0,
+					  mutate_network_rate => 1.0,
+					 );
+	  my @mutated_list = $self->mutate_genome($mutation_rate_global);
+	  my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
+	  my $history = "POINT MUTATION (GLOBAL) $total_bits bits in genes ". join ",", @mutated_list;
+	  printn $history if $verbosity >= 1;
+	  $self->add_history($history);
+	}
+	elsif ($mutation_rate_global != 0.0) {
+	  printn "ERROR: mutation_rate_global is not set in proper range";
+	  exit;
+	}
+
+	
+	if ($duplication_rate > 0.0 && $duplication_rate <= 1.0) {	# duplicate
+	  printn "mutate: DUPLICATION" if $verbosity >= 1;
+	  my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene();
+	  my $duplicate_name = sprintf("G%04d",$duplicate_start);
+	  $self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $duplicate_start, dont_clear_flag => 1);  # N.B. this only updates gene_parser_ref not genome_parser_ref
+	  my $num_bits = $self->mutate_gene_by_name($duplicate_name, $mutation_rate); # mutate duplicated gene
+	  my $history = "DUPLICATION of gene $duplicated_gene to $duplicate_name, with $num_bits mutations";
+	  printn $history if $verbosity >= 1;
+	  $self->add_history($history);
+	}
+	elsif ($duplication_rate != 0.0) {
+	  printn "ERROR: duplication_rate is not set in proper range";
+	  exit;
+	}
+
+	if ($deletion_rate > 0.0 && $deletion_rate <= 1.0) { # delete a gene
+	  printn "mutate: DELETION" if $verbosity >= 1;
+	  
+	  my $deleted_gene_ref = $self->delete_random_gene();
+	  my $deleted_gene_name = $deleted_gene_ref->get_name();
+	  my $history = "DELETION of gene $deleted_gene_name";
+	  printn $history if $verbosity >= 1;
+	  $self->add_history($history);
+	}
+	elsif ($deletion_rate != 0.0) {
+	  printn "ERROR: deletion_rate is not set in proper range";
+	  exit;
+	}
+
+	if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
+	  printn "mutate: RECOMBINATION" if $verbosity >= 1;
+	  my $gene1_index = $self->pick_random_gene();
+	  my $gene2_index = $self->pick_random_gene();
+	  my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
+	  my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
+	  my $recombinatory_start = $self->recombine_genes($gene1_index, $gene2_index);
+	  #$self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $recombinatory_start, dont_clear_fag => 1); # N.B. this only updates gene_parser_ref not genome_parser_ref
+	  my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
+	  printn $history if $verbosity >= 1;
+	  $self->add_history($history);
+	}
+	elsif ($recombination_rate != 0.0) {
+	  printn "ERROR: recombination_rate is not set in proper range";
+	  exit;
+	}
+
+	# post-mutation parsing
+	$self->parse();
+      }
+
+
+    #--------------------------------------------------------------------------------------
+    # Function: mutate_orig
+    # Synopsys: This is the original implementation of mutation subroutine by Julien
+    #--------------------------------------------------------------------------------------
+    sub mutate_orig {
+	my $self = shift; my $obj_ID = ident $self;
+	my %args = (
 	    prob_mutate_params => undef,
 	    prob_mutate_global => undef,
 	    prob_recombination => undef,
@@ -829,6 +942,7 @@ use base qw(Model);
 	# post-mutation parsing
 	$self->parse();
     }
+
 
     #--------------------------------------------------------------------------------------
     # Function: xxx
