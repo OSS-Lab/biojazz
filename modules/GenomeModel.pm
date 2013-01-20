@@ -593,6 +593,9 @@ use base qw(Model);
 	    return;
 	}
 
+	# do duplication based on the genome length and gene length
+	my @genes = $self->get_genes();
+
 	my $sequence_ref = $self->get_sequence_ref();
 	my $duplicate_locus = $sequence_ref->get_length();
 
