@@ -776,6 +776,7 @@ use base qw(Model);
 	}
 
 	if ($duplication_rate > 0.0 && $duplication_rate <= 1.0) {	# duplicate
+
 	  printn "mutate: DUPLICATION" if $verbosity >= 1;
 	  
 	  my @gene_refs = $self->get_genes();

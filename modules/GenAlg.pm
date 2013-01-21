@@ -340,6 +340,7 @@ use base qw();
 	    }
 	    
 	    # after fix the mutation
+	    
 	    my $child_ref = $parent_ref->duplicate();
 	    $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
 	    $next_generation_ref->add_element($child_ref);
