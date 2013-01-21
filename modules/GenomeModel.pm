@@ -585,19 +585,13 @@ use base qw(Model);
     #--------------------------------------------------------------------------------------
     sub duplicate_gene {
 	my $self = shift; my $obj_ID = ident $self;
-	my $probability = shift;
-	$probability = !defined $probability ? 1.0 : 0.0;
-
-	if ((rand 1) >= $probability) {
-	    printn "duplicate_gene: no duplication occurred" if $verbosity >= 1;
-	    return;
-	}
-
+	my $duplication_rate = shift || 0.0;
+	my $gene_name = shift;
+	my $gene_ref = $self->get_gene_by_name($gene_name);
+	
 	my $sequence_ref = $self->get_sequence_ref();
 	my $duplicate_locus = $sequence_ref->get_length();
 
-	my $gene_ref = $self->get_gene_by_index($self->pick_random_gene());
-	my $gene_name = $gene_ref->get_name();
 	my $gene_sequence = $gene_ref->get_sequence();
 
 	printn "duplicate_gene: duplicating gene $gene_name" if $verbosity >= 1;
@@ -752,6 +746,9 @@ use base qw(Model);
 	  my $history = "POINT MUTATION (PARAMS) $total_bits bits in genes ". join ",", @mutated_list;
 	  printn $history if $verbosity >= 1;
 	  $self->add_history($history);
+
+	  # post-mutation parsing
+	  $self->parse();
 	}
 	elsif ($mutation_rate_params != 0.0) {
 	  printn "ERROR: mutation_rate_params is not set in proper range";
@@ -769,6 +766,9 @@ use base qw(Model);
 	  my $history = "POINT MUTATION (GLOBAL) $total_bits bits in genes ". join ",", @mutated_list;
 	  printn $history if $verbosity >= 1;
 	  $self->add_history($history);
+
+	  # post-mutation parsing
+	  $self->parse();
 	}
 	elsif ($mutation_rate_global != 0.0) {
 	  printn "ERROR: mutation_rate_global is not set in proper range";
@@ -777,13 +777,25 @@ use base qw(Model);
 
 	if ($duplication_rate > 0.0 && $duplication_rate <= 1.0) {	# duplicate
 	  printn "mutate: DUPLICATION" if $verbosity >= 1;
-	  my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene();
-	  my $duplicate_name = sprintf("G%04d",$duplicate_start);
-	  $self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $duplicate_start, dont_clear_flag => 1);  # N.B. this only updates gene_parser_ref not genome_parser_ref
-	  my $num_bits = $self->mutate_gene_by_name($duplicate_name, $mutation_rate_global); # mutate duplicated gene
-	  my $history = "DUPLICATION of gene $duplicated_gene to $duplicate_name, with $num_bits mutations";
-	  printn $history if $verbosity >= 1;
-	  $self->add_history($history);
+	  
+	  my @gene_refs = $self->get_genes();
+	  my @gene_names = map $_->get_name(), @gene_refs;
+	  foreach my $gene_name (@gene_names) {
+	    
+	    if ((rand 1) <= $duplication_rate) {
+	      my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene($duplication_rate, $gene_name);
+
+	      my $duplicate_name = sprintf("G%04d",$duplicate_start);
+	      $self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $duplicate_start, dont_clear_flag => 1);  # N.B. this only updates gene_parser_ref not genome_parser_ref
+	      my $num_bits = $self->mutate_gene_by_name($duplicate_name, $mutation_rate_global); # mutate duplicated gene
+	      my $history = "DUPLICATION of gene $duplicated_gene to $duplicate_name, with $num_bits mutations";
+	      printn $history if $verbosity >= 1;
+	      $self->add_history($history);
+
+	      # post-mutation parsing
+	      $self->parse();
+	    }
+	  }
 	}
 	elsif ($duplication_rate != 0.0) {
 	  printn "ERROR: duplication_rate is not set in proper range";
@@ -793,11 +805,21 @@ use base qw(Model);
 	if ($deletion_rate > 0.0 && $deletion_rate <= 1.0) { # delete a gene
 	  printn "mutate: DELETION" if $verbosity >= 1;
 	  
-	  my $deleted_gene_ref = $self->delete_random_gene();
-	  my $deleted_gene_name = $deleted_gene_ref->get_name();
-	  my $history = "DELETION of gene $deleted_gene_name";
-	  printn $history if $verbosity >= 1;
-	  $self->add_history($history);
+	  my $num_genes = $self->get_num_genes();
+	  
+
+	  for (my $i = 0; $i < $num_genes; $i++) {
+	    if ((rand 1) <= $deletion_rate) {
+	      my $deleted_gene_ref = $self->delete_random_gene();
+	      my $deleted_gene_name = $deleted_gene_ref->get_name();
+	      my $history = "DELETION of gene $deleted_gene_name";
+	      printn $history if $verbosity >= 1;
+	      $self->add_history($history);
+
+	      # post-mutation parsing
+	      $self->parse();
+	    }
+	  }
 	}
 	elsif ($deletion_rate != 0.0) {
 	  printn "ERROR: deletion_rate is not set in proper range";
@@ -805,24 +827,27 @@ use base qw(Model);
 	}
 
 	if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
-	  printn "mutate: RECOMBINATION" if $verbosity >= 1;
-	  my $gene1_index = $self->pick_random_gene();
-	  my $gene2_index = $self->pick_random_gene();
-	  my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
-	  my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
-	  my $recombinatory_start = $self->recombine_genes($gene1_index, $gene2_index);
-	  #$self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $recombinatory_start, dont_clear_fag => 1); # N.B. this only updates gene_parser_ref not genome_parser_ref
-	  my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
-	  printn $history if $verbosity >= 1;
-	  $self->add_history($history);
+	  if ((rand 1) <= $recombination_rate) {
+	    printn "mutate: RECOMBINATION" if $verbosity >= 1;
+	    my $gene1_index = $self->pick_random_gene();
+	    my $gene2_index = $self->pick_random_gene();
+	    my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
+	    my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
+	    my $recombinatory_start = $self->recombine_genes($gene1_index, $gene2_index);
+	    #$self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $recombinatory_start, dont_clear_fag => 1); # N.B. this only updates gene_parser_ref not genome_parser_ref
+	    my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
+	    printn $history if $verbosity >= 1;
+	    $self->add_history($history);
+
+	    # post-mutation parsing
+	    $self->parse();
+	  }
 	}
 	elsif ($recombination_rate != 0.0) {
 	  printn "ERROR: recombination_rate is not set in proper range";
 	  exit;
 	}
-
-	# post-mutation parsing
-	$self->parse();
+	
       }
 
 
