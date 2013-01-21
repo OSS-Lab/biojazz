@@ -592,8 +592,7 @@ use base qw(Model);
 	    printn "duplicate_gene: no duplication occurred" if $verbosity >= 1;
 	    return;
 	}
-	
-	
+
 	my $sequence_ref = $self->get_sequence_ref();
 	my $duplicate_locus = $sequence_ref->get_length();
 
