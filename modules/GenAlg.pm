@@ -686,7 +686,7 @@ use base qw();
 	for (my $i=0; $i < @genomes; $i++) {
 	    my $genome_ref = $genomes[$i];
 #	    printn "individual $i  : ".$genome_ref->sprint_stats();
-	    
+#	    $genome_ref->
 	}
     }
 
