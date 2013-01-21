@@ -776,6 +776,7 @@ use base qw(Model);
 	}
 
 	if ($duplication_rate > 0.0 && $duplication_rate <= 1.0) {	# duplicate
+
 	  printn "mutate: DUPLICATION" if $verbosity >= 1;
 	  my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene();
 	  my $duplicate_name = sprintf("G%04d",$duplicate_start);
