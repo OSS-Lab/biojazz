@@ -1,8 +1,8 @@
 =Introduction=
 
-BioJazz is a tool for designing biochemical (protein signalling) networks using a genetic algorithm (GA).  Typically, a BioJazz user wishes to design a small network or motif which accomplishes a specific function, such as a switch or an oscillator module.  The network comprises a set of proteins whose attributes are encoded in a network's ''genome''.  The ''genome'' is a binary string which  contains all the information necessary to determine how many proteins are present in the network, their structure, which proteins interact and the biochemical parameters of their interaction.  
+BioJazz is a tool for evolving and designing biochemical reaction networks using genetic algorithm (GA).  Typically, a BioJazz user wishes to evolve or design a small network or motif which accomplishes a specific function, such as a switch or an oscillator module.  The network comprises a set of proteins whose attributes are encoded in a network's ''genome''.  The ''genome'' is a binary string which  contains all the information necessary to determine how many proteins are present in the network, their structure, which proteins interact and the biochemical parameters of their interaction. 
 
-BioJazz implements a genetic algorithm which through a random process of replication, mutation, and selection, attempts to make each generation of a population of genomes (typically 50) incrementally improve how well they perform a user-specified function. By encoding the network in a fashion that mimics the way nature does, BioJazz can use a larger variety of mutational operators than do traditional GAs (which use point mutations and crossover), such as gene duplications, gene deletions, and domain shuffling.  Thus, BioJazz has the ability to change both the network topology and the biochemical parameters of the network, and can also design a network ''de novo'', or starting from a partially or completely functional seed network.
+BioJazz implements a genetic algorithm which through a random process of replication, mutation, and selection (with either population-based or random walk style), attempts to incrementally improve how well those "genomes" perform a user-specified function. By encoding the network in a fashion that mimics the way nature does, BioJazz can use a larger variety of mutational operators than do traditional GAs (which use point mutations and crossover), such as gene duplications, gene deletions, and domain shuffling.  Thus, BioJazz has the ability to change and evolve networks with respect to both topology and biochemical parameters, by starting from a designed network ''de novo'', or a partially or completely functional seed network.
 
 Much of BioJazz's ability to design realistic networks comes from the accompanying Allosteric Network Compiler (ANC).  ANC is a stand-alone, rule-based compiler which has the ability to turn a high-level description of allosteric proteins into the corresponding set of biochemical equations.  The proteins can exhibit many of the behaviours observed in nature, such as co-localization, allosteric transitions, binding and catalytic reactions.  BioJazz is likely the first tool to couple a rule-based compiler with an evolutionary algorithm.  
 
@@ -26,16 +26,27 @@ The main features of BioJazz are:
 
 BioJazz requires the ANC and Facile tools.  You can tell BioJazz where to get them by setting the ANC_HOME and FACILE_HOME environment variables to point to the appropriate directories.  It is recommended to add the following lines to your ''~/.bashrc'' file:
 
- export ANC_HOME    = ~swainlab/toolbox/anc/latest
- export FACILE_HOME = ~swainlab/toolbox/facile/latest
+ export ANC_HOME    = ~/workspace/anc
+ export FACILE_HOME = ~/workspace/facile
  alias  anc='$ANC_HOME/anc.pl'
  alias  facile='$FACILE_HOME/facile.pl'
  
- export BIOJAZZ_HOME = ~swainlab/toolbox/biojazz/latest
+ export BIOJAZZ_HOME = ~/workspace/biojazz
  alias  biojazz='$BIOJAZZ_HOME/biojazz.pl'
 
 
-BioJazz requires Matlab to be installed on all nodes used for computation, and assumes matlab can be started with the command ''matlab''.
+BioJazz requires Matlab to be installed on all nodes used for computation, and assumes matlab can be started with the command ''matlab''. Here is an example of configuration in "~/.bashrc" file:
+
+export MATLAB_HOME=/Applications/MATLAB_R2011b.app/bin
+
+alias matlab='$MATLAB_HOME/matlab'
+export PATH=$MATLAB_HOME:$PATH
+
+DYLD_LIBRARY_PATH=/Applications/MATLAB_R2011b.app/bin/maci64:/Applications/MATLAB_R2011b.app/sys/os/maci64:/A\
+pplications/MATLAB_R2011b.app/runtime/maci64:$DYLD_LIBRARY_PATH
+
+export DYLD_LIBRARY_PATH
+
 
 Note that if you decide to use a cluster of workstations, these installation instructions apply to all workstations used.
 

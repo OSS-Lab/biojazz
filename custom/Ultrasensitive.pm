@@ -218,6 +218,7 @@ use base qw(Scoring);
 	my $history = $genome_model_ref->sprint_history(10);
 	printn $history if $verbosity >= 2 || $config_ref->{sprint_history};
 
+	#############################################################################
 	my $network_connectivity = $stats_ref->{network_connectivity} = 0;
 	if ($parse_successful) {
 	    my $transcript = $genome_iref->sprint(colour_flag => 0);
@@ -283,6 +284,7 @@ use base qw(Scoring);
 		my $tg1_subnet_size = (@tg1_subnet > 30) ? 30 : @tg1_subnet;
 		$network_connectivity += ($lg_subnet_size + $tg0_subnet_size + $tg1_subnet_size);
 
+		#########################################################################################
 		# score -- LG/TG connected to each other
 		if (grep /LPD/, (map {$_->[2]} @tg0_subnet)) {
 		    printn "TG/0 fans out to LG" if $verbosity >= 1;
@@ -457,7 +459,8 @@ use base qw(Scoring);
 		    EQN_FILE => "$matlab_work/$genome_name.eqn",
 		    SIM_TYPE => "matlab",
 		   );
-
+		
+		###############################################################################
 		#---------------------------------------------------------
 		# SCORE COMPLEXITY
 		#---------------------------------------------------------
@@ -490,6 +493,7 @@ use base qw(Scoring);
 	    }
 	    my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 800) ? 1 : 0;
 
+	    #########################################################################################
 	    #---------------------------------------------------------
 	    # NETWORK SIMULATION
 	    #---------------------------------------------------------
@@ -539,10 +543,11 @@ use base qw(Scoring);
 		$self->matlab_cmd("disp('Done plotting')\n");
 		$self->matlab_wait_on("Done plotting");
 
+		#########################################################################
 		#---------------------------------------------------------
 		# SCORE STEADY STATE
 		#---------------------------------------------------------
-#		printn "computing steady-state slopes...";
+		$printn "computing steady-state slopes...";
 
 		my $steady_state_threshold = $config_ref->{steady_state_threshold};
 		$stats_ref->{steady_state_score} = n_hill(
@@ -649,6 +654,7 @@ use base qw(Scoring);
 		    my $min_mean_squared_err = $stats_ref->{min_mean_squared_err} = 1e-6 * $stats_ref->{max_mean_squared_err};
 		    $stats_ref->{mean_squared_err_score} = (log($max_mean_squared_err)-log($min_mean_squared_err + $mean_squared_err))/log($max_mean_squared_err/$min_mean_squared_err);
 
+		    ######################################################################################################
 		    # ultrasensitivity measure
 		    my @output_vector_slopes = map {$output_vector[$_] - $output_vector[$_-1]} (1..$#output_vector);
 		    my $LG_steps = $config_ref->{LG_steps};
