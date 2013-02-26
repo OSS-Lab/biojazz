@@ -429,7 +429,7 @@ sub ss_ramp_equation {
     my $steps = $args{STEPS};
     my $ramp_time = $args{RAMP_TIME};
 
-    my $step_size = $range / $steps;
+    my $step_size = $range / $steps;  # the concentration changing size
     my $step_time = $ramp_time / $steps;
 
     my @events = ($delay, map {"~"} (1..2*$steps));
