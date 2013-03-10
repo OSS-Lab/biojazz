@@ -312,8 +312,12 @@ use base qw();
 		$parent_ref->mutate(
 				    mutation_rate_params => $config_ref->{mutation_rate_params},
 				    mutation_rate_global => $config_ref->{mutation_rate_global},
-				    duplication_rate => $config_ref->{duplication_rate},
-				    deletion_rate => $config_ref->{deletion_rate},
+				    gene_duplication_rate => $config_ref->{gene_duplication_rate},
+				    gene_deletion_rate => $config_ref->{gene_deletion_rate},
+				    domain_duplication_rate => $config_ref->{domain_duplication_rate},
+				    domain_deletion_rate => $config_ref->{domain_deletion_rate},
+				    protodomain_duplication_rate => $config_ref->{protodomain_duplication_rate},
+				    protodomain_deletion_rate => $config_ref->{protodomain_deletion_rate},
 				    recombination_rate => $config_ref->{recombination_rate},
 				   );
 		$parent_ref->set_score(undef);
@@ -433,8 +437,12 @@ use base qw();
 					  "\$genome_ref->mutate(".
 					  "mutation_rate_params => " . $config_ref->{mutation_rate_params} . "," .
 					  "mutation_rate_global => " . $config_ref->{mutation_rate_global} . "," .
-					  "duplication_rate => " . $config_ref->{duplication_rate} . "," .
-					  "deletion_rate => " . $config_ref->{deletion_rate} . "," .
+					  "gene_duplication_rate => " . $config_ref->{gene_duplication_rate} . "," .
+					  "gene_deletion_rate => " . $config_ref->{gene_deletion_rate} . "," .
+					  "domain_duplication_rate => " . $config_ref->{domain_duplication_rate} . "," .
+					  "domain_deletion_rate => " . $config_ref->{domain_deletion_rate} . "," .
+					  "protodomain_duplication_rate => " . $config_ref->{protodomain_duplication_rate} . "," .
+					  "protodomain_deletion_rate => " . $config_ref->{protodomain_deletion_rate} . "," .
 					  "recombination_rate => " . $config_ref->{recombination_rate} . "," .
 					  "\$scoring_ref->score_genome(\$genome_ref); " .
 					  "store(\$genome_ref, \"$temp_genome_file\");\n");
@@ -557,49 +565,53 @@ use base qw();
     #--------------------------------------------------------------------------------------
 
     sub mutate_current_generation {
-	my $self = shift; my $obj_ID = ident $self;
-	my $config_ref = $config_ref_of{$obj_ID};
-
-	my $current_generation_ref = $current_generation_ref_of{$obj_ID};
-	my $current_generation_number = $current_generation_number_of{$obj_ID};
-	my $current_generation_size = $current_generation_ref->get_num_elements();
-
-	my $next_generation_ref = Generation->new({});
-	my $next_generation_number = $current_generation_number + 1;
-
-	for (my $i = 0; $i < $current_generation_size; $i++) {
-	    
-	    my $child_ref = $current_generation_ref->get_element($i)->duplicate();
-
-	    $next_generation_ref->add_element($child_ref);
-	}
-
-	$current_generation_ref->clear_genomes();
-	$current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
-	$current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
-	$current_generation_ref->refresh_individual_names($current_generation_number);
-
-	my $mutation_rate = $config_ref->{mutation_rate};
-
-	my $mutate_num = int($mutation_rate * $current_generation_size);
-
-	my @mutated_indice;
-	for (my $i = 0; $i < $mutate_num; $i++) {
-	    my $index = int(rand($current_generation_size));
-	    printn "Going to mutate number $index\n";
-	    $current_generation_ref->get_element($index)->mutate(
-								 mutation_rate_params => $config_ref->{mutation_rate_params},
-								 mutation_rate_global => $config_ref->{mutation_rate_global},
-								 duplication_rate => $config_ref->{duplication_rate},
-								 deletion_rate => $config_ref->{deletion_rate},
-								 recombination_rate => $config_ref->{recombination_rate},
-								);
-
-	    $current_generation_ref->get_element($index)->set_elite_flag(0);
-	}
-
+      my $self = shift; my $obj_ID = ident $self;
+      my $config_ref = $config_ref_of{$obj_ID};
+      
+      my $current_generation_ref = $current_generation_ref_of{$obj_ID};
+      my $current_generation_number = $current_generation_number_of{$obj_ID};
+      my $current_generation_size = $current_generation_ref->get_num_elements();
+      
+      my $next_generation_ref = Generation->new({});
+      my $next_generation_number = $current_generation_number + 1;
+      
+      for (my $i = 0; $i < $current_generation_size; $i++) {
+	
+	my $child_ref = $current_generation_ref->get_element($i)->duplicate();
+	
+	$next_generation_ref->add_element($child_ref);
+      }
+      
+      $current_generation_ref->clear_genomes();
+      $current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
+      $current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
+      $current_generation_ref->refresh_individual_names($current_generation_number);
+      
+      my $mutation_rate = $config_ref->{mutation_rate};
+      
+      my $mutate_num = int($mutation_rate * $current_generation_size);
+      
+      my @mutated_indice;
+      for (my $i = 0; $i < $mutate_num; $i++) {
+	my $index = int(rand($current_generation_size));
+	printn "Going to mutate number $index\n";
+	$current_generation_ref->get_element($index)->mutate(
+							     mutation_rate_params => $config_ref->{mutation_rate_params},
+							     mutation_rate_global => $config_ref->{mutation_rate_global},
+							     gene_duplication_rate => $config_ref->{gene_duplication_rate},
+							     gene_deletion_rate => $config_ref->{gene_deletion_rate},
+							     domain_duplication_rate => $config_ref->{domain_duplication_rate},
+							     domain_deletion_rate => $config_ref->{domain_deletion_rate},
+							     protodomain_duplication_rate => $config_ref->{protodomain_duplication_rate},
+							     protodomain_deletion_rate => $config_ref->{protodomain_deletion_rate},
+							     recombination_rate => $config_ref->{recombination_rate},
+							    );
+	
+	$current_generation_ref->get_element($index)->set_elite_flag(0);
+      }
+      
     }
-
+    
     #--------------------------------------------------------------------------------------
     # Function: population_based_selection
     # Synopsys: 

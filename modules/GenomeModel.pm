@@ -719,16 +719,25 @@ use base qw(Model);
 		    mutation_rate_global => undef,
 		    duplication_rate => undef,
 		    deletion_rate => undef,
+		    domain_dupicatioin_rate => undef,
+		    domain_deletion_rate => undef,
+		    protodomain_dupicatioin_rate => undef,
+		    protodomain_deletion_rate => undef,
 		    recombination_rate => undef,
 		    @_,
 		   );
-	check_args(\%args,5);
+	check_args(\%args,9);
 	
 	my $mutation_rate_params = $args{mutation_rate_params};
 	my $mutation_rate_global = $args{mutation_rate_global};
-	my $duplication_rate = $args{duplication_rate};
-	my $deletion_rate = $args{deletion_rate};
+	my $gene_duplication_rate = $args{gene_duplication_rate};
+	my $gene_deletion_rate = $args{gene_deletion_rate};
+	my $domain_duplication_rate = $args{domain_duplication_rate};
+	my $domain_deletion_rate = $args{domain_deletion_rate};
+	my $protodomain_duplication_rate = $args{protodomain_duplication_rate};
+	my $protodomain_deletion_rate = $args{protodomain_deletion_rate};
 	my $recombination_rate = $args{recombination_rate};
+
 
 	my $sequence_ref = $self->get_sequence_ref();
 
