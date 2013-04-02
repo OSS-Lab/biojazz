@@ -578,12 +578,75 @@ use base qw(Model);
     }
 
     #--------------------------------------------------------------------------------------
-    # Function: duplicate_gene
+    # Function: duplicate_random_gene
     # Synopsys: Pick a gene at random and duplicate it (copy to end of genome) with
     #           probability given by argument (or always if no argument).
     #           Returns name of chosen gene and locus of duplicate.
     #--------------------------------------------------------------------------------------
+    sub duplicate_random_gene {
+	my $self = shift; my $obj_ID = ident $self;
+	my $probability = shift;
+	$probability = 1.0 if (!defined $probability);
+
+	if ((rand 1) > $probability) {
+	    printn "duplicate_gene: no duplication occurred" if $verbosity >= 1;
+	    return;
+	}
+
+	my $sequence_ref = $self->get_sequence_ref();
+	my $duplicate_locus = $sequence_ref->get_length();
+
+	my $gene_ref = $self->get_gene_by_index($self->pick_random_gene());
+	my $gene_name = $gene_ref->get_name();
+	my $gene_sequence = $gene_ref->get_sequence();
+
+	printn "duplicate_gene: duplicating gene $gene_name" if $verbosity >= 1;
+
+	# append the gene
+	$sequence_ref->splice_subseq($gene_sequence);
+	# terminate it
+	$sequence_ref->splice_subseq($gene_ref->get_STOP_linker_code(),
+				     $sequence_ref->get_length() - length($gene_ref->get_STOP_linker_code()),
+				     length($gene_ref->get_STOP_linker_code()));
+
+	return ($gene_name, $duplicate_locus);
+    }
+
+    #--------------------------------------------------------------------------------------
+    # Function: duplicate_gene
+    # Synopsys: duplicate a gene by its name passed from arguments, if there is no
+    #           specified gene name, then it will randomly pick a gene to duplicate
+    #--------------------------------------------------------------------------------------
     sub duplicate_gene {
+	my $self = shift; my $obj_ID = ident $self;
+	my $gene_name = shift;
+	my $gene_ref = !defined $gene_name ? ($self->get_gene_by_index($self->pick_random_gene())) : ($self->get_gene_by_name($gene_name));
+	
+	my $sequence_ref = $self->get_sequence_ref();
+	my $duplicate_locus = $sequence_ref->get_length();
+
+	my $gene_sequence = $gene_ref->get_sequence();
+
+	printn "duplicate_gene: duplicating gene $gene_name" if $verbosity >= 1;
+
+	# append the gene
+	$sequence_ref->splice_subseq($gene_sequence);
+	# terminate it
+	$sequence_ref->splice_subseq($gene_ref->get_STOP_linker_code(),
+				     $sequence_ref->get_length() - length($gene_ref->get_STOP_linker_code()),
+				     length($gene_ref->get_STOP_linker_code()));
+
+	return ($gene_name, $duplicate_locus);
+    }
+
+    #--------------------------------------------------------------------------------------
+    # Function: duplicate_domain
+    # Synopsys: duplication of domain is a bit more difficult to implement. Based on the
+    #           passed to, try to iterate each domain to decide whether duplicate it or not
+    #           and either append it at the end or put it in tandem. 
+    #           NOTE: it could easily messup the whole gene, so pay attention
+    #--------------------------------------------------------------------------------------
+    sub duplicate_domain {
 	my $self = shift; my $obj_ID = ident $self;
 	my $duplication_rate = shift || 0.0;
 	my $gene_name = shift;
@@ -605,6 +668,9 @@ use base qw(Model);
 
 	return ($gene_name, $duplicate_locus);
     }
+
+
+
 
     #--------------------------------------------------------------------------------------
     # Function: recombine_genes
@@ -784,16 +850,16 @@ use base qw(Model);
 	  exit;
 	}
 
-	if ($duplication_rate > 0.0 && $duplication_rate <= 1.0) {	# duplicate
+	if ($gene_duplication_rate > 0.0 && $gene_duplication_rate <= 1.0) {	# duplicate genes
 
-	  printn "mutate: DUPLICATION" if $verbosity >= 1;
+	  printn "mutate: GENE_DUPLICATION" if $verbosity >= 1;
 	  
 	  my @gene_refs = $self->get_genes();
 	  my @gene_names = map $_->get_name(), @gene_refs;
 	  foreach my $gene_name (@gene_names) {
 	    
-	    if ((rand 1) <= $duplication_rate) {
-	      my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene($duplication_rate, $gene_name);
+	    if ((rand 1) <= $gene_duplication_rate) {
+	      my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene($gene_name);
 
 	      my $duplicate_name = sprintf("G%04d",$duplicate_start);
 	      $self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $duplicate_start, dont_clear_flag => 1);  # N.B. this only updates gene_parser_ref not genome_parser_ref
@@ -807,19 +873,19 @@ use base qw(Model);
 	    }
 	  }
 	}
-	elsif ($duplication_rate != 0.0) {
-	  printn "ERROR: duplication_rate is not set in proper range";
+	elsif ($gene_duplication_rate != 0.0) {
+	  printn "ERROR: gene_duplication_rate is not set in proper range";
 	  exit;
 	}
 
-	if ($deletion_rate > 0.0 && $deletion_rate <= 1.0) { # delete a gene
-	  printn "mutate: DELETION" if $verbosity >= 1;
+	if ($gene_deletion_rate > 0.0 && $gene_deletion_rate <= 1.0) { # delete genes
+	  printn "mutate: GENE_DELETION" if $verbosity >= 1;
 	  
 	  my $num_genes = $self->get_num_genes();
 	  
 
 	  for (my $i = 0; $i < $num_genes; $i++) {
-	    if ((rand 1) <= $deletion_rate) {
+	    if ((rand 1) <= $gene_deletion_rate) {
 	      my $deleted_gene_ref = $self->delete_random_gene();
 	      my $deleted_gene_name = $deleted_gene_ref->get_name();
 	      my $history = "DELETION of gene $deleted_gene_name";
@@ -831,10 +897,64 @@ use base qw(Model);
 	    }
 	  }
 	}
-	elsif ($deletion_rate != 0.0) {
-	  printn "ERROR: deletion_rate is not set in proper range";
+	elsif ($gene_deletion_rate != 0.0) {
+	  printn "ERROR: gene_deletion_rate is not set in proper range";
 	  exit;
 	}
+
+	#######################
+	# DOMAIN DUPLICATION AND DELETION
+
+	# choose a gene to duplicate it, and duplicate domains in it, then append the gene to the end and delete the orginal one. 
+	if ($domain_duplication_rate > 0.0 && $domain_duplication_rate <= 1.0) {	# duplicate domains
+
+	  printn "mutate: DOMAIN_DUPLICATION" if $verbosity >= 1;
+	  
+	  
+	  
+	}
+	elsif ($domain_duplication_rate != 0.0) {
+	  printn "ERROR: domain_duplication_rate is not set in proper range";
+	  exit;
+	}
+
+
+	if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0) { # delete domains
+	  printn "mutate: DOMAIN_DELETION" if $verbosity >= 1;
+	  
+	}
+	elsif ($domain_deletion_rate != 0.0) {
+	  printn "ERROR: domain_deletion_rate is not set in proper range";
+	  exit;
+	}
+
+	# PROTODOMAIN DUPLICATION AND DELETION
+	if ($protodomain_duplication_rate > 0.0 && $protodomain_duplication_rate <= 1.0) {	# duplicate protodomains
+
+	  printn "mutate: PROTODOMAIN_DUPLICATION" if $verbosity >= 1;
+
+	  printn "NOT IMPLEMENTED YET";
+	  
+	}
+	elsif ($protodomain_duplication_rate != 0.0) {
+	  printn "ERROR: protodomain_duplication_rate is not set in proper range";
+	  exit;
+	}
+
+
+	if ($protodomain_deletion_rate > 0.0 && $protodomain_deletion_rate <= 1.0) { # delete domains
+	  printn "mutate: PROTODOMAIN_DELETION" if $verbosity >= 1;
+
+	  printn "NOT IMPLEMENTED YET";
+	  
+	}
+	elsif ($protodomain_deletion_rate != 0.0) {
+	  printn "ERROR: protodomain_deletion_rate is not set in proper range";
+	  exit;
+	}
+
+
+	#######################
 
 	if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
 	  if ((rand 1) <= $recombination_rate) {

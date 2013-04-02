@@ -117,7 +117,7 @@ use base qw(Parser);
 	$self->set_structure_ref([
 	    ["START_CODE", "$gene_start_code_of{$obj_ID}"],
 	    ["regulated_concentration", "\\G.{$regulated_concentration_width_of{$obj_ID}}"],
-	    ["UNUSED",                  "\\G.{$unused_width_of{$obj_ID}}"],
+	    ["UNUSED", "\\G.{$unused_width_of{$obj_ID}}"],
 	    ["domains", $domain_parser_ref, "\\G$soft_linker_code_of{$obj_ID}(?=.{$domain_min_length})"],
 	    ["STOP_CODE", "\\G$stop_linker_code"],
 	   ]);
