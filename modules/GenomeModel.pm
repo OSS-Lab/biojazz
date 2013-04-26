@@ -657,7 +657,6 @@ use base qw(Model);
 
 	my $gene_sequence = $gene_ref->get_sequence();
 
-	printn "duplicate_gene: duplicating gene $gene_name" if $verbosity >= 1;
 
 	# append the gene
 	$sequence_ref->splice_subseq($gene_sequence);
@@ -856,9 +855,10 @@ use base qw(Model);
 	  
 	  my @gene_refs = $self->get_genes();
 	  my @gene_names = map $_->get_name(), @gene_refs;
+	  
+
 	  foreach my $gene_name (@gene_names) {
-	    
-	    if ((rand 1) <= $gene_duplication_rate) {
+	    if ((rand 1) <= $gene_duplication_rate ) {
 	      my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene($gene_name);
 
 	      my $duplicate_name = sprintf("G%04d",$duplicate_start);
@@ -883,9 +883,10 @@ use base qw(Model);
 	  
 	  my $num_genes = $self->get_num_genes();
 	  
+	  my $deleted_gene_num = 0;
 
 	  for (my $i = 0; $i < $num_genes; $i++) {
-	    if ((rand 1) <= $gene_deletion_rate) {
+	    if ((rand 1) <= $gene_deletion_rate)&& ($num_genes - $deleted_gene_num) > 1 {
 	      my $deleted_gene_ref = $self->delete_random_gene();
 	      my $deleted_gene_name = $deleted_gene_ref->get_name();
 	      my $history = "DELETION of gene $deleted_gene_name";
@@ -894,6 +895,9 @@ use base qw(Model);
 
 	      # post-mutation parsing
 	      $self->parse();
+
+	      # conuting the deleted gene number to calculate number of rest genes
+	      $deleted_gene_num++;
 	    }
 	  }
 	}
@@ -905,7 +909,8 @@ use base qw(Model);
 	#######################
 	# DOMAIN DUPLICATION AND DELETION
 
-	# choose a gene to duplicate it, and duplicate domains in it, then append the gene to the end and delete the orginal one. 
+	# choose a gene to duplicate it, and duplicate domains in it, then 
+	# append the gene to the end and delete the orginal one. 
 	if ($domain_duplication_rate > 0.0 && $domain_duplication_rate <= 1.0) {	# duplicate domains
 
 	  printn "mutate: DOMAIN_DUPLICATION" if $verbosity >= 1;
