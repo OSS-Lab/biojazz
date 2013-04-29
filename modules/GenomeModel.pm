@@ -656,7 +656,7 @@ use base qw(Model);
 	my $duplicate_locus = $sequence_ref->get_length();
 
 	my $gene_sequence = $gene_ref->get_sequence();
-
+	
 
 	# append the gene
 	$sequence_ref->splice_subseq($gene_sequence);
@@ -851,7 +851,6 @@ use base qw(Model);
 
 	if ($gene_duplication_rate > 0.0 && $gene_duplication_rate <= 1.0) {	# duplicate genes
 
-	  printn "mutate: GENE_DUPLICATION" if $verbosity >= 1;
 	  
 	  my @gene_refs = $self->get_genes();
 	  my @gene_names = map $_->get_name(), @gene_refs;
@@ -859,7 +858,8 @@ use base qw(Model);
 
 	  foreach my $gene_name (@gene_names) {
 	    if ((rand 1) <= $gene_duplication_rate ) {
-	      my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene($gene_name);
+	  	printn "mutate: GENE_DUPLICATION" if $verbosity >= 1;
+	      	my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene($gene_name);
 
 	      my $duplicate_name = sprintf("G%04d",$duplicate_start);
 	      $self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $duplicate_start, dont_clear_flag => 1);  # N.B. this only updates gene_parser_ref not genome_parser_ref
@@ -886,7 +886,13 @@ use base qw(Model);
 	  my $deleted_gene_num = 0;
 
 	  for (my $i = 0; $i < $num_genes; $i++) {
-	    if ((rand 1) <= $gene_deletion_rate)&& ($num_genes - $deleted_gene_num) > 1 {
+		  # to prevent delete all genes in a genome, if there is only one gene left
+		  # then stop gene deletion
+		  if (($num_genes - $deleted_gene_num) > 1) {
+			 print "There is only one gene left, stop deleting!\n";
+			 break;
+		 } 
+	    if ((rand 1) <= $gene_deletion_rate){
 	      my $deleted_gene_ref = $self->delete_random_gene();
 	      my $deleted_gene_name = $deleted_gene_ref->get_name();
 	      my $history = "DELETION of gene $deleted_gene_name";
@@ -912,11 +918,28 @@ use base qw(Model);
 	# choose a gene to duplicate it, and duplicate domains in it, then 
 	# append the gene to the end and delete the orginal one. 
 	if ($domain_duplication_rate > 0.0 && $domain_duplication_rate <= 1.0) {	# duplicate domains
+		my @duplicated_gene_names;
+		my @gene_refs = $self->get_genes();
+		my @gene_names = map $_->get_name(), @gene_refs;
 
-	  printn "mutate: DOMAIN_DUPLICATION" if $verbosity >= 1;
-	  
-	  
-	  
+		foreach my $gene_name (@gene_names)
+		{
+			my $gene_seq_after_dup = $self->duplicate_domain($gene_name, $domain_duplication_rate);
+	  		if ($gene_seq_after_dup != "")
+			{
+				my $sequence_ref = $self->get_sequence_ref();
+				my $gene_ref = $self->get_gene_by_name($gene_name);
+				# append the gene with duplicated domain(s)
+				$sequence_ref->splice_subseq($gene_seq_after_dup);
+				# terminate it
+				$sequence_ref->splice_subseq($gene_ref->get_STOP_linker_code(),
+					$sequence_ref->get_length() - length($gene_ref->get_STOP_linker_code()),
+					length($gene_ref->get_STOP_linker_code()));
+				printn "mutate: Domain duplicated in $gene_name" if $verbosity >= 1;
+				# post-mutation parsing
+				$self->parse();
+			}
+		} 
 	}
 	elsif ($domain_duplication_rate != 0.0) {
 	  printn "ERROR: domain_duplication_rate is not set in proper range";
