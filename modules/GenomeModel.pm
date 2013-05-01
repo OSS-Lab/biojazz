@@ -691,8 +691,11 @@ use base qw(Model);
     sub duplicate_domain {
 	my $self = shift; my $obj_ID = ident $self;
 	my $duplication_rate = shift || 0.0;
-	my $gene_index = shift || confess "Gene index not specified, have no idea how to duplicate domains";
+	my $gene_index = shift;
 
+	if (!defined $gene_index) {
+		confess "There is no gene index specified, have no idea how to do domain deletion!";
+	}
 	my $gene_ref = $self->get_gene_by_index($gene_index);
 	
 	my $soft_linker_sequence = $self->get_gene_parser_ref()->get_soft_linker_code();
@@ -745,8 +748,11 @@ use base qw(Model);
 	sub delete_domain {
 		my $self = shift; my $obj_ID = ident $self;
 		my $deletion_rate = shift || 0.0;
-		my $gene_index = shift || confess "Gene index not specified, have no idea how to delete domains";
+		my $gene_index = shift;
 
+		if (!defined $gene_index) {
+			confess "There is no gene index specified, have no idea how to do domain deletion!";
+		}
 		my $gene_ref = $self->get_gene_by_index($gene_index);
 	
 		my $soft_linker_width = length($self->get_gene_parser_ref()->get_soft_linker_code());
