@@ -548,7 +548,7 @@ use base qw(Scoring);
 		#---------------------------------------------------------
 		# SCORE STEADY STATE
 		#---------------------------------------------------------
-		$printn "computing steady-state slopes...";
+		printn "computing steady-state slopes...";
 
 		my $steady_state_threshold = $config_ref->{steady_state_threshold};
 		$stats_ref->{steady_state_score} = n_hill(
