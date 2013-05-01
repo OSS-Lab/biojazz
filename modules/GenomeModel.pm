@@ -651,7 +651,8 @@ use base qw(Model);
 	my $duplication_rate = shift || 0.0;
 	my $gene_index = shift || confess "Gene index not specified, have no idea how to duplicate domains";
 
-	# my $gene_ref = $self->get_gene_by_index($gene_index);
+	my $gene_ref = $self->get_gene_by_index($gene_index);
+	
 	my $soft_linker_sequence = $self->get_gene_parser_ref()->get_soft_linker_code();
 	
 	my $sequence_ref = $self->get_sequence_ref();
@@ -662,36 +663,34 @@ use base qw(Model);
 	# first store all domains that will be duplicated 
 	my @duplicate_info;
 	my $duplicate_num = 0;
+	my $domain_index = 0;
 	foreach my $domain_ref (@domain_refs) {
 		if ($duplication_rate > rand()) {
 			my $domain_locus = $domain_ref->get_locus();
 			my $domain_length = $domain_ref->get_length();
 			my $insert_sequence = ($soft_linker_sequence . $domain_ref->get_sequence());
-
-			push(@duplicate_info, [$domain_locus, $domain_length, $insert_sequence]);
+			my $domain_name = $domain_ref->get_name();
+			if ($domain_name ne ($gene_ref->get_field_ref(["domain", $domain_index])->get_name())) {
+				confess "ERROR: index of domain_ref array not consistent with index of domain instances";
+			}
+			push(@duplicate_info, [$domain_locus, $domain_length, $insert_sequencei, $domain_name]);
 			$duplicate_num++;
 		}
+		$domain_index++;
 	}
 
-	if ($duplicate_num == 0) {
-		printn "There is no domain duplicated";
-		return 1;
+	my $accum_length = 0;
+	# now we insert all the domain sequence into the sequence reference.
+	# N.B.: 1. don't forget the soft_linker_code and its length
+	# 	2. don't mess up the locus (which need to add lengthes of all the 
+	# 	   sequence add previous of the current one.
+	for (my $i = 0; $i < $duplicate_num; $i++) {
+		$sequence_ref->splice_subseq($duplicate_info[$i][2], 
+			$duplicate_info[$i][0] + $duplicate_info[$i][1] + $accum_length,
+			0);
+		$accum_length = $accum_length + length($duplicate_info[$i][2]);
 	}
-	elsif {
-		my $accum_length = 0;
-		# now we insert all the domain sequence into the sequence reference.
-		# N.B.: 1. don't forget the soft_linker_code and its length
-		# 	2. don't mess up the locus (which need to add lengthes of all the 
-		# 	   sequence add previous of the current one.
-		for (my $i = 0; $i < $duplicate_num; $i++) {
-			$sequence_ref->splice_subseq($duplicate_info[$i][2], 
-				$duplicate_info[$i][0] + $duplicate_info[$i][1] + $accum_length,
-				0);
-			$accum_length = $accum_length + length($duplicate_info[$i][2]);
-		}
-		
-		return $duplicate_num;
-	}
+	return $duplicate_num;
     }
 
 
@@ -889,7 +888,7 @@ use base qw(Model);
 	  
 
 	  foreach my $gene_name (@gene_names) {
-	    if ((rand 1) <= $gene_duplication_rate ) {
+	    if ( rand() < $gene_duplication_rate ) {
 	  	printn "mutate: GENE_DUPLICATION" if $verbosity >= 1;
 	      	my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene($gene_name);
 
@@ -915,20 +914,16 @@ use base qw(Model);
 	  printn "mutate: GENE_DELETION" if $verbosity >= 1;
 	  
 	  my $num_genes = $self->get_num_genes();
-	  
 	  my $deleted_gene_num = 0;
 
-	  for (my $i = 0; $i < $num_genes; $i++) 
-	  {
-		  # to prevent delete all genes in a genome, if there is only one gene left
-		  # then stop gene deletion
-		  if (($num_genes - $deleted_gene_num) > 1) 
-		  {
+	  for (my $i = 0; $i < $num_genes; $i++) {
+		# to prevent delete all genes in a genome, if there is only one gene left
+		# then stop gene deletion
+		if (($num_genes - $deleted_gene_num) == 1) {
 			 print "There is only one gene left, stop deleting!\n";
 			 break;
 		 } 
-	    if ((rand 1) <= $gene_deletion_rate)
-	    {
+	    if (rand() < $gene_deletion_rate) {
 	      my $deleted_gene_ref = $self->delete_random_gene();
 	      my $deleted_gene_name = $deleted_gene_ref->get_name();
 	      my $history = "DELETION of gene $deleted_gene_name";
@@ -943,8 +938,7 @@ use base qw(Model);
 	    }
 	  }
 	}
-	elsif ($gene_deletion_rate != 0.0) 
-	{
+	elsif ($gene_deletion_rate != 0.0) {
 	  printn "ERROR: gene_deletion_rate is not set in proper range";
 	  exit;
 	}
@@ -956,42 +950,27 @@ use base qw(Model);
 	# append the gene to the end and delete the orginal one. 
 	if ($domain_duplication_rate > 0.0 && $domain_duplication_rate <= 1.0) 	# duplicate domains
 	{
-		my @duplicated_gene_names;
+		my $num_genes = $self->get_num_genes();
+		
 		my @gene_refs = $self->get_genes();
-		my @gene_names = map $_->get_name(), @gene_refs;
 
-		foreach my $gene_name (@gene_names)
-		{
-			my $gene_seq_after_dup = $self->duplicate_domain($gene_name, $domain_duplication_rate);
-	  		if ($gene_seq_after_dup ne "")
-			{
-				my $sequence_ref = $self->get_sequence_ref();
-				my $gene_ref = $self->get_gene_by_name($gene_name);
-				# append the gene with duplicated domain(s)
-				$sequence_ref->splice_subseq($gene_seq_after_dup);
-				# terminate it
-				$sequence_ref->splice_subseq($gene_ref->get_STOP_linker_code(),
-					$sequence_ref->get_length() - length($gene_ref->get_STOP_linker_code()),
-					length($gene_ref->get_STOP_linker_code()));
-				printn "mutate: Domain duplicated in $gene_name" if $verbosity >= 1;
-				# post-mutation parsing
+		for (my $i = 0; $i < $num_genes; $i ++) {
+			my $gene_ref = $self->get_gene_by_index($i);
+			my $gene_name = $gene_ref->get_name();
+			if ($gene_name ne $gene_refs[$i]->get_name()) {
+				confess "The index of gene instances are not consistent with index of gene_refs array";
+			}
+			my $duplicate_num = $self->duplicate_domain($domain_duplication_rate, $i);
+			printn "Mutate: duplicated $duplicate_num domains in gene $gene_name";
+			
+			# update the parser instances and gene_refs after reparsing
+			if ($duplicate_num) {
+				# post domain_duplication parsing
 				$self->parse();
-
-				push(@duplicated_gene_names, $gene_name);
+				my @gene_refs = $self->get_genes();
 			}
 		}
 
-		# Now, we should delete all the original genes that are duplicated
-		# and appended	
-		foreach my $gene_name (@duplicated_gene_names)
-		{
-			my $gene_ref = $self->get_gene_by_name($gene_name);
-			my @deleted_genes = $self->delete_gene($gene_ref);
-			confess "ERROR: internal error -- could not delete a gene" if (@deleted_genes != 1) || ($deleted_genes[0] != $gene_ref);
-
-			# post-deletion parsing
-			$self->parse();
-		}
 	}
 	elsif ($domain_duplication_rate != 0.0) 
 	{
