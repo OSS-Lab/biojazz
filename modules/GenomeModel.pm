@@ -649,23 +649,49 @@ use base qw(Model);
     sub duplicate_domain {
 	my $self = shift; my $obj_ID = ident $self;
 	my $duplication_rate = shift || 0.0;
-	my $gene_name = shift;
-	my $gene_ref = $self->get_gene_by_name($gene_name);
+	my $gene_index = shift || confess "Gene index not specified, have no idea how to duplicate domains";
+
+	# my $gene_ref = $self->get_gene_by_index($gene_index);
+	my $soft_linker_sequence = $self->get_gene_parser_ref()->get_soft_linker_code();
 	
 	my $sequence_ref = $self->get_sequence_ref();
-	my $duplicate_locus = $sequence_ref->get_length();
 
-	my $gene_sequence = $gene_ref->get_sequence();
-	
+	my @domain_refs = $self->get_domains($gene_index);
+	confess "ERROR: Can not retrive any domain from Gene $gene_index" if $domain_refs < 1;
 
-	# append the gene
-	$sequence_ref->splice_subseq($gene_sequence);
-	# terminate it
-	$sequence_ref->splice_subseq($gene_ref->get_STOP_linker_code(),
-				     $sequence_ref->get_length() - length($gene_ref->get_STOP_linker_code()),
-				     length($gene_ref->get_STOP_linker_code()));
+	# first store all domains that will be duplicated 
+	my @duplicate_info;
+	my $duplicate_num = 0;
+	foreach my $domain_ref (@domain_refs) {
+		if ($duplication_rate > rand()) {
+			my $domain_locus = $domain_ref->get_locus();
+			my $domain_length = $domain_ref->get_length();
+			my $insert_sequence = ($soft_linker_sequence . $domain_ref->get_sequence());
 
-	return ($gene_name, $duplicate_locus);
+			push(@duplicate_info, [$domain_locus, $domain_length, $insert_sequence]);
+			$duplicate_num++;
+		}
+	}
+
+	if ($duplicate_num == 0) {
+		printn "There is no domain duplicated";
+		return 1;
+	}
+	elsif {
+		my $accum_length = 0;
+		# now we insert all the domain sequence into the sequence reference.
+		# N.B.: 1. don't forget the soft_linker_code and its length
+		# 	2. don't mess up the locus (which need to add lengthes of all the 
+		# 	   sequence add previous of the current one.
+		for (my $i = 0; $i < $duplicate_num; $i++) {
+			$sequence_ref->splice_subseq($duplicate_info[$i][2], 
+				$duplicate_info[$i][0] + $duplicate_info[$i][1] + $accum_length,
+				0);
+			$accum_length = $accum_length + length($duplicate_info[$i][2]);
+		}
+		
+		return $duplicate_num;
+	}
     }
 
 
@@ -753,7 +779,7 @@ use base qw(Model);
 		printn "ERROR: delete_gene -- no such gene $gene_name";
 		exit(1);
 	    }
-	    $self->get_sequence_ref()->splice_subseq("0" x $gene_length, $gene_start, $gene_length);
+	    $self->get_sequence_ref()->splice_subseq("", $gene_start, $gene_length);
 	    push @deleted_genes, $gene_ref;
 	}
 	return @deleted_genes;
@@ -777,7 +803,8 @@ use base qw(Model);
     # Function: mutate
     # Synopsys: 
     #--------------------------------------------------------------------------------------
-    sub mutate {
+    sub mutate 
+    {
 	my $self = shift; my $obj_ID = ident $self;
 	my %args = (
 		    mutation_rate_params => undef,
@@ -809,7 +836,8 @@ use base qw(Model);
 	# pre-mutation parsing
 	$self->parse();
 
-	if ($mutation_rate_params > 0.0 && $mutation_rate_params <= 1.0) { # mutate parameters
+	if ($mutation_rate_params > 0.0 && $mutation_rate_params <= 1.0)  # mutate parameters
+	{
 	  printn "mutate: POINT MUTATION (PARAMS)" if $verbosity >= 1;
 	  $self->set_field_mutation_rates(
 					  mutate_params_rate => 1.0,
@@ -824,12 +852,14 @@ use base qw(Model);
 	  # post-mutation parsing
 	  $self->parse();
 	}
-	elsif ($mutation_rate_params != 0.0) {
+	elsif ($mutation_rate_params != 0.0) 
+	{
 	  printn "ERROR: mutation_rate_params is not set in proper range";
 	  exit;
 	}
 
-	if ($mutation_rate_global > 0.0 && $mutation_rate_global <= 1.0) { # mutate the whole network
+	if ($mutation_rate_global > 0.0 && $mutation_rate_global <= 1.0)  # mutate the whole network
+	{
 	  printn "mutate: POINT MUTATION (GLOBAL)" if $verbosity >= 1;
 	  $self->set_field_mutation_rates(
 					  mutate_params_rate => 1.0,
@@ -844,14 +874,16 @@ use base qw(Model);
 	  # post-mutation parsing
 	  $self->parse();
 	}
-	elsif ($mutation_rate_global != 0.0) {
+	elsif ($mutation_rate_global != 0.0) 
+	{
 	  printn "ERROR: mutation_rate_global is not set in proper range";
 	  exit;
 	}
 
-	if ($gene_duplication_rate > 0.0 && $gene_duplication_rate <= 1.0) {	# duplicate genes
-
-	  
+	# gene duplication
+	# by appending genes based on gene_duplication_rate
+	if ($gene_duplication_rate > 0.0 && $gene_duplication_rate <= 1.0) 	# duplicate genes
+	{
 	  my @gene_refs = $self->get_genes();
 	  my @gene_names = map $_->get_name(), @gene_refs;
 	  
@@ -878,21 +910,25 @@ use base qw(Model);
 	  exit;
 	}
 
-	if ($gene_deletion_rate > 0.0 && $gene_deletion_rate <= 1.0) { # delete genes
+	if ($gene_deletion_rate > 0.0 && $gene_deletion_rate <= 1.0)  # delete genes
+	{
 	  printn "mutate: GENE_DELETION" if $verbosity >= 1;
 	  
 	  my $num_genes = $self->get_num_genes();
 	  
 	  my $deleted_gene_num = 0;
 
-	  for (my $i = 0; $i < $num_genes; $i++) {
+	  for (my $i = 0; $i < $num_genes; $i++) 
+	  {
 		  # to prevent delete all genes in a genome, if there is only one gene left
 		  # then stop gene deletion
-		  if (($num_genes - $deleted_gene_num) > 1) {
+		  if (($num_genes - $deleted_gene_num) > 1) 
+		  {
 			 print "There is only one gene left, stop deleting!\n";
 			 break;
 		 } 
-	    if ((rand 1) <= $gene_deletion_rate){
+	    if ((rand 1) <= $gene_deletion_rate)
+	    {
 	      my $deleted_gene_ref = $self->delete_random_gene();
 	      my $deleted_gene_name = $deleted_gene_ref->get_name();
 	      my $history = "DELETION of gene $deleted_gene_name";
@@ -907,7 +943,8 @@ use base qw(Model);
 	    }
 	  }
 	}
-	elsif ($gene_deletion_rate != 0.0) {
+	elsif ($gene_deletion_rate != 0.0) 
+	{
 	  printn "ERROR: gene_deletion_rate is not set in proper range";
 	  exit;
 	}
@@ -917,7 +954,8 @@ use base qw(Model);
 
 	# choose a gene to duplicate it, and duplicate domains in it, then 
 	# append the gene to the end and delete the orginal one. 
-	if ($domain_duplication_rate > 0.0 && $domain_duplication_rate <= 1.0) {	# duplicate domains
+	if ($domain_duplication_rate > 0.0 && $domain_duplication_rate <= 1.0) 	# duplicate domains
+	{
 		my @duplicated_gene_names;
 		my @gene_refs = $self->get_genes();
 		my @gene_names = map $_->get_name(), @gene_refs;
@@ -925,7 +963,7 @@ use base qw(Model);
 		foreach my $gene_name (@gene_names)
 		{
 			my $gene_seq_after_dup = $self->duplicate_domain($gene_name, $domain_duplication_rate);
-	  		if ($gene_seq_after_dup != "")
+	  		if ($gene_seq_after_dup ne "")
 			{
 				my $sequence_ref = $self->get_sequence_ref();
 				my $gene_ref = $self->get_gene_by_name($gene_name);
@@ -938,47 +976,67 @@ use base qw(Model);
 				printn "mutate: Domain duplicated in $gene_name" if $verbosity >= 1;
 				# post-mutation parsing
 				$self->parse();
+
+				push(@duplicated_gene_names, $gene_name);
 			}
-		} 
+		}
+
+		# Now, we should delete all the original genes that are duplicated
+		# and appended	
+		foreach my $gene_name (@duplicated_gene_names)
+		{
+			my $gene_ref = $self->get_gene_by_name($gene_name);
+			my @deleted_genes = $self->delete_gene($gene_ref);
+			confess "ERROR: internal error -- could not delete a gene" if (@deleted_genes != 1) || ($deleted_genes[0] != $gene_ref);
+
+			# post-deletion parsing
+			$self->parse();
+		}
 	}
-	elsif ($domain_duplication_rate != 0.0) {
+	elsif ($domain_duplication_rate != 0.0) 
+	{
 	  printn "ERROR: domain_duplication_rate is not set in proper range";
 	  exit;
 	}
 
 
-	if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0) { # delete domains
-	  printn "mutate: DOMAIN_DELETION" if $verbosity >= 1;
+	if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0)  # delete domains
+	{
+		printn "mutate: DOMAIN_DELETION" if $verbosity >= 1;
 	  
 	}
-	elsif ($domain_deletion_rate != 0.0) {
-	  printn "ERROR: domain_deletion_rate is not set in proper range";
-	  exit;
+	elsif ($domain_deletion_rate != 0.0) 
+	{
+		printn "ERROR: domain_deletion_rate is not set in proper range";
+		exit;
 	}
 
 	# PROTODOMAIN DUPLICATION AND DELETION
-	if ($protodomain_duplication_rate > 0.0 && $protodomain_duplication_rate <= 1.0) {	# duplicate protodomains
+	if ($protodomain_duplication_rate > 0.0 && $protodomain_duplication_rate <= 1.0)	# duplicate protodomains
+	{
+	  	printn "mutate: PROTODOMAIN_DUPLICATION" if $verbosity >= 1;
 
-	  printn "mutate: PROTODOMAIN_DUPLICATION" if $verbosity >= 1;
-
-	  printn "NOT IMPLEMENTED YET";
+	  	printn "NOT IMPLEMENTED YET";
 	  
 	}
-	elsif ($protodomain_duplication_rate != 0.0) {
-	  printn "ERROR: protodomain_duplication_rate is not set in proper range";
-	  exit;
+	elsif ($protodomain_duplication_rate != 0.0) 
+	{
+	  	printn "ERROR: protodomain_duplication_rate is not set in proper range";
+	  	exit;
 	}
 
 
-	if ($protodomain_deletion_rate > 0.0 && $protodomain_deletion_rate <= 1.0) { # delete domains
-	  printn "mutate: PROTODOMAIN_DELETION" if $verbosity >= 1;
+	if ($protodomain_deletion_rate > 0.0 && $protodomain_deletion_rate <= 1.0)  # delete domains
+	{
+	  	printn "mutate: PROTODOMAIN_DELETION" if $verbosity >= 1;
 
-	  printn "NOT IMPLEMENTED YET";
+	  	printn "NOT IMPLEMENTED YET";
 	  
 	}
-	elsif ($protodomain_deletion_rate != 0.0) {
-	  printn "ERROR: protodomain_deletion_rate is not set in proper range";
-	  exit;
+	elsif ($protodomain_deletion_rate != 0.0) 
+	{
+	  	printn "ERROR: protodomain_deletion_rate is not set in proper range";
+	  	exit;
 	}
 
 
