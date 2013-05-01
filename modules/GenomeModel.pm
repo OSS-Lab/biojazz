@@ -640,6 +640,48 @@ use base qw(Model);
     }
 
     #--------------------------------------------------------------------------------------
+    # Function: delete_gene (by ref or by name)
+    # Synopsys: Delete genes from genome by zeroing out the entire gene!
+    #--------------------------------------------------------------------------------------
+    sub delete_gene {
+	my $self = shift;
+	my @genes = @_;
+
+	my @deleted_genes;
+	foreach my $gene_ref (@genes) {
+	    $gene_ref = ref $gene_ref ? $gene_ref : $self->get_gene_by_name($gene_ref);
+	    my $gene_name = $gene_ref->get_name();
+	    my $gene_start = $gene_ref->get_locus();
+	    my $gene_stop = $gene_ref->get_stop_locus();
+	    my $gene_length = $gene_ref->get_length();
+	    if (defined $gene_ref) {
+		printn "delete_gene: deleting $gene_name start=$gene_start stop=$gene_stop" if $verbosity >= 2;
+	    } else {
+		printn "ERROR: delete_gene -- no such gene $gene_name";
+		exit(1);
+	    }
+	    $self->get_sequence_ref()->splice_subseq("", $gene_start, $gene_length);
+	    push @deleted_genes, $gene_ref;
+	}
+	return @deleted_genes;
+    }
+
+    #--------------------------------------------------------------------------------------
+    # Function: delete_random_gene
+    # Synopsys: Pick a random gene and delete it
+    #--------------------------------------------------------------------------------------
+    sub delete_random_gene {
+	my $self = shift;
+	my @gene_refs = $self->get_genes();
+	my $gene_ref = $gene_refs[int rand @gene_refs];
+	printn "delete_random_gene: deleting gene ".$gene_ref->get_name() if $verbosity >= 1;
+	my @deleted_genes = $self->delete_gene($gene_ref);
+	confess "ERROR: internal error -- could not delete a gene" if (@deleted_genes != 1) || ($deleted_genes[0] != $gene_ref);
+	return $gene_ref;
+    }
+
+
+    #--------------------------------------------------------------------------------------
     # Function: duplicate_domain
     # Synopsys: duplication of domain is a bit more difficult to implement. Based on the
     #           passed to, try to iterate each domain to decide whether duplicate it or not
@@ -693,6 +735,75 @@ use base qw(Model);
 	return $duplicate_num;
     }
 
+
+	#--------------------------------------------------------------------------------------
+    	# Function: delete_domain
+    	# Synopsys: delete domain basicly based on the doamin deletion rate and gene index
+	# 	    return the names and number of domains that be deleted.
+    	#           NOTE: it could easily messup the whole gene, so pay attention
+    	#--------------------------------------------------------------------------------------
+	sub delete_domain {
+		my $self = shift; my $obj_ID = ident $self;
+		my $deletion_rate = shift || 0.0;
+		my $gene_index = shift || confess "Gene index not specified, have no idea how to delete domains";
+
+		my $gene_ref = $self->get_gene_by_index($gene_index);
+	
+		my $soft_linker_width = length($self->get_gene_parser_ref()->get_soft_linker_code());
+
+		my $sequence_ref = $self->get_sequence_ref();
+
+		my @domain_refs = $self->get_domains($gene_index);
+		my $num_domains = @domain_refs;
+		confess "ERROR: Can not retrive any domain from Gene $gene_index" if ($num_domains) < 1;
+
+		my $delete_num = 0;
+
+		my @deletion_info;
+		my $domain_index = 0;
+		foreach my $domain_ref (@domain_refs) {
+			if ($num_domains - $delete_num > 1) {
+
+				if ($deletion_rate > rand()) {
+					my $domain_locus = $domain_ref->get_locus();
+					my $domain_length = $domain_ref->get_length();
+					my $deletion_length = $domain_length + $soft_linker_width;
+					my $domain_name = $domain_ref->get_name();
+					if ($domain_name ne ($gene_ref->get_field_ref(["domain", $domain_index])->get_name())) {
+						confess "ERROR: index of domain_ref array not consistent with index of domain instances";
+					}
+					push(@deletion_info, [$domain_locus, $deletion_length, $domain_index, $domain_name]);
+					$delete_num++;
+				}
+			} else {
+				printn "N.B.: there will be only one domain left!";
+			}
+			$domain_index++;
+		}
+
+		my $accum_length = 0;
+		# now we insert all the domain sequence into the sequence reference.
+		# N.B.: 1. don't forget the soft_linker_code and its length
+		# 	2. don't mess up the locus (which need to add lengthes of all the 
+		# 	   sequence add previous of the current one.
+		for (my $i = 0; $i < $delete_num; $i++) {
+			if ($deletion_info[$i][2] == $num_domains - 1) {
+				if ($i != $delete_num - 1) {
+					confess "ERROR: the last domain is not deleted at the last!";
+				}
+
+				$sequence_ref->splice_subseq("", 
+					$deletion_info[$i][0] - $accum_length - $soft_linker_width,
+					$deletion_info[$i][1]);
+			} else {
+				$sequence_ref->splice_subseq("", 
+					$deletion_info[$i][0] - $accum_length,
+					$deletion_info[$i][1]);
+			} 
+			$accum_length = $accum_length + $deletion_info[$i][1];
+		}
+		return $delete_num;
+    	}
 
 
 
@@ -758,47 +869,6 @@ use base qw(Model);
     }
 
     #--------------------------------------------------------------------------------------
-    # Function: delete_gene (by ref or by name)
-    # Synopsys: Delete genes from genome by zeroing out the entire gene!
-    #--------------------------------------------------------------------------------------
-    sub delete_gene {
-	my $self = shift;
-	my @genes = @_;
-
-	my @deleted_genes;
-	foreach my $gene_ref (@genes) {
-	    $gene_ref = ref $gene_ref ? $gene_ref : $self->get_gene_by_name($gene_ref);
-	    my $gene_name = $gene_ref->get_name();
-	    my $gene_start = $gene_ref->get_locus();
-	    my $gene_stop = $gene_ref->get_stop_locus();
-	    my $gene_length = $gene_ref->get_length();
-	    if (defined $gene_ref) {
-		printn "delete_gene: deleting $gene_name start=$gene_start stop=$gene_stop" if $verbosity >= 2;
-	    } else {
-		printn "ERROR: delete_gene -- no such gene $gene_name";
-		exit(1);
-	    }
-	    $self->get_sequence_ref()->splice_subseq("", $gene_start, $gene_length);
-	    push @deleted_genes, $gene_ref;
-	}
-	return @deleted_genes;
-    }
-
-    #--------------------------------------------------------------------------------------
-    # Function: delete_random_gene
-    # Synopsys: Pick a random gene and delete it
-    #--------------------------------------------------------------------------------------
-    sub delete_random_gene {
-	my $self = shift;
-	my @gene_refs = $self->get_genes();
-	my $gene_ref = $gene_refs[int rand @gene_refs];
-	printn "delete_random_gene: deleting gene ".$gene_ref->get_name() if $verbosity >= 1;
-	my @deleted_genes = $self->delete_gene($gene_ref);
-	confess "ERROR: internal error -- could not delete a gene" if (@deleted_genes != 1) || ($deleted_genes[0] != $gene_ref);
-	return $gene_ref;
-    }
-
-    #--------------------------------------------------------------------------------------
     # Function: mutate
     # Synopsys: 
     #--------------------------------------------------------------------------------------
@@ -808,11 +878,11 @@ use base qw(Model);
 	my %args = (
 		    mutation_rate_params => undef,
 		    mutation_rate_global => undef,
-		    duplication_rate => undef,
-		    deletion_rate => undef,
-		    domain_dupicatioin_rate => undef,
+		    gene_duplication_rate => undef,
+		    gene_deletion_rate => undef,
+		    domain_duplication_rate => undef,
 		    domain_deletion_rate => undef,
-		    protodomain_dupicatioin_rate => undef,
+		    protodomain_duplication_rate => undef,
 		    protodomain_deletion_rate => undef,
 		    recombination_rate => undef,
 		    @_,
@@ -830,55 +900,11 @@ use base qw(Model);
 	my $recombination_rate = $args{recombination_rate};
 
 
-	my $sequence_ref = $self->get_sequence_ref();
 
 	# pre-mutation parsing
 	$self->parse();
 
-	if ($mutation_rate_params > 0.0 && $mutation_rate_params <= 1.0)  # mutate parameters
-	{
-	  printn "mutate: POINT MUTATION (PARAMS)" if $verbosity >= 1;
-	  $self->set_field_mutation_rates(
-					  mutate_params_rate => 1.0,
-					  mutate_network_rate => 0.0,
-					 );
-	  my @mutated_list = $self->mutate_genes($mutation_rate_params);
-	  my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
-	  my $history = "POINT MUTATION (PARAMS) $total_bits bits in genes ". join ",", @mutated_list;
-	  printn $history if $verbosity >= 1;
-	  $self->add_history($history);
-
-	  # post-mutation parsing
-	  $self->parse();
-	}
-	elsif ($mutation_rate_params != 0.0) 
-	{
-	  printn "ERROR: mutation_rate_params is not set in proper range";
-	  exit;
-	}
-
-	if ($mutation_rate_global > 0.0 && $mutation_rate_global <= 1.0)  # mutate the whole network
-	{
-	  printn "mutate: POINT MUTATION (GLOBAL)" if $verbosity >= 1;
-	  $self->set_field_mutation_rates(
-					  mutate_params_rate => 1.0,
-					  mutate_network_rate => 1.0,
-					 );
-	  my @mutated_list = $self->mutate_genome($mutation_rate_global);
-	  my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
-	  my $history = "POINT MUTATION (GLOBAL) $total_bits bits in genes ". join ",", @mutated_list;
-	  printn $history if $verbosity >= 1;
-	  $self->add_history($history);
-
-	  # post-mutation parsing
-	  $self->parse();
-	}
-	elsif ($mutation_rate_global != 0.0) 
-	{
-	  printn "ERROR: mutation_rate_global is not set in proper range";
-	  exit;
-	}
-
+	###########################
 	# gene duplication
 	# by appending genes based on gene_duplication_rate
 	if ($gene_duplication_rate > 0.0 && $gene_duplication_rate <= 1.0) 	# duplicate genes
@@ -886,16 +912,15 @@ use base qw(Model);
 	  my @gene_refs = $self->get_genes();
 	  my @gene_names = map $_->get_name(), @gene_refs;
 	  
-
 	  foreach my $gene_name (@gene_names) {
 	    if ( rand() < $gene_duplication_rate ) {
 	  	printn "mutate: GENE_DUPLICATION" if $verbosity >= 1;
 	      	my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene($gene_name);
 
 	      my $duplicate_name = sprintf("G%04d",$duplicate_start);
-	      $self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $duplicate_start, dont_clear_flag => 1);  # N.B. this only updates gene_parser_ref not genome_parser_ref
-	      my $num_bits = $self->mutate_gene_by_name($duplicate_name, $mutation_rate_global); # mutate duplicated gene
-	      my $history = "DUPLICATION of gene $duplicated_gene to $duplicate_name, with $num_bits mutations";
+	      # $self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $duplicate_start, dont_clear_flag => 1);  # N.B. this only updates gene_parser_ref not genome_parser_ref
+	      # my $num_bits = $self->mutate_gene_by_name($duplicate_name, $mutation_rate_global); # mutate duplicated gene
+	      my $history = "DUPLICATION of gene $duplicated_gene"; 
 	      printn $history if $verbosity >= 1;
 	      $self->add_history($history);
 
@@ -909,6 +934,8 @@ use base qw(Model);
 	  exit;
 	}
 
+	########################
+	# GENE_DELETION
 	if ($gene_deletion_rate > 0.0 && $gene_deletion_rate <= 1.0)  # delete genes
 	{
 		printn "mutate: GENE_DELETION" if $verbosity >= 1;
@@ -983,7 +1010,26 @@ use base qw(Model);
 
 	if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0)  # delete domains
 	{
-		printn "mutate: DOMAIN_DELETION" if $verbosity >= 1;
+		my $num_genes = $self->get_num_genes();
+		
+		my @gene_refs = $self->get_genes();
+
+		for (my $i = 0; $i < $num_genes; $i ++) {
+			my $gene_ref = $self->get_gene_by_index($i);
+			my $gene_name = $gene_ref->get_name();
+			if ($gene_name ne $gene_refs[$i]->get_name()) {
+				confess "The index of gene instances are not consistent with index of gene_refs array";
+			}
+			my $deleted_num = $self->delete_domain($domain_deletion_rate, $i);
+			printn "Mutate: deleted $deleted_num domains in gene $gene_name";
+			
+			# update the parser instances and gene_refs after reparsing
+			if ($deleted_num) {
+				# post domain_duplication parsing
+				$self->parse();
+				my @gene_refs = $self->get_genes();
+			}
+		}
 	  
 	}
 	elsif ($domain_deletion_rate != 0.0) 
@@ -1022,7 +1068,7 @@ use base qw(Model);
 
 
 	#######################
-
+	# Domain shuffling
 	if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
 	  if ((rand 1) <= $recombination_rate) {
 	    printn "mutate: RECOMBINATION" if $verbosity >= 1;
@@ -1044,6 +1090,54 @@ use base qw(Model);
 	  printn "ERROR: recombination_rate is not set in proper range";
 	  exit;
 	}
+
+	########################
+	if ($mutation_rate_params > 0.0 && $mutation_rate_params <= 1.0)  # mutate parameters
+	{
+	  printn "mutate: POINT MUTATION (PARAMS)" if $verbosity >= 1;
+	  $self->set_field_mutation_rates(
+					  mutate_params_rate => 1.0,
+					  mutate_network_rate => 0.0,
+					 );
+	  my @mutated_list = $self->mutate_genes($mutation_rate_params);
+	  my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
+	  my $history = "POINT MUTATION (PARAMS) $total_bits bits in genes ". join ",", @mutated_list;
+	  printn $history if $verbosity >= 1;
+	  $self->add_history($history);
+
+	  # post-mutation parsing
+	  $self->parse();
+	}
+	elsif ($mutation_rate_params != 0.0) 
+	{
+	  printn "ERROR: mutation_rate_params is not set in proper range";
+	  exit;
+	}
+	
+	########################
+	if ($mutation_rate_global > 0.0 && $mutation_rate_global <= 1.0)  # mutate the whole network
+	{
+	  printn "mutate: POINT MUTATION (GLOBAL)" if $verbosity >= 1;
+	  $self->set_field_mutation_rates(
+					  mutate_params_rate => 1.0,
+					  mutate_network_rate => 1.0,
+					 );
+	  my @mutated_list = $self->mutate_genome($mutation_rate_global);
+	  my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
+	  my $history = "POINT MUTATION (GLOBAL) $total_bits bits in genes ". join ",", @mutated_list;
+	  printn $history if $verbosity >= 1;
+	  $self->add_history($history);
+
+	  # post-mutation parsing
+	  $self->parse();
+	}
+	elsif ($mutation_rate_global != 0.0) 
+	{
+	  printn "ERROR: mutation_rate_global is not set in proper range";
+	  exit;
+	}
+
+
 	
       }
 
