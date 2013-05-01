@@ -658,7 +658,7 @@ use base qw(Model);
 	my $sequence_ref = $self->get_sequence_ref();
 
 	my @domain_refs = $self->get_domains($gene_index);
-	confess "ERROR: Can not retrive any domain from Gene $gene_index" if $domain_refs < 1;
+	confess "ERROR: Can not retrive any domain from Gene $gene_index" if (scalar @domain_refs) < 1;
 
 	# first store all domains that will be duplicated 
 	my @duplicate_info;
@@ -673,7 +673,7 @@ use base qw(Model);
 			if ($domain_name ne ($gene_ref->get_field_ref(["domain", $domain_index])->get_name())) {
 				confess "ERROR: index of domain_ref array not consistent with index of domain instances";
 			}
-			push(@duplicate_info, [$domain_locus, $domain_length, $insert_sequencei, $domain_name]);
+			push(@duplicate_info, [$domain_locus, $domain_length, $insert_sequence, $domain_name]);
 			$duplicate_num++;
 		}
 		$domain_index++;
@@ -911,32 +911,34 @@ use base qw(Model);
 
 	if ($gene_deletion_rate > 0.0 && $gene_deletion_rate <= 1.0)  # delete genes
 	{
-	  printn "mutate: GENE_DELETION" if $verbosity >= 1;
+		printn "mutate: GENE_DELETION" if $verbosity >= 1;
 	  
-	  my $num_genes = $self->get_num_genes();
-	  my $deleted_gene_num = 0;
+	  	my $num_genes = $self->get_num_genes();
+	  	my $deleted_gene_num = 0;
 
-	  for (my $i = 0; $i < $num_genes; $i++) {
-		# to prevent delete all genes in a genome, if there is only one gene left
-		# then stop gene deletion
-		if (($num_genes - $deleted_gene_num) == 1) {
-			 print "There is only one gene left, stop deleting!\n";
-			 break;
-		 } 
-	    if (rand() < $gene_deletion_rate) {
-	      my $deleted_gene_ref = $self->delete_random_gene();
-	      my $deleted_gene_name = $deleted_gene_ref->get_name();
-	      my $history = "DELETION of gene $deleted_gene_name";
-	      printn $history if $verbosity >= 1;
-	      $self->add_history($history);
+	  	FORLOOP: {
+	  		for (my $i = 0; $i < $num_genes; $i++) {
+				# to prevent delete all genes in a genome, if there is only one gene left
+				# then stop gene deletion
+				if (($num_genes - $deleted_gene_num) == 1) {
+			 		print "There is only one gene left, stop deleting!\n";
+			 		last FORLOOP;
+		 		} 
+	    			if (rand() < $gene_deletion_rate) {
+	      				my $deleted_gene_ref = $self->delete_random_gene();
+	      				my $deleted_gene_name = $deleted_gene_ref->get_name();
+	      				my $history = "DELETION of gene $deleted_gene_name";
+	      				printn $history if $verbosity >= 1;
+	      				$self->add_history($history);
+				
+	      				# post-mutation parsing
+	      				$self->parse();
 
-	      # post-mutation parsing
-	      $self->parse();
-
-	      # conuting the deleted gene number to calculate number of rest genes
-	      $deleted_gene_num++;
-	    }
-	  }
+	      				# conuting the deleted gene number to calculate number of rest genes
+	      				$deleted_gene_num++;
+	    			}
+	  		}
+		}
 	}
 	elsif ($gene_deletion_rate != 0.0) {
 	  printn "ERROR: gene_deletion_rate is not set in proper range";
