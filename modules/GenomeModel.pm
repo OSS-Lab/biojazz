@@ -715,7 +715,7 @@ use base qw(Model);
 			my $domain_length = $domain_ref->get_length();
 			my $insert_sequence = ($soft_linker_sequence . $domain_ref->get_sequence());
 			my $domain_name = $domain_ref->get_name();
-			if ($domain_name ne ($gene_ref->get_field_ref(["domain", $domain_index])->get_name())) {
+			if ($domain_name ne ($gene_ref->get_field_ref(["domains", $domain_index])->get_name())) {
 				confess "ERROR: index of domain_ref array not consistent with index of domain instances";
 			}
 			push(@duplicate_info, [$domain_locus, $domain_length, $insert_sequence, $domain_name]);
@@ -775,7 +775,7 @@ use base qw(Model);
 					my $domain_length = $domain_ref->get_length();
 					my $deletion_length = $domain_length + $soft_linker_width;
 					my $domain_name = $domain_ref->get_name();
-					if ($domain_name ne ($gene_ref->get_field_ref(["domain", $domain_index])->get_name())) {
+					if ($domain_name ne ($gene_ref->get_field_ref(["domains", $domain_index])->get_name())) {
 						confess "ERROR: index of domain_ref array not consistent with index of domain instances";
 					}
 					push(@deletion_info, [$domain_locus, $deletion_length, $domain_index, $domain_name]);
