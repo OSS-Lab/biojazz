@@ -992,7 +992,7 @@ use base qw(Model);
 		for (my $i = 0; $i < $num_genes; $i ++) {
 			my $gene_ref = $self->get_gene_by_index($i);
 			my $gene_name = $gene_ref->get_name();
-			if ($gene_name ne $gene_refs[$i]->get_name()) {
+			if ($gene_name ne ($gene_refs[$i]->get_name())) {
 				confess "The index of gene instances are not consistent with index of gene_refs array";
 			}
 			my $duplicate_num = $self->duplicate_domain($domain_duplication_rate, $i);
@@ -1002,7 +1002,8 @@ use base qw(Model);
 			if ($duplicate_num) {
 				# post domain_duplication parsing
 				$self->parse();
-				my @gene_refs = $self->get_genes();
+				undef @gene_refs;
+				@gene_refs = $self->get_genes();
 			}
 		}
 
@@ -1033,7 +1034,8 @@ use base qw(Model);
 			if ($deleted_num) {
 				# post domain_duplication parsing
 				$self->parse();
-				my @gene_refs = $self->get_genes();
+				undef @gene_refs;
+				@gene_refs = $self->get_genes();
 			}
 		}
 	  
