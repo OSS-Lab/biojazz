@@ -112,7 +112,7 @@ evolve : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) 2>&1 | tee -a -i $(basename $(config))/$(basename $(config)).$(tag).log
 
 score : FORCE
-	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --shell --genome=$(genome) --score
+	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --genome=$(genome) --score --shell 
 
 shell : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --shell
