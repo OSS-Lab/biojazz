@@ -15,7 +15,7 @@ endif
 ANC_CMD = $(ANC_HOME)/anc.pl
 FACILE_CMD = $(FACILE_HOME)/facile.pl
 
-DIFF_CMD = bzr diff --using=tkdiff
+DIFF_CMD = git diff HEAD --
 
 ######################################################################################
 # TESTING
@@ -46,7 +46,7 @@ custom_modules = \
 	test/custom/Template.log \
 	test/custom/Ultrasensitive.log \
 	test/custom/Oscillator.log \
-#	test/custom/Linear.log \
+	test/custom/Linear.log \
 
 test : test_all_modules test_main
 
@@ -102,7 +102,7 @@ biojazz_class_hierarchy : FORCE
 cluster_type = SSH
 cluster_size = 5
 seed = -1
-tag = temp
+tag = test
 config=ultrasensitive.cfg
 
 evolve : FORCE
@@ -120,7 +120,7 @@ shell : FORCE
 load : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --shell --genome=$(genome)
 
-collect : collect_from_logfile
+collect : collect_from_genomes
 
 collect_from_logfile : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='collect_history_from_logfile("$(basename $(config))/$(basename $(config)).$(tag).log"); save_history();'
