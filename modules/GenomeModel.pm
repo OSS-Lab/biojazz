@@ -35,6 +35,7 @@ use base qw(Model);
     # simulation parameters
     my %history_ref_of :ATTR(get => 'history_ref', set => 'history_ref');
     my %stats_ref_of   :ATTR(get => 'stats_ref', set => 'stats_ref');
+    my %number_of	:ATTR(get => 'number', set => 'number');
     my %score_of       :ATTR(get => 'score', set => 'score');
     my %elite_flag_of  :ATTR(get => 'elite_flag', set => 'elite_flag', default => 0);
 

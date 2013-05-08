@@ -176,7 +176,7 @@ if (!defined $config_ref->{config_file}) {
 #======================================================================================
 # RUN COMMANDS AND SCRIPTS
 #======================================================================================
-evolve(seed => defined $SEED ? $SEED : -1) if !$SHELL && !$COMMAND && defined $config_ref->{config_file};
+evolve(seed => defined $SEED ? $SEED : -1) if !$SHELL && !$COMMAND && !$GENOME && !$SCORE && defined $config_ref->{config_file};
 
 load_genome($GENOME) if $GENOME || $SCORE && defined $config_ref->{config_file};
 

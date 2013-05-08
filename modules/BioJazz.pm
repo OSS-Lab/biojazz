@@ -278,7 +278,10 @@ sub export_history {
     $history_ref->export(
 	filename => "$config_ref->{work_dir}/history.$TAG.xls",
 	genome_attribute_names => $config_ref->{genome_attribute_names},
-	population_attribute_names => $config_ref->{population_attribute_names},
+	# For kimura selection method there is no need to do population output
+	# should put the analysis at the stage after evolution. From csv files 
+	# generated "on-the-fly"
+	#population_attribute_names => $config_ref->{population_attribute_names},
        );
 }
 
