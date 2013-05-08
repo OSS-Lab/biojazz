@@ -99,8 +99,8 @@ biojazz_class_hierarchy : FORCE
 ######################################################################################
 # EVOLUTION, SHELL, ETC.
 ######################################################################################
-cluster_type = SSH
-cluster_size = 5
+cluster_type = LOCAL
+cluster_size = 1
 seed = -1
 tag = test
 config=ultrasensitive.cfg
