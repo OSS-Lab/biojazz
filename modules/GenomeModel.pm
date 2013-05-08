@@ -69,6 +69,7 @@ use base qw(Model);
 	# INIT
 	$history_ref_of{$obj_ID} = [];
 	$stats_ref_of{$obj_ID} = {};
+	$number_of{$obj_ID} = {};
 
 #	$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
     }
@@ -93,6 +94,7 @@ use base qw(Model);
 	my $stats_ref = $self->get_stats_ref();
 
 	my $str = "score=".(defined $self->get_score() ? $self->get_score() : "UNDEF");
+	$str .= ", number=".(defined $self->get_number() ? $self->get_number() : "UNDEF");
 	foreach my $key (sort keys %{$stats_ref}) {
 	    my $value = $stats_ref->{$key};
 	    $value = defined $value ? $value : "UNDEF";
