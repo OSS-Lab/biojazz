@@ -728,7 +728,7 @@ use base qw();
             # Here, we output each genome stats into a line 
             # of CSV file
             for (my $j = 0; $j < scalar @genome_attribute_names; $j++) {
-                my $attribute_value = $genome_ref->get_stats_ref()->($genome_attribute_names[$j]);
+                my $attribute_value = $genome_ref->get_stats_ref()->{$genome_attribute_names[$j]};
                 push(@attributes, $attribute_value);
             }
             # process the attributes and output
