@@ -342,6 +342,12 @@ use base qw();
 
                 $fixation_p *= $amplifier_alpha;
 
+
+                # output the mutated and scored results
+                # for both counting the mutation and the
+                # number of mutation steps
+                $self->report_current_generation();
+
             }
 
             # after fix the mutation
@@ -766,6 +772,7 @@ use base qw();
                     $self->score_mutated_genomes();
                     $self->load_current_generation($current_generation_number_of{$obj_ID});
                     $self->population_based_selection();
+                    $self->report_current_generation();
                     $self->save_current_generation();
                 } elsif (!$config_ref->{selection_method}) {
                     printn "the selection method is not specified";
