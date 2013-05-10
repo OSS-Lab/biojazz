@@ -212,7 +212,7 @@ use base qw();
 
 
             my $inum = $config_ref->{inum_genomes};
-            my $loaded_genome_num = @files;
+            my $loaded_genome_num = scalar @files;
 
             if ($inum > $loaded_genome_num) {
                 for (my $i = 0; $i < ($inum - $loaded_genome_num); $i++) {
