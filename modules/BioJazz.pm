@@ -154,7 +154,7 @@ sub evolve {
     `mkdir -p $config_ref->{work_dir}/$TAG/matlab`;
     `mkdir -p $config_ref->{work_dir}/$TAG/obj`;
     `mkdir -p $config_ref->{work_dir}/$TAG/report`;
-    `mkdir -p $config_ref->{work_dir}/$TAG/stats`
+    `mkdir -p $config_ref->{work_dir}/$TAG/stats`;
     my $timestamp = `date +%F-%T`; chomp($timestamp);
     my $source_dir = "source_$timestamp";
     `mkdir -p $config_ref->{work_dir}/$TAG/$source_dir`;

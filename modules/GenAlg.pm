@@ -723,10 +723,10 @@ use base qw();
             # of CSV file
             for (my $j = 0; $j < scalar @genome_attribute_names; $j++) {
                 my $attribute_value = $genome_ref->get_stats_ref()->($genome_attribute_names[$j]);
-                push(@attributes, $attribute);
+                push(@attributes, $attribute_value);
             }
             # process the attributes and output
-            $status = $csv->print($data_file, \@attributes);
+            $csv->print($data_file, \@attributes);
 
             # destroy @attributes
             undef @attributes;
