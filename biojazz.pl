@@ -61,12 +61,12 @@ use FindBin qw($Bin);
 
 BEGIN {
     if (!defined $ENV{ANC_HOME} || !$ENV{ANC_HOME}) {
-	print "ERROR: ANC_HOME environment variable is not defined\n";
-	exit(1);
+        print "ERROR: ANC_HOME environment variable is not defined\n";
+        exit(1);
     }
     if (!defined $ENV{FACILE_HOME} || !$ENV{FACILE_HOME}) {
-	print "ERROR: FACILE_HOME environment variable is not defined\n";
-	exit(1);
+        print "ERROR: FACILE_HOME environment variable is not defined\n";
+        exit(1);
     }
 }
 use lib "$ENV{ANC_HOME}/base";
@@ -75,13 +75,13 @@ use lib "./custom";
 
 use Utils;
 use Globals qw (
-		$VERSION
-		$RELEASE_DATE
-		$verbosity
-		$TAG
-		$config_ref
-		$WORKSPACE
-	       );
+$VERSION
+$RELEASE_DATE
+$verbosity
+$TAG
+$config_ref
+$WORKSPACE
+);
 
 use BioJazz;
 
@@ -122,22 +122,23 @@ $OUTPUT_AUTOFLUSH = 1;
 use vars qw($HELP $SHELL $SCRIPT $COMMAND $SEED $GENOME $SCORE);
 use vars qw($version_flag);
 
-GetOptions("help"            => \$HELP,
-	   "version"         => \$version_flag,
-	   "verbosity=i"     => \$verbosity,
-	   "config=s"        => \$config_ref->{config_file},
-	   "command=s"       => \$COMMAND,
-	   "script=s"        => \$SCRIPT,
-	   "shell"           => \$SHELL,
-	   "tag=s"           => \$TAG,
-	   "seed=i"          => \$SEED,
-	   "cluster_type=s"  => \$config_ref->{cluster_type},
-	   "cluster_size=i"  => \$config_ref->{cluster_size},
-	   "genome=s"        => \$GENOME,
-	   "score"           => \$SCORE,
-	   "inumg=i"         => \$config_ref->{inum_genomes},
-	   "mrate=f"         => \$config_ref->{mutation_rate},
-	  );
+GetOptions(
+    "help"            => \$HELP,
+    "version"         => \$version_flag,
+    "verbosity=i"     => \$verbosity,
+    "config=s"        => \$config_ref->{config_file},
+    "command=s"       => \$COMMAND,
+    "script=s"        => \$SCRIPT,
+    "shell"           => \$SHELL,
+    "tag=s"           => \$TAG,
+    "seed=i"          => \$SEED,
+    "cluster_type=s"  => \$config_ref->{cluster_type},
+    "cluster_size=i"  => \$config_ref->{cluster_size},
+    "genome=s"        => \$GENOME,
+    "score"           => \$SCORE,
+    "inumg=i"         => \$config_ref->{inum_genomes},
+    "mrate=f"         => \$config_ref->{mutation_rate},
+);
 
 exit if ($version_flag);
 
@@ -184,15 +185,15 @@ score_genome() if $SCORE && defined $config_ref->{config_file};
 
 
 if (defined $COMMAND) {
-  eval("$COMMAND");  warn if $@;
+    eval("$COMMAND");  warn if $@;
 }
 
 if (defined $SCRIPT) {
-  interpreter("BIOJAZZ", $SCRIPT);
+    interpreter("BIOJAZZ", $SCRIPT);
 }
 
 if (defined $SHELL) {
-  interpreter("BIOJAZZ");
+    interpreter("BIOJAZZ");
 }
 
 exit;

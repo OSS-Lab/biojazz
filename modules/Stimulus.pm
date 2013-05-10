@@ -22,13 +22,13 @@ use Exporter;
 use vars qw(@ISA @EXPORT);
 @ISA = qw(Exporter);
 @EXPORT = qw(
-	     clamping_equation
-	     impulse_equation
-	     wash_equation
-	     staircase_equation
-	     staircase_sample
-	     ramp_equation
-	     ss_ramp_equation
+clamping_equation
+impulse_equation
+wash_equation
+staircase_equation
+staircase_sample
+ramp_equation
+ss_ramp_equation
 );
 
 use Utils;
@@ -40,13 +40,13 @@ use Globals;
 #--------------------------------------------------------------------------------------
 sub clamping_equation {
     my %args = (
-	# default values
-	NODE => undef,
-	PERIOD => undef,
-	DELAY => 0,
-	STRENGTH => undef,
+        # default values
+        NODE => undef,
+        PERIOD => undef,
+        DELAY => 0,
+        STRENGTH => undef,
         CONCENTRATION    => undef,
-	DUTY => 100,
+        DUTY => 100,
         @_,        # argument pair list overwrites defaults
     );
 
@@ -62,11 +62,11 @@ sub clamping_equation {
     my $duty = $args{DUTY};
 
     if ($duty < 100) {
-	return ("null -> $node; clamp_source_$node=\"0.5*$concentration*$strength*(square(2*pi*(t-$delay)/$period, $duty)+1)\"", 
-		"$node -> null; clamp_sink_$node=$strength");
+        return ("null -> $node; clamp_source_$node=\"0.5*$concentration*$strength*(square(2*pi*(t-$delay)/$period, $duty)+1)\"", 
+            "$node -> null; clamp_sink_$node=$strength");
     } else {
-	return ("null -> $node; clamp_source_$node=".$concentration*$strength,
-		"$node -> null; clamp_sink_$node=$strength");
+        return ("null -> $node; clamp_source_$node=".$concentration*$strength,
+            "$node -> null; clamp_sink_$node=$strength");
     }
 }
 
@@ -76,11 +76,11 @@ sub clamping_equation {
 #--------------------------------------------------------------------------------------
 sub impulse_equation {
     my %args = (
-	# default values
-	NODE => undef,
-	PERIOD => undef,
-	DELAY => undef,
-	CONCENTRATION => undef,
+        # default values
+        NODE => undef,
+        PERIOD => undef,
+        DELAY => undef,
+        CONCENTRATION => undef,
         IMPULSE_LENGTH    => undef,
         @_,        # argument pair list overwrites defaults
     );
@@ -94,8 +94,8 @@ sub impulse_equation {
     my $impulse_length = $args{IMPULSE_LENGTH};
 
     if ($delay + $impulse_length > $period) {
-	printn "impulse_equation: ERROR -- impulse period wrap-around";
-	exit(1);
+        printn "impulse_equation: ERROR -- impulse period wrap-around";
+        exit(1);
     }
 
     my $level = $concentration/$impulse_length;
@@ -105,12 +105,12 @@ sub impulse_equation {
     my $trailing_edge = $delay + $impulse_length;
 
     return {
-	equations => [
-	    "null -> $node; impulse_source_$node=\"0.5*$level*(square(2*pi*(t-$delay)/$period, $duty)+1)\"",
-	   ],
-	events => [$leading_edge, $trailing_edge],
-	values => [],
-       };
+        equations => [
+            "null -> $node; impulse_source_$node=\"0.5*$level*(square(2*pi*(t-$delay)/$period, $duty)+1)\"",
+        ],
+        events => [$leading_edge, $trailing_edge],
+        values => [],
+    };
 }
 
 #--------------------------------------------------------------------------------------
@@ -119,13 +119,13 @@ sub impulse_equation {
 #--------------------------------------------------------------------------------------
 sub wash_equation {
     my %args = (
-	# default values
-	NODE => undef,
-	PERIOD => -1,
-	DELAY => 0,
-	STRENGTH => undef,
+        # default values
+        NODE => undef,
+        PERIOD => -1,
+        DELAY => 0,
+        STRENGTH => undef,
         WASH_LENGTH    => undef,
-	SINK_NODE => "null",
+        SINK_NODE => "null",
         @_,        # argument pair list overwrites defaults
     );
 
@@ -142,14 +142,14 @@ sub wash_equation {
     my $wash_length = $args{WASH_LENGTH};
     my $duty;
     if ($period != -1) {
-	if ($delay + $wash_length > $period) {
-	    printn "wash_equation: ERROR -- wash period wrap-around";
-	    exit;
-	}
-	$duty = $wash_length/$period*100;
-	return ("$node -> $sink_node; wash_sink_$node=\"0.5*$strength*(square(2*pi*(t-$delay)/$period, $duty)+1)\"");
+        if ($delay + $wash_length > $period) {
+            printn "wash_equation: ERROR -- wash period wrap-around";
+            exit;
+        }
+        $duty = $wash_length/$period*100;
+        return ("$node -> $sink_node; wash_sink_$node=\"0.5*$strength*(square(2*pi*(t-$delay)/$period, $duty)+1)\"");
     } else {
-	return ("$node -> $sink_node; wash_sink_$node=$strength");
+        return ("$node -> $sink_node; wash_sink_$node=$strength");
     }
 }
 
@@ -166,15 +166,15 @@ sub wash_equation {
 #--------------------------------------------------------------------------------------
 sub staircase_equation {
     my %args = (
-	# default values
-	NODE => undef,
-	PERIOD => undef,
-	DELAY => 0,
-	STRENGTH => undef,
+        # default values
+        NODE => undef,
+        PERIOD => undef,
+        DELAY => 0,
+        STRENGTH => undef,
         CONCENTRATION => undef,
-	DUTY => 50,
-	RFTIME => undef,
-	STEPS => undef,   # of steps in each direction
+        DUTY => 50,
+        RFTIME => undef,
+        STEPS => undef,   # of steps in each direction
         @_,        # argument pair list overwrites defaults
     );
 
@@ -194,25 +194,25 @@ sub staircase_equation {
     my $square_duty = ($square_width) / $period * 100.0;
 
     if ($steps < 1) {
-	printn "ERROR: staircase_equation -- step parameter must be >= 1";
-	exit(1);
+        printn "ERROR: staircase_equation -- step parameter must be >= 1";
+        exit(1);
     }
 
     if ($pulse_width < 2 * $rftime) {
-	printn "ERROR: staircase_equation -- parameters are inconsistent (rise/fall time exceeds computed pulse width)";
-	exit(1);
+        printn "ERROR: staircase_equation -- parameters are inconsistent (rise/fall time exceeds computed pulse width)";
+        exit(1);
     }
 
     if ($square_duty <= 0) {
-	printn "ERROR: staircase_equation -- parameters are inconsistent (rise/fall time too large?)";
-	exit(1);
+        printn "ERROR: staircase_equation -- parameters are inconsistent (rise/fall time too large?)";
+        exit(1);
     }
 
     if (($steps < 2) && ($rftime > 0)) {
-	printn "ERROR: staircase_equation -- parameters are inconsistent (cannot implement non-zero rise/fall time with indicated # of steps)";
-	exit(1);
+        printn "ERROR: staircase_equation -- parameters are inconsistent (cannot implement non-zero rise/fall time with indicated # of steps)";
+        exit(1);
     }
-	
+
     my $square_delay = ($steps < 2) ? 0 : $rftime / ($steps);
 
     my @stair_source_nodes;
@@ -221,14 +221,14 @@ sub staircase_equation {
     my @leading_edge_values;
     my @trailing_edge_values;
     for (my $i=0; $i < $steps; $i++) {
-	my $shift = $i * $square_delay + $delay;
-	push @leading_edge_events, $shift;
-	push @leading_edge_values, $i / $steps * $concentration;
-	push @trailing_edge_events, $shift + $square_width;
-	push @trailing_edge_values, $concentration * ($steps - $i) / $steps;
-	# to prevent roundoff error, multiply by pi as very last step, else
-	# we may get **old** value at event time instead of the new value
-	push @stair_source_nodes, "0.5*$concentration*$strength*(1 + square((t-$shift)/$period*2*pi, $square_duty))";
+        my $shift = $i * $square_delay + $delay;
+        push @leading_edge_events, $shift;
+        push @leading_edge_values, $i / $steps * $concentration;
+        push @trailing_edge_events, $shift + $square_width;
+        push @trailing_edge_values, $concentration * ($steps - $i) / $steps;
+        # to prevent roundoff error, multiply by pi as very last step, else
+        # we may get **old** value at event time instead of the new value
+        push @stair_source_nodes, "0.5*$concentration*$strength*(1 + square((t-$shift)/$period*2*pi, $square_duty))";
     }
     my $stair_source_node = "(".join(" + ", @stair_source_nodes).")/$steps";
 
@@ -248,33 +248,33 @@ sub staircase_equation {
     printn "staircase_equation: value list is @values" if $verbosity >= 3;
 
     if ($duty < 100) {
-	# final value is value at last event +/- one step
-	my $final_value = $values[@values-1];
-	$final_value += (
-	    fmod(($period - $delay),$period) <= ($pulse_width - $rftime) &&
-	    fmod(($period - $delay), $period) > 0 ?
-	    ($concentration/$steps) :
-	    (-$concentration/$steps)
-	   );
-	return {
-	    equations => [
-		"null -> $node; clamp_source_$node=\"$stair_source_node\"",
-		"$node -> null; clamp_sink_$node=$strength",
-	       ],
-	    events => \@events,
-	    values => \@values,
-	    final_value => $final_value,
-	};
+        # final value is value at last event +/- one step
+        my $final_value = $values[@values-1];
+        $final_value += (
+            fmod(($period - $delay),$period) <= ($pulse_width - $rftime) &&
+            fmod(($period - $delay), $period) > 0 ?
+            ($concentration/$steps) :
+            (-$concentration/$steps)
+        );
+        return {
+            equations => [
+                "null -> $node; clamp_source_$node=\"$stair_source_node\"",
+                "$node -> null; clamp_sink_$node=$strength",
+            ],
+            events => \@events,
+            values => \@values,
+            final_value => $final_value,
+        };
     } else {
-	return {
-	    equations => [
-		"null -> $node; clamp_source_$node=".$concentration*$strength,
-		"$node -> null; clamp_sink_$node=$strength",
-	       ],
-	    events => [],
-	    values => [],
-	    final_value => $concentration,
-	};
+        return {
+            equations => [
+                "null -> $node; clamp_source_$node=".$concentration*$strength,
+                "$node -> null; clamp_sink_$node=$strength",
+            ],
+            events => [],
+            values => [],
+            final_value => $concentration,
+        };
     }
 }
 
@@ -284,27 +284,27 @@ sub staircase_equation {
 #--------------------------------------------------------------------------------------
 sub staircase_sample {
     my %args = (
-	# default values
+        # default values
         CONCENTRATION => undef,
-	PERIOD => undef,
-	DELAY => 0,
-	DUTY => 50,
-	RFTIME => undef,
-	STEPS => undef,   # of steps in each direction
+        PERIOD => undef,
+        DELAY => 0,
+        DUTY => 50,
+        RFTIME => undef,
+        STEPS => undef,   # of steps in each direction
         @_,        # argument pair list overwrites defaults
     );
 
     check_args(\%args, 6);
 
     my $staircase_ref = staircase_equation(
-	NODE => "DUMMY",
-	STRENGTH => 1.0,
-	%args,
-       );
+        NODE => "DUMMY",
+        STRENGTH => 1.0,
+        %args,
+    );
     return {
-	events => $staircase_ref->{events},
-	values => $staircase_ref->{values},
-	final_value => $staircase_ref->{final_value},
+        events => $staircase_ref->{events},
+        values => $staircase_ref->{values},
+        final_value => $staircase_ref->{final_value},
     }
 }
 
@@ -316,15 +316,15 @@ sub staircase_sample {
 #--------------------------------------------------------------------------------------
 sub ramp_equation {
     my %args = (
-	# default values
-	NODE => undef,
-	PERIOD => undef,
-	DELAY => 0,
-	STRENGTH => undef,
+        # default values
+        NODE => undef,
+        PERIOD => undef,
+        DELAY => 0,
+        STRENGTH => undef,
         CONCENTRATION    => undef,
-	DUTY => 50,
-	RFTIME => undef,
-	STEPS => undef,   # N/A
+        DUTY => 50,
+        RFTIME => undef,
+        STEPS => undef,   # N/A
         @_,               # argument pair list overwrites defaults
     );
 
@@ -344,8 +344,8 @@ sub ramp_equation {
     my $square_duty = ($pulse_width - 2*$rftime) / $period * 100.0;
 
     if ($pulse_width < 2 * $rftime) {
-	printn "ERROR: ramp_equation -- parameters are inconsistent (rise/fall time exceeds computed pulse width)";
-	exit(1);
+        printn "ERROR: ramp_equation -- parameters are inconsistent (rise/fall time exceeds computed pulse width)";
+        exit(1);
     }
 
     # n.b. in the square() function, very important to *(pi) as very last step, else roundoff error introduced messes up the square()
@@ -362,9 +362,9 @@ sub ramp_equation {
 
     my @events;
     if ($delay + $rftime != $fall_ramp_delay) {
-	@events= ($delay, $delay + $rftime, $fall_ramp_delay, $fall_ramp_delay + $rftime);
+        @events= ($delay, $delay + $rftime, $fall_ramp_delay, $fall_ramp_delay + $rftime);
     } else {
-	@events= ($delay, $delay + $rftime, $fall_ramp_delay + $rftime);
+        @events= ($delay, $delay + $rftime, $fall_ramp_delay + $rftime);
     }
     # only events in the first period are included here. also, if the delay offset
     # is too large, some events will fall outside the period, so we must use
@@ -381,23 +381,23 @@ sub ramp_equation {
     printn "ramp_equation: value list is @values" if $verbosity >= 3;
 
     if ($duty < 100) {
-	return {
-	    equations => [
-		"null -> $node; clamp_source_$node=\"$ramp_source_node\"",
-		"$node -> null; clamp_sink_$node=$strength",
-	       ],
-	    events => \@events,
-	    values => \@values,
-	}
+        return {
+            equations => [
+                "null -> $node; clamp_source_$node=\"$ramp_source_node\"",
+                "$node -> null; clamp_sink_$node=$strength",
+            ],
+            events => \@events,
+            values => \@values,
+        }
     } else {
-	return {
-	    equations => [
-		"null -> $node; clamp_source_$node=".$concentration*$strength,
-		"$node -> null; clamp_sink_$node=$strength"
-	       ],
-	    events => [],
-	    values => [],
-	};
+        return {
+            equations => [
+                "null -> $node; clamp_source_$node=".$concentration*$strength,
+                "$node -> null; clamp_sink_$node=$strength"
+            ],
+            events => [],
+            values => [],
+        };
     }
 }
 
@@ -410,13 +410,13 @@ sub ramp_equation {
 #--------------------------------------------------------------------------------------
 sub ss_ramp_equation {
     my %args = (
-	# default values
-	NODE => undef,
-	DELAY => "~",  # default is to wait for steady-state before applying stimulus
-	STRENGTH => undef,
+        # default values
+        NODE => undef,
+        DELAY => "~",  # default is to wait for steady-state before applying stimulus
+        STRENGTH => undef,
         RANGE    => undef,
-	STEPS => undef,
-	RAMP_TIME => undef,
+        STEPS => undef,
+        RAMP_TIME => undef,
         @_,               # argument pair list overwrites defaults
     );
 
@@ -439,10 +439,10 @@ sub ss_ramp_equation {
 
     my $ramp_source_node = "(";
     for (my $i=0; $i < (@events-1)/2; $i++) {
-	my $ii = $i + 1;
-	my $jj = $i + 1 + (@events-1)/2;
-	$ramp_source_node .= "+(event_flags($ii) && ~event_flags($jj))*min((t-event_times($ii))/$step_time, 1)*$step_size*$strength";
-	$ramp_source_node .= "+event_flags($jj)*max(1-(t-event_times($jj))/$step_time, 0)*$step_size*$strength";
+        my $ii = $i + 1;
+        my $jj = $i + 1 + (@events-1)/2;
+        $ramp_source_node .= "+(event_flags($ii) && ~event_flags($jj))*min((t-event_times($ii))/$step_time, 1)*$step_size*$strength";
+        $ramp_source_node .= "+event_flags($jj)*max(1-(t-event_times($jj))/$step_time, 0)*$step_size*$strength";
     }
     $ramp_source_node .= ")";
 
@@ -451,12 +451,12 @@ sub ss_ramp_equation {
     printn "ramp_equation: value list is @values" if $verbosity >= 3;
 
     return {
-	equations => [
-	    "null -> $node; clamp_source_$node=\"$ramp_source_node\"",
-	    "$node -> null; clamp_sink_$node=$strength",
-	   ],
-	events => \@events,
-	values => \@values,
+        equations => [
+            "null -> $node; clamp_source_$node=\"$ramp_source_node\"",
+            "$node -> null; clamp_sink_$node=$strength",
+        ],
+        events => \@events,
+        values => \@values,
     }
 }
 

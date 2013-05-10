@@ -46,8 +46,8 @@ use base qw(Named);
     sub BUILD {
         my ($self, $obj_ID, $arg_ref) = @_;
 
-	$column_labels_of{$obj_ID} = defined $arg_ref->{column_labels} ? $arg_ref->{column_labels} : [];
-	$matrix_ref_of{$obj_ID} = [];
+        $column_labels_of{$obj_ID} = defined $arg_ref->{column_labels} ? $arg_ref->{column_labels} : [];
+        $matrix_ref_of{$obj_ID} = [];
     }
 
     #--------------------------------------------------------------------------------------
@@ -55,14 +55,14 @@ use base qw(Named);
     # Synopsys: 
     #--------------------------------------------------------------------------------------
     sub set_element {
-	my $self = shift;  my $obj_ID = ident $self;
-	my ($row, $col) = (shift, shift);
-	my $value = shift;
+        my $self = shift;  my $obj_ID = ident $self;
+        my ($row, $col) = (shift, shift);
+        my $value = shift;
 
-	my $matrix_ref = $matrix_ref_of{$obj_ID};
+        my $matrix_ref = $matrix_ref_of{$obj_ID};
 
-	$matrix_ref->[$row] = [] if !defined $matrix_ref->[$row];
-	$matrix_ref->[$row][$col] = $value;
+        $matrix_ref->[$row] = [] if !defined $matrix_ref->[$row];
+        $matrix_ref->[$row][$col] = $value;
     }
 
     #--------------------------------------------------------------------------------------
@@ -70,12 +70,12 @@ use base qw(Named);
     # Synopsys: 
     #--------------------------------------------------------------------------------------
     sub get_element {
-	my $self = shift;  my $obj_ID = ident $self;
-	my ($row, $col) = (shift, shift);
+        my $self = shift;  my $obj_ID = ident $self;
+        my ($row, $col) = (shift, shift);
 
-	my $matrix_ref = $matrix_ref_of{$obj_ID};
+        my $matrix_ref = $matrix_ref_of{$obj_ID};
 
-	return defined $matrix_ref->[$row] ? $matrix_ref->[$row][$col] : undef;
+        return defined $matrix_ref->[$row] ? $matrix_ref->[$row][$col] : undef;
     }
 
     #--------------------------------------------------------------------------------------
@@ -83,13 +83,13 @@ use base qw(Named);
     # Synopsys: 
     #--------------------------------------------------------------------------------------
     sub set_row {
-	my $self = shift;  my $obj_ID = ident $self;
-	my $row = shift;
+        my $self = shift;  my $obj_ID = ident $self;
+        my $row = shift;
 
-	my @values = @_;
+        my @values = @_;
 
-	my $matrix_ref = $matrix_ref_of{$obj_ID};
-	$matrix_ref->[$row] = \@values;
+        my $matrix_ref = $matrix_ref_of{$obj_ID};
+        $matrix_ref->[$row] = \@values;
     }
 
     #--------------------------------------------------------------------------------------
@@ -97,12 +97,12 @@ use base qw(Named);
     # Synopsys: 
     #--------------------------------------------------------------------------------------
     sub set_column {
-	my $self = shift;  my $obj_ID = ident $self;
-	my $col = shift;
+        my $self = shift;  my $obj_ID = ident $self;
+        my $col = shift;
 
-	my @values = @_;
+        my @values = @_;
 
-	map {$self->set_element($_, $col, $values[$_])} (0..@values-1);
+        map {$self->set_element($_, $col, $values[$_])} (0..@values-1);
     }
 
     #--------------------------------------------------------------------------------------
@@ -110,12 +110,12 @@ use base qw(Named);
     # Synopsys: 
     #--------------------------------------------------------------------------------------
     sub get_row {
-	my $self = shift;  my $obj_ID = ident $self;
-	my $row = shift;
+        my $self = shift;  my $obj_ID = ident $self;
+        my $row = shift;
 
-	my $matrix_ref = $matrix_ref_of{$obj_ID};
+        my $matrix_ref = $matrix_ref_of{$obj_ID};
 
-	return defined $matrix_ref->[$row] ? @{$matrix_ref->[$row]} : ();
+        return defined $matrix_ref->[$row] ? @{$matrix_ref->[$row]} : ();
     }
 
     #--------------------------------------------------------------------------------------
@@ -123,11 +123,11 @@ use base qw(Named);
     # Synopsys: 
     #--------------------------------------------------------------------------------------
     sub get_num_rows {
-	my $self = shift;  my $obj_ID = ident $self;
+        my $self = shift;  my $obj_ID = ident $self;
 
-	my $matrix_ref = $matrix_ref_of{$obj_ID};
+        my $matrix_ref = $matrix_ref_of{$obj_ID};
 
-	return scalar(@{$matrix_ref});
+        return scalar(@{$matrix_ref});
     }
 
 }

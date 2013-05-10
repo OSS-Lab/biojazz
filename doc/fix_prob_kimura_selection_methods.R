@@ -5,20 +5,20 @@
 # where s = (w' - w) / w
 
 fixation <- function(alpha, Neff, s) {
-  poss = s[s>0];
-  negs = s[s<0];
-  fpos = (1 - exp(-2 * poss)) / (1 - exp(-4 * Neff * poss));
-  fneg = (1 - exp(-2 * negs)) / (1 - exp(-4 * Neff * negs));
-  if (0 %in% s) {
-    zeros = s[s==0];
-    fzero = array(1 / (2 * Neff), dim = dim(zeros));
-    f = c(fneg, fzero, fpos);
-  } else {
-    f = c(fneg, fpos);    
-  }
-    
-  p = alpha * f;
-  return(p);
+    poss = s[s>0];
+    negs = s[s<0];
+    fpos = (1 - exp(-2 * poss)) / (1 - exp(-4 * Neff * poss));
+    fneg = (1 - exp(-2 * negs)) / (1 - exp(-4 * Neff * negs));
+    if (0 %in% s) {
+        zeros = s[s==0];
+        fzero = array(1 / (2 * Neff), dim = dim(zeros));
+        f = c(fneg, fzero, fpos);
+    } else {
+        f = c(fneg, fpos);    
+    }
+
+    p = alpha * f;
+    return(p);
 }
 
 e = c(0.001:10);

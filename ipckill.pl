@@ -13,9 +13,9 @@ while (<FH>) {
     my $line = $_;
     chomp $line;
     if ($line =~ /\S+\s*(\S+)\s*$username/) {
-	my $id = $1;
-	print "found user sema $line\n";
-	system ("./ipckill_c 0 $id");
+        my $id = $1;
+        print "found user sema $line\n";
+        system ("./ipckill_c 0 $id");
     }
 }
 
@@ -27,9 +27,9 @@ while (<FH>) {
     my $line = $_;
     chomp $line;
     if ($line =~ /\S+\s*(\S+)\s*$username/) {
-	my $id = $1;
-	print "found user shmem $line\n";
-	system ("./ipckill_c 1 $id");
+        my $id = $1;
+        print "found user shmem $line\n";
+        system ("./ipckill_c 1 $id");
     }
 }
 

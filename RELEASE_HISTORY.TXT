@@ -16,7 +16,7 @@ Date    	Tag                     Preparer        Notes
 ----    	---                     --------        -------
 
 2012-06-??	ALPHA-02		ollivier	Update for compatibility with ANC v1.x.
-							Fix miscelleneous issues, update tests.
+Fix miscelleneous issues, update tests.
 
 2008-06-02	ALPHA-01		ollivier	Initial release to other users.
 

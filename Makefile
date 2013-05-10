@@ -8,8 +8,8 @@
 # SETUP
 ######################################################################################
 ifeq ($(strip $(BIOJAZZ_HOME)),)
-  #text-if-empty
-  BIOJAZZ_HOME = .
+	#text-if-empty
+	BIOJAZZ_HOME = .
 endif
 
 ANC_CMD = $(ANC_HOME)/anc.pl
@@ -21,32 +21,32 @@ DIFF_CMD = git diff HEAD --
 # TESTING
 ######################################################################################
 main_modules = \
-	test/modules/BitVector.log \
-	test/modules/BindingProfile.log \
-	test/modules/Sequence.log \
-	test/modules/Parser.log \
-	test/modules/Model.log \
-	test/modules/ProtoDomain.log \
-	test/modules/Domain.log \
-	test/modules/Gene.log \
-	test/modules/Genome.log \
-	test/modules/GenomeModel.log \
-	test/modules/Generation.log \
-	test/modules/MatlabDriver.log \
-	test/modules/Network.log \
-	test/modules/Scoring.log \
-	test/modules/ScorNode.log \
-	test/modules/ScorCluster.log \
-	test/modules/GenAlg.log \
-	test/modules/ExcelSheet.log \
-	test/modules/ExcelBook.log \
-	test/modules/History.log \
+			   test/modules/BitVector.log \
+			   test/modules/BindingProfile.log \
+			   test/modules/Sequence.log \
+			   test/modules/Parser.log \
+			   test/modules/Model.log \
+			   test/modules/ProtoDomain.log \
+			   test/modules/Domain.log \
+			   test/modules/Gene.log \
+			   test/modules/Genome.log \
+			   test/modules/GenomeModel.log \
+			   test/modules/Generation.log \
+			   test/modules/MatlabDriver.log \
+			   test/modules/Network.log \
+			   test/modules/Scoring.log \
+			   test/modules/ScorNode.log \
+			   test/modules/ScorCluster.log \
+			   test/modules/GenAlg.log \
+			   test/modules/ExcelSheet.log \
+			   test/modules/ExcelBook.log \
+			   test/modules/History.log \
 
 custom_modules = \
-	test/custom/Template.log \
-	test/custom/Ultrasensitive.log \
-	test/custom/Oscillator.log \
-	test/custom/Linear.log \
+				 test/custom/Template.log \
+				 test/custom/Ultrasensitive.log \
+				 test/custom/Oscillator.log \
+				 test/custom/Linear.log \
 
 test : test_all_modules test_main
 
@@ -124,9 +124,9 @@ collect : collect_from_genomes
 
 collect_from_logfile : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='collect_history_from_logfile("$(basename $(config))/$(basename $(config)).$(tag).log"); save_history();'
-collect_from_genomes : FORCE
+	collect_from_genomes : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='collect_history_from_genomes(); save_history();'
-analyze : FORCE
+	analyze : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='load_history(); export_history();'
 
 ######################################################################################

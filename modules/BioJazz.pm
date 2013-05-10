@@ -22,18 +22,18 @@ use Exporter;
 use vars qw(@ISA @EXPORT @EXPORT_OK);
 @ISA = qw(Exporter);
 @EXPORT = qw(
-	     $ref
-	     $scoring_ref
-	     create_workspace
-	     evolve
-	     load_genome
-	     score_genome
-	     load_history
-	     save_history
-	     collect_history_from_genomes
-	     collect_history_from_logfile
-	     export_history
-	    );
+$ref
+$scoring_ref
+create_workspace
+evolve
+load_genome
+score_genome
+load_history
+save_history
+collect_history_from_genomes
+collect_history_from_logfile
+export_history
+);
 #@EXPORT_OK = qw(
 #		$xxx
 #	    );
@@ -54,10 +54,10 @@ use History;
 # PACKAGE GLOBALS
 #######################################################################################
 use vars qw(
-	    $ref
-	    $scoring_ref
-	    $history_ref
-	   );
+$ref
+$scoring_ref
+$history_ref
+);
 
 #######################################################################################
 # FUNCTIONS
@@ -69,7 +69,7 @@ use vars qw(
 sub create_workspace {
     # creat the workspace name
     my $workspace_name = shift || "bjazz";
-    
+
     # creat workspace and cp configure files, custom files and module files into the workspace
     printn "BioJazz is creating your workspace...";
     system("mkdir -p $workspace_name");
@@ -91,10 +91,10 @@ sub create_workspace {
 sub evolve {
 
     my %args = (
-	seed => -1,
-	@_,
-	);
-    
+        seed => -1,
+        @_,
+    );
+
     # pass seed from arguments to seed ????
     check_args(\%args, 1);
     my $seed = $args{seed};
@@ -106,45 +106,45 @@ sub evolve {
 
     # SIMULATION AND MODEL PARAMETERS
     if (!defined $config_ref->{inum_genomes}) {
-	$config_ref->{inum_genomes} = 1;
+        $config_ref->{inum_genomes} = 1;
     }
     print "BioJazz running with initial number of genomes equal to $config_ref->{inum_genomes}\n";
 
     if (!defined $config_ref->{mutation_rate}) {
-	$config_ref->{mutation_rate} = 0.01;
+        $config_ref->{mutation_rate} = 0.01;
     }
     print "BioJazz running with mutation rate of $config_ref->{mutation_rate}\n";
 
     if (!defined $config_ref->{cluster_type}) {
-	$config_ref->{cluster_type} = "LOCAL";
+        $config_ref->{cluster_type} = "LOCAL";
     }
     print "BioJazz using cluster_type $config_ref->{cluster_type}\n";
 
     if (!defined $config_ref->{cluster_size}) {
-	$config_ref->{cluster_size} = 1;
+        $config_ref->{cluster_size} = 1;
     }
     print "BioJazz using cluster_size $config_ref->{cluster_size}\n";
 
     if (!defined $config_ref->{nice}) {
-	$config_ref->{nice} = 15;
+        $config_ref->{nice} = 15;
     }
     print "BioJazz using nice $config_ref->{nice}\n";
 
     # CLEAN UP PREVIOUS RUNS
     if (defined $config_ref->{remove_old_files} && $config_ref->{remove_old_files} == 1) {
-	printn "Removing old files... are you sure (y/n)? ";
-	my $answer = <>; chomp($answer);
-	if ($answer ne "y") {
-	    printn "no, then fix the configuration file";
-	    exit(1);
-	}
-	`echo $config_ref->{work_dir}/$TAG/*.log     | xargs rm -f`;
-	`echo $config_ref->{work_dir}/$TAG/matlab/*  | xargs rm -f`;
-	`echo $config_ref->{work_dir}/$TAG/obj/*     | xargs rm -f`;
-	`echo $config_ref->{work_dir}/$TAG/source*   | xargs rm -rf`;
-	printn "Done removing files.";
+        printn "Removing old files... are you sure (y/n)? ";
+        my $answer = <>; chomp($answer);
+        if ($answer ne "y") {
+            printn "no, then fix the configuration file";
+            exit(1);
+        }
+        `echo $config_ref->{work_dir}/$TAG/*.log     | xargs rm -f`;
+        `echo $config_ref->{work_dir}/$TAG/matlab/*  | xargs rm -f`;
+        `echo $config_ref->{work_dir}/$TAG/obj/*     | xargs rm -f`;
+        `echo $config_ref->{work_dir}/$TAG/source*   | xargs rm -rf`;
+        printn "Done removing files.";
     } else {
-	printn "Keeping old files in $config_ref->{work_dir}/$TAG";
+        printn "Keeping old files in $config_ref->{work_dir}/$TAG";
     }
 
     # CREATE OUTPUT DIRECTORIES
@@ -166,21 +166,21 @@ sub evolve {
 
     # START (creates nodes, forks node manager process)
     my $ga_ref = GenAlg->new({
-	config_ref => $config_ref,
-    });
+            config_ref => $config_ref,
+        });
 
     # SEED FOR REPEATABLE RANDOM NUMBER SEQUENCE
     # (n.b. seems important to set it after fork)
     #  srand(5334245);
     if (defined $seed && ($seed >= 0)) {
-	srand($seed);
-	printn("Seed was passed as parameter");
-	`echo $start_time -- parameter -- tag=$TAG -- $seed >> seed`;
+        srand($seed);
+        printn("Seed was passed as parameter");
+        `echo $start_time -- parameter -- tag=$TAG -- $seed >> seed`;
     } else {
-	$seed = int rand (0xFFFFFFFF);
-	srand($seed);
-	printn("Seed was randomly generated");
-	`echo $start_time -- random -- tag=$TAG -- $seed >> seed`;
+        $seed = int rand (0xFFFFFFFF);
+        srand($seed);
+        printn("Seed was randomly generated");
+        `echo $start_time -- random -- tag=$TAG -- $seed >> seed`;
     }
     printn("Using seed $seed");
 
@@ -221,11 +221,11 @@ sub score_genome {
     if ($@) {print $@; return;}
 
     $scoring_ref = $config_ref->{scoring_class}->new({
-	node_ID => 999,
-	config_file => $config_ref->{config_file},
-	work_dir => "$config_ref->{work_dir}/scratch/$TAG",
-	matlab_startup_options => "-nodesktop -nosplash",  # need jvm
-    });
+            node_ID => 999,
+            config_file => $config_ref->{config_file},
+            work_dir => "$config_ref->{work_dir}/scratch/$TAG",
+            matlab_startup_options => "-nodesktop -nosplash",  # need jvm
+        });
     $config_ref = $scoring_ref->get_config_ref();
 
     $config_ref->{plot_input} = 1;
@@ -236,7 +236,7 @@ sub score_genome {
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
-    
+
     # set_elite_flag :: need to revisit to modify according to different selection method
     $ref->set_elite_flag(0);
     return $scoring_ref->score_genome($ref);
@@ -261,28 +261,28 @@ sub collect_history_from_genomes {
 
     $history_ref = History->new({});
     $history_ref->collect_history_from_genomes(
-	genomes_dir => $obj_dir,
-	max_generations => -1,
-       );
+        genomes_dir => $obj_dir,
+        max_generations => -1,
+    );
 }
 sub collect_history_from_logfile {
     my $logfile = shift;
 
     $history_ref = History->new({});
     $history_ref->collect_history_from_logfile(
-	logfile => $logfile,
-       );
+        logfile => $logfile,
+    );
 }
 # subroutine to export history which could be used to analyse the simulation results?
 sub export_history {
     $history_ref->export(
-	filename => "$config_ref->{work_dir}/history.$TAG.xls",
-	genome_attribute_names => $config_ref->{genome_attribute_names},
-	# For kimura selection method there is no need to do population output
-	# should put the analysis at the stage after evolution. From csv files 
-	# generated "on-the-fly"
-	#population_attribute_names => $config_ref->{population_attribute_names},
-       );
+        filename => "$config_ref->{work_dir}/history.$TAG.xls",
+        genome_attribute_names => $config_ref->{genome_attribute_names},
+        # For kimura selection method there is no need to do population output
+        # should put the analysis at the stage after evolution. From csv files 
+        # generated "on-the-fly"
+        #population_attribute_names => $config_ref->{population_attribute_names},
+    );
 }
 
 #--------------------------------------------------------------------------------------

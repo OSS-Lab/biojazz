@@ -59,8 +59,8 @@ use base qw();
     # Convert object to a string (automatically in string contexts)...
     # (n.b. this function gets called when printing out the object reference)
     sub as_str : STRINGIFY {
-	my $self = shift;
-	my $class = ref $self;
+        my $self = shift;
+        my $class = ref $self;
 
         return "$class=SCALAR(".$self->get_sequence().")";
     }
@@ -70,9 +70,9 @@ use base qw();
     # Synopsys: Get sequence length.
     #--------------------------------------------------------------------------------------
     sub get_length {
-	my $self = shift; my $obj_ID = ident $self;
+        my $self = shift; my $obj_ID = ident $self;
 
-	return length($sequence_of{$obj_ID});
+        return length($sequence_of{$obj_ID});
     }
 
     #--------------------------------------------------------------------------------------
@@ -80,11 +80,11 @@ use base qw();
     # Synopsys: 
     #--------------------------------------------------------------------------------------
     sub get_subseq {
-	my $self = shift; my $obj_ID = ident $self;
-	my $locus = shift || 0;
-	my $length = shift; $length = !defined $length ? length($sequence_of{$obj_ID}) : $length;
+        my $self = shift; my $obj_ID = ident $self;
+        my $locus = shift || 0;
+        my $length = shift; $length = !defined $length ? length($sequence_of{$obj_ID}) : $length;
 
-	return substr($sequence_of{$obj_ID}, $locus, $length);
+        return substr($sequence_of{$obj_ID}, $locus, $length);
     }
 
     #--------------------------------------------------------------------------------------
@@ -93,12 +93,12 @@ use base qw();
     #           (By default, replaces entire sequence with given).
     #--------------------------------------------------------------------------------------
     sub set_subseq {
-	my $self = shift; my $obj_ID = ident $self;
-	my $subseq = shift; $subseq = !defined $subseq ? "" : $subseq;
-	my $locus = shift || 0;
-	my $length = shift; $length = !defined $length ? length($subseq) : $length;
+        my $self = shift; my $obj_ID = ident $self;
+        my $subseq = shift; $subseq = !defined $subseq ? "" : $subseq;
+        my $locus = shift || 0;
+        my $length = shift; $length = !defined $length ? length($subseq) : $length;
 
-	return substr($sequence_of{$obj_ID}, $locus, $length, $subseq);
+        return substr($sequence_of{$obj_ID}, $locus, $length, $subseq);
     }
 
     #--------------------------------------------------------------------------------------
@@ -107,12 +107,12 @@ use base qw();
     #           original sequence (inserting by default).
     #--------------------------------------------------------------------------------------
     sub splice_subseq {
-	my $self = shift; my $obj_ID = ident $self;
-	my $subseq = shift; $subseq = !defined $subseq ? "" : $subseq;
-	my $locus = shift || length($sequence_of{$obj_ID});  # append by default
-	my $length = shift || 0;                             # insert by default
+        my $self = shift; my $obj_ID = ident $self;
+        my $subseq = shift; $subseq = !defined $subseq ? "" : $subseq;
+        my $locus = shift || length($sequence_of{$obj_ID});  # append by default
+        my $length = shift || 0;                             # insert by default
 
-	return substr($sequence_of{$obj_ID}, $locus, $length, $subseq);
+        return substr($sequence_of{$obj_ID}, $locus, $length, $subseq);
     }
 
     #--------------------------------------------------------------------------------------
@@ -120,21 +120,21 @@ use base qw();
     # Synopsys: Generate a sequence of a given length in bits.
     #--------------------------------------------------------------------------------------
     sub generate_random_sequence {
-	my $self = shift;
-	my $sequence_length = shift;
+        my $self = shift;
+        my $sequence_length = shift;
 
-	printn "generate_random_sequence: generating sequence of length $sequence_length" if ($verbosity >= 2);
-	confess "ERROR: generate_random_sequence -- need positive argument" if ($sequence_length <= 0);
+        printn "generate_random_sequence: generating sequence of length $sequence_length" if ($verbosity >= 2);
+        confess "ERROR: generate_random_sequence -- need positive argument" if ($sequence_length <= 0);
 
-	my @sequence = ();
+        my @sequence = ();
 
-	while ($sequence_length--) {
-	    my $bit = int(rand(2));
-	    push @sequence, $bit;
-	}
+        while ($sequence_length--) {
+            my $bit = int(rand(2));
+            push @sequence, $bit;
+        }
 
-	# return one big string
-	return $sequence_of{ident $self} = join "", @sequence;
+        # return one big string
+        return $sequence_of{ident $self} = join "", @sequence;
     }
 
     #--------------------------------------------------------------------------------------
@@ -143,36 +143,36 @@ use base qw();
     #           Returns number of bits mutated.
     #--------------------------------------------------------------------------------------
     sub mutate_subseq {
-	my $self = shift; my $obj_ID = ident $self;
-	my $probability = shift || 0.0;
-	my $locus = shift || 0;
-	my $length = shift; $length = (!defined $length) ? length($sequence_of{$obj_ID}) - $locus : $length;
+        my $self = shift; my $obj_ID = ident $self;
+        my $probability = shift || 0.0;
+        my $locus = shift || 0;
+        my $length = shift; $length = (!defined $length) ? length($sequence_of{$obj_ID}) - $locus : $length;
 
-	my $stop = $locus + $length;
-	printn "mutate_subseq: mutating $length sequence bits starting at $locus with probability $probability" if ($verbosity >= 3);
+        my $stop = $locus + $length;
+        printn "mutate_subseq: mutating $length sequence bits starting at $locus with probability $probability" if ($verbosity >= 3);
 
-	if (length($sequence_of{$obj_ID}) < $locus + $length) {
-	    confess "ERROR: mutate_subseq -- can't mutate past end of sequence";
-	}
+        if (length($sequence_of{$obj_ID}) < $locus + $length) {
+            confess "ERROR: mutate_subseq -- can't mutate past end of sequence";
+        }
 
-	my $subseq = $self->get_subseq($locus, $length);
+        my $subseq = $self->get_subseq($locus, $length);
 
-	my $num_bits = 0;
-	for (my $i=0; $i < $length; $i++) {
-	    if ((rand 1) < $probability) {
-		my $value = substr($subseq, $i, 1);
-		confess "ERROR: mutate_subseq -- sequence appears corrupted" if ($value ne "1") && ($value ne "0");
-		my $new_value = $value eq "1" ? "0" : "1";
-		substr($subseq, $i, 1) = $new_value;
-		printn "mutate_subseq: mutating bit at position ".($locus+$i).", $value -> $new_value" if ($verbosity >= 3);
-		$num_bits++;
-	    }
-	}
-	printn "mutate_subseq: mutated $num_bits sequence bits" if ($verbosity >= 3);
+        my $num_bits = 0;
+        for (my $i=0; $i < $length; $i++) {
+            if ((rand 1) < $probability) {
+                my $value = substr($subseq, $i, 1);
+                confess "ERROR: mutate_subseq -- sequence appears corrupted" if ($value ne "1") && ($value ne "0");
+                my $new_value = $value eq "1" ? "0" : "1";
+                substr($subseq, $i, 1) = $new_value;
+                printn "mutate_subseq: mutating bit at position ".($locus+$i).", $value -> $new_value" if ($verbosity >= 3);
+                $num_bits++;
+            }
+        }
+        printn "mutate_subseq: mutated $num_bits sequence bits" if ($verbosity >= 3);
 
-	$self->set_subseq($subseq, $locus, $length);
+        $self->set_subseq($subseq, $locus, $length);
 
-	return $num_bits;
+        return $num_bits;
     }
 
     #--------------------------------------------------------------------------------------
@@ -180,9 +180,9 @@ use base qw();
     # Synopsys: Alias for get_subseq.
     #--------------------------------------------------------------------------------------
     sub sprint {
-	my $self = shift;
+        my $self = shift;
 
-	return $self->get_subseq(@_);
+        return $self->get_subseq(@_);
     }
 
     #--------------------------------------------------------------------------------------
@@ -190,20 +190,20 @@ use base qw();
     # Synopsys: Load a sequence from a file
     #--------------------------------------------------------------------------------------
     sub load_sequence {
-	my $self = shift;
-	my $filename = shift;
-	
-	open (SEQUENCE, "<$filename") or die "ERROR: can't read sequence file\n";
+        my $self = shift;
+        my $filename = shift;
 
-	my $sequence = "";
+        open (SEQUENCE, "<$filename") or die "ERROR: can't read sequence file\n";
 
-	my $bit;
-	while (read SEQUENCE, $bit, 1) {
-	    confess "ERROR: file $filename is not a sequence" if (($bit ne '0') && ($bit ne '1'));
-	    $sequence .= $bit;
-	}
+        my $sequence = "";
 
-	$sequence_of{ident $self} = ($sequence);
+        my $bit;
+        while (read SEQUENCE, $bit, 1) {
+            confess "ERROR: file $filename is not a sequence" if (($bit ne '0') && ($bit ne '1'));
+            $sequence .= $bit;
+        }
+
+        $sequence_of{ident $self} = ($sequence);
     }
 
     #--------------------------------------------------------------------------------------
@@ -211,10 +211,10 @@ use base qw();
     # Synopsys: Save a sequence to a file
     #--------------------------------------------------------------------------------------
     sub save_sequence {
-	my $self = shift;
-	my $filename = shift;
+        my $self = shift;
+        my $filename = shift;
 
-	die "ERROR: save_sequence is not implemented";
+        die "ERROR: save_sequence is not implemented";
     }
 }
 

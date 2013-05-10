@@ -38,13 +38,13 @@ use base qw(BitVector);
     # Synopsys: Returns L/R flipped, 1s-complement of the vector.
     #######################################################################################
     sub binding_complement {
-	my $self = shift;
-	my $class = ref $self || $self;
-	# if class method call assume a string was supplied and create object on the fly
-	$self = $class->new({vector => shift}) if !ref $self;
-	my $obj_ID = ident $self;
-		
-	return $self->lr_flip()->NOT();
+        my $self = shift;
+        my $class = ref $self || $self;
+        # if class method call assume a string was supplied and create object on the fly
+        $self = $class->new({vector => shift}) if !ref $self;
+        my $obj_ID = ident $self;
+
+        return $self->lr_flip()->NOT();
     }
 
     #--------------------------------------------------------------------------------------
@@ -53,25 +53,25 @@ use base qw(BitVector);
     #           when the first is compared to L-R flipped, inverted version of the second.
     #--------------------------------------------------------------------------------------
     sub mismatch {
-	my $class = shift;
-	my $x_ref = shift;
-	my $y_ref = shift;
+        my $class = shift;
+        my $x_ref = shift;
+        my $y_ref = shift;
 
-	# if strings were supplied, create objects on the fly
-	$x_ref = $class->new({vector => $x_ref}) if !ref $x_ref;
-	$y_ref = $class->new({vector => $y_ref}) if !ref $y_ref;
+        # if strings were supplied, create objects on the fly
+        $x_ref = $class->new({vector => $x_ref}) if !ref $x_ref;
+        $y_ref = $class->new({vector => $y_ref}) if !ref $y_ref;
 
-	# apply masks
-	while (@_) {
-	    my $x_mask_ref = shift;
-	    my $y_mask_ref = shift;
-	    $x_mask_ref = BindingProfile->new({vector => $x_mask_ref}) if !ref $x_mask_ref;
-	    $y_mask_ref = BindingProfile->new({vector => $y_mask_ref}) if !ref $y_mask_ref;
-	    $x_ref = BindingProfile->XOR($x_ref, $x_mask_ref);
-	    $y_ref = BindingProfile->XOR($y_ref, $y_mask_ref);
-	}
+        # apply masks
+        while (@_) {
+            my $x_mask_ref = shift;
+            my $y_mask_ref = shift;
+            $x_mask_ref = BindingProfile->new({vector => $x_mask_ref}) if !ref $x_mask_ref;
+            $y_mask_ref = BindingProfile->new({vector => $y_mask_ref}) if !ref $y_mask_ref;
+            $x_ref = BindingProfile->XOR($x_ref, $x_mask_ref);
+            $y_ref = BindingProfile->XOR($y_ref, $y_mask_ref);
+        }
 
-	return BindingProfile->hamming_distance($x_ref, $y_ref->binding_complement());
+        return BindingProfile->hamming_distance($x_ref, $y_ref->binding_complement());
     }
 
     #######################################################################################

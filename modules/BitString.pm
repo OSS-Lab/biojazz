@@ -23,8 +23,8 @@ use Exporter;
 use vars qw(@ISA @EXPORT);
 @ISA = qw(Exporter);
 @EXPORT = qw(
-	     dec2bin
-	     bin2dec
+dec2bin
+bin2dec
 );
 
 

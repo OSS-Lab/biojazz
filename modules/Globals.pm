@@ -23,12 +23,12 @@ use vars qw(@ISA @EXPORT @EXPORT_OK);
 @ISA = qw(Exporter);
 @EXPORT = qw($verbosity);
 @EXPORT_OK = qw(
-		$TAG
-		$config_ref
-		$VERSION
-		$RELEASE_DATE
-		$WORKSPACE
-	    );
+$TAG
+$config_ref
+$VERSION
+$RELEASE_DATE
+$WORKSPACE
+);
 
 #######################################################################################
 # MODULES USED
@@ -39,13 +39,13 @@ use Utils;
 # PACKAGE GLOBALS
 #######################################################################################
 use vars qw(
-	    $TAG
-	    $verbosity
-	    $config_ref
-	    $VERSION
-	    $RELEASE_DATE
-	    $WORKSPACE
-	   );
+$TAG
+$verbosity
+$config_ref
+$VERSION
+$RELEASE_DATE
+$WORKSPACE
+);
 
 #--------------------------------------------------------------------------------------
 # Function: globals_init

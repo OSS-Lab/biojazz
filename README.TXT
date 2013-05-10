@@ -13,21 +13,21 @@ I have found the following to work when installing
 perl modules (e.g. Bit::Vector) as a user.
 
 cd ~
-rm -rf .cpan
-export PERL5LIB=~/myperl  # (and add to .bashrc)
+    rm -rf .cpan
+    export PERL5LIB=~/myperl  # (and add to .bashrc)
 perl -MCPAN -e shell   # (or just cpan if in path)
 
 # answer the questions, and when asked, say LIB=~/myperl PREFIX=~/myperl
 
-cpan> install Bit::Vector
+    cpan> install Bit::Vector
 
 
-USAGE
-=====
+    USAGE
+    =====
 
-Use the -h option to get usage info:
+    Use the -h option to get usage info:
 
-        E.g. biojazz.pl -h
+    E.g. biojazz.pl -h
 
 
 
