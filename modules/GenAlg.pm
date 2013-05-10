@@ -14,6 +14,7 @@ use warnings;
 package GenAlg;
 
 use Class::Std;
+use Text::CSV;
 
 use base qw();
 {
@@ -340,6 +341,12 @@ use base qw();
                 }
 
                 $fixation_p *= $amplifier_alpha;
+
+
+                # output the mutated and scored results
+                # for both counting the mutation and the
+                # number of mutation steps
+                $self->report_current_generation();
 
             }
 
@@ -692,15 +699,47 @@ use base qw();
     sub report_current_generation {
         my $self = shift; my $obj_ID = ident $self;
         my $current_generation_number = $current_generation_number_of{$obj_ID};
-
+        my $current_generation_ref = $current_generation_ref_of{$obj_ID};
+        my $config_ref = $config_ref_of{$obj_ID};
+        
         my @genomes = $self->get_current_generation_ref()->get_elements();
 
+        my @genome_attribute_names = @{$config_ref->{genome_attribute_names}};
+        
+        confess "genome_attribute_names is not specified!" if !$genome_attribute_names[0];
+        if ($genome_attribute_names[0] eq "all") {
+            undef @genome_attribute_names;
+            @genome_attribute_names = $current_generation_ref->get_attribute_names();
+            confess "genome_attribute_names are not abstracted from genome stats_ref!" if !$genome_attribute_names[0];
+        }
+
         printn "report_current_generation: generation $current_generation_number";
+
+        my $data_dir = "$config_ref->{work_dir}/$TAG/stats";
+        my $file_name = sprintf("$data_dir/Generation%03d.csv", $current_generation_number);
+        open my $data_file, ">> $file_name" or die "$file_name: $!";
+        my $csv = Text::CSV->new({binary => 1, eol => "\n"});
+        
+        my @attributes;
+
         for (my $i=0; $i < @genomes; $i++) {
             my $genome_ref = $genomes[$i];
-#	    printn "individual $i  : ".$genome_ref->sprint_stats();
-#	    $genome_ref->
+            
+            # Here, we output each genome stats into a line 
+            # of CSV file
+            for (my $j = 0; $j < scalar @genome_attribute_names; $j++) {
+                my $attribute_value = $genome_ref->get_stats_ref()->{$genome_attribute_names[$j]};
+                push(@attributes, $attribute_value);
+            }
+            # process the attributes and output
+            $csv->print($data_file, \@attributes);
+
+            # destroy @attributes
+            undef @attributes;
+
         }
+        close($data_file) || warn "close failed: $!";
+
     }
 
     #--------------------------------------------------------------------------------------
@@ -733,6 +772,7 @@ use base qw();
                     $self->score_mutated_genomes();
                     $self->load_current_generation($current_generation_number_of{$obj_ID});
                     $self->population_based_selection();
+                    $self->report_current_generation();
                     $self->save_current_generation();
                 } elsif (!$config_ref->{selection_method}) {
                     printn "the selection method is not specified";

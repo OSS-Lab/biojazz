@@ -142,6 +142,7 @@ sub evolve {
         `echo $config_ref->{work_dir}/$TAG/matlab/*  | xargs rm -f`;
         `echo $config_ref->{work_dir}/$TAG/obj/*     | xargs rm -f`;
         `echo $config_ref->{work_dir}/$TAG/source*   | xargs rm -rf`;
+        `echo $config_ref->{work_dir}/$TAG/stats/*   | xargs rm -rf`;
         printn "Done removing files.";
     } else {
         printn "Keeping old files in $config_ref->{work_dir}/$TAG";
@@ -153,6 +154,7 @@ sub evolve {
     `mkdir -p $config_ref->{work_dir}/$TAG/matlab`;
     `mkdir -p $config_ref->{work_dir}/$TAG/obj`;
     `mkdir -p $config_ref->{work_dir}/$TAG/report`;
+    `mkdir -p $config_ref->{work_dir}/$TAG/stats`;
     my $timestamp = `date +%F-%T`; chomp($timestamp);
     my $source_dir = "source_$timestamp";
     `mkdir -p $config_ref->{work_dir}/$TAG/$source_dir`;
