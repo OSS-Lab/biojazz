@@ -746,6 +746,30 @@ use base qw();
 
     }
 
+    
+    #---  FUNCTION  ----------------------------------------------------------------
+    #         NAME: clear_pre_gen
+    #   PARAMETERS: ????
+    #      RETURNS: ????
+    #  DESCRIPTION: ????
+    #       THROWS: no exceptions
+    #     COMMENTS: none
+    #     SEE ALSO: n/a
+    #-------------------------------------------------------------------------------
+    
+    sub clear_pre_gen {
+        my $self = shift; my $obj_ID = ident $self;
+        my $config_ref = $config_ref_of{$obj_ID};
+        my $pre_gen_num = $current_generation_number_of{$obj_ID} - 1;
+        my $obj_dir = "$config_ref->{work_dir}/$TAG/obj";
+        my $removal_files = sprintf("$obj_dir/G%03d_I*.obj", $pre_gen_num);
+        
+        `rm -f $removal_files`;
+        printn "Removed genome files of the $pre_gen_num th generation" if $verbosity > 1;
+
+        return 1;
+    } ## --- end sub clear_pre_gen
+    
     #--------------------------------------------------------------------------------------
     # Function: evolve
     # Synopsys: 
@@ -778,6 +802,7 @@ use base qw();
                     $self->population_based_selection();
                     $self->report_current_generation();
                     $self->save_current_generation();
+                    $self->clear_pre_gen();
                 } elsif (!$config_ref->{selection_method}) {
                     printn "the selection method is not specified";
                     exit(1);
