@@ -721,10 +721,14 @@ use base qw();
         my $csv = Text::CSV->new({binary => 1, eol => "\n"});
         
         my @attributes;
+        my @attribute_names_new = ("genome_name", "population", @genome_attribute_names);
+        $csv->print($data_file, \@attribute_names_new);
 
         for (my $i=0; $i < @genomes; $i++) {
             my $genome_ref = $genomes[$i];
             
+            push(@attributes, $genome_ref->get_name());
+            push(@attributes, $genome_ref->get_number());
             # Here, we output each genome stats into a line 
             # of CSV file
             for (my $j = 0; $j < scalar @genome_attribute_names; $j++) {

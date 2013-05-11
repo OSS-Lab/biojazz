@@ -35,7 +35,7 @@ use base qw(Model);
     # simulation parameters
     my %history_ref_of :ATTR(get => 'history_ref', set => 'history_ref');
     my %stats_ref_of   :ATTR(get => 'stats_ref', set => 'stats_ref');
-    my %number_of	:ATTR(get => 'number', set => 'number');
+    my %number_of       :ATTR(get => 'number', set => 'number', default => 0);
     my %score_of       :ATTR(get => 'score', set => 'score');
     my %elite_flag_of  :ATTR(get => 'elite_flag', set => 'elite_flag', default => 0);
 
@@ -69,10 +69,78 @@ use base qw(Model);
         # INIT
         $history_ref_of{$obj_ID} = [];
         $stats_ref_of{$obj_ID} = {};
-        $number_of{$obj_ID} = {};
 
 #	$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
     }
+    
+
+
+    #===  FUNCTION  ================================================================
+    #         NAME: static_analyse
+    #      PURPOSE: anaylse the static information of genome and network
+    #   PARAMETERS: number of genes, domains, protodomains, rules etc.
+    #      RETURNS: 
+    #  DESCRIPTION: ????
+    #       THROWS: no exceptions
+    #     COMMENTS: none
+    #     SEE ALSO: n/a
+    #===============================================================================
+    sub static_analyse {
+        my $self = shift; my $obj_ID = ident $self;
+        
+        my $genome_ref = $self->get_genome();
+        my @gene_refs = $self->get_genes();
+        my @domain_refs = $self->get_domain_parser_ref()->get_object_instances();
+        my @protodomain_refs = $self->get_protodomain_parser_ref()->get_object_instances();
+
+        $stats_ref_of{$obj_ID}->{num_genes} = scalar @gene_refs;
+        $stats_ref_of{$obj_ID}->{num_domains} = scalar @domain_refs;
+        $stats_ref_of{$obj_ID}->{num_protodomains} = scalar @protodomain_refs;
+        # analyse protodomains
+        my $num_MDs = 0;
+        my $num_CDs = 0;
+        my $num_BDs = 0;
+        my $num_KDs = 0;
+        my $num_PDs = 0;
+        my $num_allosteric_protodomains = 0;
+        foreach my $protodomain_ref (@protodomain_refs) {
+            my $protodomain_translation_ref = $protodomain_ref->get_translation_ref();
+            if ($protodomain_translation_ref->{type} eq "msite" ) {
+                $num_MDs++;
+            } elsif ($protodomain_translation_ref->{type} eq "csite") {
+                $num_CDs++;
+                if ($protodomain_translation_ref->{substrate_polarity} == 0) {
+                    $num_KDs++;
+                } elsif ($protodomain_translation_ref->{substrate_polarity} == 1) {
+                    $num_PDs++;
+                }
+            } elsif ($protodomain_translation_ref->{type} eq "bsite") {
+                $num_BDs++;
+            }
+
+            if ($protodomain_ref->get_allosteric_flag() == 1) {
+                $num_allosteric_protodomains++;
+            }
+        }
+
+        # analyse domains
+        my $num_allosteric_domains = 0;
+        foreach my $domain_ref (@domain_refs) {
+            my $domain_translation_ref = $domain_ref->get_translation_ref();
+            if ($domain_translation_ref->{allosteric_flag} == 1) {
+                $num_allosteric_domains++;
+            }
+        }
+
+
+        @{$stats_ref_of{$obj_ID}}{ "num_phosphorylation_protodomains", 
+        "num_catalytic_protodomains", "num_kinase_protodomains", "num_phosphatase_protodomains",
+        "num_binding_protodomains", "num_allosteric_protodomains", "num_allosteric_domains",
+        } = ($num_MDs, $num_CDs, $num_KDs, $num_PDs, $num_BDs, $num_allosteric_protodomains, 
+            $num_allosteric_domains);
+
+
+    } ## --- end sub static_analyse
 
     #--------------------------------------------------------------------------------------
     # Function: get_stat
@@ -560,7 +628,7 @@ use base qw(Model);
         # first mutate only stuff between genes and junk
         my $genes_rate = $genome_parser_ref->get_field_mutation_rate("genes");
         $genome_parser_ref->set_field_mutation_rate("genes", 0.0);
-        my $mutated_junk_bits = $self->get_genome->mutate($mutation_rate);
+        my $mutated_junk_bits = $self->get_genome()->mutate($mutation_rate);
         printn "mutated $mutated_junk_bits bits in junk dna";
         # now mutate genes themselves, restoring saved rate
         $genome_parser_ref->set_field_mutation_rate("genes", $genes_rate);
