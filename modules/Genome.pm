@@ -78,6 +78,7 @@ use base qw(Parser Network);
         # DEFAULTS
 
         # INIT
+        $rules_of{$obj_ID} = [];
 
         # STRUCTURE
         my $gene_parser_ref = Gene->new({

@@ -244,7 +244,6 @@ use base qw(Scoring);
 
             # PRUNE GENES
             $stats_ref->{num_pruned_genes} = scalar $genome_ref->prune_isolated_genes();
-            $stats_ref->{num_genes} = $genome_model_ref->get_num_genes();
 
             my $gene_ref = $genome_model_ref->get_gene_parser_ref();
             my $lg_gene_ref = $gene_ref->lookup_object_instance_by_name("LG0000");
