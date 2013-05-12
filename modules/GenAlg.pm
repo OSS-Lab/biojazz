@@ -291,6 +291,7 @@ use base qw();
         # start to generate new generation 
         my $effective_population_size = $config_ref->{effective_population_size};
         my $amplifier_alpha = $config_ref->{amplifier_alpha};
+        $self->print_attribute_names();
         for (my $i = 0; $i < $current_generation_size; $i++) {
 
             my $parent_ref = $current_generation_ref->get_element($i);
@@ -300,6 +301,12 @@ use base qw();
             my $fixation_p = -1;
             my $mutated_score;
             while ($fixation_p < rand) {
+
+                # output the mutated and scored results
+                # for both counting the mutation and the
+                # number of mutation steps
+                $self->report_current_generation();
+
 
                 $current_generation_ref->clear_genomes();
                 $current_generation_ref->load_generation(
@@ -343,12 +350,6 @@ use base qw();
                 }
 
                 $fixation_p *= $amplifier_alpha;
-
-
-                # output the mutated and scored results
-                # for both counting the mutation and the
-                # number of mutation steps
-                $self->report_current_generation();
 
             }
 
@@ -551,7 +552,8 @@ use base qw();
                 }
             }
         }
-
+        my $next_generation_number = $current_generation_number + 1;
+        $current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
         $current_generation_ref->refresh_individual_names($current_generation_number);
 
     }
@@ -633,9 +635,8 @@ use base qw();
         my $current_generation_size = $current_generation_ref->get_num_elements();
 
         my $temp_generation_ref = Generation->new({});
-        my $temp_generation_number = $current_generation_number;
 
-        printn "create_next_generation: selecting generation $temp_generation_number";
+        printn "create_next_generation: selecting generation $current_generation_number";
 
         # check scores to make sure defined and positive
         my @scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
@@ -683,18 +684,49 @@ use base qw();
                my $parent_name = $parent_ref->get_name();
 
                my $child_ref = $parent_ref->duplicate();
-               $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $temp_generation_number, $i));
+               $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $current_generation_number, $i));
                $child_ref->set_number($selection_count[$i]);
                $temp_generation_ref->add_element($child_ref);
            } 
        }
 
        $current_generation_ref->clear_genomes();
-       $current_generation_number = $current_generation_number_of{$obj_ID} = $temp_generation_number;
        $current_generation_ref = $current_generation_ref_of{$obj_ID} = $temp_generation_ref;
        $current_generation_ref->refresh_individual_names($current_generation_number);
 
     }
+
+    #--------------------------------------------------------------------------------------
+    # Function: print_attribute_names
+    # Synopsys: 
+    #--------------------------------------------------------------------------------------
+    sub print_attribute_names {
+        my $self = shift; my $obj_ID = ident $self;
+        my $current_generation_number = $current_generation_number_of{$obj_ID};
+        my $current_generation_ref = $current_generation_ref_of{$obj_ID};
+        my $config_ref = $config_ref_of{$obj_ID};
+        
+        my @genome_attribute_names = @{$config_ref->{genome_attribute_names}};
+        
+        confess "genome_attribute_names is not specified!" if (@genome_attribute_names);
+        if ($genome_attribute_names[0] eq "all") {
+            undef @genome_attribute_names;
+            @genome_attribute_names = $current_generation_ref->get_attribute_names();
+        }
+
+        my $data_dir = "$config_ref->{work_dir}/$TAG/stats";
+        my $file_name = sprintf("$data_dir/Generation%03d.csv", $current_generation_number);
+        open my $data_file, ">> $file_name" or die "$file_name: $!";
+        my $csv = Text::CSV->new({binary => 1, eol => "\n"});
+        
+        my @attribute_names_new = ('genome_name', 'population/mutants', @genome_attribute_names);
+        $csv->print($data_file, \@attribute_names_new);
+
+        close($data_file) || warn "close failed: $!";
+
+        return 1;
+    }
+
 
     #--------------------------------------------------------------------------------------
     # Function: report_current_generation
@@ -710,11 +742,10 @@ use base qw();
 
         my @genome_attribute_names = @{$config_ref->{genome_attribute_names}};
         
-        confess "genome_attribute_names is not specified!" if !$genome_attribute_names[0];
+        confess "genome_attribute_names is not specified!" if (@genome_attribute_names);
         if ($genome_attribute_names[0] eq "all") {
             undef @genome_attribute_names;
             @genome_attribute_names = $current_generation_ref->get_attribute_names();
-            confess "genome_attribute_names are not abstracted from genome stats_ref!" if !$genome_attribute_names[0];
         }
 
         printn "report_current_generation: generation $current_generation_number";
@@ -725,12 +756,10 @@ use base qw();
         my $csv = Text::CSV->new({binary => 1, eol => "\n"});
         
         my @attributes;
-        my @attribute_names_new = ("genome_name", "population", @genome_attribute_names);
-        $csv->print($data_file, \@attribute_names_new);
-
+        my @attribute_names_new = ('genome_name', 'population/mutants', @genome_attribute_names);
         for (my $i=0; $i < @genomes; $i++) {
             my $genome_ref = $genomes[$i];
-            
+            $genome_ref->static_analyse();
             push(@attributes, $genome_ref->get_name());
             push(@attributes, $genome_ref->get_number());
             # Here, we output each genome stats into a line 
@@ -748,6 +777,7 @@ use base qw();
         }
         close($data_file) || warn "close failed: $!";
 
+        return 1;
     }
 
     
@@ -792,7 +822,6 @@ use base qw();
 
             $self->load_current_generation($current_generation_number_of{$obj_ID});
 
-            $self->report_current_generation();
 
             if ($current_generation_number_of{$obj_ID} + 1 < $config_ref->{num_generations}) {
                 if ($config_ref->{selection_method} eq "kimura_selection") {
@@ -807,12 +836,13 @@ use base qw();
                         }
                     }
                 } elsif ($config_ref->{selection_method} eq "population_based_selection") {
+                    $self->print_attribute_names();
+                    $self->report_current_generation();
                     $self->mutate_current_generation();
                     $self->save_current_generation();
                     $self->score_mutated_genomes();
                     $self->load_current_generation($current_generation_number_of{$obj_ID});
                     $self->population_based_selection();
-                    $self->report_current_generation();
                     $self->save_current_generation();
                     # clear genome files in order to relife the storage burdon
                     if (defined $config_ref_of{$obj_ID}->{fossil_epoch}) {
