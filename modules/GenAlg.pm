@@ -307,7 +307,6 @@ use base qw();
                     dir => "$config_ref->{work_dir}/$TAG/obj",
                     number => $current_generation_number,
                 );
-                $current_generation_number_of{$obj_ID} = $current_generation_number;
 
                 $parent_ref = $current_generation_ref->get_element($i);
                 printn "discard previous mutation and reloaded parent genome to mutate and score\n";
