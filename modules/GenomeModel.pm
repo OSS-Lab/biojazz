@@ -140,7 +140,8 @@ use base qw(Model);
             $num_allosteric_domains);
 
         # number of rules
-        $stats_ref_of{$obj_ID}->{num_rules} = scalar @{$genome_ref->get_rules()};
+        # N.B.: currently has some problem need to revise
+        # $stats_ref_of{$obj_ID}->{num_rules} = scalar @{$genome_ref->get_rules()};
     } ## --- end sub static_analyse
 
     #--------------------------------------------------------------------------------------

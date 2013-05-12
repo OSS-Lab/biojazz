@@ -209,6 +209,7 @@ use base qw();
                     $scoring_ref->score_genome($genome_model_ref);
                     $genome_model_ref->set_elite_flag(1);
                     $genome_model_ref->set_number(1);
+                    $genome_model_ref->static_analyse();
                 }
             }
 
@@ -255,7 +256,7 @@ use base qw();
 
         my $next_generation_ref = Generation->new({});
         my $next_generation_number = $current_generation_number + 1;
-
+        $current_generation_number_of{$obj_ID} = $next_generation_number;
         printn "create_next_generation: creating generation $next_generation_number";
 
         # check scores to make sure defined and positive
@@ -271,7 +272,6 @@ use base qw();
 
         printn "@scores";
 
-#	my $temp_obj_dir = "$config_ref->{work_dir}/$TAG/obj";
 
         my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
         my $defined_local_dir = (defined $local_dir ? $local_dir : "");
@@ -302,12 +302,6 @@ use base qw();
             my $mutated_score;
             while ($fixation_p < rand) {
 
-                # output the mutated and scored results
-                # for both counting the mutation and the
-                # number of mutation steps
-                $self->report_current_generation();
-
-
                 $current_generation_ref->clear_genomes();
                 $current_generation_ref->load_generation(
                     dir => "$config_ref->{work_dir}/$TAG/obj",
@@ -334,7 +328,7 @@ use base qw();
                 $parent_ref->clear_stats();
 
                 $scoring_ref->score_genome($parent_ref);
-
+                $parent_ref->static_analyse();
 
                 printn "the parent's score is: $scores[$i]";
                 my $child_score = $parent_ref->get_score();
@@ -350,6 +344,12 @@ use base qw();
                 }
 
                 $fixation_p *= $amplifier_alpha;
+
+                # output the mutated and scored results
+                # for both counting the mutation and the
+                # number of mutation steps
+                $self->report_current_generation();
+
 
             }
 
@@ -599,7 +599,7 @@ use base qw();
             # ensure reproducibility independent of node scoring if there is element of randomness
             # by deriving node scoring seed from main random generator
             my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
-            $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); \$scoring_ref->score_genome(\$genome_ref); \$genome_ref->set_elite_flag(1); store(\$genome_ref, \"$genome_file\");\n");
+            $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); \$scoring_ref->score_genome(\$genome_ref); \$genome_ref->static_analyse(); \$genome_ref->set_elite_flag(1); store(\$genome_ref, \"$genome_file\");\n");
             $node_ref->node_expect(undef, 'PERL_SHELL');
             $node_ref->node_print("NODE_READY");
             $used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on
@@ -759,7 +759,6 @@ use base qw();
         my @attribute_names_new = ('genome_name', 'population/mutants', @genome_attribute_names);
         for (my $i=0; $i < @genomes; $i++) {
             my $genome_ref = $genomes[$i];
-            $genome_ref->static_analyse();
             push(@attributes, $genome_ref->get_name());
             push(@attributes, $genome_ref->get_number());
             # Here, we output each genome stats into a line 
@@ -813,6 +812,8 @@ use base qw();
         my $config_ref = $config_ref_of{$obj_ID};
 
         $self->create_initial_generation();
+        $self->print_attribute_names();
+        $self->report_current_generation();
         $self->save_current_generation();
 
 
