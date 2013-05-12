@@ -708,7 +708,7 @@ use base qw();
         
         my @genome_attribute_names = @{$config_ref->{genome_attribute_names}};
         
-        confess "genome_attribute_names is not specified!" if (@genome_attribute_names);
+        confess "genome_attribute_names is not specified!" if (!@genome_attribute_names);
         if ($genome_attribute_names[0] eq "all") {
             undef @genome_attribute_names;
             @genome_attribute_names = $current_generation_ref->get_attribute_names();
@@ -742,7 +742,7 @@ use base qw();
 
         my @genome_attribute_names = @{$config_ref->{genome_attribute_names}};
         
-        confess "genome_attribute_names is not specified!" if (@genome_attribute_names);
+        confess "genome_attribute_names is not specified!" if (!@genome_attribute_names);
         if ($genome_attribute_names[0] eq "all") {
             undef @genome_attribute_names;
             @genome_attribute_names = $current_generation_ref->get_attribute_names();
