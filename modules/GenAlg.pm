@@ -198,29 +198,31 @@ use base qw();
                 });
 
 
+            my @genome_model_refs = $current_generation_ref_of{$obj_ID}->get_elements();
             if ($config_ref->{score_initial_generation}) {
                 # reset all score/stats for first generation
-                foreach my $genome_model_ref ($current_generation_ref_of{$obj_ID}->get_elements()) {
+                foreach my $genome_model_ref (@genome_model_refs) {
                     $genome_model_ref->clear_stats(preserve => []);
                     $genome_model_ref->set_score(undef);
                     $genome_model_ref->set_elite_flag(0);
 
                     $scoring_ref->score_genome($genome_model_ref);
                     $genome_model_ref->set_elite_flag(1);
+                    $genome_model_ref->set_number(1);
                 }
             }
 
-
-
             my $inum = $config_ref->{inum_genomes};
-            my $loaded_genome_num = scalar @files;
+            my $loaded_genome_num = scalar @genome_model_refs;
 
             if ($inum > $loaded_genome_num) {
                 for (my $i = 0; $i < ($inum - $loaded_genome_num); $i++) {
                     my $index = int(rand($loaded_genome_num));
-                    my $child_ref = $current_generation_ref->get_element($index)->duplicate();
-                    $child_ref->add_history("copied from $files[$index]");
-                    $current_generation_ref->add_element($child_ref);
+                    my $genome_model_ref = $genome_model_refs[$index];
+                    my $current_number = $genome_model_ref->get_number();
+                    $genome_model_ref->set_number($current_number + 1);
+                    my $name = $genome_model_ref->get_name();
+                    $genome_model_ref->add_history("increased population size of $name");
                 }
             }
 
@@ -317,9 +319,9 @@ use base qw();
                     gene_deletion_rate => $config_ref->{gene_deletion_rate},
                     domain_duplication_rate => $config_ref->{domain_duplication_rate},
                     domain_deletion_rate => $config_ref->{domain_deletion_rate},
+                    recombination_rate => $config_ref->{recombination_rate},
                     protodomain_duplication_rate => $config_ref->{protodomain_duplication_rate},
                     protodomain_deletion_rate => $config_ref->{protodomain_deletion_rate},
-                    recombination_rate => $config_ref->{recombination_rate},
                 );
                 $parent_ref->set_score(undef);
                 $parent_ref->clear_stats();
@@ -450,7 +452,7 @@ use base qw();
                         "domain_deletion_rate => " . $config_ref->{domain_deletion_rate} . "," .
                         "protodomain_duplication_rate => " . $config_ref->{protodomain_duplication_rate} . "," .
                         "protodomain_deletion_rate => " . $config_ref->{protodomain_deletion_rate} . "," .
-                        "recombination_rate => " . $config_ref->{recombination_rate} . "," .
+                        "recombination_rate => " . $config_ref->{recombination_rate} . ",);" .
                         "\$scoring_ref->score_genome(\$genome_ref); " .
                         "store(\$genome_ref, \"$temp_genome_file\");\n");
                     $node_ref->node_expect(undef, 'PERL_SHELL');
@@ -506,6 +508,55 @@ use base qw();
 
 
     #--------------------------------------------------------------------------------------
+    # Function: mutate_current_generation
+    # Synopsys: 
+    #--------------------------------------------------------------------------------------
+
+    sub mutate_current_generation {
+        my $self = shift; my $obj_ID = ident $self;
+        my $config_ref = $config_ref_of{$obj_ID};
+
+        my $current_generation_ref = $current_generation_ref_of{$obj_ID};
+        my $current_generation_number = $current_generation_number_of{$obj_ID};
+        my $current_generation_size = $current_generation_ref->get_num_elements();
+
+        my $mutation_rate = $config_ref->{mutation_rate};
+        my @genome_model_refs = $current_generation_ref->get_elements();
+
+        foreach my $genome_ref (@genome_model_refs) {
+            my $parent_name = $genome_ref->get_name();
+            my $population = $genome_ref->get_number();
+            for (my $i = 0; $i < $population; $i++) {
+                my $child_ref = $genome_ref->duplicate();
+                my $mutation_count = $child_ref->mutate(
+                    mutation_rate_params => $config_ref->{mutation_rate_params},
+                    mutation_rate_global => $config_ref->{mutation_rate_global},
+                    gene_duplication_rate => $config_ref->{gene_duplication_rate},
+                    gene_deletion_rate => $config_ref->{gene_deletion_rate},
+                    domain_duplication_rate => $config_ref->{domain_duplication_rate},
+                    domain_deletion_rate => $config_ref->{domain_deletion_rate},
+                    protodomain_duplication_rate => $config_ref->{protodomain_duplication_rate},
+                    protodomain_deletion_rate => $config_ref->{protodomain_deletion_rate},
+                    recombination_rate => $config_ref->{recombination_rate},
+                );
+
+                if ($mutation_count) {
+                    $child_ref->set_elite_flag(0);
+                    $child_ref->set_number(1);
+                    $current_generation_ref->add_element($child_ref);
+                    printn "New genotype appear, mutated from $parent_name!" if $verbosity > 1;
+                    $genome_ref->set_number($population - 1);
+                } else {
+                    undef $child_ref;
+                }
+            }
+        }
+
+        $current_generation_ref->refresh_individual_names($current_generation_number);
+
+    }
+
+    #--------------------------------------------------------------------------------------
     # Function: score_mutated_genomes
     # Synopsys: 
     #--------------------------------------------------------------------------------------
@@ -546,7 +597,7 @@ use base qw();
             # ensure reproducibility independent of node scoring if there is element of randomness
             # by deriving node scoring seed from main random generator
             my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
-            $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); \$scoring_ref->score_genome(\$genome_ref); store(\$genome_ref, \"$genome_file\");\n");
+            $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); \$scoring_ref->score_genome(\$genome_ref); \$genome_ref->set_elite_flag(1); store(\$genome_ref, \"$genome_file\");\n");
             $node_ref->node_expect(undef, 'PERL_SHELL');
             $node_ref->node_print("NODE_READY");
             $used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on
@@ -565,59 +616,6 @@ use base qw();
     }
 
 
-
-    #--------------------------------------------------------------------------------------
-    # Function: mutate_current_generation
-    # Synopsys: 
-    #--------------------------------------------------------------------------------------
-
-    sub mutate_current_generation {
-        my $self = shift; my $obj_ID = ident $self;
-        my $config_ref = $config_ref_of{$obj_ID};
-
-        my $current_generation_ref = $current_generation_ref_of{$obj_ID};
-        my $current_generation_number = $current_generation_number_of{$obj_ID};
-        my $current_generation_size = $current_generation_ref->get_num_elements();
-
-        my $next_generation_ref = Generation->new({});
-        my $next_generation_number = $current_generation_number + 1;
-
-        for (my $i = 0; $i < $current_generation_size; $i++) {
-
-            my $child_ref = $current_generation_ref->get_element($i)->duplicate();
-
-            $next_generation_ref->add_element($child_ref);
-        }
-
-        $current_generation_ref->clear_genomes();
-        $current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
-        $current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
-        $current_generation_ref->refresh_individual_names($current_generation_number);
-
-        my $mutation_rate = $config_ref->{mutation_rate};
-
-        my $mutate_num = int($mutation_rate * $current_generation_size);
-
-        my @mutated_indice;
-        for (my $i = 0; $i < $mutate_num; $i++) {
-            my $index = int(rand($current_generation_size));
-            printn "Going to mutate number $index\n";
-            $current_generation_ref->get_element($index)->mutate(
-                mutation_rate_params => $config_ref->{mutation_rate_params},
-                mutation_rate_global => $config_ref->{mutation_rate_global},
-                gene_duplication_rate => $config_ref->{gene_duplication_rate},
-                gene_deletion_rate => $config_ref->{gene_deletion_rate},
-                domain_duplication_rate => $config_ref->{domain_duplication_rate},
-                domain_deletion_rate => $config_ref->{domain_deletion_rate},
-                protodomain_duplication_rate => $config_ref->{protodomain_duplication_rate},
-                protodomain_deletion_rate => $config_ref->{protodomain_deletion_rate},
-                recombination_rate => $config_ref->{recombination_rate},
-            );
-
-            $current_generation_ref->get_element($index)->set_elite_flag(0);
-        }
-
-    }
 
     #--------------------------------------------------------------------------------------
     # Function: population_based_selection
@@ -641,12 +639,13 @@ use base qw();
 
         # check scores to make sure defined and positive
         my @scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
-        if (grep {!defined $_} @scores) {
-            printn "ERROR: not all scores are defined (if this is first generation, check value of score_initial_generation in config file)";
+        my @numbers = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
+        if (grep {!defined $_} @scores || grep {!defined $_} @numbers) {
+            printn "ERROR: not all scores and population numbers are defined (if this is first generation, check value of score_initial_generation in config file)";
             exit(1);
         }
-        if (grep {$_ < 0} @scores) {
-            printn "ERROR: all scores must be non-negative";
+        if (grep {$_ < 0} @scores || grep {$_ < 0} @numbers) {
+            printn "ERROR: all scores and population numbers must be non-negative";
             exit(1);
         }
 
@@ -654,12 +653,13 @@ use base qw();
         my $total_score = 0;
         my @cumulative_scores;
         for (my $i = 0; $i < $current_generation_size; $i++) {
-            $total_score += $scores[$i];
+            $total_score += ($scores[$i] * $numbers[$i]);
             push(@cumulative_scores, $total_score);
         }
 
-
-        for (my $i = 0; $i < $current_generation_size; $i++) {
+        my @selection_count = (0) x $current_generation_size;
+        my $evolve_population = defined $config_ref->{evolve_population} ? $config_ref->{evolve_population} : die "Not specified evolve_population in config file!";
+        for (my $i = 0; $i < $evolve_population; $i++) {
             my $threshold = rand() * $total_score;
             my $right = 0;
             my $left = $current_generation_size - 1;
@@ -674,21 +674,25 @@ use base qw();
                 }
             }
 
-            my $parent_ref = $current_generation_ref->get_element($right);
-            my $parent_name = $parent_ref->get_name();
-
-            my $child_ref = $parent_ref->duplicate();
-            $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $temp_generation_number, $i));
-            $child_ref->set_elite_flag(1);
-
-            $temp_generation_ref->add_element($child_ref);
-
+            $selection_count[$right]++;
         }
+        
+        for (my $i = 0; $i < $current_generation_size; $i++) {
+           if ($selection_count[$i]) {
+               my $parent_ref = $current_generation_ref->get_element($i);
+               my $parent_name = $parent_ref->get_name();
 
-        $current_generation_ref->clear_genomes();
-        $current_generation_number = $current_generation_number_of{$obj_ID} = $temp_generation_number;
-        $current_generation_ref = $current_generation_ref_of{$obj_ID} = $temp_generation_ref;
-        $current_generation_ref->refresh_individual_names($current_generation_number);
+               my $child_ref = $parent_ref->duplicate();
+               $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $temp_generation_number, $i));
+               $child_ref->set_number($selection_count[$i]);
+               $temp_generation_ref->add_element($child_ref);
+           } 
+       }
+
+       $current_generation_ref->clear_genomes();
+       $current_generation_number = $current_generation_number_of{$obj_ID} = $temp_generation_number;
+       $current_generation_ref = $current_generation_ref_of{$obj_ID} = $temp_generation_ref;
+       $current_generation_ref->refresh_individual_names($current_generation_number);
 
     }
 
@@ -794,6 +798,14 @@ use base qw();
                 if ($config_ref->{selection_method} eq "kimura_selection") {
                     $self->random_walk_selection();
                     $self->save_current_generation();
+                    # clear genome files in order to relife the storage burdon
+                    if (defined $config_ref_of{$obj_ID}->{fossil_epoch}) {
+                        my $fossil_epoch = $config_ref_of{$obj_ID}->{fossil_epoch};
+                        my $current_generation_number = $current_generation_number_of{$obj_ID};
+                        if (($current_generation_number % $fossil_epoch) != 0) {
+                            $self->clear_pre_gen();
+                        }
+                    }
                 } elsif ($config_ref->{selection_method} eq "population_based_selection") {
                     $self->mutate_current_generation();
                     $self->save_current_generation();
@@ -802,7 +814,14 @@ use base qw();
                     $self->population_based_selection();
                     $self->report_current_generation();
                     $self->save_current_generation();
-                    $self->clear_pre_gen();
+                    # clear genome files in order to relife the storage burdon
+                    if (defined $config_ref_of{$obj_ID}->{fossil_epoch}) {
+                        my $fossil_epoch = $config_ref_of{$obj_ID}->{fossil_epoch};
+                        my $current_generation_number = $current_generation_number_of{$obj_ID};
+                        if (($current_generation_number % $fossil_epoch) != 0) {
+                            $self->clear_pre_gen();
+                        }
+                    }
                 } elsif (!$config_ref->{selection_method}) {
                     printn "the selection method is not specified";
                     exit(1);

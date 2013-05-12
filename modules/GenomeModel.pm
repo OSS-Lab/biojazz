@@ -859,10 +859,10 @@ use base qw(Model);
         }
 
         my $accum_length = 0;
-        # now we insert all the domain sequence into the sequence reference.
+        # now we delete all the domain sequence from the sequence reference.
         # N.B.: 1. don't forget the soft_linker_code and its length
-        # 	2. don't mess up the locus (which need to add lengthes of all the 
-        # 	   sequence add previous of the current one.
+        # 	2. don't mess up the locus (which need to count lengthes of all the 
+        # 	   sequence deleted previous of the current one.
         for (my $i = 0; $i < $delete_num; $i++) {
             if ($deletion_info[$i][2] == $num_domains - 1) {
                 if ($i != $delete_num - 1) {
@@ -977,6 +977,7 @@ use base qw(Model);
         my $recombination_rate = $args{recombination_rate};
 
 
+        my $mutation_count = 0;
 
         # pre-mutation parsing
         $self->parse();
@@ -989,6 +990,7 @@ use base qw(Model);
             my @gene_refs = $self->get_genes();
             my @gene_names = map $_->get_name(), @gene_refs;
 
+            my $gene_duplication_count = 0;
             foreach my $gene_name (@gene_names) {
                 if ( rand() < $gene_duplication_rate ) {
                     printn "mutate: GENE_DUPLICATION" if $verbosity >= 1;
@@ -1003,8 +1005,10 @@ use base qw(Model);
 
                     # post-mutation parsing
                     $self->parse();
+                    $gene_duplication_count++;
                 }
             }
+            $mutation_count += $gene_duplication_count;
         }
         elsif ($gene_duplication_rate != 0.0) {
             printn "ERROR: gene_duplication_rate is not set in proper range";
@@ -1043,6 +1047,8 @@ use base qw(Model);
                     }
                 }
             }
+
+            $mutation_count += $deleted_gene_num;
         }
         elsif ($gene_deletion_rate != 0.0) {
             printn "ERROR: gene_deletion_rate is not set in proper range";
@@ -1059,6 +1065,7 @@ use base qw(Model);
             my $num_genes = $self->get_num_genes();
 
             my @gene_refs = $self->get_genes();
+            my $domain_duplication_count = 0;
 
             for (my $i = 0; $i < $num_genes; $i ++) {
                 my $gene_ref = $self->get_gene_by_index($i);
@@ -1075,6 +1082,7 @@ use base qw(Model);
                     $self->parse();
                     undef @gene_refs;
                     @gene_refs = $self->get_genes();
+                    $domain_duplication_count += $duplicate_num;
                 }
             }
 
@@ -1107,6 +1115,7 @@ use base qw(Model);
                     $self->parse();
                     undef @gene_refs;
                     @gene_refs = $self->get_genes();
+                    $mutation_count += $deleted_num;
                 }
             }
 
@@ -1163,6 +1172,7 @@ use base qw(Model);
 
                 # post-mutation parsing
                 $self->parse();
+                $mutation_count++;
             }
         }
         elsif ($recombination_rate != 0.0) {
@@ -1186,6 +1196,7 @@ use base qw(Model);
 
             # post-mutation parsing
             $self->parse();
+            $mutation_count += $total_bits;
         }
         elsif ($mutation_rate_params != 0.0) 
         {
@@ -1209,6 +1220,7 @@ use base qw(Model);
 
             # post-mutation parsing
             $self->parse();
+            $mutation_count += $total_bits;
         }
         elsif ($mutation_rate_global != 0.0) 
         {
@@ -1217,7 +1229,7 @@ use base qw(Model);
         }
 
 
-
+        return $mutation_count;
     }
 
 
