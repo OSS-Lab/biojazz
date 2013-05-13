@@ -527,27 +527,29 @@ use base qw();
             my $parent_name = $genome_ref->get_name();
             my $population = $genome_ref->get_number();
             for (my $i = 0; $i < $population; $i++) {
-                my $child_ref = $genome_ref->duplicate();
-                my $mutation_count = $child_ref->mutate(
-                    mutation_rate_params => $config_ref->{mutation_rate_params},
-                    mutation_rate_global => $config_ref->{mutation_rate_global},
-                    gene_duplication_rate => $config_ref->{gene_duplication_rate},
-                    gene_deletion_rate => $config_ref->{gene_deletion_rate},
-                    domain_duplication_rate => $config_ref->{domain_duplication_rate},
-                    domain_deletion_rate => $config_ref->{domain_deletion_rate},
-                    protodomain_duplication_rate => $config_ref->{protodomain_duplication_rate},
-                    protodomain_deletion_rate => $config_ref->{protodomain_deletion_rate},
-                    recombination_rate => $config_ref->{recombination_rate},
-                );
+                if (rand(1) < $mutation_rate) {
+                    my $child_ref = $genome_ref->duplicate();
+                    my $mutation_count = $child_ref->mutate(
+                        mutation_rate_params => $config_ref->{mutation_rate_params},
+                        mutation_rate_global => $config_ref->{mutation_rate_global},
+                        gene_duplication_rate => $config_ref->{gene_duplication_rate},
+                        gene_deletion_rate => $config_ref->{gene_deletion_rate},
+                        domain_duplication_rate => $config_ref->{domain_duplication_rate},
+                        domain_deletion_rate => $config_ref->{domain_deletion_rate},
+                        protodomain_duplication_rate => $config_ref->{protodomain_duplication_rate},
+                        protodomain_deletion_rate => $config_ref->{protodomain_deletion_rate},
+                        recombination_rate => $config_ref->{recombination_rate},
+                    );
 
-                if ($mutation_count) {
-                    $child_ref->set_elite_flag(0);
-                    $child_ref->set_number(1);
-                    $current_generation_ref->add_element($child_ref);
-                    printn "New genotype appear, mutated from $parent_name!" if $verbosity > 1;
-                    $genome_ref->set_number($population - 1);
-                } else {
-                    undef $child_ref;
+                    if ($mutation_count) {
+                        $child_ref->set_elite_flag(0);
+                        $child_ref->set_number(1);
+                        $current_generation_ref->add_element($child_ref);
+                        printn "New genotype appear, mutated from $parent_name!" if $verbosity > 1;
+                        $genome_ref->set_number($population - 1);
+                    } else {
+                        undef $child_ref;
+                    }
                 }
             }
         }
@@ -836,13 +838,13 @@ use base qw();
                         }
                     }
                 } elsif ($config_ref->{selection_method} eq "population_based_selection") {
-                    $self->print_attribute_names();
-                    $self->report_current_generation();
-                    $self->mutate_current_generation();
+                   $self->mutate_current_generation();
                     $self->save_current_generation();
                     $self->score_mutated_genomes();
                     $self->load_current_generation($current_generation_number_of{$obj_ID});
                     $self->population_based_selection();
+                    $self->print_attribute_names();
+                    $self->report_current_generation();
                     $self->save_current_generation();
                     # clear genome files in order to relife the storage burdon
                     if (defined $config_ref_of{$obj_ID}->{fossil_epoch}) {
