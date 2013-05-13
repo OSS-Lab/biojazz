@@ -678,22 +678,22 @@ use base qw();
 
             $selection_count[$right]++;
         }
-        
+
         for (my $i = 0; $i < $current_generation_size; $i++) {
-           if ($selection_count[$i]) {
-               my $parent_ref = $current_generation_ref->get_element($i);
-               my $parent_name = $parent_ref->get_name();
+            if ($selection_count[$i]) {
+                my $parent_ref = $current_generation_ref->get_element($i);
+                my $parent_name = $parent_ref->get_name();
 
-               my $child_ref = $parent_ref->duplicate();
-               $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $current_generation_number, $i));
-               $child_ref->set_number($selection_count[$i]);
-               $temp_generation_ref->add_element($child_ref);
-           } 
-       }
+                my $child_ref = $parent_ref->duplicate();
+                $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $current_generation_number, $i));
+                $child_ref->set_number($selection_count[$i]);
+                $temp_generation_ref->add_element($child_ref);
+            } 
+        }
 
-       $current_generation_ref->clear_genomes();
-       $current_generation_ref = $current_generation_ref_of{$obj_ID} = $temp_generation_ref;
-       $current_generation_ref->refresh_individual_names($current_generation_number);
+        $current_generation_ref->clear_genomes();
+        $current_generation_ref = $current_generation_ref_of{$obj_ID} = $temp_generation_ref;
+        $current_generation_ref->refresh_individual_names($current_generation_number);
 
     }
 
@@ -706,9 +706,9 @@ use base qw();
         my $current_generation_number = $current_generation_number_of{$obj_ID};
         my $current_generation_ref = $current_generation_ref_of{$obj_ID};
         my $config_ref = $config_ref_of{$obj_ID};
-        
+
         my @genome_attribute_names = @{$config_ref->{genome_attribute_names}};
-        
+
         confess "genome_attribute_names is not specified!" if (!@genome_attribute_names);
         if ($genome_attribute_names[0] eq "all") {
             undef @genome_attribute_names;
@@ -719,7 +719,7 @@ use base qw();
         my $file_name = sprintf("$data_dir/Generation%03d.csv", $current_generation_number);
         open my $data_file, ">> $file_name" or die "$file_name: $!";
         my $csv = Text::CSV->new({binary => 1, eol => "\n"});
-        
+
         my @attribute_names_new = ('genome_name', 'population/mutants', @genome_attribute_names);
         $csv->print($data_file, \@attribute_names_new);
 
@@ -738,11 +738,11 @@ use base qw();
         my $current_generation_number = $current_generation_number_of{$obj_ID};
         my $current_generation_ref = $current_generation_ref_of{$obj_ID};
         my $config_ref = $config_ref_of{$obj_ID};
-        
+
         my @genomes = $self->get_current_generation_ref()->get_elements();
 
         my @genome_attribute_names = @{$config_ref->{genome_attribute_names}};
-        
+
         confess "genome_attribute_names is not specified!" if (!@genome_attribute_names);
         if ($genome_attribute_names[0] eq "all") {
             undef @genome_attribute_names;
@@ -755,7 +755,7 @@ use base qw();
         my $file_name = sprintf("$data_dir/Generation%03d.csv", $current_generation_number);
         open my $data_file, ">> $file_name" or die "$file_name: $!";
         my $csv = Text::CSV->new({binary => 1, eol => "\n"});
-        
+
         my @attributes;
         my @attribute_names_new = ('genome_name', 'population/mutants', @genome_attribute_names);
         for (my $i=0; $i < @genomes; $i++) {
@@ -780,9 +780,9 @@ use base qw();
         return 1;
     }
 
-    
+
     #---  FUNCTION  ----------------------------------------------------------------
-    #         NAME: clear_pre_gen
+    #         NAME: clear_objs
     #   PARAMETERS: ????
     #      RETURNS: ????
     #  DESCRIPTION: ????
@@ -790,20 +790,21 @@ use base qw();
     #     COMMENTS: none
     #     SEE ALSO: n/a
     #-------------------------------------------------------------------------------
-    
-    sub clear_pre_gen {
+
+    sub clear_objs {
         my $self = shift; my $obj_ID = ident $self;
+        my $generation_number = shift;
+        die "No generation number are specified!" if !defined $generation_number;
         my $config_ref = $config_ref_of{$obj_ID};
-        my $pre_gen_num = $current_generation_number_of{$obj_ID} - 1;
         my $obj_dir = "$config_ref->{work_dir}/$TAG/obj";
-        my $removal_files = sprintf("$obj_dir/G%03d_I*.obj", $pre_gen_num);
-        
+        my $removal_files = sprintf("$obj_dir/G%03d_I*.obj", $generation_number);
+
         `rm -f $removal_files`;
-        printn "Removed genome files of the $pre_gen_num th generation" if $verbosity > 1;
+        printn "Removed genome files of the $generation_number th generation" if $verbosity > 1;
 
         return 1;
     } ## --- end sub clear_pre_gen
-    
+
     #--------------------------------------------------------------------------------------
     # Function: evolve
     # Synopsys: 
@@ -811,6 +812,8 @@ use base qw();
     sub evolve {
         my $self = shift; my $obj_ID = ident $self;
         my $config_ref = $config_ref_of{$obj_ID};
+        my $first_generation = $config_ref->{first_generation};
+        my $fossil_epoch = $config_ref->{fossil_epoch};
 
         $self->create_initial_generation();
         $self->print_attribute_names();
@@ -830,28 +833,31 @@ use base qw();
                     $self->random_walk_selection();
                     $self->save_current_generation();
                     # clear genome files in order to relife the storage burdon
-                    if (defined $config_ref_of{$obj_ID}->{fossil_epoch}) {
-                        my $fossil_epoch = $config_ref_of{$obj_ID}->{fossil_epoch};
+                    if (defined $fossil_epoch) {
                         my $current_generation_number = $current_generation_number_of{$obj_ID};
-                        if (($current_generation_number % $fossil_epoch) != 0) {
-                            $self->clear_pre_gen();
+                        if ($current_generation_number != 1 &&
+                            ($current_generation_number % $fossil_epoch) 
+                            != ($first_generation % $fossil_epoch)) {
+                            $self->clear_objs($current_generation_number - 1);
                         }
                     }
                 } elsif ($config_ref->{selection_method} eq "population_based_selection") {
-                   $self->mutate_current_generation();
+                    $self->mutate_current_generation();
                     $self->save_current_generation();
                     $self->score_mutated_genomes();
                     $self->load_current_generation($current_generation_number_of{$obj_ID});
                     $self->population_based_selection();
                     $self->print_attribute_names();
                     $self->report_current_generation();
+                    $self->clear_objs($current_generation_number_of{$obj_ID});
                     $self->save_current_generation();
                     # clear genome files in order to relife the storage burdon
-                    if (defined $config_ref_of{$obj_ID}->{fossil_epoch}) {
-                        my $fossil_epoch = $config_ref_of{$obj_ID}->{fossil_epoch};
+                    if (defined $fossil_epoch) {
                         my $current_generation_number = $current_generation_number_of{$obj_ID};
-                        if (($current_generation_number % $fossil_epoch) != 0) {
-                            $self->clear_pre_gen();
+                        if ($current_generation_number != 1 &&
+                            ($current_generation_number % $fossil_epoch) 
+                            != ($first_generation % $fossil_epoch)) {
+                            $self->clear_objs($current_generation_number - 1);
                         }
                     }
                 } elsif (!$config_ref->{selection_method}) {
