@@ -76,9 +76,6 @@ use base qw(Scoring);
             printn "Ultrasensitive::score_genome elite individual already scored, previous score=$stats_ref->{score}";
             return if ($config_ref->{rescore_elite} == 0);
             printn "Ultrasensitive::score_genome re-scoring elite individual";
-# !!! NEED TO FIX THIS TO RE-SCORE ELITE INDIVIDUAL AFTER A RESTART
-#	    $genome_model_ref->clear_stats(preserve => ["score_count", "score", "created_kinase", "created_phosphatase"]);
-#	    $stats_ref->{score_count}++;
 
             $genome_model_ref->clear_stats(preserve => ["created_kinase", "created_phosphatase"]);
             $stats_ref->{score_count} = 1;

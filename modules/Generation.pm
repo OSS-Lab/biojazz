@@ -286,7 +286,7 @@ use base qw(Set ClassData);
             my $ref = $refs[$i];
             my $name = sprintf("G%03d_I%02d", $number, $i);
             $ref->set_name($name);
-#	    $ref->add_history("name refreshed to $name");
+            $ref->add_history("name refreshed to $name");
         }
     }
 

@@ -205,11 +205,11 @@ use base qw();
                     $genome_model_ref->clear_stats(preserve => []);
                     $genome_model_ref->set_score(undef);
                     $genome_model_ref->set_elite_flag(0);
+                    $genome_model_ref->set_number(1);
 
                     $scoring_ref->score_genome($genome_model_ref);
+                    $genome_model_ref->static_analyse($config_ref->{rescore_elite});
                     $genome_model_ref->set_elite_flag(1);
-                    $genome_model_ref->set_number(1);
-                    $genome_model_ref->static_analyse();
                 }
             }
 
@@ -325,9 +325,12 @@ use base qw();
                 );
                 $parent_ref->set_score(undef);
                 $parent_ref->clear_stats();
+                $parent_ref->set_elite_flag(0);
 
                 $scoring_ref->score_genome($parent_ref);
-                $parent_ref->static_analyse();
+                $parent_ref->static_analyse($config_ref->{rescore_elite});
+                $parent_ref->set_elite_flag(1);
+
 
                 printn "the parent's score is: $scores[$i]";
                 my $child_score = $parent_ref->get_score();
@@ -542,6 +545,8 @@ use base qw();
                     );
 
                     if ($mutation_count) {
+                        $child_ref->set_score(undef);
+                        $child_ref->clear_stats(preserve => []);
                         $child_ref->set_elite_flag(0);
                         $child_ref->set_number(1);
                         $current_generation_ref->add_element($child_ref);
@@ -555,7 +560,7 @@ use base qw();
         }
         my $next_generation_number = $current_generation_number + 1;
         $current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
-        $current_generation_ref->refresh_individual_names($current_generation_number);
+        $current_generation_ref->refresh_individual_names($next_generation_number);
 
     }
 
@@ -574,6 +579,8 @@ use base qw();
         my $current_generation_number = $current_generation_number_of{$obj_ID};
         my $current_generation_size = $current_generation_ref->get_num_elements();
 
+        my $rescore_elite = $config_ref->{rescore_elite}; die "rescore_elite is not specified in config file!" if !defined $rescore_elite;
+
         my $file_glob = Generation->get_generation_glob(
             dir => "$config_ref->{work_dir}/$TAG/obj",
             number => $current_generation_number,
@@ -581,26 +588,18 @@ use base qw();
 
         my @genome_files = (glob $file_glob);
 
-        my @mutated_indice;
-        for (my $i = 0; $i < $current_generation_size; $i++) {
-            if($current_generation_ref->get_element($i)->get_elite_flag() == 0) {
-                push(@mutated_indice, $i);
-            }
-
-        }
-
         my %used_nodes = ();
         printn "score_current_generation: scoring generation $current_generation_number ....";
 
-        for (my $i=0; $i < @mutated_indice; $i++) {
-            my $genome_file = $genome_files[$mutated_indice[$i]];
+        for (my $i=0; $i < $current_generation_size; $i++) {
+            my $genome_file = $genome_files[$i];
             printn "score_current_generation: scoring file $genome_file";
 
             my $node_ref = $cluster_ref->get_free_node();
             # ensure reproducibility independent of node scoring if there is element of randomness
             # by deriving node scoring seed from main random generator
             my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
-            $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); \$scoring_ref->score_genome(\$genome_ref); \$genome_ref->static_analyse(); \$genome_ref->set_elite_flag(1); store(\$genome_ref, \"$genome_file\");\n");
+            $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); \$scoring_ref->score_genome(\$genome_ref); \$genome_ref->static_analyse($rescore_elite); \$genome_ref->set_elite_flag(1); store(\$genome_ref, \"$genome_file\");\n");
             $node_ref->node_expect(undef, 'PERL_SHELL');
             $node_ref->node_print("NODE_READY");
             $used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on

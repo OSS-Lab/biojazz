@@ -87,7 +87,15 @@ use base qw(Model);
     #===============================================================================
     sub static_analyse {
         my $self = shift; my $obj_ID = ident $self;
-        
+        my $rescore_elite = shift;
+
+        my $elite_flag = $self->get_elite_flag();
+        if ($elite_flag) {
+            printn "This genome has been static analysed before.";
+            return if ($rescore_elite == 0);
+            printn "Now re-static analyse this genome.";
+        }
+
         my $genome_ref = $self->get_genome();
         my @gene_refs = $self->get_genes();
         my @domain_refs = $self->get_domain_parser_ref()->get_object_instances();
@@ -142,6 +150,7 @@ use base qw(Model);
         # number of rules
         # N.B.: currently has some problem need to revise
         # $stats_ref_of{$obj_ID}->{num_rules} = scalar @{$genome_ref->get_rules()};
+
     } ## --- end sub static_analyse
 
     #--------------------------------------------------------------------------------------
