@@ -114,6 +114,9 @@ evolve : FORCE
 score : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --genome=$(genome) --score --shell 
 
+score_generation : FORCE
+	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(clulster_type) --cluster_size=$(cluster_size) --seed=$(seed) --generation=$(generation) --shell
+
 shell : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --shell
 

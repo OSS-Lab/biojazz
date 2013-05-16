@@ -28,6 +28,7 @@ create_workspace
 evolve
 load_genome
 score_genome
+score_generation
 load_history
 save_history
 collect_history_from_genomes
@@ -211,7 +212,7 @@ sub load_genome {
     my $genome = shift;
 
     # retrieve the genome object
-    return $ref = retrieve($genome);
+    return $ref = retrieve("$genome");
 }
 
 #--------------------------------------------------------------------------------------
@@ -243,6 +244,46 @@ sub score_genome {
     $ref->set_elite_flag(0);
     return $scoring_ref->score_genome($ref);
 }
+
+#--------------------------------------------------------------------------------------
+# Function: score_generation
+# Synopsis: scoring generation with config_ref and scoring_ref which defined in configure files
+#--------------------------------------------------------------------------------------
+sub score_generation {
+    my $generation_num = shift;
+    eval("use $config_ref->{scoring_class};");
+
+    $scoring_ref = $config_ref->{scoring_class}->new({
+            node_ID => 999,
+            config_file => $config_ref->{config_file},
+            work_dir => "$config_ref->{work_dir}/scratch/$TAG",
+            matlab_startup_options => "-nodesktop -nosplash",  # need jvm
+        });
+    $config_ref = $scoring_ref->get_config_ref();
+
+    $config_ref->{plot_input} = 1;
+    $config_ref->{plot_output} = 1;
+    $config_ref->{plot_phase} = 1;
+    $config_ref->{plot_species} = 0 || $config_ref->{plot_species};
+    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes";
+    $config_ref->{sprint_history} = 1;
+    $config_ref->{sprint_transcript} = 1;
+    $config_ref->{save_transcript} = 1;
+
+    my $dir = "$config_ref->{work_dir}/$TAG/obj";
+
+    my $file_glob = sprintf("$dir/G%03d_I*.obj", $generation_num);
+    my @genome_files = (glob $file_glob);
+
+    for (my $i = 0; $i < @genome_files; $i++) {
+        my $genome_model_ref = retrieve("$genome_files[$i]");
+        $genome_model_ref->set_elite_flag(0);
+        $scoring_ref->score_genome($genome_model_ref);
+        $genome_model_ref->set_elite_flag(1);
+    }
+
+}
+
 
 #--------------------------------------------------------------------------------------
 # Function: xxx_history

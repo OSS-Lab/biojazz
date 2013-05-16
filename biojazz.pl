@@ -119,7 +119,7 @@ $OUTPUT_AUTOFLUSH = 1;
 #======================================================================================
 # CMD-LINE ARGUMENT PROCESSING AND DEFAULTS
 #======================================================================================
-use vars qw($HELP $SHELL $SCRIPT $COMMAND $SEED $GENOME $SCORE);
+use vars qw($HELP $SHELL $SCRIPT $COMMAND $SEED $GENOME $SCORE $GENERATION);
 use vars qw($version_flag);
 
 GetOptions(
@@ -135,6 +135,7 @@ GetOptions(
     "cluster_type=s"  => \$config_ref->{cluster_type},
     "cluster_size=i"  => \$config_ref->{cluster_size},
     "genome=s"        => \$GENOME,
+    "generation=i"  => \$GENERATION,
     "score"           => \$SCORE,
     "inumg=i"         => \$config_ref->{inum_genomes},
     "mrate=f"         => \$config_ref->{mutation_rate},
@@ -182,6 +183,8 @@ evolve(seed => defined $SEED ? $SEED : -1) if !$SHELL && !$COMMAND && !$GENOME &
 load_genome($GENOME) if $GENOME || $SCORE && defined $config_ref->{config_file};
 
 score_genome() if $SCORE && defined $config_ref->{config_file};
+
+score_generation($GENERATION) if $GENERATION && defined $config_ref->{config_file};
 
 
 if (defined $COMMAND) {
