@@ -365,7 +365,7 @@ use base qw(Scoring);
                     if (@protodomains >= 1) {
                         my $index = int rand @protodomains;
                         my $protodomain_ref = $protodomains[$index];
-                        printn "Editing genome to create phosphatase ".$protodomain_ref->get_name().")";
+                        printn "Editing genome to create phosphatase (".$protodomain_ref->get_name().")";
                         $protodomain_ref->set_field("type", $csite_field_value);
                         $protodomain_ref->set_field("substrate_polarity", 1);
                         @adjacent_phosphatases = (@adjacent_phosphatases, $protodomain_ref); # update list
