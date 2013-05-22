@@ -495,6 +495,18 @@ use base qw(Model);
     }
 
 
+    #---  FUNCTION  ----------------------------------------------------------------
+    #         NAME: get_domain_by_index
+    #   PARAMETERS: gene_index, domain_index
+    #      RETURNS: domain reference
+    #     COMMENTS: none
+    #-------------------------------------------------------------------------------
+    sub get_domain_by_index {
+        my	( $self, $gene_index, $domain_index )	= @_;
+        
+        return $self->get_gene_by_index($gene_index)->get_field_ref(["domains", $domain_index]);
+    } ## --- end sub get_domain_by_index
+
     #--------------------------------------------------------------------------------------
     # Function: get_domain_sequence
     # Synopsys: Given a gene and domain number, extract the sequence from genome.
@@ -517,6 +529,46 @@ use base qw(Model);
 
         return @{$self->get_gene_by_index($gene_index)->get_field_ref(["domains"])};
     }
+
+    #--------------------------------------------------------------------------------------
+    # Function: get_protodomains
+    # Synopsys: Given a gene index and a domain index, return the list of protodomain ParserInstances.
+    #--------------------------------------------------------------------------------------
+    sub get_protodomains {
+        my $self = shift;
+        my $gene_index = shift;
+        my $domain_index = shift;
+
+        return @{$self->get_domain_by_index($gene_index, $domain_index)->get_field_ref(["protodomains"])};
+    }
+
+
+    #---  FUNCTION  ----------------------------------------------------------------
+    #         NAME: get_protodomain_by_index
+    #   PARAMETERS: gene_index, domain_index, protodomain_index
+    #      RETURNS: protodomain reference
+    #     COMMENTS: none
+    #-------------------------------------------------------------------------------
+    sub get_protodomain_by_index {
+        my	( $self, $gene_index, $domain_index, $protodomain_index )	= @_;
+        
+        return $self->get_domain_by_index($gene_index, $domain_index)->get_field_ref(["protodomains", $protodomain_index]);
+    } ## --- end sub get_protodomain_by_index
+
+
+    #--------------------------------------------------------------------------------------
+    # Function: get_protodomain_sequence
+    # Synopsys: Given a gene, domain and protodomain number, extract the sequence from genome.
+    #--------------------------------------------------------------------------------------
+    sub get_protodomain_sequence {
+        my $self = shift;
+        my $gene_index = shift;
+        my $domain_index = shift;
+        my $protodomain_index = shift;
+
+        return $self->get_domain_by_index($gene_index, $domain_index)->get_field_sequence(["protodomains", $protodomain_index]);
+    }
+
 
     #--------------------------------------------------------------------------------------
     # These functions are genome mutators
