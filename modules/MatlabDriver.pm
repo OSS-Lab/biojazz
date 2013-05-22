@@ -73,9 +73,9 @@ use base qw(Named);
 
         my $matlab_command;
         if ($host eq "localhost") {
-            $matlab_command = "ulimit -S -v $vmem; ulimit -a; matlab $options";
+            $matlab_command = "ulimit -s hard; ulimit -S -v $vmem; ulimit -a; matlab $options";
         } else {
-            $matlab_command = "ssh -X $host \"cd $ENV{PWD}; ulimit -S -v $vmem; ulimit -a; matlab $options\"";
+            $matlab_command = "ssh -X $host \"cd $ENV{PWD}; ulimit -s -v $vmem; ulimit -a; matlab $options\"";
         }
 
         my $LOG_FH;
