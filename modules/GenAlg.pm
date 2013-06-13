@@ -160,7 +160,7 @@ use base qw();
                 }
             }
             if (($file_glob =~ /G(...)_I/) && ($1 != $config_ref->{first_generation})) {
-                printn "\nWARNING: Configuration parameter first_generation appears not to be set correctly";
+                printn "\nWARNING: Configuration parameter first_generation appears not to be set correctly (not 0 or 1)";
                 printn "Continue (y/n)? ";
                 my $answer = <>; chomp($answer);
                 if ($answer ne "y") {
