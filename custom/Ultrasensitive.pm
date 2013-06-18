@@ -1018,8 +1018,8 @@ END
                     UNUSED => "0000",
                     domains => [
                         {
-                            allosteric_flag => 1,
-                            RT_transition_rate => 0.01,
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.00,
                             TR_transition_rate => 1.00,
                             RT_phi => 1.0,
                             protodomains => [
@@ -1027,6 +1027,52 @@ END
                                     type => "bsite",
                                     substrate_polarity => 0,
                                     binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
+                                    kf_profile => "00000000000000000000",
+                                    kb_profile => "11000000110000001000",
+                                    kp_profile => "00011111000111110011",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                                {
+                                    type => "bsite",
+                                    substrate_polarity => 0,
+                                    binding_profile => "0000000000",
+                                    kf_profile => "11111100111111001110",
+                                    kb_profile => "11000000110000001000",
+                                    kp_profile => "11111100111111001110",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 1.0, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.00,
+                            TR_transition_rate => 1.00,
+                            RT_phi => 1.0,
+                            protodomains => [
+                                {
+                                    type => "bsite",
+                                    substrate_polarity => 0,
+                                    binding_profile => "0000000000",
                                     kf_profile => "00000000000000000000",
                                     kb_profile => "11000000110000001000",
                                     kp_profile => "00011111000111110011",
