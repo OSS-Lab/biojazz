@@ -958,6 +958,10 @@ use base qw(Model);
     # TBD: Right now only small 2-domain genes are created.  Need to change general case to
     #      choose m<=M and n<=N sequential domains from each gene where M and N are 
     #      the no. domains from each gene.
+    # IMPL: Now we try this method. Try to find the sequence from one gene from beginning
+    #       to a certain protodomain, then find another sequence from another gene from one
+    #       certain domain to the end of it. try to find at least one of the protodomains 
+    #       in each gene.
     #--------------------------------------------------------------------------------------
     sub recombine_genes {
         my $self = shift;
