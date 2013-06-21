@@ -292,27 +292,25 @@ use base qw();
         my $effective_population_size = $config_ref->{effective_population_size};
         my $amplifier_alpha = $config_ref->{amplifier_alpha};
         $self->print_attribute_names();
+        my @mutation_step_nums;
         for (my $i = 0; $i < $current_generation_size; $i++) {
-
+            
             my $parent_ref = $current_generation_ref->get_element($i);
             my $parent_name = $parent_ref->get_name();
-
             # start the kimura selection (random walk)
             my $fixation_p = -1;
             my $mutated_score;
+            my $mutation_step_num = 0;
+            my $child_ref = $parent_ref->duplicate();
+            printn "Duplicated from $i th member\n" if $verbosity > 1;
             while ($fixation_p < rand) {
+                undef $child_ref;
+                my $child_ref = $parent_ref->duplicate();
 
-                $current_generation_ref->clear_genomes();
-                $current_generation_ref->load_generation(
-                    dir => "$config_ref->{work_dir}/$TAG/obj",
-                    number => $current_generation_number,
-                );
-
-                $parent_ref = $current_generation_ref->get_element($i);
-                printn "discard previous mutation and reloaded parent genome to mutate and score\n";
-
-                $parent_ref->set_elite_flag(0);
-                $parent_ref->mutate(
+                $child_ref->set_score(undef);
+                $child_ref->clear_stats();
+                $child_ref->set_elite_flag(0);
+                $child_ref->mutate(
                     mutation_rate_params => $config_ref->{mutation_rate_params},
                     mutation_rate_global => $config_ref->{mutation_rate_global},
                     gene_duplication_rate => $config_ref->{gene_duplication_rate},
@@ -323,17 +321,13 @@ use base qw();
                     protodomain_duplication_rate => $config_ref->{protodomain_duplication_rate},
                     protodomain_deletion_rate => $config_ref->{protodomain_deletion_rate},
                 );
-                $parent_ref->set_score(undef);
-                $parent_ref->clear_stats();
-                $parent_ref->set_elite_flag(0);
-
-                $scoring_ref->score_genome($parent_ref);
-                $parent_ref->static_analyse($config_ref->{rescore_elite});
-                $parent_ref->set_elite_flag(1);
+                $scoring_ref->score_genome($child_ref);
+                $child_ref->static_analyse($config_ref->{rescore_elite});
+                $child_ref->set_elite_flag(1);
 
 
                 printn "the parent's score is: $scores[$i]";
-                my $child_score = $parent_ref->get_score();
+                my $child_score = $child_ref->get_score();
 
                 printn "the child's score is; $child_score";
 
@@ -346,18 +340,11 @@ use base qw();
                 }
 
                 $fixation_p *= $amplifier_alpha;
-
-                # output the mutated and scored results
-                # for both counting the mutation and the
-                # number of mutation steps
-                $self->report_current_generation();
-
-
+                $mutation_step_num++;
             }
 
             # after fix the mutation
-
-            my $child_ref = $parent_ref->duplicate();
+            $child_ref->set_number($mutation_step_num);
             $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
             $next_generation_ref->add_element($child_ref);
         }
@@ -368,145 +355,7 @@ use base qw();
         $current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
         $current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
         $current_generation_ref->refresh_individual_names($current_generation_number);
-    }
-
-    #--------------------------------------------------------------------------------------
-    # Function: kimura_selection
-    # Synopsys: 
-    #--------------------------------------------------------------------------------------
-    sub kimura_selection {
-        my $self = shift; my $obj_ID = ident $self;
-
-        my $config_ref = $config_ref_of{$obj_ID};
-        my $cluster_ref = $cluster_ref_of{$obj_ID};
-
-        my $current_generation_ref = $current_generation_ref_of{$obj_ID};
-        my $current_generation_number = $current_generation_number_of{$obj_ID};
-        my $current_generation_size = $current_generation_ref->get_num_elements();
-
-        if ($current_generation_size > 1) {
-            printn "ERROR: there is more than 1 genomes in the generation $current_generation_number";
-            exit(1);
-        }
-
-        my $next_generation_ref = Generation->new({});
-        my $next_generation_number = $current_generation_number + 1;
-
-        printn "create_next_generation: creating generation $next_generation_number";
-
-        # check scores to make sure defined and positive
-        my @scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
-        if (grep {!defined $_} @scores) {
-            printn "ERROR: not all scores are defined (if this is first generation, check value of score_initial_generation in config file)";
-            exit(1);
-        }
-        if (grep {$_ < 0} @scores) {
-            printn "ERROR: all scores must be non-negative";
-            exit(1);
-        }
-
-        printn join ", ", @scores;
-
-        my @temp_genome_files = Generation->get_generation_temp(
-            dir => "$config_ref->{work_dir}/$TAG/obj",
-            cluster_size => $config_ref->{cluster_size},
-        );
-
-        print join("\n", @temp_genome_files);
-
-        my $file_glob = Generation->get_generation_glob(
-            dir => "$config_ref->{work_dir}/$TAG/obj",
-            number => $current_generation_number,
-        );
-
-        my @genome_files = (glob $file_glob);
-
-        printn "\nevolve_current_generation: evolving generation $current_generation_number ....";
-
-        my $effective_population_size = $config_ref->{effective_population_size};
-        my $amplifier_alpha = $config_ref->{amplifier_alpha};
-
-        for (my $i=0; $i < @genome_files; $i++) {
-            my $genome_file = $genome_files[$i];
-            printn "score_current_generation: evolving $genome_file";
-
-            my %used_nodes = ();
-
-            my $fixation_p = 0;
-            my $mutated_score = 0;
-
-            my $mutated_score_ref;
-
-            do {
-                for (my $j=0; $j < @temp_genome_files; $j++) {
-                    my $temp_genome_file = $temp_genome_files[$j];
-                    print "using temp genome file $temp_genome_file \n";
-                    my $node_ref = $cluster_ref->get_free_node();
-                    # ensure reproducibility independent of node scoring if there is element of randomness
-                    # by deriving node scoring seed from main random generator
-                    my $seed = int 1_000_000_000 * rand;  # don't make seed bigger or you lose randomness
-                    $node_ref->node_print("srand($seed); \$genome_ref = retrieve(\"$genome_file\"); " .
-                        "\$genome_ref->mutate(".
-                        "mutation_rate_params => " . $config_ref->{mutation_rate_params} . "," .
-                        "mutation_rate_global => " . $config_ref->{mutation_rate_global} . "," .
-                        "gene_duplication_rate => " . $config_ref->{gene_duplication_rate} . "," .
-                        "gene_deletion_rate => " . $config_ref->{gene_deletion_rate} . "," .
-                        "domain_duplication_rate => " . $config_ref->{domain_duplication_rate} . "," .
-                        "domain_deletion_rate => " . $config_ref->{domain_deletion_rate} . "," .
-                        "protodomain_duplication_rate => " . $config_ref->{protodomain_duplication_rate} . "," .
-                        "protodomain_deletion_rate => " . $config_ref->{protodomain_deletion_rate} . "," .
-                        "recombination_rate => " . $config_ref->{recombination_rate} . ",);" .
-                        "\$scoring_ref->score_genome(\$genome_ref); " .
-                        "store(\$genome_ref, \"$temp_genome_file\");\n");
-                    $node_ref->node_expect(undef, 'PERL_SHELL');
-                    $node_ref->node_print("NODE_READY");
-                    $used_nodes{$node_ref->get_node_ID()} = 1;  # mark this node as one we must wait on
-                }
-                while (1) {
-                    my @used_list = keys %used_nodes;
-                    my @busy_list = $cluster_ref->get_busy_node_id_list();
-                    my @wait_list = intersection(\@busy_list, \@used_list);
-                    printn "score_current_generation: waiting on nodes... @wait_list";
-                    last if (@wait_list == 0);
-                    sleep 5;		# poll again in 5 seconds....
-                }
-
-                ### need to initialize reference first then you can assign values to the reference
-
-                $mutated_score_ref = Generation->retrieve_largest_temp_score(
-                    files => \@temp_genome_files,
-                );
-                my $child_score = $mutated_score_ref->{score};
-
-                $mutated_score = $scores[$i] == 0 ? ($child_score - $scores[$i]) : ($child_score - $scores[$i]) / $scores[$i];
-
-                if ($mutated_score == 0.0) {
-                    $fixation_p = 1 / (2 * $effective_population_size);  # test if fix the neutral selection
-                } else {
-                    $fixation_p = (1 - exp(-2 * $mutated_score)) / (1 - exp(-4 * $effective_population_size * $mutated_score));
-                }
-
-                $fixation_p *= $amplifier_alpha;
-
-
-            } until ($fixation_p > rand());
-
-
-            my $mutated_score_index = $mutated_score_ref->{index};
-            my $child_genome_file = $temp_genome_files[$mutated_score_index];
-
-            my $child_ref = retrieve("$child_genome_file");
-
-            $child_ref->add_history(sprintf("REPLICATION: G%03d_I%02d", $next_generation_number, $i));
-            $next_generation_ref->add_element($child_ref);
-
-        }
-
-        # change to next generation
-        $current_generation_ref->clear_genomes();
-        $current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
-        $current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
-        $current_generation_ref->refresh_individual_names($current_generation_number);
+        
     }
 
 
@@ -756,7 +605,13 @@ use base qw();
         my $csv = Text::CSV->new({binary => 1, eol => "\n"});
 
         my @attributes;
-        my @attribute_names_new = ('genome_name', 'population/mutants', @genome_attribute_names);
+        my $second_attribute = "Population/Mutants";
+        if ($config_ref->{selection_method} eq "kimura_selection") {
+            my $second_attribute = "Mutation steps";
+        } elsif ($config_ref->{selection_method} eq "population_based_selection") {
+            my $second_attribute = "Population per mutant"
+        }
+        my @attribute_names_new = ("Name", $second_attribute, @genome_attribute_names);
         for (my $i=0; $i < @genomes; $i++) {
             my $genome_ref = $genomes[$i];
             push(@attributes, $genome_ref->get_name());
@@ -830,6 +685,7 @@ use base qw();
             if ($current_generation_number_of{$obj_ID} + 1 < $config_ref->{num_generations}) {
                 if ($config_ref->{selection_method} eq "kimura_selection") {
                     $self->random_walk_selection();
+                    $self->report_current_generation();
                     $self->save_current_generation();
                     # clear genome files in order to relife the storage burdon
                     if (defined $fossil_epoch) {
@@ -846,7 +702,7 @@ use base qw();
                     $self->score_mutated_genomes();
                     $self->load_current_generation($current_generation_number_of{$obj_ID});
                     $self->population_based_selection();
-                    $self->print_attribute_names();
+                    $self->priet_attribute_names();
                     $self->report_current_generation();
                     $self->clear_objs($current_generation_number_of{$obj_ID});
                     $self->save_current_generation();
