@@ -1,34 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>BioJazz by LifeWorks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+    <title>BioJazz by LifeWorks</title>
   </head>
+
   <body>
-    <div class="wrapper">
-      <header>
+    <header>
+      <div class="inner">
         <h1>BioJazz</h1>
-        <p>Evolution and Design of Biochemical Reaction Networks</p>
+        <h2>Evolution and Design of Biochemical Reaction Networks</h2>
+        <a href="https://github.com/LifeWorks/biojazz" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
 
-        <p class="view"><a href="https://github.com/LifeWorks/biojazz">View the Project on GitHub <small>LifeWorks/biojazz</small></a></p>
-
-
-        <ul>
-          <li><a href="https://github.com/LifeWorks/biojazz/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/LifeWorks/biojazz/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/LifeWorks/biojazz">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h3>
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h3>
 <a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h3>
 
 <p>BioJazz is a tool for evolving and designing biochemical reaction networks using genetic algorithm (GA).  Typically, a BioJazz user wishes to evolve or design a small network or motif which accomplishes a specific function, such as a switch or an oscillator module.  The network comprises a set of proteins whose attributes are encoded in a network's ''genome''.  The ''genome'' is a binary string which  contains all the information necessary to determine how many proteins are present in the network, their structure, which proteins interact and the biochemical parameters of their interaction. </p>
@@ -203,16 +203,12 @@
 
 <p>BioJazz uses a genetic algorithm (GA) to search for a functional network.  The idea behind a genetic algorithm is to encode each candidate network as a ''genome'', which is just a sequence of bits having the value 0 or 1.  Given a population of individual network genomes, the GA calls a user-specified scoring function on each of the individuals in the population to determine it's ''fitness score''.  After computing the fitness scores, the GA creates a new generation of individual networks by cloning and mutating the previous generation in such a way that fitter individuals tend to have more descendants than less fit individuals.  Thus, depending on its relative fitness score, the fate of a particular individual network may be to:</p>
 
-<pre><code>1. pass unchanged to the next generation (elite duplication)
-
-2. generate one or more mutated clones (asexual duplication)
-
-3. generate one or more children
-
-4. have no descendants at all (elimination)
-</code></pre>
-
-<p>Networks with a higher score has a better chance of fates i), ii) or iii) (i.e. surviving) than networks with a relatively lower score.</p>
+<ol>
+<li><p>pass unchanged to the next generation (elite duplication)</p></li>
+<li><p>generate one or more mutated clones (asexual duplication)</p></li>
+<li><p>generate one or more children</p></li>
+<li><p>have no descendants at all (elimination)</p></li>
+</ol><p>Networks with a higher score has a better chance of fates i), ii) or iii) (i.e. surviving) than networks with a relatively lower score.</p>
 
 <p>The number of creation created is such that the population size is kept constant from generation to generation.  The population size is specified via the parameter ''max_population''.</p>
 
@@ -230,57 +226,81 @@
 
 <p>Regardless of how the initial generation is created, each individual is then stored under the following name in the working directory of the design:</p>
 
-<pre><code>    $DESIGN_WORK/obj/G''ggg''_I''ii''.obj
+<pre><code>    $DESIGN_WORK/obj/G`ggg`_I`ii`.obj
+</code></pre>
 
-Where ''ggg''' is the generation number and ''ii'' is the individual number.
+<p>Where <code>ggg</code> is the generation number and <code>ii</code> is the individual number.</p>
 
-==Scoring==
+<h4>
+<a name="scoring" class="anchor" href="#scoring"><span class="octicon octicon-link"></span></a>Scoring</h4>
 
-* the score_genome method of a user-defined scoring class is called to score individual networks
-* the scoring class inherits many useful method from ''Scoring''
-* describe Scoring class, its use of MatlabDriver, etc.
+<ul>
+<li>the score_genome method of a user-defined scoring class is called to score individual networks</li>
+<li>the scoring class inherits many useful method from ''Scoring''</li>
+<li>describe Scoring class, its use of MatlabDriver, etc.</li>
+</ul><h4>
+<a name="replication" class="anchor" href="#replication"><span class="octicon octicon-link"></span></a>Replication</h4>
 
-==Replication==
+<p>There are two modes of replication in BioJazz.  They are rank-based and fitness-based replication.</p>
 
-There are two modes of replication in BioJazz.  They are rank-based and fitness-based replication.
+<p>===Rank-based replication===</p>
 
-===Rank-based replication===
+<p>In the rank-based mode, the fitness score returned by the user-defined evaluation routine are not used as is to compute the actual fitness of each network (the actual fitness being the expectation value for the number of children).  This mode is appropriate when small numerical differences in the score do not meaningfully correspond to the number of children an individual should have.  Therefore, BioJazz uses the fitness score of each individual to produce a ranking of the entire generation.</p>
 
-In the rank-based mode, the fitness score returned by the user-defined evaluation routine are not used as is to compute the actual fitness of each network (the actual fitness being the expectation value for the number of children).  This mode is appropriate when small numerical differences in the score do not meaningfully correspond to the number of children an individual should have.  Therefore, BioJazz uses the fitness score of each individual to produce a ranking of the entire generation.
+<p>Children are generated according to the following procedure.  First, the top ''elite_pool_size'' individuals are copied as is to the next generation, without any mutations.  Next, an additional (''max_population'' - ''elite_pool_size'') children need to be created to keep the population size constant.  </p>
 
-Children are generated according to the following procedure.  First, the top ''elite_pool_size'' individuals are copied as is to the next generation, without any mutations.  Next, an additional (''max_population'' - ''elite_pool_size'') children need to be created to keep the population size constant.  
+<p>===Fitness-based replication===</p>
 
-===Fitness-based replication===
+<p>In this mode, the computed fitness dictates the relative proportion of the available pool of children that a genome is to have.</p>
 
-In this mode, the computed fitness dictates the relative proportion of the available pool of children that a genome is to have.
+<p>Children are generated according to the following procedure.  First, the top ''elite_pool_size'' individuals are copied as is to the next generation, without any mutations.  Next, an additional (''max_population'' - ''elite_pool_size'') children need to be created to keep the population size constant.  Each individual in the current generation is a potential parent and its expected number of children is proportional to the fitness computed from the ranking as described above.  </p>
 
-Children are generated according to the following procedure.  First, the top ''elite_pool_size'' individuals are copied as is to the next generation, without any mutations.  Next, an additional (''max_population'' - ''elite_pool_size'') children need to be created to keep the population size constant.  Each individual in the current generation is a potential parent and its expected number of children is proportional to the fitness computed from the ranking as described above.  
+<p>To decide which individuals become parents a sampling procedure called the "roulette wheel" is used.  Imagine a roulette wheel where each parent has a slot whose size is proportional to the fitness....</p>
 
-To decide which individuals become parents a sampling procedure called the "roulette wheel" is used.  Imagine a roulette wheel where each parent has a slot whose size is proportional to the fitness....
-
-
-==Mutation Operators==
+<p>==Mutation Operators==
 ===Point Mutation===
 ===Gene Duplication===
 ===Gene Deletion===
-===Domain Shuffling===
+===Domain Shuffling===</p>
 
-=Network Encoding Model=
+<p>=Network Encoding Model=</p>
 
+<p>==Complementarity Encoding Scheme==</p>
 
-==Complementarity Encoding Scheme==
+<p>The complementarity encoding scheme is currently implemented in BioJazz.</p>
 
-The complementarity encoding scheme is currently implemented in BioJazz.
-
-{|border="1" cellpadding="2"
-|+'''Sequence Fields'''
-!Field Name!!Length (L)!!Allowed Values RegExp!!Scaling||Dynamic Range||Resolution||Description
-|-
-|colspan="7"|'''Genome'''
-|-
-|PRE-JUNK||Any||[01]*||||||||Untranslated sequence preceding first gene.
-|-
-|genes||1 or more genes||Any legal gene||||||||One or more genes separated by untranslated sub-sequences.
+<table>
+<tr>
+<th>Sequence Fields</th>
+<th align="center">Field Name</th>
+<th align="center">Length (L)</th>
+<th align="center">Allowed Values RegExp</th>
+<th align="center">Scaling</th>
+<th align="center">Dynamic Range</th>
+<th align="center">Resolution</th>
+<th align="right">Description</th>
+</tr>
+<tr>
+<td><strong>Genome</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="right"></td>
+</tr>
+<tr>
+<td>PRE-JUNK</td>
+<td align="center">Any</td>
+<td align="center">[01]*</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Untranslated sequence preceding first gene.</td>
+<td align="right"></td>
+</tr>
+</table><p>|genes||1 or more genes||Any legal gene||||||||One or more genes separated by untranslated sub-sequences.
 |-
 |POST-JUNK||Any||[01]*||||||||Untranslated sequence following last gene.
 |-
@@ -336,90 +356,105 @@ The complementarity encoding scheme is currently implemented in BioJazz.
 |-
 |UNUSED||4||[01]{L}||||||||Reserved field.
 |-
-|}
+|}</p>
 
-==Field Scaling==
+<p>==Field Scaling==</p>
 
-All the above fields correspond to parameter values whose scale and dynamic range is given in a configuration file.  This section deals with the issue of translating an integer (binary encoded) scale into parameter values.  In all sections, x is the integer value corresponding to a binary field, which goes from 0 to x_max=2^L-1 where L is the length of the field.  Also, y_min is the minimum value of the parameter, and y_max is the maximum value.  For example, the regulated_concentration parameter can be made to range from 1e-3 (y_min) to 1e+3 (y_max).
+<p>All the above fields correspond to parameter values whose scale and dynamic range is given in a configuration file.  This section deals with the issue of translating an integer (binary encoded) scale into parameter values.  In all sections, x is the integer value corresponding to a binary field, which goes from 0 to x_max=2^L-1 where L is the length of the field.  Also, y_min is the minimum value of the parameter, and y_max is the maximum value.  For example, the regulated_concentration parameter can be made to range from 1e-3 (y_min) to 1e+3 (y_max).</p>
 
-===Linearly Scaled Fields===
+<p>===Linearly Scaled Fields===</p>
 
-Relevant field(s): RT_phi.
+<p>Relevant field(s): RT_phi.</p>
 
-Here the value of the parameter is y(x) = y_min + (y_max - y_min)*(x/x_max);
+<p>Here the value of the parameter is y(x) = y_min + (y_max - y_min)*(x/x_max);</p>
 
-The resolution R(n) for an n-bit field is given by:
+<p>The resolution R(n) for an n-bit field is given by:</p>
 
-R(n) = (y_max-y_min)/(2^n-1)
+<p>R(n) = (y_max-y_min)/(2^n-1)</p>
 
-===Loglinear Scaled Fields===
+<p>===Loglinear Scaled Fields===</p>
 
-Relevant field(s): kp_profile, RT/TR_transition_rate, Keq_ratio, regulated_concentration
+<p>Relevant field(s): kp_profile, RT/TR_transition_rate, Keq_ratio, regulated_concentration</p>
 
-y(x) = y_min * (y_max/y_min)^(x/x_max), or
+<p>y(x) = y_min * (y_max/y_min)^(x/x_max), or</p>
 
-log(y) = log(y0) + (x/x_max)*log(y_max/y_min)
+<p>log(y) = log(y0) + (x/x_max)*log(y_max/y_min)</p>
 
-The fold-change between two values of x which differ by 1.0 is:
+<p>The fold-change between two values of x which differ by 1.0 is:</p>
 
-FC = y(x+1)/y(x) = (y_max/y_min)^(1/x_max).
+<p>FC = y(x+1)/y(x) = (y_max/y_min)^(1/x_max).</p>
 
-For example, an L=8-bit field associated with a dynamic range of y_max/y_min = 1e6 implies xmin=0, x_max=2^L-1=255 and a fold-change per increment of x of:
+<p>For example, an L=8-bit field associated with a dynamic range of y_max/y_min = 1e6 implies xmin=0, x_max=2^L-1=255 and a fold-change per increment of x of:</p>
 
-FC(8bits) = 1e6^(1/255) = 1.0557
+<p>FC(8bits) = 1e6^(1/255) = 1.0557</p>
 
-In other words, you can change by 5.57% increments.  For 10 bits,
+<p>In other words, you can change by 5.57% increments.  For 10 bits,</p>
 
-FC(10bits) = 1e6^(1/1023) = 1.0136.
+<p>FC(10bits) = 1e6^(1/1023) = 1.0136.</p>
 
-===Loglinear Scaled Profiles===
+<p>===Loglinear Scaled Profiles===</p>
 
-Fields: kf_profile, kb_profile
+<p>Fields: kf_profile, kb_profile</p>
 
-Profiles do not directly encode parameters, but instead are compared to each other after applying a special complement() function to either one of the arguments.  The result of this comparison is used to obtain a Hamming distance of 0 to at most L.  This Hamming distance is then scaled log-linearly.  Thus if two profiles are 8 bits long, x_min=0 and x_max=L=8, so for a dynamic range of 1e6 we have
+<p>Profiles do not directly encode parameters, but instead are compared to each other after applying a special complement() function to either one of the arguments.  The result of this comparison is used to obtain a Hamming distance of 0 to at most L.  This Hamming distance is then scaled log-linearly.  Thus if two profiles are 8 bits long, x_min=0 and x_max=L=8, so for a dynamic range of 1e6 we have</p>
 
-FC = 1e6^(1/8) = 5.6234
+<p>FC = 1e6^(1/8) = 5.6234</p>
 
-I.e. a 560% change per increment.  More appropriate would be to use 10-30 bits:
+<p>I.e. a 560% change per increment.  More appropriate would be to use 10-30 bits:</p>
 
-FC(10) = 1e6^(1/10) = 3.9811
+<p>FC(10) = 1e6^(1/10) = 3.9811</p>
 
-FC(20) = 1e6^(1/20) = 1.9953
+<p>FC(20) = 1e6^(1/20) = 1.9953</p>
 
-FC(30) = 1e6^(1/30) = 1.5849
+<p>FC(30) = 1e6^(1/30) = 1.5849</p>
 
-I.e. a 2x or 60% change per increment.
+<p>I.e. a 2x or 60% change per increment.</p>
 
-====Improvement====
+<p>====Improvement====</p>
 
-Note that there is some inefficiency in this method of coding because we need extremely long fields to get goo resolution,  because x_max=L and not 2^L.
+<p>Note that there is some inefficiency in this method of coding because we need extremely long fields to get goo resolution,  because x_max=L and not 2^L.</p>
 
-Currently for profiles X and Y, we have:
+<p>Currently for profiles X and Y, we have:</p>
 
-MISMATCH_VECTOR = XOR(X, complement(Y))
-MISMATCH = ones(MISMATCH_VECTOR)
+<p>MISMATCH_VECTOR = XOR(X, complement(Y))
+MISMATCH = ones(MISMATCH_VECTOR)</p>
 
-Equivalently, 
+<p>Equivalently, </p>
 
-MISMATCH = HAMMING(X, complement(Y))
+<p>MISMATCH = HAMMING(X, complement(Y))</p>
 
-An alternative would scale the MISMATCH_VECTOR, which has a range of 2^L, instead of MISMATCH, which has a range of just L.  Caveat is that we must get the same thing if the profiles are commuted, but in fact the MISMATCH_VECTOR gets flipped, so the msb becomes the lsb.  One way around this is to designate the 2 outer bits as msbs, and the 2 most inner bits as lsbs.  You break the MISMATCH_VECTOR in two, flip the 2nd half and add to the first.  This gets us a range of 0 to [2^(L/2)-1]*2.
+<p>An alternative would scale the MISMATCH_VECTOR, which has a range of 2^L, instead of MISMATCH, which has a range of just L.  Caveat is that we must get the same thing if the profiles are commuted, but in fact the MISMATCH_VECTOR gets flipped, so the msb becomes the lsb.  One way around this is to designate the 2 outer bits as msbs, and the 2 most inner bits as lsbs.  You break the MISMATCH_VECTOR in two, flip the 2nd half and add to the first.  This gets us a range of 0 to [2^(L/2)-1]*2.</p>
 
-=Scoring Functions=
+<p>=Scoring Functions=</p>
 
-### Authors and Contributors
-The project is firstly developed by Julien Ollivier (), and further improved by Song Feng (@LifeWorks).
+<h3>
+<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
 
-### Support or Contact
-If have any problems, please contact Song Feng (@LifeWorks) or email lifeworks.song@gmail.com
-</code></pre>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/LifeWorks">LifeWorks</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+<p>The project is firstly developed by Julien Ollivier, then modified and currently maintained by Song Feng (<a href="https://github.com/LifeWorks" class="user-mention">@LifeWorks</a>).</p>
+
+<h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+
+<p>If have any problems, please contact <a href="https://github.com/LifeWorks" class="user-mention">@LifeWorks</a> or email <a href="mailto:lifeworks.song@gmail.com">lifeworks.song@gmail.com</a></p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/LifeWorks/biojazz/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/LifeWorks/biojazz/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/LifeWorks/biojazz"></a> is maintained by <a href="https://github.com/LifeWorks">LifeWorks</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
-    
+
+  
   </body>
 </html>
