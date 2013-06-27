@@ -34,4 +34,4 @@ answer the questions, and when asked, say LIB=~/myperl PREFIX=~/myperl
 The project is firstly developed by Julien Ollivier, then modified and currently maintained by @LifeWorks.
 
 ### Support or Contact
-If have any problems, please contact @LifeWorks or email lifeworks.song@gmail.com
+If have any problems, please contact @LifeWorks.
