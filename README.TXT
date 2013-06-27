@@ -31,7 +31,7 @@ answer the questions, and when asked, say LIB=~/myperl PREFIX=~/myperl
 
 
 ### Authors and Contributors
-The project is firstly developed by Julien Ollivier, then modified and currently maintained by Song Feng (@LifeWorks).
+The project is firstly developed by Julien Ollivier, then modified and currently maintained by @LifeWorks.
 
 ### Support or Contact
 If have any problems, please contact @LifeWorks or email lifeworks.song@gmail.com
