@@ -2,8 +2,6 @@
 .*.swp
 *~
 .*~
-#*#
 .bzr
 .bzrignore
-seed
 .bzr*
