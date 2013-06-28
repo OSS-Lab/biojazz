@@ -37,7 +37,10 @@
 #-                   the configuration file.
 #- --inumg=i         Initial number of genomes. Overrides the value for
 #-                   inum_genomes given in the configuration file.
+#- --generation=i    specify which generation need to score
 #-
+#- --rescore         Run the rescore function to rescore (very) genome from
+#-                   recorded obj files.
 #
 #-#############################################################################
 
@@ -119,7 +122,7 @@ $OUTPUT_AUTOFLUSH = 1;
 #======================================================================================
 # CMD-LINE ARGUMENT PROCESSING AND DEFAULTS
 #======================================================================================
-use vars qw($HELP $SHELL $SCRIPT $COMMAND $SEED $GENOME $SCORE $GENERATION);
+use vars qw($HELP $SHELL $SCRIPT $COMMAND $SEED $GENOME $SCORE $GENERATION $RESCORE);
 use vars qw($version_flag);
 
 GetOptions(
@@ -135,8 +138,9 @@ GetOptions(
     "cluster_type=s"  => \$config_ref->{cluster_type},
     "cluster_size=i"  => \$config_ref->{cluster_size},
     "genome=s"        => \$GENOME,
-    "generation=i"  => \$GENERATION,
+    "generation=i"    => \$GENERATION,
     "score"           => \$SCORE,
+    "rescore"         => \$RESCORE,
     "inumg=i"         => \$config_ref->{inum_genomes},
     "mrate=f"         => \$config_ref->{mutation_rate},
 );
@@ -185,6 +189,8 @@ load_genome($GENOME) if $GENOME || $SCORE && defined $config_ref->{config_file};
 score_genome() if $SCORE && defined $config_ref->{config_file};
 
 score_generation($GENERATION) if $GENERATION && defined $config_ref->{config_file};
+
+rescore_genomes() if $RESCORE;
 
 
 if (defined $COMMAND) {
