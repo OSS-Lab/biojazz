@@ -1026,8 +1026,6 @@ use base qw(Model);
             gene_deletion_rate => undef,
             domain_duplication_rate => undef,
             domain_deletion_rate => undef,
-            protodomain_duplication_rate => undef,
-            protodomain_deletion_rate => undef,
             recombination_rate => undef,
             @_,
         );

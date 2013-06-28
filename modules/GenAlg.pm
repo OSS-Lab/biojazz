@@ -318,8 +318,6 @@ use base qw();
                     domain_duplication_rate => $config_ref->{domain_duplication_rate},
                     domain_deletion_rate => $config_ref->{domain_deletion_rate},
                     recombination_rate => $config_ref->{recombination_rate},
-                    protodomain_duplication_rate => $config_ref->{protodomain_duplication_rate},
-                    protodomain_deletion_rate => $config_ref->{protodomain_deletion_rate},
                 );
                 $scoring_ref->score_genome($child_ref);
                 $child_ref->static_analyse($config_ref->{rescore_elite});
@@ -388,8 +386,6 @@ use base qw();
                         gene_deletion_rate => $config_ref->{gene_deletion_rate},
                         domain_duplication_rate => $config_ref->{domain_duplication_rate},
                         domain_deletion_rate => $config_ref->{domain_deletion_rate},
-                        protodomain_duplication_rate => $config_ref->{protodomain_duplication_rate},
-                        protodomain_deletion_rate => $config_ref->{protodomain_deletion_rate},
                         recombination_rate => $config_ref->{recombination_rate},
                     );
 

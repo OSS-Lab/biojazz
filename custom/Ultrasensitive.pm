@@ -77,12 +77,15 @@ use base qw(Scoring);
             return if ($config_ref->{rescore_elite} == 0);
             printn "Ultrasensitive::score_genome re-scoring elite individual";
 
-            $genome_model_ref->clear_stats(preserve => ["created_kinase", "created_phosphatase"]);
+            # Should clear stats in the evolution to prevent stats loss when rescore genomes.
+            # $genome_model_ref->clear_stats(preserve => ["created_kinase", "created_phosphatase"]);
             $stats_ref->{score_count} = 1;
             $stats_ref->{score} = 0;
         } else {
             printn "Ultrasensitive::score_genome scoring non-elite individual...";
-            $genome_model_ref->clear_stats(preserve => ["created_kinase", "created_phosphatase"]);
+ 
+            # Should clear stats in the evolution to prevent stats loss when rescore genomes.
+            # $genome_model_ref->clear_stats(preserve => ["created_kinase", "created_phosphatase"]);
             $stats_ref->{score_count} = 1;
             $stats_ref->{score} = 0;
         }
