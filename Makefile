@@ -94,7 +94,7 @@ test_custom : FORCE
 ######################################################################################
 
 biojazz_class_hierarchy : FORCE
-	-perl -I$(ANC_HOME)/base -Imodules -MUtils -e 'print Utils::sprint_class_hierarchy("biojazz_class_hierarchy.png", GenomeModel, Genome, Gene, Domain, ProtoDomain, GenomeInstance, GeneInstance, DomainInstance, ProtoDomainInstance)'
+	-perl -I$(ANC_HOME)/base -Imodules -MUtils -e 'print Utils::sprint_class_hierarchy("biojazz_class_hierarchy.png", GenomeModel, Genome, Gene, Domain, ProtoDomain, GenomeInstance, GeneInstance, DomainInstance, ProtoDomainInstance, BindingProfile, BioJazz, BitString, BitVector, Generation, Model, Network, Sequence, Stimulus, Scoring, History, ScorNode, ScorCluster, Parser, ParserInstance)'
 
 ######################################################################################
 # EVOLUTION, SHELL, ETC.
