@@ -304,7 +304,7 @@ use base qw();
             my $child_ref = $parent_ref->duplicate();
             printn "Duplicated from $i th member\n" if $verbosity > 1;
             while ($fixation_p < rand) {
-                $child_ref->_DUMP();
+                $child_ref->DEMOLISH();
                 my $child_ref = $parent_ref->duplicate();
 
                 $child_ref->set_score(undef);
@@ -398,7 +398,7 @@ use base qw();
                         printn "New genotype appear, mutated from $parent_name!" if $verbosity > 1;
                         $genome_ref->set_number($population - 1);
                     } else {
-                        $child_ref->_DUMP();
+                        $child_ref->DEMOLISH();
                     }
                 }
             }
@@ -555,8 +555,8 @@ use base qw();
 
         confess "genome_attribute_names is not specified!" if (!@genome_attribute_names);
         if ($genome_attribute_names[0] eq "all") {
-            undef @genome_attribute_names;
-            @genome_attribute_names = $current_generation_ref->get_attribute_names();
+            @genome_attribute_names = ();
+            my @genome_attribute_names = $current_generation_ref->get_attribute_names();
         }
 
         my $data_dir = "$config_ref->{work_dir}/$TAG/stats";
@@ -589,8 +589,8 @@ use base qw();
 
         confess "genome_attribute_names is not specified!" if (!@genome_attribute_names);
         if ($genome_attribute_names[0] eq "all") {
-            undef @genome_attribute_names;
-            @genome_attribute_names = $current_generation_ref->get_attribute_names();
+            @genome_attribute_names = ();
+            my @genome_attribute_names = $current_generation_ref->get_attribute_names();
         }
 
         printn "report_current_generation: generation $current_generation_number";
@@ -622,7 +622,7 @@ use base qw();
             $csv->print($data_file, \@attributes);
 
             # destroy @attributes
-            undef @attributes;
+            @attributes = ();
 
         }
         close($data_file) || warn "close failed: $!";

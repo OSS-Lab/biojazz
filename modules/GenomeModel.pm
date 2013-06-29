@@ -73,7 +73,11 @@ use base qw(Model);
 #	$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
     }
     
+    sub DEMOLISH {
+        my $self = shift;
 
+        printn "Genome's mutation failed.\n";
+    }
 
     #===  FUNCTION  ================================================================
     #         NAME: static_analyse
