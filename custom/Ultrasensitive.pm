@@ -1044,7 +1044,7 @@ END
                                 {
                                     type => "bsite",
                                     substrate_polarity => 0,
-                                    binding_profile => "0000000000",
+                                    binding_profile => "0101001011",
                                     kf_profile => "11111100111111001110",
                                     kb_profile => "11000000110000001000",
                                     kp_profile => "11111100111111001110",
@@ -1075,7 +1075,7 @@ END
                                 {
                                     type => "bsite",
                                     substrate_polarity => 0,
-                                    binding_profile => "0000000000",
+                                    binding_profile => BindingProfile->binding_complement("0101001011")->sprint(),
                                     kf_profile => "00000000000000000000",
                                     kb_profile => "11000000110000001000",
                                     kp_profile => "00011111000111110011",

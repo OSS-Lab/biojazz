@@ -1029,7 +1029,7 @@ use base qw(Model);
             recombination_rate => undef,
             @_,
         );
-        check_args(\%args,9);
+        check_args(\%args,7);
 
         my $mutation_rate_params = $args{mutation_rate_params};
         my $mutation_rate_global = $args{mutation_rate_global};
