@@ -1037,8 +1037,6 @@ use base qw(Model);
         my $gene_deletion_rate = $args{gene_deletion_rate};
         my $domain_duplication_rate = $args{domain_duplication_rate};
         my $domain_deletion_rate = $args{domain_deletion_rate};
-        my $protodomain_duplication_rate = $args{protodomain_duplication_rate};
-        my $protodomain_deletion_rate = $args{protodomain_deletion_rate};
         my $recombination_rate = $args{recombination_rate};
 
 
@@ -1077,6 +1075,105 @@ use base qw(Model);
         }
         elsif ($gene_duplication_rate != 0.0) {
             printn "ERROR: gene_duplication_rate is not set in proper range";
+            exit;
+        }
+
+        #######################
+        # DOMAIN DUPLICATION
+
+        # choose a gene to duplicate it, and duplicate domains in it, then 
+        # append the gene to the end and delete the orginal one. 
+        if ($domain_duplication_rate > 0.0 && $domain_duplication_rate <= 1.0) 	# duplicate domains
+        {
+            my $num_genes = $self->get_num_genes();
+
+            my @gene_refs = $self->get_genes();
+            my $domain_duplication_count = 0;
+
+            for (my $i = 0; $i < $num_genes; $i ++) {
+                my $gene_ref = $self->get_gene_by_index($i);
+                my $gene_name = $gene_ref->get_name();
+                if ($gene_name ne ($gene_refs[$i]->get_name())) {
+                    confess "The index of gene instances are not consistent with index of gene_refs array";
+                }
+                my $duplicate_num = $self->duplicate_domain($domain_duplication_rate, $i);
+                printn "Mutate: duplicated $duplicate_num domains in gene $gene_name";
+
+                # update the parser instances and gene_refs after reparsing
+                if ($duplicate_num) {
+                    # post domain_duplication parsing
+                    $self->parse();
+                    undef @gene_refs;
+                    @gene_refs = $self->get_genes();
+                    $domain_duplication_count += $duplicate_num;
+                }
+            }
+
+        }
+        elsif ($domain_duplication_rate != 0.0) 
+        {
+            printn "ERROR: domain_duplication_rate is not set in proper range";
+            exit;
+        }
+
+
+        #######################
+        # Domain shuffling
+        if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
+            if ((rand 1) <= $recombination_rate) {
+                printn "mutate: RECOMBINATION" if $verbosity >= 1;
+                my $gene1_index = $self->pick_random_gene();
+                my $gene2_index = $self->pick_random_gene();
+                my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
+                my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
+                my $recombinatory_start = $self->recombine_genes($gene1_index, $gene2_index);
+                #$self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $recombinatory_start, dont_clear_fag => 1); # N.B. this only updates gene_parser_ref not genome_parser_ref
+                my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
+                printn $history if $verbosity >= 1;
+                $self->add_history($history);
+
+                # post-mutation parsing
+                $self->parse();
+                $mutation_count++;
+            }
+        }
+        elsif ($recombination_rate != 0.0) {
+            printn "ERROR: recombination_rate is not set in proper range";
+            exit;
+        }
+
+        #######################
+        # DOMAIN DELETION
+
+        if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0)  # delete domains
+        {
+            my $num_genes = $self->get_num_genes();
+
+            my @gene_refs = $self->get_genes();
+
+            for (my $i = 0; $i < $num_genes; $i ++) {
+                my $gene_ref = $self->get_gene_by_index($i);
+                my $gene_name = $gene_ref->get_name();
+                if ($gene_name ne $gene_refs[$i]->get_name()) {
+                    confess "The index of gene instances are not consistent with index of gene_refs array";
+                }
+                my $deleted_num = $self->delete_domain($domain_deletion_rate, $i);
+                printn "Mutate: deleted $deleted_num domains in gene $gene_name";
+
+                # update the parser instances and gene_refs after reparsing
+                if ($deleted_num) {
+                    # post domain_duplication parsing
+                    $self->parse();
+                    undef @gene_refs;
+                    @gene_refs = $self->get_genes();
+                    $mutation_count += $deleted_num;
+                }
+            }
+
+        }
+        elsif ($domain_deletion_rate != 0.0) 
+        {
+            printn "ERROR: domain_deletion_rate is not set in proper range";
             exit;
         }
 
@@ -1120,131 +1217,7 @@ use base qw(Model);
             exit;
         }
 
-        #######################
-        # DOMAIN DUPLICATION AND DELETION
-
-        # choose a gene to duplicate it, and duplicate domains in it, then 
-        # append the gene to the end and delete the orginal one. 
-        if ($domain_duplication_rate > 0.0 && $domain_duplication_rate <= 1.0) 	# duplicate domains
-        {
-            my $num_genes = $self->get_num_genes();
-
-            my @gene_refs = $self->get_genes();
-            my $domain_duplication_count = 0;
-
-            for (my $i = 0; $i < $num_genes; $i ++) {
-                my $gene_ref = $self->get_gene_by_index($i);
-                my $gene_name = $gene_ref->get_name();
-                if ($gene_name ne ($gene_refs[$i]->get_name())) {
-                    confess "The index of gene instances are not consistent with index of gene_refs array";
-                }
-                my $duplicate_num = $self->duplicate_domain($domain_duplication_rate, $i);
-                printn "Mutate: duplicated $duplicate_num domains in gene $gene_name";
-
-                # update the parser instances and gene_refs after reparsing
-                if ($duplicate_num) {
-                    # post domain_duplication parsing
-                    $self->parse();
-                    undef @gene_refs;
-                    @gene_refs = $self->get_genes();
-                    $domain_duplication_count += $duplicate_num;
-                }
-            }
-
-        }
-        elsif ($domain_duplication_rate != 0.0) 
-        {
-            printn "ERROR: domain_duplication_rate is not set in proper range";
-            exit;
-        }
-
-
-        if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0)  # delete domains
-        {
-            my $num_genes = $self->get_num_genes();
-
-            my @gene_refs = $self->get_genes();
-
-            for (my $i = 0; $i < $num_genes; $i ++) {
-                my $gene_ref = $self->get_gene_by_index($i);
-                my $gene_name = $gene_ref->get_name();
-                if ($gene_name ne $gene_refs[$i]->get_name()) {
-                    confess "The index of gene instances are not consistent with index of gene_refs array";
-                }
-                my $deleted_num = $self->delete_domain($domain_deletion_rate, $i);
-                printn "Mutate: deleted $deleted_num domains in gene $gene_name";
-
-                # update the parser instances and gene_refs after reparsing
-                if ($deleted_num) {
-                    # post domain_duplication parsing
-                    $self->parse();
-                    undef @gene_refs;
-                    @gene_refs = $self->get_genes();
-                    $mutation_count += $deleted_num;
-                }
-            }
-
-        }
-        elsif ($domain_deletion_rate != 0.0) 
-        {
-            printn "ERROR: domain_deletion_rate is not set in proper range";
-            exit;
-        }
-
-        # PROTODOMAIN DUPLICATION AND DELETION
-        if ($protodomain_duplication_rate > 0.0 && $protodomain_duplication_rate <= 1.0)	# duplicate protodomains
-        {
-            printn "mutate: PROTODOMAIN_DUPLICATION" if $verbosity >= 1;
-
-            printn "NOT IMPLEMENTED YET";
-
-        }
-        elsif ($protodomain_duplication_rate != 0.0) 
-        {
-            printn "ERROR: protodomain_duplication_rate is not set in proper range";
-            exit;
-        }
-
-
-        if ($protodomain_deletion_rate > 0.0 && $protodomain_deletion_rate <= 1.0)  # delete domains
-        {
-            printn "mutate: PROTODOMAIN_DELETION" if $verbosity >= 1;
-
-            printn "NOT IMPLEMENTED YET";
-
-        }
-        elsif ($protodomain_deletion_rate != 0.0) 
-        {
-            printn "ERROR: protodomain_deletion_rate is not set in proper range";
-            exit;
-        }
-
-
-        #######################
-        # Domain shuffling
-        if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
-            if ((rand 1) <= $recombination_rate) {
-                printn "mutate: RECOMBINATION" if $verbosity >= 1;
-                my $gene1_index = $self->pick_random_gene();
-                my $gene2_index = $self->pick_random_gene();
-                my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
-                my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
-                my $recombinatory_start = $self->recombine_genes($gene1_index, $gene2_index);
-                #$self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $recombinatory_start, dont_clear_fag => 1); # N.B. this only updates gene_parser_ref not genome_parser_ref
-                my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
-                printn $history if $verbosity >= 1;
-                $self->add_history($history);
-
-                # post-mutation parsing
-                $self->parse();
-                $mutation_count++;
-            }
-        }
-        elsif ($recombination_rate != 0.0) {
-            printn "ERROR: recombination_rate is not set in proper range";
-            exit;
-        }
-
+ 
         ########################
         if ($mutation_rate_params > 0.0 && $mutation_rate_params <= 1.0)  # mutate parameters
         {

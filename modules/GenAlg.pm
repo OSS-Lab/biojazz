@@ -304,7 +304,7 @@ use base qw();
             my $child_ref = $parent_ref->duplicate();
             printn "Duplicated from $i th member\n" if $verbosity > 1;
             while ($fixation_p < rand) {
-                undef $child_ref;
+                $child_ref->_DUMP();
                 my $child_ref = $parent_ref->duplicate();
 
                 $child_ref->set_score(undef);
@@ -398,7 +398,7 @@ use base qw();
                         printn "New genotype appear, mutated from $parent_name!" if $verbosity > 1;
                         $genome_ref->set_number($population - 1);
                     } else {
-                        undef $child_ref;
+                        $child_ref->_DUMP();
                     }
                 }
             }
