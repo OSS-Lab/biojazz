@@ -76,7 +76,7 @@ use base qw(Model);
     sub DEMOLISH {
         my $self = shift;
 
-        printn "Genome is detroyed.\n";
+        printn "Genome is detroyed.\n" if $verbosity > 3;
     }
 
     #===  FUNCTION  ================================================================
