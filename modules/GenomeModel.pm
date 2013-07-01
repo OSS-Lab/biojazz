@@ -76,7 +76,7 @@ use base qw(Model);
     sub DEMOLISH {
         my $self = shift;
 
-        printn "Genome's mutation failed.\n";
+        printn "Genome is detroyed.\n";
     }
 
     #===  FUNCTION  ================================================================
