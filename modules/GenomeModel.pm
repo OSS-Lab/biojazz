@@ -840,7 +840,6 @@ use base qw(Model);
         my $gene_ref = $self->get_gene_by_index($gene_index);
         my $sequence_ref = $self->get_sequence_ref();
         
-        my $gene_ref = $self->get_gene_by_index($gene_index);
         my $gene_name = $gene_ref->get_name();
         my @gene_protodomains = $self->get_protodomains($gene_index);
         my $gene_num_protodomains = scalar @gene_protodomains;
