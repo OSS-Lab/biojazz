@@ -847,17 +847,17 @@ use base qw(Model);
         my $gene_pd2 = int rand ($gene_num_protodomains + 1);
         my $duplicate_num = abs($gene_pd1 - $gene_pd2);
 
-        my $gene_site1;
-        if ($gene_pd1 == $gene_num_protodomains) {
+        my $gene_site1; my $gene_site2;
+        if ($gene_pd1 == $gene_num_protodomains && $gene_pd2 == $gene_num_protodomains) {
+            return $duplicate_num;
+        } elsif ($gene_pd1 == $gene_num_protodomains && $gene_pd2 != $gene_num_protodomains) {
             $gene_site1 = $gene_protodomains[$gene_pd1 - 1]->get_locus() + $gene_protodomains[$gene_pd1 - 1]->get_length();
-        } else {
-            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus();
-        }
-
-        my $gene_site2;
-        if ($gene_pd2 == $gene_num_protodomains) {
+            $gene_site2 = $gene_protodomains[$gene_pd2]->get_locus() + $gene_protodomains[$gene_pd2]->get_length();
+        } elsif ($gene_pd1 != $gene_num_protodomains && $gene_pd2 == $gene_num_protodomains) {
+            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus() + $gene_protodomains[$gene_pd1]->get_length();
             $gene_site2 = $gene_protodomains[$gene_pd2 - 1]->get_locus() + $gene_protodomains[$gene_pd2 - 1]->get_length();
         } else {
+            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus();
             $gene_site2 = $gene_protodomains[$gene_pd2]->get_locus();
         }
 
@@ -896,20 +896,21 @@ use base qw(Model);
         if ($delete_num == $gene_num_protodomains) {
             return (- $delete_num);
         }
-        my $gene_site1;
-        if ($gene_pd1 == $gene_num_protodomains) {
-            $gene_site1 = $gene_protodomains[$gene_pd1 - 1]->get_locus() + $gene_protodomains[$gene_pd1 - 1]->get_length();
-        } else {
-            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus();
-        }
 
-        my $gene_site2;
-        if ($gene_pd2 == $gene_num_protodomains) {
+        my $gene_site1; my $gene_site2;
+        if ($gene_pd1 == $gene_num_protodomains && $gene_pd2 == $gene_num_protodomains) {
+            return $delete_num;
+        } elsif ($gene_pd1 == $gene_num_protodomains && $gene_pd2 != $gene_num_protodomains) {
+            $gene_site1 = $gene_protodomains[$gene_pd1 - 1]->get_locus() + $gene_protodomains[$gene_pd1 - 1]->get_length();
+            $gene_site2 = $gene_protodomains[$gene_pd2]->get_locus() + $gene_protodomains[$gene_pd2]->get_length();
+        } elsif ($gene_pd1 != $gene_num_protodomains && $gene_pd2 == $gene_num_protodomains) {
+            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus() + $gene_protodomains[$gene_pd1]->get_length();
             $gene_site2 = $gene_protodomains[$gene_pd2 - 1]->get_locus() + $gene_protodomains[$gene_pd2 - 1]->get_length();
         } else {
+            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus();
             $gene_site2 = $gene_protodomains[$gene_pd2]->get_locus();
         }
-
+        
         my @gene_locus_unsorted = ($gene_site1, $gene_site2);
         my @gene_locus = sort {$a <=> $b} @gene_locus_unsorted;
         $sequence_ref->splice_subseq("", $gene_locus[0], ($gene_locus[1] - $gene_locus[0]));
@@ -955,37 +956,43 @@ use base qw(Model);
         printn "recombine_genes: $gene1_name sequence = " . $gene1_ref->get_sequence() if $verbosity > 3;
         printn "recombine_genes: $gene2_name sequence = " . $gene2_ref->get_sequence() if $verbosity > 3;
 
-        my $gene1_pd1 = int rand ($gene1_num_protodomains + 1);
-        my $gene1_pd2 = int rand ($gene1_num_protodomains + 1);
-        my $gene2_pd1 = int rand ($gene2_num_protodomains + 1);
-        my $gene2_pd2 = int rand ($gene2_num_protodomains + 1);
+        my $gene1_pd1 = int rand ($gene1_num_protodomains);
+        my $gene1_pd2 = int rand ($gene1_num_protodomains);
+        my $gene2_pd1 = int rand ($gene2_num_protodomains);
+        my $gene2_pd2 = int rand ($gene2_num_protodomains);
 
         my $gene1_site1;
-        if ($gene1_pd1 == $gene1_num_protodomains) {
-            $gene1_site1 = $gene1_protodomains[$gene1_pd1 - 1]->get_locus() + $gene1_protodomains[$gene1_pd1 - 1]->get_length();
-        } else {
-            $gene1_site1 = $gene1_protodomains[$gene1_pd1]->get_locus();
-        }
-
         my $gene1_site2;
-        if ($gene1_pd2 == $gene1_num_protodomains) {
-            $gene1_site2 = $gene1_protodomains[$gene1_pd2 - 1]->get_locus() + $gene1_protodomains[$gene1_pd2 - 1]->get_length();
-        } else {
-            $gene1_site2 = $gene1_protodomains[$gene1_pd2]->get_locus();
-        }
-
         my $gene2_site1;
-        if ($gene2_pd1 == $gene2_num_protodomains) {
-            $gene2_site1 = $gene2_protodomains[$gene2_pd1 - 1]->get_locus() + $gene2_protodomains[$gene2_pd1 - 1]->get_length();
-        } else {
-            $gene2_site1 = $gene2_protodomains[$gene2_pd1]->get_locus();
-        }
-
         my $gene2_site2;
-        if ($gene2_pd2 == $gene2_num_protodomains) {
-            $gene2_site2 = $gene2_protodomains[$gene2_pd2 - 1]->get_locus() + $gene2_protodomains[$gene2_pd2 - 1]->get_length();
+        
+        if ($gene1_pd1 == ($gene1_num_protodomains - 1) || $gene1_pd2 == ($gene1_num_protodomains - 1)
+            || $gene2_pd1 == ($gene2_num_protodomains -1) || $gene2_pd2 == ($gene2_num_protodomains -1)) {
+            $gene1_site1 = $gene1_protodomains[$gene1_pd1]->get_locus() + $gene1_protodomains[$gene1_pd1]->get_length();
+            $gene1_site2 = $gene1_protodomains[$gene1_pd2]->get_locus() + $gene1_protodomains[$gene1_pd2]->get_length();
+            $gene2_site1 = $gene2_protodomains[$gene2_pd1]->get_locus() + $gene2_protodomains[$gene2_pd1]->get_length();
+            $gene2_site2 = $gene2_protodomains[$gene2_pd2]->get_locus() + $gene2_protodomains[$gene2_pd2]->get_length();
+
         } else {
-            $gene2_site2 = $gene2_protodomains[$gene2_pd2]->get_locus();
+            if ($gene1_pd1 == 0 || $gene1_pd2 == 0 || $gene2_pd1 == 0 || $gene2_pd2 == 0) {
+                $gene1_site1 = $gene1_protodomains[$gene1_pd1]->get_locus();
+                $gene1_site2 = $gene1_protodomains[$gene1_pd2]->get_locus();
+                $gene2_site1 = $gene2_protodomains[$gene2_pd1]->get_locus();
+                $gene2_site2 = $gene2_protodomains[$gene2_pd2]->get_locus();
+            } else {
+                if (rand() < 0.5) {
+                    $gene1_site1 = $gene1_protodomains[$gene1_pd1]->get_locus();
+                    $gene1_site2 = $gene1_protodomains[$gene1_pd2]->get_locus();
+                    $gene2_site1 = $gene2_protodomains[$gene2_pd1]->get_locus();
+                    $gene2_site2 = $gene2_protodomains[$gene2_pd2]->get_locus();
+                } else {
+                    $gene1_site1 = $gene1_protodomains[$gene1_pd1]->get_locus() + $gene1_protodomains[$gene1_pd1]->get_length();
+                    $gene1_site2 = $gene1_protodomains[$gene1_pd2]->get_locus() + $gene1_protodomains[$gene1_pd2]->get_length();
+                    $gene2_site1 = $gene2_protodomains[$gene2_pd1]->get_locus() + $gene2_protodomains[$gene2_pd1]->get_length();
+                    $gene2_site2 = $gene2_protodomains[$gene2_pd2]->get_locus() + $gene2_protodomains[$gene2_pd2]->get_length();
+
+                }
+            }
         }
 
         my @gene1_locus_unsorted = ($gene1_site1, $gene1_site2);
@@ -999,9 +1006,11 @@ use base qw(Model);
         my $left_sequence = $sequence_ref->get_subseq($gene2_orig, ($gene2_locus[0] - $gene2_orig));
         my $right_sequence = $sequence_ref->get_subseq($gene2_locus[1], ($gene2_end - $gene2_locus[1]));
 
+        my $gene_parser_ref = $self->get_gene_parser_ref();
         my $new_gene_sequence = ($left_sequence .
             $middle_sequence .
-            $right_sequence);
+            $right_sequence . 
+            $gene_parser_ref->get_STOP_linker_code());
 
         my $new_gene_start = $sequence_ref->get_length();
 
