@@ -832,51 +832,41 @@ use base qw(Model);
     #--------------------------------------------------------------------------------------
     sub duplicate_domain {
         my $self = shift; my $obj_ID = ident $self;
-        my $duplication_rate = shift || 0.0;
         my $gene_index = shift;
 
         if (!defined $gene_index) {
             confess "There is no gene index specified, have no idea how to do domain deletion!";
         }
         my $gene_ref = $self->get_gene_by_index($gene_index);
-
-        my $soft_linker_sequence = $self->get_gene_parser_ref()->get_soft_linker_code();
-
         my $sequence_ref = $self->get_sequence_ref();
+        
+        my $gene_ref = $self->get_gene_by_index($gene_index);
+        my $gene_name = $gene_ref->get_name();
+        my @gene_protodomains = $self->get_protodomains($gene_index);
+        my $gene_num_protodomains = scalar @gene_protodomains;
+        my $gene_pd1 = int rand ($gene_num_protodomains + 1);
+        my $gene_pd2 = int rand ($gene_num_protodomains + 1);
+        my $duplicate_num = abs($gene_pd1 - $gene_pd2);
 
-        my @domain_refs = $self->get_domains($gene_index);
-        confess "ERROR: Can not retrive any domain from Gene $gene_index" if (scalar @domain_refs) < 1;
-
-        # first store all domains that will be duplicated 
-        my @duplicate_info;
-        my $duplicate_num = 0;
-        my $domain_index = 0;
-        foreach my $domain_ref (@domain_refs) {
-            if ($duplication_rate > rand()) {
-                my $domain_locus = $domain_ref->get_locus();
-                my $domain_length = $domain_ref->get_length();
-                my $insert_sequence = ($soft_linker_sequence . $domain_ref->get_sequence());
-                my $domain_name = $domain_ref->get_name();
-                if ($domain_name ne ($gene_ref->get_field_ref(["domains", $domain_index])->get_name())) {
-                    confess "ERROR: index of domain_ref array not consistent with index of domain instances";
-                }
-                push(@duplicate_info, [$domain_locus, $domain_length, $insert_sequence, $domain_name]);
-                $duplicate_num++;
-            }
-            $domain_index++;
+        my $gene_site1;
+        if ($gene_pd1 == $gene_num_protodomains) {
+            $gene_site1 = $gene_protodomains[$gene_pd1 - 1]->get_locus() + $gene_protodomains[$gene_pd1 - 1]->get_length();
+        } else {
+            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus();
         }
 
-        my $accum_length = 0;
-        # now we insert all the domain sequence into the sequence reference.
-        # N.B.: 1. don't forget the soft_linker_code and its length
-        # 	2. don't mess up the locus (which need to add lengthes of all the 
-        # 	   sequence add previous of the current one.
-        for (my $i = 0; $i < $duplicate_num; $i++) {
-            $sequence_ref->splice_subseq($duplicate_info[$i][2], 
-                $duplicate_info[$i][0] + $duplicate_info[$i][1] + $accum_length,
-                0);
-            $accum_length = $accum_length + length($duplicate_info[$i][2]);
+        my $gene_site2;
+        if ($gene_pd2 == $gene_num_protodomains) {
+            $gene_site2 = $gene_protodomains[$gene_pd2 - 1]->get_locus() + $gene_protodomains[$gene_pd2 - 1]->get_length();
+        } else {
+            $gene_site2 = $gene_protodomains[$gene_pd2]->get_locus();
         }
+
+        my @gene_locus_unsorted = ($gene_site1, $gene_site2);
+        my @gene_locus = sort {$a <=> $b} @gene_locus_unsorted;
+        my $middle_sequence = $sequence_ref->get_subseq($gene_locus[0], ($gene_locus[1] - $gene_locus[0]));
+        $sequence_ref->splice_subseq($middle_sequence, $gene_locus[1]);
+ 
         return $duplicate_num;
     }
 
@@ -884,12 +874,11 @@ use base qw(Model);
     #--------------------------------------------------------------------------------------
     # Function: delete_domain
     # Synopsys: delete domain basicly based on the doamin deletion rate and gene index
-    # 	    return the names and number of domains that be deleted.
+    # 	    return number of protodomains that be deleted.
     #           NOTE: it could easily messup the whole gene, so pay attention
     #--------------------------------------------------------------------------------------
     sub delete_domain {
         my $self = shift; my $obj_ID = ident $self;
-        my $deletion_rate = shift || 0.0;
         my $gene_index = shift;
 
         if (!defined $gene_index) {
@@ -999,28 +988,28 @@ use base qw(Model);
 
         my $gene1_site1;
         if ($gene1_pd1 == $gene1_num_protodomains) {
-            $gene1_site1 = $gene1_protodomains[$gene1_pd1]->get_locus() + $gene1_protodomains[$gene1_pd1]->get_length();
+            $gene1_site1 = $gene1_protodomains[$gene1_pd1 - 1]->get_locus() + $gene1_protodomains[$gene1_pd1 - 1]->get_length();
         } else {
             $gene1_site1 = $gene1_protodomains[$gene1_pd1]->get_locus();
         }
 
         my $gene1_site2;
         if ($gene1_pd2 == $gene1_num_protodomains) {
-            $gene1_site2 = $gene1_protodomains[$gene1_pd2]->get_locus() + $gene1_protodomains[$gene1_pd2]->get_length();
+            $gene1_site2 = $gene1_protodomains[$gene1_pd2 - 1]->get_locus() + $gene1_protodomains[$gene1_pd2 - 1]->get_length();
         } else {
             $gene1_site2 = $gene1_protodomains[$gene1_pd2]->get_locus();
         }
 
         my $gene2_site1;
         if ($gene2_pd1 == $gene2_num_protodomains) {
-            $gene2_site1 = $gene2_protodomains[$gene2_pd1]->get_locus() + $gene2_protodomains[$gene2_pd1]->get_length();
+            $gene2_site1 = $gene2_protodomains[$gene2_pd1 - 1]->get_locus() + $gene2_protodomains[$gene2_pd1 - 1]->get_length();
         } else {
             $gene2_site1 = $gene2_protodomains[$gene2_pd1]->get_locus();
         }
 
         my $gene2_site2;
         if ($gene2_pd2 == $gene2_num_protodomains) {
-            $gene2_site2 = $gene2_protodomains[$gene2_pd2]->get_locus() + $gene2_protodomains[$gene2_pd2]->get_length();
+            $gene2_site2 = $gene2_protodomains[$gene2_pd2 - 1]->get_locus() + $gene2_protodomains[$gene2_pd2 - 1]->get_length();
         } else {
             $gene2_site2 = $gene2_protodomains[$gene2_pd2]->get_locus();
         }
@@ -1156,16 +1145,18 @@ use base qw(Model);
                 if ($gene_name ne ($gene_refs[$i]->get_name())) {
                     confess "The index of gene instances are not consistent with index of gene_refs array";
                 }
-                my $duplicate_num = $self->duplicate_domain($domain_duplication_rate, $i);
-                printn "Mutate: duplicated $duplicate_num domains in gene $gene_name";
+                if (rand() < $domain_duplication_rate) {
+                    my $duplicate_num = $self->duplicate_domain($i);
+                    printn "Mutate: duplicated $duplicate_num domains in gene $gene_name" if $verbosity > 1;
 
-                # update the parser instances and gene_refs after reparsing
-                if ($duplicate_num) {
-                    # post domain_duplication parsing
-                    $self->parse();
-                    undef @gene_refs;
-                    @gene_refs = $self->get_genes();
-                    $domain_duplication_count += $duplicate_num;
+                    # update the parser instances and gene_refs after reparsing
+                    if ($duplicate_num) {
+                        # post domain_duplication parsing
+                        $self->parse();
+                        undef @gene_refs;
+                        @gene_refs = $self->get_genes();
+                        $domain_duplication_count += $duplicate_num;
+                    }
                 }
             }
 
