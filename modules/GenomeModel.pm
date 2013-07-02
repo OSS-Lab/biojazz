@@ -879,6 +879,7 @@ use base qw(Model);
     #--------------------------------------------------------------------------------------
     sub delete_domain {
         my $self = shift; my $obj_ID = ident $self;
+        my $deletion_rate = shift || 0.0;
         my $gene_index = shift;
 
         if (!defined $gene_index) {
