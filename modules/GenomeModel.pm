@@ -1208,9 +1208,11 @@ use base qw(Model);
             }
 
             my $num_genes_left = $num_genes - scalar @gene_need_delete_indice;
+            my $deleted_gene_num2;
             for (my $i = 0; $i < $num_genes_left; $i++) {
                 if (rand() < $gene_deletion_rate) {
-                    my $deleted_gene_ref = $self->delete_random_gene();
+                    my $deleted_gene_ref = $self->get_gene_by_index($i - $deleted_gene_num2);
+                    $self->delete_gene($deleted_gene_ref);
                     my $deleted_gene_name = $deleted_gene_ref->get_name();
                     my $history = "DELETION of gene $deleted_gene_name";
                     printn $history if $verbosity >= 1;
@@ -1220,7 +1222,7 @@ use base qw(Model);
                     $self->parse();
 
                     # conuting the deleted gene number to calculate number of rest genes
-                    $deleted_gene_num++;
+                    $deleted_gene_num2++;
                 }
             }
 
