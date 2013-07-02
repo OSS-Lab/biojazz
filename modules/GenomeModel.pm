@@ -1081,7 +1081,7 @@ use base qw(Model);
         # pre-mutation parsing
         $self->parse();
 
-        
+        my $num_genes = $self->get_num_genes();
         ###########################
         # gene duplication
         # by appending genes based on gene_duplication_rate
@@ -1097,8 +1097,6 @@ use base qw(Model);
                     my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene($gene_name);
 
                     my $duplicate_name = sprintf("G%04d",$duplicate_start);
-                    # $self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $duplicate_start, dont_clear_flag => 1);  # N.B. this only updates gene_parser_ref not genome_parser_ref
-                    # my $num_bits = $self->mutate_gene_by_name($duplicate_name, $mutation_rate_global); # mutate duplicated gene
                     my $history = "DUPLICATION of gene $duplicated_gene"; 
                     printn $history if $verbosity >= 1;
                     $self->add_history($history);
@@ -1116,13 +1114,38 @@ use base qw(Model);
         }
 
         #######################
+        # Domain shuffling
+        if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
+            for (my $i = 0; $i < $num_genes; $i ++) {
+                if (rand() < $recombination_rate) {
+                    printn "mutate: RECOMBINATION" if $verbosity >= 1;
+                    my $gene1_index = int rand $num_genes;
+                    my $gene2_index = int rand $num_genes;
+                    my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
+                    my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
+                    my $recombinatory_start = $self->recombine_genes($gene1_index, $gene2_index);
+                    my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
+                    printn $history if $verbosity >= 1;
+                    $self->add_history($history);
+
+                    # post-mutation parsing
+                    $self->parse();
+                    $mutation_count++;
+                }
+            }
+        }
+        elsif ($recombination_rate != 0.0) {
+            printn "ERROR: recombination_rate is not set in proper range";
+            exit;
+        }
+
+        #######################
         # DOMAIN DUPLICATION
 
         # choose a gene to duplicate it, and duplicate domains in it, then 
         # append the gene to the end and delete the orginal one. 
         if ($domain_duplication_rate > 0.0 && $domain_duplication_rate <= 1.0) 	# duplicate domains
         {
-            my $num_genes = $self->get_num_genes();
 
             my @gene_refs = $self->get_genes();
             my $domain_duplication_count = 0;
@@ -1155,39 +1178,11 @@ use base qw(Model);
             exit;
         }
 
-
-        #######################
-        # Domain shuffling
-        if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
-            if ((rand 1) <= $recombination_rate) {
-                printn "mutate: RECOMBINATION" if $verbosity >= 1;
-                my $gene1_index = $self->pick_random_gene();
-                my $gene2_index = $self->pick_random_gene();
-                my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
-                my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
-                my $recombinatory_start = $self->recombine_genes($gene1_index, $gene2_index);
-                #$self->get_gene_parser_ref()->parse(sequence_ref => $sequence_ref, start_pos => $recombinatory_start, dont_clear_fag => 1); # N.B. this only updates gene_parser_ref not genome_parser_ref
-                my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
-                printn $history if $verbosity >= 1;
-                $self->add_history($history);
-
-                # post-mutation parsing
-                $self->parse();
-                $mutation_count++;
-            }
-        }
-        elsif ($recombination_rate != 0.0) {
-            printn "ERROR: recombination_rate is not set in proper range";
-            exit;
-        }
-
         #######################
         # DOMAIN DELETION
 
         if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0)  # delete domains
         {
-            my $num_genes = $self->get_num_genes();
-
             my @gene_refs = $self->get_genes();
 
             for (my $i = 0; $i < $num_genes; $i ++) {
