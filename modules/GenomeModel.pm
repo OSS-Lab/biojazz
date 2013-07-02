@@ -536,14 +536,18 @@ use base qw(Model);
 
     #--------------------------------------------------------------------------------------
     # Function: get_protodomains
-    # Synopsys: Given a gene index and a domain index, return the list of protodomain ParserInstances.
+    # Synopsys: Given a gene index, return the list of protodomain ParserInstances.
     #--------------------------------------------------------------------------------------
     sub get_protodomains {
         my $self = shift;
         my $gene_index = shift;
-        my $domain_index = shift;
+        my @domain_refs = $self->get_domains($gene_index);
+        my @protodomain_refs;
+        foreach my $domain_ref (@domain_refs) {
+            push (@protodomain_refs, @{$domain_ref->get_field_ref(["protodomains"])});
+        }
 
-        return @{$self->get_domain_by_index($gene_index, $domain_index)->get_field_ref(["protodomains"])};
+        return @protodomain_refs;
     }
 
 
@@ -972,46 +976,74 @@ use base qw(Model);
         my $obj_ID = ident $self;
         my ($gene1_index, $gene2_index) = (shift, shift);
 
+        my $sequence_ref = $self->get_sequence_ref();
+        
         my $gene1_ref = $self->get_gene_by_index($gene1_index);
         my $gene2_ref = $self->get_gene_by_index($gene2_index);
         my $gene1_name = $gene1_ref->get_name();
         my $gene2_name = $gene2_ref->get_name();
-        my @gene1_domains = $self->get_domains($gene1_index);
-        my @gene2_domains = $self->get_domains($gene2_index);
-        my $gene1_num_domains = @gene1_domains;
-        my $gene2_num_domains = @gene2_domains;
 
-        printn "recombine_genes: recombining $gene1_name($gene1_index, $gene1_num_domains domains) and $gene2_name($gene2_index, $gene2_num_domains domains)" if $verbosity >= 1;
-        printn "recombine_genes: $gene1_name sequence = " . $gene1_ref->get_sequence() if $verbosity >= 2;
-        printn "recombine_genes: $gene2_name sequence = " . $gene2_ref->get_sequence() if $verbosity >= 2;
+        my @gene1_protodomains = $self->get_protodomains($gene1_index);
+        my @gene2_protodomains = $self->get_protodomains($gene2_index);
+        my $gene1_num_protodomains = scalar @gene1_protodomains;
+        my $gene2_num_protodomains = scalar @gene2_protodomains;
 
-        my $domain1_index = int rand $gene1_num_domains;
-        my $domain2_index = int rand $gene2_num_domains;
+        printn "recombine_genes: recombining $gene1_name($gene1_index, $gene1_num_protodomains protodomains) and $gene2_name($gene2_index, $gene2_num_protodomains protodomains)" if $verbosity > 1;
+        printn "recombine_genes: $gene1_name sequence = " . $gene1_ref->get_sequence() if $verbosity > 3;
+        printn "recombine_genes: $gene2_name sequence = " . $gene2_ref->get_sequence() if $verbosity > 3;
 
-        printn "recombine_genes: using domains $gene1_name($domain1_index) and $gene2_name($domain2_index)" if $verbosity >= 1;
-        my $domain1_sequence = $gene1_domains[$domain1_index]->get_sequence();
-        my $domain2_sequence = $gene2_domains[$domain2_index]->get_sequence();
-        printn "recombine_genes: domain1_sequence = " . $domain1_sequence if $verbosity >= 2;
-        printn "recombine_genes: domain2_sequence = " . $domain2_sequence if $verbosity >= 2;
+        my $gene1_pd1 = int rand ($gene1_num_protodomains + 1);
+        my $gene1_pd2 = int rand ($gene1_num_protodomains + 1);
+        my $gene2_pd1 = int rand ($gene2_num_protodomains + 1);
+        my $gene2_pd2 = int rand ($gene2_num_protodomains + 1);
 
-        my $gene_parser_ref = $self->get_gene_parser_ref();
-
-        my $new_gene_sequence = ($gene_parser_ref->get_gene_start_code() .
-            Sequence->new()->generate_random_sequence($gene_parser_ref->get_regulated_concentration_width()) .
-            Sequence->new()->generate_random_sequence($gene_parser_ref->get_unused_width()) .
-            $domain1_sequence .
-            $gene_parser_ref->get_soft_linker_code() .
-            $domain2_sequence .
-            $gene_parser_ref->get_STOP_linker_code()
-        );
-        if (@{$gene_parser_ref->get_structure_ref()} != 5) {
-            confess "ERROR: internal error, structure_ref of gene appears to have changed, so new gene sequence may not be built correctly";
+        my $gene1_site1;
+        if ($gene1_pd1 == $gene1_num_protodomains) {
+            $gene1_site1 = $gene1_protodomains[$gene1_pd1]->get_locus() + $gene1_protodomains[$gene1_pd1]->get_length();
+        } else {
+            $gene1_site1 = $gene1_protodomains[$gene1_pd1]->get_locus();
         }
 
-        my $new_gene_start = $self->get_sequence_ref()->get_length();
+        my $gene1_site2;
+        if ($gene1_pd2 == $gene1_num_protodomains) {
+            $gene1_site2 = $gene1_protodomains[$gene1_pd2]->get_locus() + $gene1_protodomains[$gene1_pd2]->get_length();
+        } else {
+            $gene1_site2 = $gene1_protodomains[$gene1_pd2]->get_locus();
+        }
+
+        my $gene2_site1;
+        if ($gene2_pd1 == $gene2_num_protodomains) {
+            $gene2_site1 = $gene2_protodomains[$gene2_pd1]->get_locus() + $gene2_protodomains[$gene2_pd1]->get_length();
+        } else {
+            $gene2_site1 = $gene2_protodomains[$gene2_pd1]->get_locus();
+        }
+
+        my $gene2_site2;
+        if ($gene2_pd2 == $gene2_num_protodomains) {
+            $gene2_site2 = $gene2_protodomains[$gene2_pd2]->get_locus() + $gene2_protodomains[$gene2_pd2]->get_length();
+        } else {
+            $gene2_site2 = $gene2_protodomains[$gene2_pd2]->get_locus();
+        }
+
+        my @gene1_locus_unsorted = ($gene1_site1, $gene1_site2);
+        my @gene2_locus_unsorted = ($gene2_site1, $gene2_site2);
+        my @gene1_locus = sort {$a <=> $b} @gene1_locus_unsorted;
+        my @gene2_locus = sort {$a <=> $b} @gene2_locus_unsorted;
+
+        my $middle_sequence = $sequence_ref->get_subseq($gene1_locus[0], ($gene1_locus[1]-$gene1_locus[0]));
+        my $gene2_orig = $gene2_ref->get_locus();
+        my $gene2_end = $gene2_orig + $gene2_ref->get_length();
+        my $left_sequence = $sequence_ref->get_subseq($gene2_orig, ($gene2_locus[0] - $gene2_orig));
+        my $right_sequence = $sequence_ref->get_subseq($gene2_locus[1], ($gene2_end - $gene2_locus[1]));
+
+        my $new_gene_sequence = ($left_sequence .
+            $middle_sequence .
+            $right_sequence);
+
+        my $new_gene_start = $sequence_ref->get_length();
 
         $self->get_sequence_ref()->splice_subseq("00000000".$new_gene_sequence);
-        printn "recombine_genes: new gene sequence = " . $new_gene_sequence if $verbosity >= 2;
+        printn "recombine_genes: new gene sequence = " . $new_gene_sequence if $verbosity > 1;
 
         return $new_gene_start;
     }
@@ -1049,6 +1081,7 @@ use base qw(Model);
         # pre-mutation parsing
         $self->parse();
 
+        
         ###########################
         # gene duplication
         # by appending genes based on gene_duplication_rate
@@ -1112,6 +1145,8 @@ use base qw(Model);
                     $domain_duplication_count += $duplicate_num;
                 }
             }
+
+            $mutation_count += $domain_duplication_count;
 
         }
         elsif ($domain_duplication_rate != 0.0) 
