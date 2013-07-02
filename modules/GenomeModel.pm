@@ -878,70 +878,44 @@ use base qw(Model);
     #--------------------------------------------------------------------------------------
     sub delete_domain {
         my $self = shift; my $obj_ID = ident $self;
-        my $deletion_rate = shift || 0.0;
         my $gene_index = shift;
 
         if (!defined $gene_index) {
             confess "There is no gene index specified, have no idea how to do domain deletion!";
         }
         my $gene_ref = $self->get_gene_by_index($gene_index);
-
-        my $soft_linker_width = length($self->get_gene_parser_ref()->get_soft_linker_code());
-
         my $sequence_ref = $self->get_sequence_ref();
+        
+        my $gene_name = $gene_ref->get_name();
+        my @gene_protodomains = $self->get_protodomains($gene_index);
+        my $gene_num_protodomains = scalar @gene_protodomains;
+        my $gene_pd1 = int rand ($gene_num_protodomains + 1);
+        my $gene_pd2 = int rand ($gene_num_protodomains + 1);
+        my $delete_num = abs($gene_pd1 - $gene_pd2);
 
-        my @domain_refs = $self->get_domains($gene_index);
-        my $num_domains = @domain_refs;
-        confess "ERROR: Can not retrive any domain from Gene $gene_index" if ($num_domains) < 1;
-
-        my $delete_num = 0;
-
-        my @deletion_info;
-        my $domain_index = 0;
-        foreach my $domain_ref (@domain_refs) {
-            if ($num_domains - $delete_num > 1) {
-
-                if ($deletion_rate > rand()) {
-                    my $domain_locus = $domain_ref->get_locus();
-                    my $domain_length = $domain_ref->get_length();
-                    my $deletion_length = $domain_length + $soft_linker_width;
-                    my $domain_name = $domain_ref->get_name();
-                    if ($domain_name ne ($gene_ref->get_field_ref(["domains", $domain_index])->get_name())) {
-                        confess "ERROR: index of domain_ref array not consistent with index of domain instances";
-                    }
-                    push(@deletion_info, [$domain_locus, $deletion_length, $domain_index, $domain_name]);
-                    $delete_num++;
-                }
-            } else {
-                printn "N.B.: there will be only one domain left!";
-            }
-            $domain_index++;
+        if ($delete_num == $gene_num_protodomains) {
+            return (- $delete_num);
+        }
+        my $gene_site1;
+        if ($gene_pd1 == $gene_num_protodomains) {
+            $gene_site1 = $gene_protodomains[$gene_pd1 - 1]->get_locus() + $gene_protodomains[$gene_pd1 - 1]->get_length();
+        } else {
+            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus();
         }
 
-        my $accum_length = 0;
-        # now we delete all the domain sequence from the sequence reference.
-        # N.B.: 1. don't forget the soft_linker_code and its length
-        # 	2. don't mess up the locus (which need to count lengthes of all the 
-        # 	   sequence deleted previous of the current one.
-        for (my $i = 0; $i < $delete_num; $i++) {
-            if ($deletion_info[$i][2] == $num_domains - 1) {
-                if ($i != $delete_num - 1) {
-                    confess "ERROR: the last domain is not deleted at the last!";
-                }
-
-                $sequence_ref->splice_subseq("", 
-                    $deletion_info[$i][0] - $accum_length - $soft_linker_width,
-                    $deletion_info[$i][1]);
-            } else {
-                $sequence_ref->splice_subseq("", 
-                    $deletion_info[$i][0] - $accum_length,
-                    $deletion_info[$i][1]);
-            } 
-            $accum_length = $accum_length + $deletion_info[$i][1];
+        my $gene_site2;
+        if ($gene_pd2 == $gene_num_protodomains) {
+            $gene_site2 = $gene_protodomains[$gene_pd2 - 1]->get_locus() + $gene_protodomains[$gene_pd2 - 1]->get_length();
+        } else {
+            $gene_site2 = $gene_protodomains[$gene_pd2]->get_locus();
         }
+
+        my @gene_locus_unsorted = ($gene_site1, $gene_site2);
+        my @gene_locus = sort {$a <=> $b} @gene_locus_unsorted;
+        $sequence_ref->splice_subseq("", $gene_locus[0], ($gene_locus[1] - $gene_locus[0]));
+ 
         return $delete_num;
     }
-
 
 
     #--------------------------------------------------------------------------------------
@@ -1172,26 +1146,31 @@ use base qw(Model);
         #######################
         # DOMAIN DELETION
 
+        my @gene_need_delete_indice;
         if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0)  # delete domains
         {
             my @gene_refs = $self->get_genes();
-
             for (my $i = 0; $i < $num_genes; $i ++) {
                 my $gene_ref = $self->get_gene_by_index($i);
                 my $gene_name = $gene_ref->get_name();
                 if ($gene_name ne $gene_refs[$i]->get_name()) {
                     confess "The index of gene instances are not consistent with index of gene_refs array";
                 }
-                my $deleted_num = $self->delete_domain($domain_deletion_rate, $i);
-                printn "Mutate: deleted $deleted_num domains in gene $gene_name";
+                if (rand() < $domain_deletion_rate) {
+                    my $deleted_num = $self->delete_domain($i);
+                    printn "Mutate: deleted $deleted_num domains in gene $gene_name" if $verbosity > 1;
 
-                # update the parser instances and gene_refs after reparsing
-                if ($deleted_num) {
-                    # post domain_duplication parsing
-                    $self->parse();
-                    undef @gene_refs;
-                    @gene_refs = $self->get_genes();
-                    $mutation_count += $deleted_num;
+                    # update the parser instances and gene_refs after reparsing
+                    if ($deleted_num < 0) {
+                        push(@gene_need_delete_indice, $i);
+                    }
+                    elsif ($deleted_num > 0) {
+                        # post domain_duplication parsing
+                        $self->parse();
+                        undef @gene_refs;
+                        @gene_refs = $self->get_genes();
+                        $mutation_count += $deleted_num;
+                    }
                 }
             }
 
@@ -1211,27 +1190,37 @@ use base qw(Model);
             my $num_genes = $self->get_num_genes();
             my $deleted_gene_num = 0;
 
-            FORLOOP: {
-                for (my $i = 0; $i < $num_genes; $i++) {
-                    # to prevent delete all genes in a genome, if there is only one gene left
-                    # then stop gene deletion
-                    if (($num_genes - $deleted_gene_num) == 1) {
-                        print "There is only one gene left, stop deleting!\n";
-                        last FORLOOP;
-                    } 
-                    if (rand() < $gene_deletion_rate) {
-                        my $deleted_gene_ref = $self->delete_random_gene();
-                        my $deleted_gene_name = $deleted_gene_ref->get_name();
-                        my $history = "DELETION of gene $deleted_gene_name";
-                        printn $history if $verbosity >= 1;
-                        $self->add_history($history);
+            if (scalar @gene_need_delete_indice > 0) {
+                my @gene_indice = sort {$a <=> $b} @gene_need_delete_indice;
+                foreach my $gene_index (@gene_indice) {
+                    my $gene_need_delete = $self->get_gene_by_index($gene_index - $deleted_gene_num);
+                    $self->delete_gene($gene_need_delete);
+                    my $deleted_gene_name = $gene_need_delete->get_name();
+                    my $history = "DELETION of gene $deleted_gene_name";
+                    printn $history if $verbosity >= 1;
+                    $self->add_history($history);
 
-                        # post-mutation parsing
-                        $self->parse();
+                    # post-mutation parsing
+                    $self->parse();
 
-                        # conuting the deleted gene number to calculate number of rest genes
-                        $deleted_gene_num++;
-                    }
+                    $deleted_gene_num++;
+                }
+            }
+
+            my $num_genes_left = $num_genes - scalar @gene_need_delete_indice;
+            for (my $i = 0; $i < $num_genes_left; $i++) {
+                if (rand() < $gene_deletion_rate) {
+                    my $deleted_gene_ref = $self->delete_random_gene();
+                    my $deleted_gene_name = $deleted_gene_ref->get_name();
+                    my $history = "DELETION of gene $deleted_gene_name";
+                    printn $history if $verbosity >= 1;
+                    $self->add_history($history);
+
+                    # post-mutation parsing
+                    $self->parse();
+
+                    # conuting the deleted gene number to calculate number of rest genes
+                    $deleted_gene_num++;
                 }
             }
 
