@@ -1217,7 +1217,7 @@ use base qw(Model);
             }
 
             my $num_genes_left = $num_genes - scalar @gene_need_delete_indice;
-            my $deleted_gene_num2;
+            my $deleted_gene_num2 = 0;
             for (my $i = 0; $i < $num_genes_left; $i++) {
                 if (rand() < $gene_deletion_rate) {
                     my $deleted_gene_ref = $self->get_gene_by_index($i - $deleted_gene_num2);
@@ -1236,6 +1236,7 @@ use base qw(Model);
             }
 
             $mutation_count += $deleted_gene_num;
+            $mutation_count += $deleted_gene_num2;
         }
         elsif ($gene_deletion_rate != 0.0) {
             printn "ERROR: gene_deletion_rate is not set in proper range";
