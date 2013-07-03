@@ -220,7 +220,7 @@ use base qw();
 
             my $loaded_genome_num = 0;
             foreach my $genome_model_ref (@genome_model_refs) {
-                if (!defined ($genome_model_ref->get_numer())) {
+                if (!defined ($genome_model_ref->get_number())) {
                     $genome_model_ref->set_number(1);
                 }
                 $loaded_genome_num += $genome_model_ref->get_number();
