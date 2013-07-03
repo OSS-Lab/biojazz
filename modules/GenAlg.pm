@@ -706,7 +706,7 @@ use base qw();
                         my $current_generation_number = $current_generation_number_of{$obj_ID};
                         if ($current_generation_number != 1 &&
                             ($current_generation_number % $fossil_epoch) 
-                            != ($first_generation % $fossil_epoch)) {
+                            != (($first_generation % $fossil_epoch) + 1)) {
                             $self->clear_objs($current_generation_number - 1);
                         }
                     }
