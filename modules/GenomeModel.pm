@@ -69,6 +69,9 @@ use base qw(Model);
         # INIT
         $history_ref_of{$obj_ID} = [];
         $stats_ref_of{$obj_ID} = {};
+        $number_of{$obj_ID} = 1;
+        $score_of{$obj_ID} = 0;
+        $elite_flag_of{$obj_ID} = 0;
 
 #	$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
     }

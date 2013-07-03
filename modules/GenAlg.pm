@@ -217,7 +217,14 @@ use base qw();
             if ($config_ref->{selection_method} eq "kimura_selection") {
                 $inum = 1;
             }
-            my $loaded_genome_num = scalar @genome_model_refs;
+
+            my $loaded_genome_num = 0;
+            foreach my $genome_model_ref (@genome_model_refs) {
+                if (!defined ($genome_model_ref->get_numer())) {
+                    $genome_model_ref->set_number(1);
+                }
+                $loaded_genome_num += $genome_model_ref->get_number();
+            }
 
             if ($inum > $loaded_genome_num) {
                 for (my $i = 0; $i < ($inum - $loaded_genome_num); $i++) {
