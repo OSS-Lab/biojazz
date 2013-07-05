@@ -685,7 +685,7 @@ use base qw();
             $self->load_current_generation($current_generation_number_of{$obj_ID});
 
 
-            if ($current_generation_number_of{$obj_ID} + 1 < $config_ref->{num_generations}) {
+            if ($current_generation_number_of{$obj_ID} <= $config_ref->{num_generations}) {
                 if ($config_ref->{selection_method} eq "kimura_selection") {
                     $self->random_walk_selection();
                     $self->print_attribute_names();
