@@ -390,6 +390,7 @@ use base qw(Model);
         my $obj_ID = ident $self;
 
         if ($self->get_genome_parser_ref()->get_object_instance_count() != 1) {
+            printn "The genome is not parsered successfully, no genome_parser_ref returned!" if $verbosity > 2;
             return undef;
         } else {
             return $self->get_genome_parser_ref()->get_object_instance_by_index(0);
@@ -800,12 +801,12 @@ use base qw(Model);
             my $gene_stop = $gene_ref->get_stop_locus();
             my $gene_length = $gene_ref->get_length();
             if (defined $gene_ref) {
-                printn "delete_gene: deleting $gene_name start=$gene_start stop=$gene_stop" if $verbosity >= 2;
+                printn "delete_gene: deleting $gene_name start=$gene_start stop=$gene_stop" if $verbosity > 2;
             } else {
                 printn "ERROR: delete_gene -- no such gene $gene_name";
                 exit(1);
             }
-            $self->get_sequence_ref()->splice_subseq("", $gene_start, $gene_length);
+            $self->get_sequence_ref()->splice_subseq("0" x $gene_length, $gene_start, $gene_length);
             push @deleted_genes, $gene_ref;
         }
         return @deleted_genes;
@@ -1055,7 +1056,7 @@ use base qw(Model);
 
         # pre-mutation parsing
         $self->parse();
-
+        $self->check();
         my $num_genes = $self->get_num_genes();
         ###########################
         # gene duplication
@@ -1087,7 +1088,8 @@ use base qw(Model);
             printn "ERROR: gene_duplication_rate is not set in proper range";
             exit;
         }
-
+        $self->check();
+ 
         #######################
         # Domain shuffling
         if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
@@ -1113,7 +1115,8 @@ use base qw(Model);
             printn "ERROR: recombination_rate is not set in proper range";
             exit;
         }
-
+        $self->check();
+ 
         #######################
         # DOMAIN DUPLICATION
 
@@ -1154,7 +1157,8 @@ use base qw(Model);
             printn "ERROR: domain_duplication_rate is not set in proper range";
             exit;
         }
-
+        $self->check();
+ 
         #######################
         # DOMAIN DELETION
 
@@ -1185,14 +1189,14 @@ use base qw(Model);
                     }
                 }
             }
-
         }
         elsif ($domain_deletion_rate != 0.0) 
         {
             printn "ERROR: domain_deletion_rate is not set in proper range";
             exit;
         }
-
+        $self->check();
+ 
         ########################
         # GENE_DELETION
         if ($gene_deletion_rate > 0.0 && $gene_deletion_rate <= 1.0)  # delete genes
@@ -1203,7 +1207,7 @@ use base qw(Model);
             my $deleted_gene_num = 0;
 
             if (scalar @gene_need_delete_indice > 0) {
-                my @gene_indice = sort {$a <=> $b} @gene_need_delete_indice;
+                my @gene_indice = sort {$b <=> $a} @gene_need_delete_indice;
                 foreach my $gene_index (@gene_indice) {
                     my $gene_need_delete = $self->get_gene_by_index($gene_index - $deleted_gene_num);
                     $self->delete_gene($gene_need_delete);
@@ -1220,21 +1224,27 @@ use base qw(Model);
             }
 
             my $num_genes_left = $num_genes - scalar @gene_need_delete_indice;
+            $num_genes = $self->get_num_genes();
+            confess "The number of genes after deletion is not consistant with of left ones." if ($num_genes != $num_genes_left);
             my $deleted_gene_num2 = 0;
-            for (my $i = 0; $i < $num_genes_left; $i++) {
-                if (rand() < $gene_deletion_rate) {
-                    my $deleted_gene_ref = $self->get_gene_by_index($i - $deleted_gene_num2);
-                    $self->delete_gene($deleted_gene_ref);
-                    my $deleted_gene_name = $deleted_gene_ref->get_name();
-                    my $history = "DELETION of gene $deleted_gene_name";
-                    printn $history if $verbosity >= 1;
-                    $self->add_history($history);
+            GENE_DELETION: {
+                for (my $i = 0; $i < $num_genes; $i++) {
+                    if (rand() < $gene_deletion_rate) {
+                        my $deleted_gene_ref = $self->delete_random_gene();
+                        my $deleted_gene_name = $deleted_gene_ref->get_name();
+                        my $history = "DELETION of gene $deleted_gene_name";
+                        printn $history if $verbosity >= 1;
+                        $self->add_history($history);
 
-                    # post-mutation parsing
-                    $self->parse();
+                        # post-mutation parsing
+                        $self->parse();
 
-                    # conuting the deleted gene number to calculate number of rest genes
-                    $deleted_gene_num2++;
+                        # conuting the deleted gene number to calculate number of rest genes
+                        $deleted_gene_num2++;
+                    }
+                    if ($num_genes - $deleted_gene_num2 == 1) {
+                        last GENE_DELETION;
+                    }
                 }
             }
 
@@ -1245,7 +1255,8 @@ use base qw(Model);
             printn "ERROR: gene_deletion_rate is not set in proper range";
             exit;
         }
-
+        $self->check();
+ 
  
         ########################
         if ($mutation_rate_params > 0.0 && $mutation_rate_params <= 1.0)  # mutate parameters
@@ -1270,7 +1281,8 @@ use base qw(Model);
             printn "ERROR: mutation_rate_params is not set in proper range";
             exit;
         }
-
+        $self->check();
+ 
         ########################
         if ($mutation_rate_global > 0.0 && $mutation_rate_global <= 1.0)  # mutate the whole network
         {
@@ -1294,7 +1306,8 @@ use base qw(Model);
             printn "ERROR: mutation_rate_global is not set in proper range";
             exit;
         }
-
+        $self->check();
+ 
 
         return $mutation_count;
     }
