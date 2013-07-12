@@ -786,8 +786,36 @@ use base qw(Model);
     }
 
     #--------------------------------------------------------------------------------------
-    # Function: delete_gene (by ref or by name)
+    # Function: erase_gene (by ref or by name)
     # Synopsys: Delete genes from genome by zeroing out the entire gene!
+    #--------------------------------------------------------------------------------------
+    sub erase_gene {
+        my $self = shift;
+        my @genes = @_;
+
+        my @deleted_genes;
+        foreach my $gene_ref (@genes) {
+            $gene_ref = ref $gene_ref ? $gene_ref : $self->get_gene_by_name($gene_ref);
+            my $gene_name = $gene_ref->get_name();
+            my $gene_start = $gene_ref->get_locus();
+            my $gene_stop = $gene_ref->get_stop_locus();
+            my $gene_length = $gene_ref->get_length();
+            if (defined $gene_ref) {
+                printn "erase_gene: erasing $gene_name start=$gene_start stop=$gene_stop" if $verbosity > 2;
+            } else {
+                printn "ERROR: erase_gene -- no such gene $gene_name";
+                exit(1);
+            }
+            $self->get_sequence_ref()->splice_subseq("0" x $gene_length, $gene_start, $gene_length);
+            push @deleted_genes, $gene_ref;
+        }
+        return @deleted_genes;
+    }
+
+
+    #--------------------------------------------------------------------------------------
+    # Function: delete_gene (by ref or by name)
+    # Synopsys: Delete genes from genome by cutting out the entire gene!
     #--------------------------------------------------------------------------------------
     sub delete_gene {
         my $self = shift;
@@ -806,7 +834,7 @@ use base qw(Model);
                 printn "ERROR: delete_gene -- no such gene $gene_name";
                 exit(1);
             }
-            $self->get_sequence_ref()->splice_subseq("0" x $gene_length, $gene_start, $gene_length);
+            $self->get_sequence_ref()->splice_subseq("", $gene_start, $gene_length);
             push @deleted_genes, $gene_ref;
         }
         return @deleted_genes;
@@ -823,6 +851,21 @@ use base qw(Model);
         printn "delete_random_gene: deleting gene ".$gene_ref->get_name() if $verbosity >= 1;
         my @deleted_genes = $self->delete_gene($gene_ref);
         confess "ERROR: internal error -- could not delete a gene" if (@deleted_genes != 1) || ($deleted_genes[0] != $gene_ref);
+        return $gene_ref;
+    }
+
+
+    #--------------------------------------------------------------------------------------
+    # Function: erase_random_gene
+    # Synopsys: Pick a random gene and erase it
+    #--------------------------------------------------------------------------------------
+    sub erase_random_gene {
+        my $self = shift;
+        my @gene_refs = $self->get_genes();
+        my $gene_ref = $gene_refs[int rand @gene_refs];
+        printn "erase_random_gene: erasing gene ".$gene_ref->get_name() if $verbosity >= 1;
+        my @deleted_genes = $self->erase_gene($gene_ref);
+        confess "ERROR: internal error -- could not erase a gene" if (@deleted_genes != 1) || ($deleted_genes[0] != $gene_ref);
         return $gene_ref;
     }
 
@@ -1083,12 +1126,12 @@ use base qw(Model);
                 }
             }
             $mutation_count += $gene_duplication_count;
+            $self->check();
         }
         elsif ($gene_duplication_rate != 0.0) {
             printn "ERROR: gene_duplication_rate is not set in proper range";
             exit;
         }
-        $self->check();
  
         #######################
         # Domain shuffling
@@ -1110,12 +1153,12 @@ use base qw(Model);
                     $mutation_count++;
                 }
             }
+            $self->check();
         }
         elsif ($recombination_rate != 0.0) {
             printn "ERROR: recombination_rate is not set in proper range";
             exit;
         }
-        $self->check();
  
         #######################
         # DOMAIN DUPLICATION
@@ -1151,18 +1194,18 @@ use base qw(Model);
 
             $mutation_count += $domain_duplication_count;
 
+            $self->check();
         }
         elsif ($domain_duplication_rate != 0.0) 
         {
             printn "ERROR: domain_duplication_rate is not set in proper range";
             exit;
         }
-        $self->check();
  
         #######################
         # DOMAIN DELETION
 
-        my @gene_need_delete_indice;
+        my @gene_need_delete_indice = ();
         if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0)  # delete domains
         {
             my @gene_refs = $self->get_genes();
@@ -1189,13 +1232,13 @@ use base qw(Model);
                     }
                 }
             }
+            $self->check();
         }
         elsif ($domain_deletion_rate != 0.0) 
         {
             printn "ERROR: domain_deletion_rate is not set in proper range";
             exit;
         }
-        $self->check();
  
         ########################
         # GENE_DELETION
@@ -1206,26 +1249,27 @@ use base qw(Model);
             my $num_genes = $self->get_num_genes();
             my $deleted_gene_num = 0;
 
-            if (scalar @gene_need_delete_indice > 0 && scalar @gene_need_delete_indice < $num_genes) {
-                my @gene_indice = sort {$b <=> $a} @gene_need_delete_indice;
-                foreach my $gene_index (@gene_indice) {
-                    my $gene_need_delete = $self->get_gene_by_index($gene_index - $deleted_gene_num);
-                    $self->delete_gene($gene_need_delete);
-                    my $deleted_gene_name = $gene_need_delete->get_name();
-                    my $history = "DELETION of gene $deleted_gene_name";
-                    printn $history if $verbosity >= 1;
-                    $self->add_history($history);
+            if (scalar @gene_need_delete_indice < $num_genes) {
+                if (scalar @gene_need_delete_indice > 0) {
+                    my @gene_indice = sort {$b <=> $a} @gene_need_delete_indice;
+                    foreach my $gene_index (@gene_indice) {
+                        my $gene_need_delete = $self->get_gene_by_index($gene_index);
+                        $self->delete_gene($gene_need_delete);
+                        my $deleted_gene_name = $gene_need_delete->get_name();
+                        my $history = "DELETION of gene $deleted_gene_name";
+                        printn $history if $verbosity >= 1;
+                        $self->add_history($history);
 
-                    # post-mutation parsing
-                    $self->parse();
+                        # post-mutation parsing
+                        $self->parse();
 
-                    $deleted_gene_num++;
+                        $deleted_gene_num++;
+                    }
+                    $self->check();
                 }
-
-
-                my $num_genes_left = $num_genes - scalar @gene_need_delete_indice;
+                my $num_genes_left = $num_genes - $deleted_gene_num;
                 my $current_num_genes = $self->get_num_genes();
-                confess "The number of genes after deletion is not consistant with of left ones." if ($current_num_genes != $num_genes_left);
+                printn "Warning: The number of genes after deletion is not consistant with of left ones." if ($current_num_genes != $num_genes_left && $verbosity >= 1);
                 my $deleted_gene_num2 = 0;
                 GENE_DELETION: {
                     for (my $i = 0; $i < $current_num_genes; $i++) {
@@ -1233,9 +1277,9 @@ use base qw(Model);
                             last GENE_DELETION;
                         }
                         elsif (rand() < $gene_deletion_rate) {
-                            my $deleted_gene_ref = $self->delete_random_gene();
+                            my $deleted_gene_ref = $self->erase_random_gene();
                             my $deleted_gene_name = $deleted_gene_ref->get_name();
-                            my $history = "DELETION of gene $deleted_gene_name";
+                            my $history = "ERASION of gene $deleted_gene_name";
                             printn $history if $verbosity >= 1;
                             $self->add_history($history);
 
@@ -1247,10 +1291,10 @@ use base qw(Model);
                         }
                     }
                 }
+                $self->check();
 
                 $mutation_count += $deleted_gene_num;
                 $mutation_count += $deleted_gene_num2;
-
 
             } elsif (@gene_need_delete_indice == $num_genes) {
                 DELETE_GENES: {
@@ -1273,7 +1317,7 @@ use base qw(Model);
                         }
                     }
                 }
-
+                $self->check();
                 $mutation_count += $deleted_gene_num;
             }
         }
@@ -1281,7 +1325,6 @@ use base qw(Model);
             printn "ERROR: gene_deletion_rate is not set in proper range";
             exit;
         }
-        $self->check();
  
  
         ########################
