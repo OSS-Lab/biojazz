@@ -1179,7 +1179,7 @@ use base qw(Model);
                 }
                 if (rand() < $domain_duplication_rate) {
                     my $duplicate_num = $self->duplicate_domain($i);
-                    printn "Mutate: duplicated $duplicate_num domains in gene $gene_name" if $verbosity > 1;
+                    printn "Mutate: duplicated $duplicate_num domains in gene $gene_name" if $verbosity >= 1;
 
                     # update the parser instances and gene_refs after reparsing
                     if ($duplicate_num) {
@@ -1217,7 +1217,7 @@ use base qw(Model);
                 }
                 if (rand() < $domain_deletion_rate) {
                     my $deleted_num = $self->delete_domain($i);
-                    printn "Mutate: deleted $deleted_num domains in gene $gene_name" if $verbosity > 1;
+                    printn "Mutate: deleted $deleted_num domains in gene $gene_name" if $verbosity >= 1;
 
                     # update the parser instances and gene_refs after reparsing
                     if ($deleted_num < 0) {
@@ -1244,7 +1244,7 @@ use base qw(Model);
         # GENE_DELETION
         if ($gene_deletion_rate > 0.0 && $gene_deletion_rate <= 1.0)  # delete genes
         {
-            printn "mutate: GENE_DELETION" if $verbosity > 1;
+            printn "mutate: GENE_DELETION" if $verbosity >= 1;
 
             my $num_genes = $self->get_num_genes();
             my $deleted_gene_num = 0;
