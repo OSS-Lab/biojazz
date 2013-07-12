@@ -1206,7 +1206,7 @@ use base qw(Model);
             my $num_genes = $self->get_num_genes();
             my $deleted_gene_num = 0;
 
-            if (scalar @gene_need_delete_indice > 0 && @gene_need_delete_indice < $num_genes) {
+            if (scalar @gene_need_delete_indice > 0 && scalar @gene_need_delete_indice < $num_genes) {
                 my @gene_indice = sort {$b <=> $a} @gene_need_delete_indice;
                 foreach my $gene_index (@gene_indice) {
                     my $gene_need_delete = $self->get_gene_by_index($gene_index - $deleted_gene_num);
