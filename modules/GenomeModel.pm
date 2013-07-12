@@ -1201,12 +1201,12 @@ use base qw(Model);
         # GENE_DELETION
         if ($gene_deletion_rate > 0.0 && $gene_deletion_rate <= 1.0)  # delete genes
         {
-            printn "mutate: GENE_DELETION" if $verbosity >= 1;
+            printn "mutate: GENE_DELETION" if $verbosity > 1;
 
             my $num_genes = $self->get_num_genes();
             my $deleted_gene_num = 0;
 
-            if (scalar @gene_need_delete_indice > 0) {
+            if (scalar @gene_need_delete_indice > 0 && @gene_need_delete_indice < $num_genes) {
                 my @gene_indice = sort {$b <=> $a} @gene_need_delete_indice;
                 foreach my $gene_index (@gene_indice) {
                     my $gene_need_delete = $self->get_gene_by_index($gene_index - $deleted_gene_num);
@@ -1221,35 +1221,61 @@ use base qw(Model);
 
                     $deleted_gene_num++;
                 }
-            }
 
-            my $num_genes_left = $num_genes - scalar @gene_need_delete_indice;
-            $num_genes = $self->get_num_genes();
-            confess "The number of genes after deletion is not consistant with of left ones." if ($num_genes != $num_genes_left);
-            my $deleted_gene_num2 = 0;
-            GENE_DELETION: {
-                for (my $i = 0; $i < $num_genes; $i++) {
-                    if (rand() < $gene_deletion_rate) {
-                        my $deleted_gene_ref = $self->delete_random_gene();
-                        my $deleted_gene_name = $deleted_gene_ref->get_name();
-                        my $history = "DELETION of gene $deleted_gene_name";
-                        printn $history if $verbosity >= 1;
-                        $self->add_history($history);
 
-                        # post-mutation parsing
-                        $self->parse();
+                my $num_genes_left = $num_genes - scalar @gene_need_delete_indice;
+                my $current_num_genes = $self->get_num_genes();
+                confess "The number of genes after deletion is not consistant with of left ones." if ($current_num_genes != $num_genes_left);
+                my $deleted_gene_num2 = 0;
+                GENE_DELETION: {
+                    for (my $i = 0; $i < $current_num_genes; $i++) {
+                        if ($current_num_genes - $deleted_gene_num2 == 1) {
+                            last GENE_DELETION;
+                        }
+                        elsif (rand() < $gene_deletion_rate) {
+                            my $deleted_gene_ref = $self->delete_random_gene();
+                            my $deleted_gene_name = $deleted_gene_ref->get_name();
+                            my $history = "DELETION of gene $deleted_gene_name";
+                            printn $history if $verbosity >= 1;
+                            $self->add_history($history);
 
-                        # conuting the deleted gene number to calculate number of rest genes
-                        $deleted_gene_num2++;
-                    }
-                    if ($num_genes - $deleted_gene_num2 == 1) {
-                        last GENE_DELETION;
+                            # post-mutation parsing
+                            $self->parse();
+
+                            # conuting the deleted gene number to calculate number of rest genes
+                            $deleted_gene_num2++;
+                        }
                     }
                 }
-            }
 
-            $mutation_count += $deleted_gene_num;
-            $mutation_count += $deleted_gene_num2;
+                $mutation_count += $deleted_gene_num;
+                $mutation_count += $deleted_gene_num2;
+
+
+            } elsif (@gene_need_delete_indice == $num_genes) {
+                DELETE_GENES: {
+                    for (my $i = 0; $i < $num_genes; $i++) {
+                        if ($num_genes - $deleted_gene_num == 1) {
+                            last DELETE_GENES;
+                        }
+                        elsif (rand() < $gene_deletion_rate) {
+                            my $deleted_gene_ref = $self->delete_random_gene();
+                            my $deleted_gene_name = $deleted_gene_ref->get_name();
+                            my $history = "DELETION of gene $deleted_gene_name";
+                            printn $history if $verbosity >= 1;
+                            $self->add_history($history);
+
+                            # post-mutation parsing
+                            $self->parse();
+
+                            # conuting the deleted gene number to calculate number of rest genes
+                            $deleted_gene_num++;
+                        }
+                    }
+                }
+
+                $mutation_count += $deleted_gene_num;
+            }
         }
         elsif ($gene_deletion_rate != 0.0) {
             printn "ERROR: gene_deletion_rate is not set in proper range";
