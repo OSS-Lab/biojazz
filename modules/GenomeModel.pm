@@ -554,6 +554,29 @@ use base qw(Model);
         return @protodomain_refs;
     }
 
+    #---  FUNCTION  ----------------------------------------------------------------
+    #         NAME: get_pd_nums
+    #   PARAMETERS: ????
+    #      RETURNS: ????
+    #  DESCRIPTION: ????
+    #       THROWS: no exceptions
+    #     COMMENTS: none
+    #     SEE ALSO: n/a
+    #-------------------------------------------------------------------------------
+
+    sub get_pd_nums {
+        my $self = shift; my $obj_ID = ident $self;
+        my $gene_index = shift;
+
+        my @domain_refs = $self->get_domains($gene_index);
+        my @pd_nums = (0);
+        foreach my $domain_ref (@domain_refs) {
+            my $pd_num = scalar @{$domain_ref->get_field_ref(["protodomains"])};
+            push(@pd_nums, $pd_num);
+        }
+        return @pd_nums;
+    } ## --- end sub get_pd_nums
+
 
     #---  FUNCTION  ----------------------------------------------------------------
     #         NAME: get_protodomain_by_index
@@ -886,7 +909,11 @@ use base qw(Model);
         }
         my $gene_ref = $self->get_gene_by_index($gene_index);
         my $sequence_ref = $self->get_sequence_ref();
-        
+
+        my @pd_nums = $self->get_pd_nums($gene_index);
+
+
+
         my $gene_name = $gene_ref->get_name();
         my @gene_protodomains = $self->get_protodomains($gene_index);
         my $gene_num_protodomains = scalar @gene_protodomains;
