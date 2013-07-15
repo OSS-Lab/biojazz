@@ -386,6 +386,7 @@ use base qw();
             for (my $i = 0; $i < $population; $i++) {
                 if (rand(1) < $mutation_rate) {
                     my $child_ref = $genome_ref->duplicate();
+                    printn "MUTATION: mutating genome $parent_name." if $verbosity >= 1;
                     my $mutation_count = $child_ref->mutate(
                         mutation_rate_params => $config_ref->{mutation_rate_params},
                         mutation_rate_global => $config_ref->{mutation_rate_global},
@@ -402,7 +403,7 @@ use base qw();
                         $child_ref->set_elite_flag(0);
                         $child_ref->set_number(1);
                         $current_generation_ref->add_element($child_ref);
-                        printn "New genotype appear, mutated from $parent_name!" if $verbosity > 1;
+                        printn "MUTATION: new genotype appear, mutated from $parent_name." if $verbosity >= 1;
                         $genome_ref->set_number($population - 1);
                     } else {
                         $child_ref->DEMOLISH();
