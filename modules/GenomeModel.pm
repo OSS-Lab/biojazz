@@ -911,35 +911,41 @@ use base qw(Model);
         }
         my $gene_ref = $self->get_gene_by_index($gene_index);
         my $sequence_ref = $self->get_sequence_ref();
+        my $gene_parser_ref = $self->get_gene_parser_ref();
+        my $domain_parser_ref = $self->get_domain_parser_ref();
+        my $soft_linker_code = $gene_parser_ref->get_soft_linker_code();
+        my $hard_linker_code = $domain_parser_ref->get_hard_linker_code();
 
         my @domains = $self->get_domains($gene_index);
         my @pd_accum_nums = $self->get_pd_accum_nums($gene_index);
 
         my $gene_name = $gene_ref->get_name();
-        my @gene_protodomains = $self->get_protodomains($gene_index);
-        my $gene_num_protodomains = scalar @gene_protodomains;
-        my @gene_pds = ((int rand ($gene_num_protodomains + 1)), (int rand ($gene_num_protodomains + 1)));
-        my $duplicate_num = abs($gene_pds[0] - $gene_pds[1]);
+        my @protodomains = $self->get_protodomains($gene_index);
+        my $num_protodomains = scalar @protodomains;
+        my @interpds_unsorted = ((int rand ($num_protodomains + 1)), (int rand ($num_protodomains + 1)));
+        my @interpds = sort {$a <=> $b} @interpds_unsorted;
+        my $duplicate_num = abs($interpds[1] - $interpds[0]);
         ##UNDER DEVELOPING##
         
-        my $gene_site1; my $gene_site2;
-        if ($gene_pd1 == $gene_pd2) {
+        my $cut_site1; my $cut_site2;
+        my $mu_locus; my $mu_seq;
+        if ($interpds[0] == $interpds[1]) {
             return $duplicate_num;
-        } elsif ($gene_pd1 == $gene_num_protodomains && $gene_pd2 != $gene_num_protodomains) {
-            $gene_site1 = $gene_protodomains[$gene_pd1 - 1]->get_locus() + $gene_protodomains[$gene_pd1 - 1]->get_length();
-            $gene_site2 = $gene_protodomains[$gene_pd2]->get_locus() + $gene_protodomains[$gene_pd2]->get_length();
-        } elsif ($gene_pd1 != $gene_num_protodomains && $gene_pd2 == $gene_num_protodomains) {
-            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus() + $gene_protodomains[$gene_pd1]->get_length();
-            $gene_site2 = $gene_protodomains[$gene_pd2 - 1]->get_locus() + $gene_protodomains[$gene_pd2 - 1]->get_length();
-        } else {
-            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus();
-            $gene_site2 = $gene_protodomains[$gene_pd2]->get_locus();
-        }
+        } elsif ($interpds[1] == $num_protodomains) {
+            if (grep $_ == $interpds[0], @pd_accum_nums) {
 
-        my @gene_locus_unsorted = ($gene_site1, $gene_site2);
-        my @gene_locus = sort {$a <=> $b} @gene_locus_unsorted;
-        my $middle_sequence = $sequence_ref->get_subseq($gene_locus[0], ($gene_locus[1] - $gene_locus[0]));
-        $sequence_ref->splice_subseq($middle_sequence, $gene_locus[1]);
+            } else {
+                $cut_site0 = $protodomains[$interpds[0]]->get_locus() - length($hard_linker_code);
+                $cut_site1 = $protodomains[$interpds[1] - 1]->get_locus() + $protodomains[$interpds[1] - 1]->get_length();
+                $mu_locus = $cut_site1;
+                $mu_seq = $sequence_ref->get_subseq($cut_site0, $cut_site1 - $cut_site0);
+            }
+        } else {
+
+        }
+        
+
+        $sequence_ref->splice_subseq($mu_seq, $mu_locus);
  
         return $duplicate_num;
     }
