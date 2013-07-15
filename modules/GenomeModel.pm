@@ -932,12 +932,20 @@ use base qw(Model);
         if ($interpds[0] == $interpds[1]) {
             return $duplicate_num;
         } elsif ($interpds[1] == $num_protodomains) {
+            $cut_site1 = $protodomains[$interpds[1] - 1]->get_locus() + $protodomains[$interpds[1] - 1]->get_length();
+            $mu_locus = $cut_site1;
+            # depends on if the other one is between domains
             if (grep $_ == $interpds[0], @pd_accum_nums) {
-                my ($domain_index) = grep { $pd_accum_nums[$_] == $interpds[0] }
+                my ($domain_index) = grep { $pd_accum_nums[$_] == $interpds[0] } 0..$#pd_accum_nums;
+                if (rand < 0.5) {
+                    $cut_site0 = $domains[$domain_index]->get_locus();
+                    $mu_seq = $soft_linker_code . $sequence_ref->get_subseq($cut_site0, $cut_site1 - $cut_site0);
+                } else {
+                    $cut_site0 = $protodomains[$interpds[0]]->get_locus();
+                    $mu_seq = $hard_linker_code . $sequence_ref->get_subseq($cut_site0, $cut_site1 - $cut_site0);
+                }
             } else {
                 $cut_site0 = $protodomains[$interpds[0]]->get_locus() - length($hard_linker_code);
-                $cut_site1 = $protodomains[$interpds[1] - 1]->get_locus() + $protodomains[$interpds[1] - 1]->get_length();
-                $mu_locus = $cut_site1;
                 $mu_seq = $sequence_ref->get_subseq($cut_site0, $cut_site1 - $cut_site0);
             }
         } else {
