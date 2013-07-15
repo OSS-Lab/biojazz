@@ -933,7 +933,7 @@ use base qw(Model);
             return $duplicate_num;
         } elsif ($interpds[1] == $num_protodomains) {
             if (grep $_ == $interpds[0], @pd_accum_nums) {
-
+                my ($domain_index) = grep { $pd_accum_nums[$_] == $interpds[0] }
             } else {
                 $cut_site0 = $protodomains[$interpds[0]]->get_locus() - length($hard_linker_code);
                 $cut_site1 = $protodomains[$interpds[1] - 1]->get_locus() + $protodomains[$interpds[1] - 1]->get_length();
