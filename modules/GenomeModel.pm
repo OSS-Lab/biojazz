@@ -895,7 +895,7 @@ use base qw(Model);
         my $duplicate_num = abs($gene_pd1 - $gene_pd2);
 
         my $gene_site1; my $gene_site2;
-        if ($gene_pd1 == $gene_num_protodomains && $gene_pd2 == $gene_num_protodomains) {
+        if ($gene_pd1 == $gene_pd2) {
             return $duplicate_num;
         } elsif ($gene_pd1 == $gene_num_protodomains && $gene_pd2 != $gene_num_protodomains) {
             $gene_site1 = $gene_protodomains[$gene_pd1 - 1]->get_locus() + $gene_protodomains[$gene_pd1 - 1]->get_length();
@@ -945,7 +945,7 @@ use base qw(Model);
         }
 
         my $gene_site1; my $gene_site2;
-        if ($gene_pd1 == $gene_num_protodomains && $gene_pd2 == $gene_num_protodomains) {
+        if ($gene_pd1 == $gene_pd2) {
             return $delete_num;
         } elsif ($gene_pd1 == $gene_num_protodomains && $gene_pd2 != $gene_num_protodomains) {
             $gene_site1 = $gene_protodomains[$gene_pd1 - 1]->get_locus() + $gene_protodomains[$gene_pd1 - 1]->get_length();
