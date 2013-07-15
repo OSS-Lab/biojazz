@@ -555,7 +555,7 @@ use base qw(Model);
     }
 
     #---  FUNCTION  ----------------------------------------------------------------
-    #         NAME: get_pd_nums
+    #         NAME: get_pd_accum_nums
     #   PARAMETERS: ????
     #      RETURNS: ????
     #  DESCRIPTION: ????
@@ -564,17 +564,19 @@ use base qw(Model);
     #     SEE ALSO: n/a
     #-------------------------------------------------------------------------------
 
-    sub get_pd_nums {
+    sub get_pd_accum_nums {
         my $self = shift; my $obj_ID = ident $self;
         my $gene_index = shift;
 
         my @domain_refs = $self->get_domains($gene_index);
-        my @pd_nums = (0);
+        my @pd_accum_nums = (0);
+        my $pd_total_num = 0;
         foreach my $domain_ref (@domain_refs) {
             my $pd_num = scalar @{$domain_ref->get_field_ref(["protodomains"])};
-            push(@pd_nums, $pd_num);
+            $pd_total_num += $pd_num;
+            push(@pd_accum_nums, $pd_total_num);
         }
-        return @pd_nums;
+        return @pd_accum_nums;
     } ## --- end sub get_pd_nums
 
 
@@ -910,17 +912,16 @@ use base qw(Model);
         my $gene_ref = $self->get_gene_by_index($gene_index);
         my $sequence_ref = $self->get_sequence_ref();
 
-        my @pd_nums = $self->get_pd_nums($gene_index);
-
-
+        my @domains = $self->get_domains($gene_index);
+        my @pd_accum_nums = $self->get_pd_accum_nums($gene_index);
 
         my $gene_name = $gene_ref->get_name();
         my @gene_protodomains = $self->get_protodomains($gene_index);
         my $gene_num_protodomains = scalar @gene_protodomains;
-        my $gene_pd1 = int rand ($gene_num_protodomains + 1);
-        my $gene_pd2 = int rand ($gene_num_protodomains + 1);
-        my $duplicate_num = abs($gene_pd1 - $gene_pd2);
-
+        my @gene_pds = ((int rand ($gene_num_protodomains + 1)), (int rand ($gene_num_protodomains + 1)));
+        my $duplicate_num = abs($gene_pds[0] - $gene_pds[1]);
+        ##UNDER DEVELOPING##
+        
         my $gene_site1; my $gene_site2;
         if ($gene_pd1 == $gene_pd2) {
             return $duplicate_num;
