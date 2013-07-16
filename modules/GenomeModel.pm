@@ -919,13 +919,11 @@ use base qw(Model);
         my @domains = $self->get_domains($gene_index);
         my @pd_accum_nums = $self->get_pd_accum_nums($gene_index);
 
-        my $gene_name = $gene_ref->get_name();
         my @protodomains = $self->get_protodomains($gene_index);
         my $num_protodomains = scalar @protodomains;
         my @interpds_unsorted = ((int rand ($num_protodomains + 1)), (int rand ($num_protodomains + 1)));
         my @interpds = sort {$a <=> $b} @interpds_unsorted;
         my $duplicate_num = abs($interpds[1] - $interpds[0]);
-        ##UNDER DEVELOPING##
         
         my $cut_site0; my $cut_site1;
         my $mu_locus; my $mu_seq;
@@ -1016,35 +1014,74 @@ use base qw(Model);
         }
         my $gene_ref = $self->get_gene_by_index($gene_index);
         my $sequence_ref = $self->get_sequence_ref();
-        
-        my $gene_name = $gene_ref->get_name();
-        my @gene_protodomains = $self->get_protodomains($gene_index);
-        my $gene_num_protodomains = scalar @gene_protodomains;
-        my $gene_pd1 = int rand ($gene_num_protodomains + 1);
-        my $gene_pd2 = int rand ($gene_num_protodomains + 1);
-        my $delete_num = abs($gene_pd1 - $gene_pd2);
+        my $gene_parser_ref = $self->get_gene_parser_ref();
+        my $domain_parser_ref = $self->get_domain_parser_ref();
+        my $soft_linker_code = $gene_parser_ref->get_soft_linker_code();
+        my $hard_linker_code = $domain_parser_ref->get_hard_linker_code();
 
-        if ($delete_num == $gene_num_protodomains) {
+        my @domains = $self->get_domains($gene_index);
+        my @pd_accum_nums = $self->get_pd_accum_nums($gene_index);
+
+        my @protodomains = $self->get_protodomains($gene_index);
+        my $num_protodomains = scalar @protodomains;
+        my @interpds_unsorted = ((int rand ($num_protodomains + 1)), (int rand ($num_protodomains + 1)));
+        my @interpds = sort {$a <=> $b} @interpds_unsorted;
+        my $delete_num = abs($interpds[1] - $interpds[0]);
+        
+        if ($delete_num == $num_protodomains) {
             return (- $delete_num);
         }
 
-        my $gene_site1; my $gene_site2;
-        if ($gene_pd1 == $gene_pd2) {
+        my $cut_locus; my $cut_length;
+
+        if ($interpds[0] == $interpds[1]) {
             return $delete_num;
-        } elsif ($gene_pd1 == $gene_num_protodomains && $gene_pd2 != $gene_num_protodomains) {
-            $gene_site1 = $gene_protodomains[$gene_pd1 - 1]->get_locus() + $gene_protodomains[$gene_pd1 - 1]->get_length();
-            $gene_site2 = $gene_protodomains[$gene_pd2]->get_locus() + $gene_protodomains[$gene_pd2]->get_length();
-        } elsif ($gene_pd1 != $gene_num_protodomains && $gene_pd2 == $gene_num_protodomains) {
-            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus() + $gene_protodomains[$gene_pd1]->get_length();
-            $gene_site2 = $gene_protodomains[$gene_pd2 - 1]->get_locus() + $gene_protodomains[$gene_pd2 - 1]->get_length();
+        } elsif ((grep $_ != $interpds[0], @pd_accum_nums) && (grep $_ != $interpds[1], @pd_accum_nums)) {
+            $cut_locus = $protodomains[$interpds[0]]->get_locus();
+            $cut_length = $protodomains[$interpds[1]]->get_locus() - $cut_locus;
+        } elsif ((grep $_ == $interpds[0], @pd_accum_nums) && (grep $_ != $interpds[1], @pd_accum_nums)) {
+            if ($interpds[0] != 0) {
+                my $cut_term = $protodomains[$interpds[1]]->get_locus();
+                if (rand() < 0.5) {
+                    my ($domain_index) = grep {$pd_accum_nums[$_] == $interpds[0]} 0..$#pd_accum_nums;
+                    $cut_locus = $domains[$domain_index]->get_locus() - length($soft_linker_code);
+                    $cut_length = $cut_term - length($hard_linker_code) - $cut_locus;
+                } else {
+                    $cut_locus = $protodomains[$interpds[0]]->get_locus();
+                    $cut_length = $cut_term - $cut_locus;
+                }
+            } else {
+                $cut_locus = $protodomains[$interpds[0]]->get_locus();
+                $cut_length = $protodomains[$interpds[1]]->get_locus() - $cut_locus;
+            }
+        } elsif ((grep $_ != $interpds[0], @pd_accum_nums) && (grep $_ == $interpds[1], @pd_accum_nums)) {
+            if ($interpds[1] == $num_protodomains) {
+                $cut_locus = $protodomains[$interpds[0]]->get_locus() - length($hard_linker_code);
+                $cut_length = $protodomains[$interpds[1] - 1]->get_locus() + $protodomains[$interpds[1] - 1]->get_length() - $cut_locus;
+            } else {
+                if (rand() < 0.5) {
+                    my ($domain_index) = grep {$pd_accum_nums[$_] == $interpds[1]} 0..$#pd_accum_nums;
+                    $cut_locus = $protodomains[$interpds[0]]->get_locus() - length($hard_linker_code);
+                    $cut_length = $domains[$domain_index]->get_locus() - length($soft_linker_code) - $cut_locus;
+                } else {
+                    $cut_locus = $protodomains[$interpds[0]]->get_locus();
+                    $cut_length = $protodomains[$interpds[1]]->get_locus() - $cut_locus;
+                }
+            }
         } else {
-            $gene_site1 = $gene_protodomains[$gene_pd1]->get_locus();
-            $gene_site2 = $gene_protodomains[$gene_pd2]->get_locus();
+            if ($interpds[1] != $num_protodomains) {
+                my ($domain_index0) = grep {$pd_accum_nums[$_] == $interpds[0]} 0..$#pd_accum_nums;
+                my ($domain_index1) = grep {$pd_accum_nums[$_] == $interpds[1]} 0..$#pd_accum_nums;
+                $cut_locus = $domains[$domain_index0]->get_locus();
+                $cut_length = $domains[$domain_index1]->get_locus() - $cut_locus;
+            } else {
+                my ($domain_index0) = grep {$pd_accum_nums[$_] == $interpds[0]} 0..$#pd_accum_nums;
+                $cut_locus = $domains[$domain_index0]->get_locus() - length($soft_linker_code);
+                $cut_length = $protodomains[$interpds[1] - 1]->get_locus() + $protodomains[$interpds[1] - 1]->get_length() - $cut_locus;
+            }
         }
         
-        my @gene_locus_unsorted = ($gene_site1, $gene_site2);
-        my @gene_locus = sort {$a <=> $b} @gene_locus_unsorted;
-        $sequence_ref->splice_subseq("", $gene_locus[0], ($gene_locus[1] - $gene_locus[0]));
+        $sequence_ref->splice_subseq("", $cut_locus, $cut_length);
  
         return $delete_num;
     }
