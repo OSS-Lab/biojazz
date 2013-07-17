@@ -947,12 +947,12 @@ use base qw(Model);
                 $mu_seq = $sequence_ref->get_subseq($cut_site0, $cut_site1 - $cut_site0);
             }
         } else {
-            if ((grep $_ != $interpds[0], @pd_accum_nums) && (grep $_ != $interpds[1], @pd_accum_nums)) {
+            if (!(grep $_ == $interpds[0], @pd_accum_nums) && !(grep $_ == $interpds[1], @pd_accum_nums)) {
                 $cut_site0 = $protodomains[$interpds[0]]->get_locus();
                 $cut_site1 = $protodomains[$interpds[1]]->get_locus();
                 $mu_locus = $cut_site1;
                 $mu_seq = $sequence_ref->get_subseq($cut_site0, $cut_site1 - $cut_site0);
-            } elsif ((grep $_ == $interpds[0], @pd_accum_nums) && (grep $_ != $interpds[1], @pd_accum_nums)) {
+            } elsif ((grep $_ == $interpds[0], @pd_accum_nums) && !(grep $_ == $interpds[1], @pd_accum_nums)) {
                 $cut_site1 = $protodomains[$interpds[1]]->get_locus() - length($hard_linker_code);
                 $mu_locus = $cut_site1;
                 if (rand() < 0.5) {
@@ -963,7 +963,7 @@ use base qw(Model);
                     $cut_site0 = $protodomains[$interpds[0]]->get_locus();
                     $mu_seq = $hard_linker_code . $sequence_ref->get_subseq($cut_site0, $cut_site1 - $cut_site0);
                 }
-            } elsif ((grep $_ != $interpds[0], @pd_accum_nums) && (grep $_ == $interpds[1], @pd_accum_nums)) {
+            } elsif (!(grep $_ == $interpds[0], @pd_accum_nums) && (grep $_ == $interpds[1], @pd_accum_nums)) {
                 $cut_site0 = $protodomains[$interpds[0]]->get_locus();
                 if (rand() < 0.5) {
                     my ($domain_index) = grep {$pd_accum_nums[$_] == $interpds[1]} 0..$#pd_accum_nums;
@@ -1036,10 +1036,10 @@ use base qw(Model);
 
         if ($interpds[0] == $interpds[1]) {
             return $delete_num;
-        } elsif ((grep $_ != $interpds[0], @pd_accum_nums) && (grep $_ != $interpds[1], @pd_accum_nums)) {
+        } elsif (!(grep $_ == $interpds[0], @pd_accum_nums) && !(grep $_ == $interpds[1], @pd_accum_nums)) {
             $cut_locus = $protodomains[$interpds[0]]->get_locus();
             $cut_length = $protodomains[$interpds[1]]->get_locus() - $cut_locus;
-        } elsif ((grep $_ == $interpds[0], @pd_accum_nums) && (grep $_ != $interpds[1], @pd_accum_nums)) {
+        } elsif ((grep $_ == $interpds[0], @pd_accum_nums) && !(grep $_ == $interpds[1], @pd_accum_nums)) {
             if ($interpds[0] != 0) {
                 my $cut_term = $protodomains[$interpds[1]]->get_locus();
                 if (rand() < 0.5) {
@@ -1054,7 +1054,7 @@ use base qw(Model);
                 $cut_locus = $protodomains[$interpds[0]]->get_locus();
                 $cut_length = $protodomains[$interpds[1]]->get_locus() - $cut_locus;
             }
-        } elsif ((grep $_ != $interpds[0], @pd_accum_nums) && (grep $_ == $interpds[1], @pd_accum_nums)) {
+        } elsif (!(grep $_ == $interpds[0], @pd_accum_nums) && (grep $_ == $interpds[1], @pd_accum_nums)) {
             if ($interpds[1] == $num_protodomains) {
                 $cut_locus = $protodomains[$interpds[0]]->get_locus() - length($hard_linker_code);
                 $cut_length = $protodomains[$interpds[1] - 1]->get_locus() + $protodomains[$interpds[1] - 1]->get_length() - $cut_locus;
