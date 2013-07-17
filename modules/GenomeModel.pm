@@ -1121,8 +1121,8 @@ use base qw(Model);
         my $gene2_num_protodomains = scalar @gene2_protodomains;
 
         printn "recombine_genes: recombining $gene1_name($gene1_index, $gene1_num_protodomains protodomains) and $gene2_name($gene2_index, $gene2_num_protodomains protodomains)" if $verbosity > 1;
-        printn "recombine_genes: $gene1_name sequence = " . $gene1_ref->get_sequence() if $verbosity > 3;
-        printn "recombine_genes: $gene2_name sequence = " . $gene2_ref->get_sequence() if $verbosity > 3;
+        printn "recombine_genes: $gene1_name sequence = " . $gene1_ref->get_sequence() if $verbosity > 1;
+        printn "recombine_genes: $gene2_name sequence = " . $gene2_ref->get_sequence() if $verbosity > 1;
 
         my $gene1_pd1 = int rand ($gene1_num_protodomains);
         my $gene1_pd2 = int rand ($gene1_num_protodomains);
@@ -1140,7 +1140,6 @@ use base qw(Model);
             $gene1_site2 = $gene1_protodomains[$gene1_pd2]->get_locus() + $gene1_protodomains[$gene1_pd2]->get_length();
             $gene2_site1 = $gene2_protodomains[$gene2_pd1]->get_locus() + $gene2_protodomains[$gene2_pd1]->get_length();
             $gene2_site2 = $gene2_protodomains[$gene2_pd2]->get_locus() + $gene2_protodomains[$gene2_pd2]->get_length();
-
         } else {
             if ($gene1_pd1 == 0 || $gene1_pd2 == 0 || $gene2_pd1 == 0 || $gene2_pd2 == 0) {
                 $gene1_site1 = $gene1_protodomains[$gene1_pd1]->get_locus();
@@ -1158,7 +1157,6 @@ use base qw(Model);
                     $gene1_site2 = $gene1_protodomains[$gene1_pd2]->get_locus() + $gene1_protodomains[$gene1_pd2]->get_length();
                     $gene2_site1 = $gene2_protodomains[$gene2_pd1]->get_locus() + $gene2_protodomains[$gene2_pd1]->get_length();
                     $gene2_site2 = $gene2_protodomains[$gene2_pd2]->get_locus() + $gene2_protodomains[$gene2_pd2]->get_length();
-
                 }
             }
         }
