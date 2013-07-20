@@ -1210,7 +1210,7 @@ use base qw(Model);
             $right_seq . 
             $gene_parser_ref->get_STOP_linker_code());
 
-        my $new_gene_start = $sequence_ref->get_length();
+        my $new_gene_start = $sequence_ref->get_length() + 8;
 
         $self->get_sequence_ref()->splice_subseq("00000000".$new_gene_sequence);
         printn "recombine_genes: new gene sequence = " . $new_gene_sequence if $verbosity > 1;
@@ -1291,7 +1291,9 @@ use base qw(Model);
                 if (rand() < $recombination_rate) {
                     printn "mutate: RECOMBINATION" if $verbosity >= 1;
                     my $gene1_index = int rand $num_genes;
-                    my $gene2_index = int rand $num_genes;
+                    do {
+                        my $gene2_index = int rand $num_genes;
+                    } until ($gene2_index != $gene1_index);
                     my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
                     my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
                     my $recombinatory_start = $self->recombine_genes($gene1_index, $gene2_index);

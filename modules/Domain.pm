@@ -77,7 +77,7 @@ use base qw(Parser);
         $RT_transition_rate_width_of{$obj_ID} = 10;
         $TR_transition_rate_width_of{$obj_ID} = 10;
         $RT_phi_width_of{$obj_ID} = 10;
-        $unused_width_of{$obj_ID} = 32;
+        $unused_width_of{$obj_ID} = 4;
 
         $RT_transition_rate_max_of{$obj_ID} = 1e3;
         $RT_transition_rate_min_of{$obj_ID} = 1e-3;

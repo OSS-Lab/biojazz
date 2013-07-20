@@ -74,11 +74,11 @@ use base qw(Parser);
         # DEFAULTS
         $gene_start_code_of{$obj_ID} = "01111110";
         $soft_linker_code_of{$obj_ID} = "001";
-        $regulated_concentration_width_of{$obj_ID} = 4;
-        $unused_width_of{$obj_ID} = 32;
+        $regulated_concentration_width_of{$obj_ID} = 10;
+        $unused_width_of{$obj_ID} = 4;
 
         $regulated_concentration_max_of{$obj_ID} = 1e-3;
-        $regulated_concentration_min_of{$obj_ID} = 1e-12;
+        $regulated_concentration_min_of{$obj_ID} = 1e-3;
 
         # INIT
         $gene_start_code_of{$obj_ID} = $arg_ref->{gene_start_code} if exists $arg_ref->{gene_start_code};
