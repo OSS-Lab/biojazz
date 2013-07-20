@@ -1291,8 +1291,9 @@ use base qw(Model);
                 if (rand() < $recombination_rate) {
                     printn "mutate: RECOMBINATION" if $verbosity >= 1;
                     my $gene1_index = int rand $num_genes;
+                    my $gene2_index;
                     do {
-                        my $gene2_index = int rand $num_genes;
+                        $gene2_index = int rand $num_genes;
                     } until ($gene2_index != $gene1_index);
                     my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
                     my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
