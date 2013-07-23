@@ -206,6 +206,7 @@ use base qw();
                     $genome_model_ref->set_score(undef);
                     $genome_model_ref->set_elite_flag(0);
                     $genome_model_ref->set_number(1);
+                    $genome_model_ref->set_index(0);
 
                     $scoring_ref->score_genome($genome_model_ref);
                     $genome_model_ref->static_analyse($config_ref->{rescore_elite});
@@ -380,6 +381,7 @@ use base qw();
         my $mutation_rate = $config_ref->{mutation_rate};
         my @genome_model_refs = $current_generation_ref->get_elements();
 
+        my $genome_index = 0;
         foreach my $genome_ref (@genome_model_refs) {
             my $parent_name = $genome_ref->get_name();
             my $population = $genome_ref->get_number();
@@ -402,6 +404,7 @@ use base qw();
                         $child_ref->clear_stats(preserve => []);
                         $child_ref->set_elite_flag(0);
                         $child_ref->set_number(1);
+                        $child_ref->set_index($genome_index);
                         $current_generation_ref->add_element($child_ref);
                         printn "MUTATION: new genotype appear, mutated from $parent_name." if $verbosity >= 1;
                         $genome_ref->set_number($population - 1);
@@ -409,6 +412,7 @@ use base qw();
                         $child_ref->DEMOLISH();
                     }
                 }
+                $genome_index++;
             }
         }
         my $next_generation_number = $current_generation_number + 1;
@@ -539,6 +543,7 @@ use base qw();
                 my $child_ref = $parent_ref->duplicate();
                 $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $current_generation_number, $i));
                 $child_ref->set_number($selection_count[$i]);
+                $child_ref->set_index(0);
                 $temp_generation_ref->add_element($child_ref);
             } 
         }
