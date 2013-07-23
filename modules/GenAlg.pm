@@ -339,7 +339,7 @@ use base qw();
                 if ($scores[$i] != 0) {
                     $mutated_score = ($child_score - $scores[$i]) / $scores[$i];
                 } else {
-                    $mutated_score = $child_score;
+                    $mutated_score = 1;
                 }
 
                 if ($mutated_score == 0.0) {
