@@ -38,7 +38,6 @@ use base qw(Model);
     my %number_of       :ATTR(get => 'number', set => 'number', default => 0);
     my %score_of       :ATTR(get => 'score', set => 'score', default => 0);
     my %elite_flag_of  :ATTR(get => 'elite_flag', set => 'elite_flag', default => 0);
-    my %index_of        :ATTR(get => 'index', set => 'index', default => 0);
 
 #    my %cell_volume_of :ATTR(get => 'cell_volume', set => 'cell_volume');
 
@@ -73,7 +72,6 @@ use base qw(Model);
         $number_of{$obj_ID} = 1;
         $score_of{$obj_ID} = 0;
         $elite_flag_of{$obj_ID} = 0;
-        $index_of{$obj_ID} = 0;
 
 #	$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
     }
