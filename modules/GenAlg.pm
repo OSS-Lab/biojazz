@@ -336,7 +336,11 @@ use base qw();
 
                 printn "the child's score is; $child_score";
 
-                $mutated_score = ($child_score - $scores[$i]) / $scores[$i];
+                if ($scores[$i] != 0) {
+                    $mutated_score = ($child_score - $scores[$i]) / $scores[$i];
+                } else {
+                    $mutated_score = $child_score;
+                }
 
                 if ($mutated_score == 0.0) {
                     $fixation_p = 1 / (2 * $effective_population_size);  # prevent divide by zero
