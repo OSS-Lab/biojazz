@@ -29,6 +29,7 @@ evolve
 load_genome
 score_genome
 score_generation
+rescore_genomes
 load_history
 save_history
 collect_history_from_genomes
