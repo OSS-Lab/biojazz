@@ -140,6 +140,10 @@ use base qw(Set ClassData);
         my $config_ref = shift;
 
         my $inum = $config_ref->{inum_genomes};
+        if ($config_ref->{selection_method} eq "kimura_selection") {
+            $inum = 1;
+        }
+
 
         my $genome_class = $self->get_class_data("ELEMENT_CLASS");
         for (my $i = 0; $i < $inum; $i++) {
