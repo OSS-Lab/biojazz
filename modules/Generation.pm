@@ -140,10 +140,10 @@ use base qw(Set ClassData);
         my $config_ref = shift;
 
         my $inum = $config_ref->{inum_genomes};
+        my $population = $config_ref->{evolve_population};
         if ($config_ref->{selection_method} eq "kimura_selection") {
             $inum = 1;
         }
-
 
         my $genome_class = $self->get_class_data("ELEMENT_CLASS");
         for (my $i = 0; $i < $inum; $i++) {
@@ -163,6 +163,7 @@ use base qw(Set ClassData);
                     },
                 });
             $genome_ref->get_sequence_ref()->generate_random_sequence(5000);
+            $genome_ref->set_number(1);
             $genome_ref->add_history("random sequence created");
             $self->add_element($genome_ref);
         }

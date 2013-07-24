@@ -232,14 +232,66 @@ use base qw();
                     my $genome_model_ref = $genome_model_refs[$index];
                     my $current_number = $genome_model_ref->get_number();
                     $genome_model_ref->set_number($current_number + 1);
-                    my $name = $genome_model_ref->get_name();
-                    $genome_model_ref->add_history("increased population size of $name");
                 }
             }
 
         } else {
             printn "create_initial_generation: creating $config_ref->{inum_genomes} individuals";
             $current_generation_ref->create_random_genomes($config_ref);
+
+            my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
+            my $defined_local_dir = (defined $local_dir ? $local_dir : "");
+
+
+            eval("use $config_ref->{scoring_class};");
+            if ($@) {print $@; return;}
+
+            my $scoring_ref = $config_ref->{scoring_class}->new({
+                    config_file => $config_ref->{config_file},
+                    node_ID => 999,
+                    work_dir => $config_ref->{work_dir},
+                    local_dir => $defined_local_dir,
+                    matlab_startup_options => "-nodesktop -nosplash",  # need jvm
+                });
+
+
+            my @genome_model_refs = $current_generation_ref_of{$obj_ID}->get_elements();
+            if ($config_ref->{score_initial_generation}) {
+                # reset all score/stats for first generation
+                foreach my $genome_model_ref (@genome_model_refs) {
+                    $genome_model_ref->clear_stats(preserve => []);
+                    $genome_model_ref->set_score(undef);
+                    $genome_model_ref->set_elite_flag(0);
+
+                    $scoring_ref->score_genome($genome_model_ref);
+                    $genome_model_ref->static_analyse($config_ref->{rescore_elite});
+                    $genome_model_ref->set_elite_flag(1);
+                }
+            }
+
+            my $population = $config_ref->{evolve_population};
+            if ($config_ref->{selection_method} eq "kimura_selection") {
+                $population = 1;
+            }
+
+            my $loaded_genome_num = 0;
+            foreach my $genome_model_ref (@genome_model_refs) {
+                if (!defined ($genome_model_ref->get_number())) {
+                    $genome_model_ref->set_number(1);
+                }
+                $loaded_genome_num += $genome_model_ref->get_number();
+            }
+
+            if ($population > $loaded_genome_num) {
+                for (my $i = 0; $i < ($population - $loaded_genome_num); $i++) {
+                    my $index = int(rand($loaded_genome_num));
+                    my $genome_model_ref = $genome_model_refs[$index];
+                    my $current_number = $genome_model_ref->get_number();
+                    $genome_model_ref->set_number($current_number + 1);
+                }
+            }
+
+
         }
         $current_generation_ref->refresh_individual_names($config_ref->{first_generation});
         $current_generation_number_of{$obj_ID} = $config_ref->{first_generation};
