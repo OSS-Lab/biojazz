@@ -258,6 +258,7 @@ sub score_generation {
 
     check_args(\%args, 1);
     my $generation_num = $args{generation_num};
+    printn "Scoring generation $generation_num";
 
     eval("use $config_ref->{scoring_class};");
 
