@@ -190,7 +190,7 @@ score_genome() if $SCORE && defined $config_ref->{config_file};
 
 score_generation($GENERATION) if $GENERATION && defined $config_ref->{config_file};
 
-rescore_genomes() if $RESCORE;
+rescore_genomes() if $RESCORE && defined $config_ref->{config_file};
 
 
 if (defined $COMMAND) {
