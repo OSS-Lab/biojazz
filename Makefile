@@ -115,10 +115,10 @@ score : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --genome=$(genome) --score --shell 
 
 score_generation : FORCE
-	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --generation=$(generation) 
+	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --generation=$(generation) --shell
 
 rescore : FORCE
-	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --rescore
+	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --rescore --shell
 
 shell : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) --shell
