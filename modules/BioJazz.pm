@@ -253,7 +253,7 @@ sub score_genome {
 sub score_generation {
     my %args = (
         generation_num => undef,
-       @_, 
+        @_, 
     );
 
     check_args(\%args, 1);

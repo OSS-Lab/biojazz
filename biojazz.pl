@@ -184,11 +184,11 @@ if (!defined $config_ref->{config_file}) {
 #======================================================================================
 evolve(seed => defined $SEED ? $SEED : -1) if !$SHELL && !$COMMAND && !$GENOME && !$SCORE && !$GENERATION && !$RESCORE && defined $config_ref->{config_file};
 
-load_genome($GENOME) if $GENOME || $SCORE && defined $config_ref->{config_file};
+load_genome($GENOME) if defined $GENOME || $SCORE && defined $config_ref->{config_file};
 
 score_genome() if $SCORE && defined $config_ref->{config_file};
 
-score_generation($GENERATION) if $GENERATION && defined $config_ref->{config_file};
+score_generation(generation_num => $GENERATION) if defined $GENERATION && defined $config_ref->{config_file};
 
 rescore_genomes() if $RESCORE && defined $config_ref->{config_file};
 
