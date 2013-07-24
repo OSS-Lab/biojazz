@@ -182,24 +182,23 @@ use base qw();
                 history_flag => 1,
             );
 
-            my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
-            my $defined_local_dir = (defined $local_dir ? $local_dir : "");
-
-
-            eval("use $config_ref->{scoring_class};");
-            if ($@) {print $@; return;}
-
-            my $scoring_ref = $config_ref->{scoring_class}->new({
-                    config_file => $config_ref->{config_file},
-                    node_ID => 999,
-                    work_dir => $config_ref->{work_dir},
-                    local_dir => $defined_local_dir,
-                    matlab_startup_options => "-nodesktop -nosplash",  # need jvm
-                });
-
-
             my @genome_model_refs = $current_generation_ref_of{$obj_ID}->get_elements();
             if ($config_ref->{score_initial_generation}) {
+
+                my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
+                my $defined_local_dir = (defined $local_dir ? $local_dir : "");
+
+                eval("use $config_ref->{scoring_class};");
+                if ($@) {print $@; return;}
+
+                my $scoring_ref = $config_ref->{scoring_class}->new({
+                        config_file => $config_ref->{config_file},
+                        node_ID => 999,
+                        work_dir => $config_ref->{work_dir},
+                        local_dir => $defined_local_dir,
+                        matlab_startup_options => "-nodesktop -nosplash",  # need jvm
+                    });
+
                 # reset all score/stats for first generation
                 foreach my $genome_model_ref (@genome_model_refs) {
                     $genome_model_ref->clear_stats(preserve => []);
@@ -239,24 +238,23 @@ use base qw();
             printn "create_initial_generation: creating $config_ref->{inum_genomes} individuals";
             $current_generation_ref->create_random_genomes($config_ref);
 
-            my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
-            my $defined_local_dir = (defined $local_dir ? $local_dir : "");
-
-
-            eval("use $config_ref->{scoring_class};");
-            if ($@) {print $@; return;}
-
-            my $scoring_ref = $config_ref->{scoring_class}->new({
-                    config_file => $config_ref->{config_file},
-                    node_ID => 999,
-                    work_dir => $config_ref->{work_dir},
-                    local_dir => $defined_local_dir,
-                    matlab_startup_options => "-nodesktop -nosplash",  # need jvm
-                });
-
-
             my @genome_model_refs = $current_generation_ref_of{$obj_ID}->get_elements();
             if ($config_ref->{score_initial_generation}) {
+
+                my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
+                my $defined_local_dir = (defined $local_dir ? $local_dir : "");
+
+                eval("use $config_ref->{scoring_class};");
+                if ($@) {print $@; return;}
+
+                my $scoring_ref = $config_ref->{scoring_class}->new({
+                        config_file => $config_ref->{config_file},
+                        node_ID => 999,
+                        work_dir => $config_ref->{work_dir},
+                        local_dir => $defined_local_dir,
+                        matlab_startup_options => "-nodesktop -nosplash",  # need jvm
+                    });
+
                 # reset all score/stats for first generation
                 foreach my $genome_model_ref (@genome_model_refs) {
                     $genome_model_ref->clear_stats(preserve => []);

@@ -140,7 +140,6 @@ use base qw(Set ClassData);
         my $config_ref = shift;
 
         my $inum = $config_ref->{inum_genomes};
-        my $population = $config_ref->{evolve_population};
         if ($config_ref->{selection_method} eq "kimura_selection") {
             $inum = 1;
         }
