@@ -79,14 +79,12 @@ use base qw(Scoring);
 
             # Should clear stats in the evolution to prevent stats loss when rescore genomes.
             # $genome_model_ref->clear_stats(preserve => ["created_kinase", "created_phosphatase"]);
-            $stats_ref->{score_count} = 1;
             $stats_ref->{score} = 0;
         } else {
             printn "Ultrasensitive::score_genome scoring non-elite individual...";
  
             # Should clear stats in the evolution to prevent stats loss when rescore genomes.
             # $genome_model_ref->clear_stats(preserve => ["created_kinase", "created_phosphatase"]);
-            $stats_ref->{score_count} = 1;
             $stats_ref->{score} = 0;
         }
 
@@ -792,13 +790,12 @@ use base qw(Scoring);
             $final_score = 0;
         }
 
-        $stats_ref->{score} = ($stats_ref->{score} * ($stats_ref->{score_count} - 1) + $final_score) / $stats_ref->{score_count};
-        #    $stats_ref->{score} = $final_score;
+        $stats_ref->{score} = $final_score;
 
         $genome_model_ref->set_score($stats_ref->{score});
 
         printn $genome_model_ref->sprint_stats();
-        printn "final_score = $final_score cumulative_score = $stats_ref->{score} count = $stats_ref->{score_count}";
+        printn "final_score = $final_score";
 
         #---------------------------------------------------------
         # MOVE FILES from LOCAL_DIR to WORK_DIR
@@ -807,8 +804,8 @@ use base qw(Scoring);
             my $file_glob = "$matlab_work/${genome_name}*";
             my @files = glob($file_glob);
             if (@files) {
-                printn "Moving @files to $work_dir/matlab";
-                system("mv @files $work_dir/matlab");
+                printn "Removing @files in $work_dir/matlab" if $verbosity > 1;
+                `echo $matlab_work/${genome_name}*  | xargs rm -f`;
             }
         }
     }
