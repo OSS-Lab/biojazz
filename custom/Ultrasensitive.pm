@@ -300,7 +300,7 @@ use base qw(Scoring);
                     $network_connectivity += 100;
                 }
 
-                $network_connectivity = 500 if $network_connectivity >= 400;  # max LG/TG connectivity score
+                $network_connectivity += 100 if $network_connectivity >= 400;  # max LG/TG connectivity score
             }
 
             my @adjacent_kinases = $genome_ref->find_adjacent_csites($tg_protodomain_ref, 0);
@@ -310,6 +310,7 @@ use base qw(Scoring);
             printn "Found ".@adjacent_kinases." adjacent kinases";
             printn "Found ".@adjacent_phosphatases." adjacent phosphatases";
 
+            # NOTE: Should we keep this trick or just let the network to evolve the required networks?
             # to speed up evolution, we can cheat: if network_connectivity >= 200, and  < 500,
             # this means LG is connected to either TG/0, TG/1, but not both.
             # provided there are at least 2 connected proteins,
@@ -461,15 +462,20 @@ use base qw(Scoring);
                 ###############################################################################
                 #---------------------------------------------------------
                 # SCORE COMPLEXITY
+                # Basically compute the number of genes, domains, protodomains, rules
+                # and put those values in account as how complex is the network
+                #
+                # NOTE: if the network have more genes/domains/protodomains, the complexity score
+                #       will become smaller. This must be the reason why the networks is going to 
+                #       simple networks !!!! 
+                #       1/(1+(complexity/100))
                 #---------------------------------------------------------
-#		my $line_count = `wc -l $matlab_work/$genome_name.eqn`;
-#		$line_count =~ /^\s*(\S+)\s*/; # extract the line count
-#		$stats_ref->{complexity} = $1;
                 my $num_protodomains = @{[$anc_model =~ /ProtoDomain :/g]};
                 my $num_domains = @{[$anc_model =~ /\sDomain :/g]};
                 my $num_proteins = @{[$anc_model =~ /Protein :/g]};
                 my $num_rules = @{[$anc_model =~ /CanBindRule :/g]};
                 printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules";
+                $stats_ref->{num_rules} = $num_rules;
                 $stats_ref->{complexity} = $num_protodomains + $num_domains + $num_proteins + $num_rules;
                 $stats_ref->{complexity_score} = n_hill($stats_ref->{complexity}, 100, 1);
 
@@ -611,7 +617,7 @@ use base qw(Scoring);
                         $self->matlab_round_value(value => $_, AbsTol => $config_ref->{AbsTol}, RelTol => $config_ref->{RelTol})
                         } ($pos_t1, $pos_t2, $neg_t1, $neg_t2);
                     }
-                    my $pos_delta = ($pos_t2 - $pos_t1)/($pos_t2 + $pos_t1)*2; # relative measure
+                    my $pos_delta = ($pos_t2 - $pos_t1)/($pos_t2 + $pos_t1)*2; # relative measure the time points (how fast reach steady state?)
                     my $neg_delta = ($neg_t2 - $neg_t1)/($neg_t2 + $neg_t1)*2;
 
                     my $pos_output_select = ($pos_delta >= $neg_delta) ? 1 : 0;
@@ -624,7 +630,6 @@ use base qw(Scoring);
                         $stats_ref->{sim_flag} = 0;
                     }
                     printn "pos_output_select = $pos_output_select";
-                    #		printn "t_bottom = $t_bottom t_top = $t_top t_bottom_n = $t_bottom_n t_top_n = $t_top_n";
                     printn "pos_delta = $pos_delta, neg_delta = $neg_delta";
                     my @output_vector = $pos_output_select ? @pos_output_vector : @neg_output_vector;
 
