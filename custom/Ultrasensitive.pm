@@ -804,8 +804,8 @@ use base qw(Scoring);
             my $file_glob = "$matlab_work/${genome_name}*";
             my @files = glob($file_glob);
             if (@files) {
-                printn "Removing @files in $work_dir/matlab" if $verbosity > 1;
-                `echo $matlab_work/${genome_name}*  | xargs rm -f`;
+                printn "Moving @files to $work_dir/matlab" if $verbosity > 1;
+                system("mv @files $work_dir/matlab");
             }
         }
     }
