@@ -353,7 +353,6 @@ use base qw();
             my $fixation_p = -1;
             my $mutated_score;
             my $mutation_step_num = 0;
-            
             while ($fixation_p < rand) {
 
                 $current_generation_ref->clear_genomes();
@@ -617,8 +616,8 @@ use base qw();
 
         confess "genome_attribute_names is not specified!" if (!@genome_attribute_names);
         if ($genome_attribute_names[0] eq "all") {
-            @genome_attribute_names = ();
-            my @genome_attribute_names = $current_generation_ref->get_attribute_names();
+            undef @genome_attribute_names;
+            @genome_attribute_names = $current_generation_ref->get_attribute_names();
         }
 
         my $data_dir = "$config_ref->{work_dir}/$TAG/stats";
@@ -651,8 +650,8 @@ use base qw();
 
         confess "genome_attribute_names is not specified!" if (!@genome_attribute_names);
         if ($genome_attribute_names[0] eq "all") {
-            @genome_attribute_names = ();
-            my @genome_attribute_names = $current_generation_ref->get_attribute_names();
+            undef @genome_attribute_names;
+            @genome_attribute_names = $current_generation_ref->get_attribute_names();
         }
 
         printn "report_current_generation: generation $current_generation_number";
@@ -684,7 +683,7 @@ use base qw();
             $csv->print($data_file, \@attributes);
 
             # destroy @attributes
-            @attributes = ();
+            undef @attributes;
 
         }
         close($data_file) || warn "close failed: $!";

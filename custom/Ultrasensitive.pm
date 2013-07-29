@@ -220,7 +220,7 @@ use base qw(Scoring);
         my $network_connectivity = $stats_ref->{network_connectivity} = 0;
         if ($parse_successful) {
             my $transcript = $genome_iref->sprint(colour_flag => 0);
-            printn $transcript if $verbosity >= 2 || $config_ref->{sprint_transcript};
+            printn $transcript if $verbosity > 2 || $config_ref->{sprint_transcript};
             burp_file("$matlab_work/$genome_name.tsc", "$history\n$transcript") if $config_ref->{save_transcript};
             $genome_model_ref->translate();
 
@@ -232,13 +232,13 @@ use base qw(Scoring);
             $genome_ref->build_network();
 
             # REPORT PROTODOMAIN CONNECTIVITY
-            printn "Protodomains: ".join(",", map {$_->get_name()} @{$genome_ref->get_adjacency_matrix_node_refs()->{protodomains}});
-            printn $genome_ref->get_adjacency_matrix_ref()->{protodomains}->[0]->sprint_matrix() if $verbosity >= 2;
-            printn $genome_ref->get_connectivity_matrix_ref()->{protodomains}->sprint_matrix() if $verbosity >= 2;
+            printn "Protodomains: ".join(",", map {$_->get_name()} @{$genome_ref->get_adjacency_matrix_node_refs()->{protodomains}}) if $verbosity > 1;
+            printn $genome_ref->get_adjacency_matrix_ref()->{protodomains}->[0]->sprint_matrix() if $verbosity > 2;
+            printn $genome_ref->get_connectivity_matrix_ref()->{protodomains}->sprint_matrix() if $verbosity > 2;
             # REPORT GENE CONNECTIVITY
-            printn "Genes: ".join(",", map {$_->get_name()} @{$genome_ref->get_adjacency_matrix_node_refs()->{genes}}) if $verbosity >= 1;
-            printn $genome_ref->get_adjacency_matrix_ref()->{genes}->[0]->sprint_matrix() if $verbosity >= 2;
-            printn $genome_ref->get_connectivity_matrix_ref()->{genes}->sprint_matrix() if $verbosity >= 2;
+            printn "Genes: ".join(",", map {$_->get_name()} @{$genome_ref->get_adjacency_matrix_node_refs()->{genes}}) if $verbosity > 1;
+            printn $genome_ref->get_adjacency_matrix_ref()->{genes}->[0]->sprint_matrix() if $verbosity > 2;
+            printn $genome_ref->get_connectivity_matrix_ref()->{genes}->sprint_matrix() if $verbosity > 2;
 
             # PRUNE GENES
             $stats_ref->{num_pruned_genes} = scalar $genome_ref->prune_isolated_genes();
@@ -255,25 +255,26 @@ use base qw(Scoring);
             #---------------------------------------------------------
             if ($lg_gene_ref->get_export_flag()) {
                 $network_connectivity++;
-                printn "LG is connected" if $verbosity >= 1;
+                printn "LG is connected" if $verbosity > 1;
             }
             if ($tg_gene_ref->get_export_flag()) {
                 $network_connectivity++;
-                printn "TG is connected" if $verbosity >= 1;
+                printn "TG is connected" if $verbosity > 1;
             }
 
             #---------------------------------------------------------
             # SCORING: 90 + 400 pts -- LG/TG subnets
             #---------------------------------------------------------
             if ($network_connectivity == 2) { # LG/TF connected
+                $stats_ref->{network_connected_flag} = 1;
                 my (@lg_subnet, @tg0_subnet, @tg1_subnet);   # protodomain subnets
                 @lg_subnet = $genome_ref->get_connected(key => "protodomains", ref => $lg_protodomain_ref);
                 @tg0_subnet = $genome_ref->get_connected(key => "protodomains", ref => $tg_protodomain_ref, state => 0);
                 @tg1_subnet = $genome_ref->get_connected(key => "protodomains", ref => $tg_protodomain_ref, state => 1);
 
-                printn "LG protodomain connects to ".join ",",   (map {$_->[2]} @lg_subnet) if $verbosity >= 1;
-                printn "TG/0 protodomain connects to ".join ",", (map {$_->[2]} @tg0_subnet) if $verbosity >= 1;
-                printn "TG/1 protodomain connects to ".join ",", (map {$_->[2]} @tg1_subnet) if $verbosity >= 1;
+                printn "LG protodomain connects to ".join ",", (map {$_->[2]} @lg_subnet) if $verbosity > 1;
+                printn "TG/0 protodomain connects to ".join ",", (map {$_->[2]} @tg0_subnet) if $verbosity > 1;
+                printn "TG/1 protodomain connects to ".join ",", (map {$_->[2]} @tg1_subnet) if $verbosity > 1;
 
                 # max 90 points for subnet size
                 my $lg_subnet_size = (@lg_subnet > 30) ? 30 : @lg_subnet;
@@ -284,135 +285,32 @@ use base qw(Scoring);
                 #########################################################################################
                 # score -- LG/TG connected to each other
                 if (grep /LPD/, (map {$_->[2]} @tg0_subnet)) {
-                    printn "TG/0 fans out to LG" if $verbosity >= 1;
+                    printn "TG/0 fans out to LG" if $verbosity > 1;
                     $network_connectivity += 100;
                 }
                 if (grep /LPD/, (map {$_->[2]} @tg1_subnet)) {
-                    printn "TG/1 fans out to LG" if $verbosity >= 1;
+                    printn "TG/1 fans out to LG" if $verbosity > 1;
                     $network_connectivity += 100;
                 }
                 if (grep /TPD\d*\/0/, (map {$_->[2]} @lg_subnet)) {
-                    printn "LG fans out to TG/0" if $verbosity >= 1;
+                    printn "LG fans out to TG/0" if $verbosity > 1;
                     $network_connectivity += 100;
                 }
                 if (grep /TPD\d*\/1/, (map {$_->[2]} @lg_subnet)) {
-                    printn "LG fans out to TG/1" if $verbosity >= 1;
+                    printn "LG fans out to TG/1" if $verbosity > 1;
                     $network_connectivity += 100;
                 }
 
                 $network_connectivity += 100 if $network_connectivity >= 400;  # max LG/TG connectivity score
             }
-
-            my @adjacent_kinases = $genome_ref->find_adjacent_csites($tg_protodomain_ref, 0);
-            my @adjacent_phosphatases = $genome_ref->find_adjacent_csites($tg_protodomain_ref, 1);
-            $stats_ref->{num_adjacent_kinases} = scalar(@adjacent_kinases);
-            $stats_ref->{num_adjacent_phosphatases} = scalar(@adjacent_phosphatases);
-            printn "Found ".@adjacent_kinases." adjacent kinases";
-            printn "Found ".@adjacent_phosphatases." adjacent phosphatases";
-
-            # NOTE: Should we keep this trick or just let the network to evolve the required networks?
-            # to speed up evolution, we can cheat: if network_connectivity >= 200, and  < 500,
-            # this means LG is connected to either TG/0, TG/1, but not both.
-            # provided there are at least 2 connected proteins,
-            # let's flip some bits to create the necessary enzymes out
-            # of the adjacent proteins.  however, we will do this only
-            # once per lineage by setting the persistent created_kinase/phosphatase flags
-            my @tg_adjacent_genes = $genome_ref->get_adjacent(key => "genes", ref => $tg_gene_ref);
-            my $tg_adjacent_genes = $stats_ref->{tg_adjacent_genes} = scalar @tg_adjacent_genes;
-            if ($tg_adjacent_genes >= 2) {
-                printn "TG has > 2 connected proteins" if $verbosity >= 1;
-            }
-            if ($network_connectivity >= 200 && $network_connectivity < 500 && $tg_adjacent_genes >= 2) {
-                printn "Editing genome to create kinase/phosphatase";
-                confess "ERROR: unexpected condition" if (@adjacent_kinases && @adjacent_phosphatases);
-                #---------------------------------------------------------
-                # PICK AN ADJACENT PROTEIN TO MAKE INTO KINASE/PHOSPHATASE
-                #---------------------------------------------------------
-
-                my @adjacent_protodomains = union(
-                    [map {$_->[0]} $genome_ref->get_adjacent(key => "protodomains", ref => $tg_protodomain_ref, state => 0)],
-                    [map {$_->[0]} $genome_ref->get_adjacent(key => "protodomains", ref => $tg_protodomain_ref, state => 1)],
-                );
-                @adjacent_protodomains = simple_difference(
-                    \@adjacent_protodomains,
-                    [$lg_protodomain_ref]
-                );
-                @adjacent_protodomains = simple_difference(
-                    \@adjacent_protodomains,
-                    [$tg_protodomain_ref]
-                );
-
-                my $csite_field_value = $tg_protodomain_ref->untranslate_field("type", "csite");
-                my $modified_flag = 0;
-                if (@adjacent_kinases < 1 && !defined $genome_model_ref->get_stat("created_kinase")) {
-                    my @protodomains = (@adjacent_phosphatases ? # preserve one phosphatase
-                        simple_difference(\@adjacent_protodomains, [$adjacent_phosphatases[int rand @adjacent_phosphatases]]) :
-                        @adjacent_protodomains);
-                    if (@protodomains >= 1) {
-                        my $index = int rand @protodomains;
-                        my $protodomain_ref = $protodomains[$index];
-                        printn "Editing genome to create kinase (".$protodomain_ref->get_name().")";
-                        $protodomain_ref->set_field("type", $csite_field_value);
-                        $protodomain_ref->set_field("substrate_polarity", 0);
-                        @adjacent_kinases = (@adjacent_kinases, $protodomain_ref); # update list
-                        $stats_ref->{created_kinase} += 1;  # !!! store name of containing gene instead ???
-                        $genome_model_ref->add_history("Edited genome protodomain ".$protodomain_ref->get_name()." to create kinase csite");
-                        $modified_flag = 1;
-                    }
-                }
-                if (@adjacent_phosphatases < 1 && !defined $genome_model_ref->get_stat("created_phosphatase")) {
-                    my @protodomains = (@adjacent_kinases ? # preserve one kinase
-                        simple_difference(\@adjacent_protodomains, [$adjacent_kinases[int rand @adjacent_kinases]]) :
-                        @adjacent_protodomains);
-                    if (@protodomains >= 1) {
-                        my $index = int rand @protodomains;
-                        my $protodomain_ref = $protodomains[$index];
-                        printn "Editing genome to create phosphatase (".$protodomain_ref->get_name().")";
-                        $protodomain_ref->set_field("type", $csite_field_value);
-                        $protodomain_ref->set_field("substrate_polarity", 1);
-                        @adjacent_phosphatases = (@adjacent_phosphatases, $protodomain_ref); # update list
-                        $stats_ref->{created_phosphatase} += 1;
-                        $genome_model_ref->add_history("Edited genome protodomain ".$protodomain_ref->get_name()." to create phosphatase csite");
-                        $modified_flag = 1;
-                    }
-                }
-
-                if ($modified_flag) {
-                    #---------------------------------------------------------
-                    # RE-PARSE/TRANSLATE GENOME AND I/O GENES
-                    #---------------------------------------------------------
-                    $genome_iref = $genome_model_ref->parse(
-                        [
-                            sequence_ref => $lg_sequence_ref,
-                            prefix => "L",
-                        ],
-                        [
-                            sequence_ref => $tg_sequence_ref,
-                            prefix => "T",
-                        ],
-                    );
-                    $genome_model_ref->check();
-                    $genome_model_ref->translate();
-                }
-
-                #---------------------------------------------------------
-                # SCORING: if we have adjacent kinases/phosphatases, we
-                #          should now have a score that reflects this
-                #---------------------------------------------------------
-                if (@adjacent_kinases && @adjacent_phosphatases) {
-                    $network_connectivity = 500;
-                }
-            }
-
+            
             if ($network_connectivity >= 500) {
-                $stats_ref->{network_connected_flag} = 1;
-
                 # exclude proteins not in LG/TG subnet from export
                 my (@lg_subnet, @tg_subnet);   # gene subnets
                 @lg_subnet = map {$_->[0]} $genome_ref->get_connected(key => "genes", ref => $lg_gene_ref);
                 @tg_subnet = map {$_->[0]} $genome_ref->get_connected(key => "genes", ref => $tg_gene_ref);
-                printn "LG protein connects to ".join ",",   (map {$_->get_name} @lg_subnet) if $verbosity >= 1;
-                printn "TG protein connects to ".join ",", (map {$_->get_name} @tg_subnet) if $verbosity >= 1;
+                printn "LG protein connects to ".join ",", (map {$_->get_name} @lg_subnet) if $verbosity > 1;
+                printn "TG protein connects to ".join ",", (map {$_->get_name} @tg_subnet) if $verbosity > 1;
 
                 my @proteins_not_in_subnet = simple_difference([$genome_model_ref->get_genes()], [union(\@lg_subnet, \@tg_subnet)]);
                 map {$_->set_export_flag(0)} @proteins_not_in_subnet;
@@ -447,8 +345,8 @@ use base qw(Scoring);
                 $self->anc_process_species_report("$matlab_work/$genome_name.species.rpt");
                 my @anc_species = $self->anc_get_species();
                 $stats_ref->{num_anc_species} = @anc_species;
-                printn "ANC NUM SPECIES: ".scalar(@anc_species) if $verbosity >= 1;
-                printn "ANC SPECIES: @anc_species" if $verbosity >= 2;
+                printn "ANC NUM SPECIES: ".scalar(@anc_species) if $verbosity > 1;
+                printn "ANC SPECIES: @anc_species" if $verbosity > 2;
 
                 #---------------------------------------------------------
                 # RUN FACILE
@@ -474,11 +372,15 @@ use base qw(Scoring);
                 my $num_domains = @{[$anc_model =~ /\sDomain :/g]};
                 my $num_proteins = @{[$anc_model =~ /Protein :/g]};
                 my $num_rules = @{[$anc_model =~ /CanBindRule :/g]};
-                printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules";
                 $stats_ref->{num_rules} = $num_rules;
+                printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules" if $verbosity > 1;
+                # check that number of species is less than maximum
+                my $species_complexity = 0;
+                if ($stats_ref->{num_anc_species} > $config_ref->{max_species}) {
+                    $species_complexity += 100;
+                }
                 $stats_ref->{complexity} = $num_protodomains + $num_domains + $num_proteins + $num_rules;
-                $stats_ref->{complexity_score} = n_hill($stats_ref->{complexity}, 100, 1);
-
+                $stats_ref->{complexity_score} = n_hill(($stats_ref->{complexity} + $species_complexity), 100, 1);
                 #---------------------------------------------------------
                 # CHECK ANC/FACILE MODEL
                 #---------------------------------------------------------
@@ -489,13 +391,8 @@ use base qw(Scoring);
                 $stats_ref->{num_reactions_tg_1} = $num_reactions_tg_1;
                 $network_connectivity += 100 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
                 $network_connectivity += 100 * ($num_reactions_tg_0 > 1 ? 1 : $num_reactions_tg_0);
-
-                # check that number of species is less than maximum
-                if ($stats_ref->{num_anc_species} < $config_ref->{max_species}) {
-                    $network_connectivity += 100;   # didn't go over max no. of species
-                }
             }
-            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 800) ? 1 : 0;
+            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 700) ? 1 : 0;
 
             #########################################################################################
             #---------------------------------------------------------
@@ -506,7 +403,6 @@ use base qw(Scoring);
             $stats_ref->{sim_flag} = 0;
             if ($ANC_ok_flag) {
                 $stats_ref->{sim_flag} = 1;
-
                 #---------------------------------------------------------
                 # RUN MATLAB SIM
                 #---------------------------------------------------------
@@ -550,6 +446,8 @@ use base qw(Scoring);
                 #########################################################################
                 #---------------------------------------------------------
                 # SCORE STEADY STATE
+                # Should be better if we caculate all event_times's delays
+                # and add them togethoer
                 #---------------------------------------------------------
                 printn "computing steady-state slopes...";
 
@@ -662,12 +560,12 @@ use base qw(Scoring);
                     my @output_vector_slopes = map {$output_vector[$_] - $output_vector[$_-1]} (1..$#output_vector);
                     my $LG_steps = $config_ref->{LG_steps};
                     confess "ERROR: LG_steps must be odd" if (int $LG_steps/2) == ($LG_steps/2);
-                    #		my $dy1  = max_numeric(0, $output_vector_slopes[$i_dy2_bottom-1]);
+                    #my $dy1  = max_numeric(0, $output_vector_slopes[$i_dy2_bottom-1]);
                     my $dy2  = max_numeric(0, $output_vector_slopes[$i_dy2_top-1]);
-                    #		my $dy3  = max_numeric(0, $output_vector_slopes[$i_dy2_top]);
-                    #		my $dy1n = max_numeric(0, -$output_vector_slopes[$i_dy2n_bottom]);
+                    #my $dy3  = max_numeric(0, $output_vector_slopes[$i_dy2_top]);
+                    #my $dy1n = max_numeric(0, -$output_vector_slopes[$i_dy2n_bottom]);
                     my $dy2n = max_numeric(0, -$output_vector_slopes[$i_dy2n_top]);
-                    #		my $dy3n = max_numeric(0, -$output_vector_slopes[$i_dy2n_top-1]);
+                    #my $dy3n = max_numeric(0, -$output_vector_slopes[$i_dy2n_top-1]);
 
                     my ($dy1_min, $dy1_max)   = $self->matlab_get_state_range(
                         complex => $output_complex,

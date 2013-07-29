@@ -76,12 +76,6 @@ use base qw(Model);
 #	$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
     }
     
-    sub DEMOLISH {
-        my $self = shift;
-
-        printn "Genome is detroyed.\n" if $verbosity > 3;
-    }
-
     #===  FUNCTION  ================================================================
     #         NAME: static_analyse
     #      PURPOSE: anaylse the static information of genome and network
