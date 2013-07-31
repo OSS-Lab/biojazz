@@ -626,14 +626,14 @@ use base qw();
         open my $data_file, ">> $file_name" or die "$file_name: $!";
         my $csv = Text::CSV->new({binary => 1, eol => "\n"});
 
-        my $second_attribute;
+        my $second_attribute = 'Population/MutationSteps';
         if ($config_ref->{selection_method} eq "kimura_selection") {
-            my $second_attribute = "Mutation steps";
+            $second_attribute = 'Mutation_steps';
         } elsif ($config_ref->{selection_method} eq "population_based_selection") {
-            my $second_attribute = "Population per mutant"
+            $second_attribute = 'Population_per_mutant';
         }
  
-        my @attribute_names_new = ('Name', $second_attribute, 'Mutations', 'Point mutations', @genome_attribute_names);
+        my @attribute_names_new = ('Name', $second_attribute, 'Mutations', 'Point_mutations', @genome_attribute_names);
         $csv->print($data_file, \@attribute_names_new);
 
         close($data_file) || warn "close failed: $!";
