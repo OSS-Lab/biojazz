@@ -324,7 +324,7 @@ use base qw();
             exit(1);
         }
 
-        printn "@scores";
+        printn "@scores" if $verbosity > 1;
 
         my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
         my $defined_local_dir = (defined $local_dir ? $local_dir : "");
@@ -432,6 +432,7 @@ use base qw();
 
         my $mutation_rate = $config_ref->{mutation_rate};
         my @genome_model_refs = $current_generation_ref->get_elements();
+        printn "MUTATION: mutating the $current_generation_number th generation.";
 
         foreach my $genome_ref (@genome_model_refs) {
             my $parent_name = $genome_ref->get_name();
@@ -439,7 +440,7 @@ use base qw();
             for (my $i = 0; $i < $population; $i++) {
                 if (rand(1) < $mutation_rate) {
                     my $child_ref = $genome_ref->duplicate();
-                    printn "MUTATION: mutating genome $parent_name." if $verbosity >= 1;
+                    printn "MUTATION: mutating genome $parent_name.";
                     my $mutation_count = $child_ref->mutate(
                         mutation_rate_params => $config_ref->{mutation_rate_params},
                         mutation_rate_global => $config_ref->{mutation_rate_global},
@@ -456,7 +457,7 @@ use base qw();
                         $child_ref->set_elite_flag(0);
                         $child_ref->set_number(1);
                         $current_generation_ref->add_element($child_ref);
-                        printn "MUTATION: new genotype appear, mutated from $parent_name." if $verbosity >= 1;
+                        printn "MUTATION: new genotype appear, mutated from $parent_name.";
                         $genome_ref->set_number($population - 1);
                     } else {
                         $child_ref->DEMOLISH();
@@ -518,9 +519,9 @@ use base qw();
             my @wait_list = intersection(\@busy_list, \@used_list);
             printn "score_current_generation: waiting on nodes... @wait_list";
             last if (@wait_list == 0);
-            sleep 5;		# poll again in 5 seconds....
+            sleep 10;		# poll again in 10 seconds....
         }
-        printn"score_current_generation: done waiting on nodes...";
+        printn"score_current_generation: done waiting on nodes!";
     }
 
 
@@ -542,7 +543,7 @@ use base qw();
 
         my $temp_generation_ref = Generation->new({});
 
-        printn "create_next_generation: selecting generation $current_generation_number";
+        printn "create_next_generation: selecting from generation $current_generation_number";
 
         # check scores to make sure defined and positive
         my @scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
@@ -711,7 +712,7 @@ use base qw();
         my $removal_files = sprintf("$obj_dir/G%03d_I*.obj", $generation_number);
 
         `rm -f $removal_files`;
-        printn "Removed genome files of the $generation_number th generation" if $verbosity > 1;
+        printn "Removing genome files of the $generation_number th generation" if $verbosity > 1;
 
         return 1;
     } ## --- end sub clear_pre_gen

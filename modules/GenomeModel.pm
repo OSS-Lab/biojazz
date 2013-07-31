@@ -627,7 +627,7 @@ use base qw(Model);
         my $post_junk_length = $genome_ref->get_field_length("POST_JUNK");
         my $post_junk_stop = $genome_ref->get_field_stop("POST_JUNK");
 
-        printn "terminate_genome: setting all bits from position $last_stop_locus to $post_junk_stop";
+        printn "terminate_genome: setting all bits from position $last_stop_locus to $post_junk_stop" if $verbosity >= 1;
         my $last_stop = "1" x $last_stop_length;
         $last_gene_ref->set_field("STOP_CODE", $last_stop);
         my $post_junk = "1" x $post_junk_length;
@@ -723,7 +723,7 @@ use base qw(Model);
         my $genes_rate = $genome_parser_ref->get_field_mutation_rate("genes");
         $genome_parser_ref->set_field_mutation_rate("genes", 0.0);
         my $mutated_junk_bits = $self->get_genome()->mutate($mutation_rate);
-        printn "mutated $mutated_junk_bits bits in junk dna";
+        printn "mutated $mutated_junk_bits bits in junk dna" if $verbosity >= 1;
         # now mutate genes themselves, restoring saved rate
         $genome_parser_ref->set_field_mutation_rate("genes", $genes_rate);
         return $self->mutate_genes($mutation_rate);
@@ -820,7 +820,7 @@ use base qw(Model);
             my $gene_stop = $gene_ref->get_stop_locus();
             my $gene_length = $gene_ref->get_length();
             if (defined $gene_ref) {
-                printn "erase_gene: erasing $gene_name start=$gene_start stop=$gene_stop" if $verbosity > 2;
+                printn "erase_gene: erasing $gene_name start=$gene_start stop=$gene_stop" if $verbosity >= 1;
             } else {
                 printn "ERROR: erase_gene -- no such gene $gene_name";
                 exit(1);
@@ -848,7 +848,7 @@ use base qw(Model);
             my $gene_stop = $gene_ref->get_stop_locus();
             my $gene_length = $gene_ref->get_length();
             if (defined $gene_ref) {
-                printn "delete_gene: deleting $gene_name start=$gene_start stop=$gene_stop" if $verbosity > 2;
+                printn "delete_gene: deleting $gene_name start=$gene_start stop=$gene_stop" if $verbosity >= 1;
             } else {
                 printn "ERROR: delete_gene -- no such gene $gene_name";
                 exit(1);
@@ -1116,7 +1116,7 @@ use base qw(Model);
         my @gene1_interpds = sort {$a <=> $b} ($gene1_rand0, $gene1_rand1);
         my @gene2_interpds = sort {$a <=> $b} ((int rand($gene2_num_pds + 1)), (int rand($gene2_num_pds + 1)));
 
-        printn "recombine_genes: recombining $gene1_name($gene1_index, $gene1_num_pds protodomains) and $gene2_name($gene2_index, $gene2_num_pds protodomains)" if $verbosity > 1;
+        printn "recombine_genes: recombining $gene1_name($gene1_index, $gene1_num_pds protodomains) and $gene2_name($gene2_index, $gene2_num_pds protodomains)" if $verbosity >= 1;
         printn "recombine_genes: $gene1_name sequence = " . $gene1_ref->get_sequence() if $verbosity > 1;
         printn "recombine_genes: $gene2_name sequence = " . $gene2_ref->get_sequence() if $verbosity > 1;
 
@@ -1257,12 +1257,12 @@ use base qw(Model);
             my $gene_duplication_count = 0;
             foreach my $gene_name (@gene_names) {
                 if ( rand() < $gene_duplication_rate ) {
-                    printn "mutate: GENE_DUPLICATION" if $verbosity >= 1;
+                    printn "MUTATION: GENE_DUPLICATION" if $verbosity >= 1;
                     my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene($gene_name);
 
                     my $duplicate_name = sprintf("G%04d",$duplicate_start);
                     my $history = "DUPLICATION of gene $duplicated_gene"; 
-                    printn $history if $verbosity >= 1;
+                    printn $history if $verbosity > 1;
                     $self->add_history($history);
 
                     # post-mutation parsing
@@ -1283,7 +1283,7 @@ use base qw(Model);
         if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
             for (my $i = 0; $i < $num_genes; $i ++) {
                 if (rand() < $recombination_rate) {
-                    printn "mutate: RECOMBINATION" if $verbosity >= 1;
+                    printn "MUTATION: RECOMBINATION" if $verbosity >= 1;
                     my $gene1_index = int rand $num_genes;
                     my $gene2_index;
                     do {
@@ -1293,7 +1293,7 @@ use base qw(Model);
                     my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
                     my $recombinatory_start = $self->recombine_genes($gene1_index, $gene2_index);
                     my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
-                    printn $history if $verbosity >= 1;
+                    printn $history if $verbosity > 1;
                     $self->add_history($history);
 
                     # post-mutation parsing
@@ -1405,7 +1405,7 @@ use base qw(Model);
                         $self->delete_gene($gene_need_delete);
                         my $deleted_gene_name = $gene_need_delete->get_name();
                         my $history = "DELETION of gene $deleted_gene_name";
-                        printn $history if $verbosity >= 1;
+                        printn $history if $verbosity > 1;
                         $self->add_history($history);
 
                         # post-mutation parsing
@@ -1428,7 +1428,7 @@ use base qw(Model);
                             my $deleted_gene_ref = $self->erase_random_gene();
                             my $deleted_gene_name = $deleted_gene_ref->get_name();
                             my $history = "ERASION of gene $deleted_gene_name";
-                            printn $history if $verbosity >= 1;
+                            printn $history if $verbosity > 1;
                             $self->add_history($history);
 
                             # post-mutation parsing
@@ -1454,7 +1454,7 @@ use base qw(Model);
                             my $deleted_gene_ref = $self->delete_random_gene();
                             my $deleted_gene_name = $deleted_gene_ref->get_name();
                             my $history = "DELETION of gene $deleted_gene_name";
-                            printn $history if $verbosity >= 1;
+                            printn $history if $verbosity > 1;
                             $self->add_history($history);
 
                             # post-mutation parsing

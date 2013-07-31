@@ -75,13 +75,13 @@ use base qw(Scoring);
         if ($elite_flag) {
             printn "Ultrasensitive::score_genome elite individual already scored, previous score=$stats_ref->{score}";
             return if ($config_ref->{rescore_elite} == 0);
-            printn "Ultrasensitive::score_genome re-scoring elite individual";
+            printn "Ultrasensitive::score_genome re-scoring elite individual" if $verbosity > 1;
 
             # Should clear stats in the evolution to prevent stats loss when rescore genomes.
             # $genome_model_ref->clear_stats(preserve => ["created_kinase", "created_phosphatase"]);
             $stats_ref->{score} = 0;
         } else {
-            printn "Ultrasensitive::score_genome scoring non-elite individual...";
+            printn "Ultrasensitive::score_genome scoring non-elite individual..." if $verbosity > 1;
  
             # Should clear stats in the evolution to prevent stats loss when rescore genomes.
             # $genome_model_ref->clear_stats(preserve => ["created_kinase", "created_phosphatase"]);
@@ -122,7 +122,7 @@ use base qw(Scoring);
                     },
                 ],
             });
-        printn "lg_sequence=".$lg_sequence_ref->get_sequence() if $verbosity >= 2;
+        printn "lg_sequence=".$lg_sequence_ref->get_sequence() if $verbosity > 1;
         my $tg_sequence_ref = $genome_model_ref->get_gene_parser_ref()->create_sequence({
                 START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
                 regulated_concentration => $config_ref->{TG_init}, # all-zeroes
@@ -154,7 +154,7 @@ use base qw(Scoring);
                     },
                 ],
             });
-        printn "tg_sequence=".$tg_sequence_ref->get_sequence() if $verbosity >= 2;
+        printn "tg_sequence=".$tg_sequence_ref->get_sequence() if $verbosity > 1;
 
         #---------------------------------------------------------
         # STIMULUS/SAMPLING EQUATIONS
@@ -188,7 +188,7 @@ use base qw(Scoring);
         my ($lg_source_eqn, $lg_sink_eqn) = @{$stimulus_ref->{equations}};
         my @stimulus_event_times = @{$stimulus_ref->{events}};
         my @stimulus_values_list = @{$stimulus_ref->{values}};
-        if ($verbosity >= 2) {
+        if ($verbosity > 1) {
             printn "Stimulus:";
             printn $lg_source_eqn;
             printn $lg_sink_eqn;
@@ -214,7 +214,7 @@ use base qw(Scoring);
         my $parse_successful = $stats_ref->{parse_successful} = $genome_model_ref->check();
 
         my $history = $genome_model_ref->sprint_history(10);
-        printn $history if $verbosity >= 2 || $config_ref->{sprint_history};
+        printn $history if $verbosity > 1 || $config_ref->{sprint_history};
 
         #############################################################################
         my $network_connectivity = $stats_ref->{network_connectivity} = 0;
@@ -406,7 +406,7 @@ use base qw(Scoring);
                 #---------------------------------------------------------
                 # RUN MATLAB SIM
                 #---------------------------------------------------------
-                printn "Ultrasensitive::score_genome: running matlab driver...";
+                printn "Ultrasensitive::score_genome: running matlab driver..." if $verbosity > 1;
                 my $matlab_ref = $self->get_matlab_ref();
                 $matlab_ref->cmd("clear all; ${genome_name}Driver");
                 $matlab_ref->wait_on("Facile.*done");
@@ -449,7 +449,7 @@ use base qw(Scoring);
                 # Should be better if we caculate all event_times's delays
                 # and add them togethoer
                 #---------------------------------------------------------
-                printn "computing steady-state slopes...";
+                printn "computing steady-state slopes..." if $verbosity > 1;
 
                 my $steady_state_threshold = $config_ref->{steady_state_threshold};
                 $stats_ref->{steady_state_score} = n_hill(
@@ -458,7 +458,7 @@ use base qw(Scoring);
                 #---------------------------------------------------------
                 # REPORT RESULT VECTOR
                 #---------------------------------------------------------
-                printn "RESULT VECTOR: INPUT = LG OUTPUT = TG00001 DELAY = $config_ref->{LG_delay}";
+                printn "RESULT VECTOR: INPUT = LG OUTPUT = TG00001 DELAY = $config_ref->{LG_delay}" if $verbosity > 1;
                 my (@pos_output_vector, @neg_output_vector, @expected_output_vector);
 
                 my @sampling_times = @event_times;
@@ -488,7 +488,7 @@ use base qw(Scoring);
                     }
 
                     printf("RESULT VECTOR:  t=%-6.2f input vector:  %8.4g pos_output_vector: %8.6g neg_output_vector: %8.6g (expected = %8.4g)\n",
-                        $t, $input_vector[$i], $pos_output_vector[$i], $neg_output_vector[$i], $expected_output_vector[$i]);
+                        $t, $input_vector[$i], $pos_output_vector[$i], $neg_output_vector[$i], $expected_output_vector[$i]) if $verbosity > 1;
                 }
 
                 if (!$timeout_flag) {
@@ -499,7 +499,6 @@ use base qw(Scoring);
                     my $i_dy2_top    = ($config_ref->{LG_steps}+1)/2; # index at top of middle step
                     my $i_dy2n_bottom = $#sampling_times - ($config_ref->{LG_steps}-1)/2;   # index at bottom of middle step
                     my $i_dy2n_top    = $#sampling_times - ($config_ref->{LG_steps}+1)/2;   # index at top of middle step
-                    #printn "XXX $i_dy2_bottom $i_dy2_top $i_dy2n_bottom $i_dy2n_top";
                     my $t_bottom = $sampling_times[$i_dy2_bottom];
                     my $t_top = $sampling_times[$i_dy2_top];
                     my $t_bottom_n = $sampling_times[$i_dy2n_bottom];
@@ -527,8 +526,8 @@ use base qw(Scoring);
                         printn "\nWARNING: pos_delta and neg_delta are both zero or negative\n";
                         $stats_ref->{sim_flag} = 0;
                     }
-                    printn "pos_output_select = $pos_output_select";
-                    printn "pos_delta = $pos_delta, neg_delta = $neg_delta";
+                    printn "pos_output_select = $pos_output_select" if $verbosity > 1;
+                    printn "pos_delta = $pos_delta, neg_delta = $neg_delta" if $verbosity > 1;
                     my @output_vector = $pos_output_select ? @pos_output_vector : @neg_output_vector;
 
                     #---------------------------------------------------------
@@ -587,15 +586,15 @@ use base qw(Scoring);
                         t1 => $sampling_times[$i_dy2n_top-1],
                         t2 => $sampling_times[$i_dy2n_top],
                     );
-                    printn "dy1_min/max = ($dy1_min, $dy1_max) dy1n_min/max = ($dy1n_min, $dy1n_max)";
-                    printn "dy3_min/max = ($dy3_min, $dy3_max) dy3n_min/max = ($dy3n_min, $dy3n_max)";
+                    printn "dy1_min/max = ($dy1_min, $dy1_max) dy1n_min/max = ($dy1n_min, $dy1n_max)" if $verbosity > 1;
+                    printn "dy3_min/max = ($dy3_min, $dy3_max) dy3n_min/max = ($dy3n_min, $dy3n_max)" if $verbosity > 1;
                     my $dy1 =  $dy1_max  - $dy1_min;
                     my $dy1n = $dy1n_max - $dy1n_min;
                     my $dy3 =  $dy3_max  - $dy3_min;
                     my $dy3n = $dy3n_max - $dy3n_min;
 
-                    printn "dy1 = $dy1 dy2 = $dy2 dy3 = $dy3";
-                    printn "dy1n = $dy1n dy2n = $dy2n dy3n=$dy3n";
+                    printn "dy1 = $dy1 dy2 = $dy2 dy3 = $dy3" if $verbosity > 1;
+                    printn "dy1n = $dy1n dy2n = $dy2n dy3n=$dy3n" if $verbosity > 1;
 
                     my $max_dy = $config_ref->{TG_init};
 
