@@ -39,6 +39,8 @@ use base qw(Model);
     my %score_of       :ATTR(get => 'score', set => 'score', default => 0);
     my %elite_flag_of  :ATTR(get => 'elite_flag', set => 'elite_flag', default => 0);
 
+    my %mutations_of    :ATTR(get => 'mutations', set => 'mutations', default => 0);
+    my %point_mutations_of    :ATTR(get => 'point_mutations', set => 'point_mutations', default => 0);
 #    my %cell_volume_of :ATTR(get => 'cell_volume', set => 'cell_volume');
 
     #######################################################################################
@@ -72,7 +74,8 @@ use base qw(Model);
         $number_of{$obj_ID} = 1;
         $score_of{$obj_ID} = 0;
         $elite_flag_of{$obj_ID} = 0;
-
+        $mutations_of{$obj_ID} = 0;
+        $point_mutations_of{$obj_ID} = 0;
 #	$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
     }
     
@@ -1474,6 +1477,7 @@ use base qw(Model);
             exit;
         }
  
+        my $point_mutation_count;
  
         ########################
         if ($mutation_rate_params > 0.0 && $mutation_rate_params <= 1.0)  # mutate parameters
@@ -1491,7 +1495,7 @@ use base qw(Model);
 
             # post-mutation parsing
             $self->parse();
-            $mutation_count += $total_bits;
+            $point_mutation_count += $total_bits;
         }
         elsif ($mutation_rate_params != 0.0) 
         {
@@ -1516,7 +1520,7 @@ use base qw(Model);
 
             # post-mutation parsing
             $self->parse();
-            $mutation_count += $total_bits;
+            $point_mutation_count += $total_bits;
         }
         elsif ($mutation_rate_global != 0.0) 
         {
@@ -1524,8 +1528,10 @@ use base qw(Model);
             exit;
         }
         $self->check();
- 
 
+        $mutation_count += $point_mutation_count;
+        $self->set_mutations($mutation_count);
+        $self->set_point_mutations($point_mutation_count);
         return $mutation_count;
     }
 

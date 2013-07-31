@@ -626,7 +626,14 @@ use base qw();
         open my $data_file, ">> $file_name" or die "$file_name: $!";
         my $csv = Text::CSV->new({binary => 1, eol => "\n"});
 
-        my @attribute_names_new = ('genome_name', 'population/mutants', @genome_attribute_names);
+        my $second_attribute;
+        if ($config_ref->{selection_method} eq "kimura_selection") {
+            my $second_attribute = "Mutation steps";
+        } elsif ($config_ref->{selection_method} eq "population_based_selection") {
+            my $second_attribute = "Population per mutant"
+        }
+ 
+        my @attribute_names_new = ('Name', $second_attribute, 'Mutations', 'Point mutations', @genome_attribute_names);
         $csv->print($data_file, \@attribute_names_new);
 
         close($data_file) || warn "close failed: $!";
@@ -663,17 +670,12 @@ use base qw();
         my $csv = Text::CSV->new({binary => 1, eol => "\n"});
 
         my @attributes;
-        my $second_attribute = "Population/Mutants";
-        if ($config_ref->{selection_method} eq "kimura_selection") {
-            my $second_attribute = "Mutation steps";
-        } elsif ($config_ref->{selection_method} eq "population_based_selection") {
-            my $second_attribute = "Population per mutant"
-        }
-        my @attribute_names_new = ("Name", $second_attribute, @genome_attribute_names);
         for (my $i=0; $i < @genomes; $i++) {
             my $genome_ref = $genomes[$i];
             push(@attributes, $genome_ref->get_name());
             push(@attributes, $genome_ref->get_number());
+            push(@attributes, $genome_ref->get_mutations());
+            push(@attributes, $genome_ref->get_point_mutations());
             # Here, we output each genome stats into a line 
             # of CSV file
             for (my $j = 0; $j < scalar @genome_attribute_names; $j++) {
