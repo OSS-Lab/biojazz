@@ -452,8 +452,13 @@ use base qw(Scoring);
                 printn "computing steady-state slopes..." if $verbosity > 1;
 
                 my $steady_state_threshold = $config_ref->{steady_state_threshold};
+                my @substr_times = ($event_times[1]);
+                for (my $i = 2; $i < @event_times; $i++) {
+                   push(@substr_times, $event_times[$i] - $event_times[$i - 1]);
+                }
+                my $ss_time_max = max @substr_times;
                 $stats_ref->{steady_state_score} = n_hill(
-                    $event_times[1], $steady_state_threshold,1);
+                    $ss_time_max, $steady_state_threshold,1);
 
                 #---------------------------------------------------------
                 # REPORT RESULT VECTOR
