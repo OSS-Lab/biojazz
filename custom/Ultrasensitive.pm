@@ -78,13 +78,13 @@ use base qw(Scoring);
             printn "Ultrasensitive::score_genome re-scoring elite individual" if $verbosity > 1;
 
             # Should clear stats in the evolution to prevent stats loss when rescore genomes.
-            # $genome_model_ref->clear_stats(preserve => ["created_kinase", "created_phosphatase"]);
+            $genome_model_ref->clear_stats();
             $stats_ref->{score} = 0;
         } else {
             printn "Ultrasensitive::score_genome scoring non-elite individual..." if $verbosity > 1;
  
             # Should clear stats in the evolution to prevent stats loss when rescore genomes.
-            # $genome_model_ref->clear_stats(preserve => ["created_kinase", "created_phosphatase"]);
+            $genome_model_ref->clear_stats();
             $stats_ref->{score} = 0;
         }
 
@@ -373,7 +373,7 @@ use base qw(Scoring);
                 my $num_proteins = @{[$anc_model =~ /Protein :/g]};
                 my $num_rules = @{[$anc_model =~ /CanBindRule :/g]};
                 $stats_ref->{num_rules} = $num_rules;
-                printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules" if $verbosity > 1;
+                printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules" if $verbosity >= 1;
                 # check that number of species is less than maximum
                 my $species_complexity = 0;
                 if ($stats_ref->{num_anc_species} > $config_ref->{max_species}) {
