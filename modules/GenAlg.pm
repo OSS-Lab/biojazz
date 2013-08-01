@@ -204,8 +204,13 @@ use base qw();
                     $genome_model_ref->clear_stats(preserve => []);
                     $genome_model_ref->set_score(undef);
                     $genome_model_ref->set_elite_flag(0);
-                    $genome_model_ref->set_number(1);
-
+                    if ($config_ref->{selection_method} eq "kimura_selection") {
+                        $genome_model_ref->set_number(0);
+                    } elsif ($config_ref->{selection_method} eq "population_based_selection") {
+                        $genome_model_ref->set_number(1);
+                    } else {
+                        confess "The selection method is not set appropriately!";
+                    }
                     $scoring_ref->score_genome($genome_model_ref);
                     $genome_model_ref->static_analyse($config_ref->{rescore_elite});
                     $genome_model_ref->set_elite_flag(1);

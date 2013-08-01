@@ -35,7 +35,7 @@ use base qw(Model);
     # simulation parameters
     my %history_ref_of :ATTR(get => 'history_ref', set => 'history_ref');
     my %stats_ref_of   :ATTR(get => 'stats_ref', set => 'stats_ref');
-    my %number_of       :ATTR(get => 'number', set => 'number', default => 1);
+    my %number_of       :ATTR(get => 'number', set => 'number', default => 0);
     my %score_of       :ATTR(get => 'score', set => 'score', default => 0);
     my %elite_flag_of  :ATTR(get => 'elite_flag', set => 'elite_flag', default => 0);
 
@@ -71,7 +71,7 @@ use base qw(Model);
         # INIT
         $history_ref_of{$obj_ID} = [];
         $stats_ref_of{$obj_ID} = {};
-        $number_of{$obj_ID} = 1;
+        $number_of{$obj_ID} = 0;
         $score_of{$obj_ID} = 0;
         $elite_flag_of{$obj_ID} = 0;
         $mutations_of{$obj_ID} = 0;
