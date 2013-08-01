@@ -1045,6 +1045,37 @@ END
                         },
                     ],
                 },
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 0.1, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.0,
+                            TR_transition_rate => 1.0,
+                            RT_phi => 0.0,
+                            protodomains => [
+                                {
+                                    type => "csite",
+                                    substrate_polarity => 1,
+                                    binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
+                                    kf_profile => "11111100111111001110",
+                                    kb_profile => "11000000110000001000",
+                                    kp_profile => "11111100111111001110",
+                                    Keq_ratio => 2.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "0",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
             ],
         });
     printn "sequence=".$sequence_ref->get_sequence();
