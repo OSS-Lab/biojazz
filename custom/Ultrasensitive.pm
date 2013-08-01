@@ -368,13 +368,13 @@ use base qw(Scoring);
                 #       simple networks !!!! 
                 #       1/(1+(complexity/100))
                 #---------------------------------------------------------
-                my @protodomains = $anc_model =~ /ReactionSite/gi;
-                my @domains = $anc_model =~ /AllostericStructure/gi;
-                my @proteins = $anc_model =~ /Structure/gi;
-                my @rules = $anc_model =~ /CanBindRule/gi;
+                my @protodomains = $anc_model =~ /ReactionSite :/g;
+                my @domains = $anc_model =~ /AllostericStructure :/g;
+                my @proteins = $anc_model =~ /Structure :/g;
+                my @rules = $anc_model =~ /CanBindRule :/g;
                 my $num_protodomains = scalar @protodomains;
                 my $num_domains = scalar @domains;
-                my $num_proteins = scalar @proteins;
+                my $num_proteins = scalar @proteins - $num_domains;
                 my $num_rules = scalar @rules;
                 $stats_ref->{num_rules} = $num_rules;
                 printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules" if $verbosity >= 1;
