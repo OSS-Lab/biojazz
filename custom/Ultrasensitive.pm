@@ -266,7 +266,7 @@ use base qw(Scoring);
             # SCORING: 90 + 400 pts -- LG/TG subnets
             #---------------------------------------------------------
             if ($network_connectivity == 2) { # LG/TF connected
-                $stats_ref->{network_connected_flag} = 1;
+                #$stats_ref->{network_connected_flag} = 1;
                 my (@lg_subnet, @tg0_subnet, @tg1_subnet);   # protodomain subnets
                 @lg_subnet = $genome_ref->get_connected(key => "protodomains", ref => $lg_protodomain_ref);
                 @tg0_subnet = $genome_ref->get_connected(key => "protodomains", ref => $tg_protodomain_ref, state => 0);
@@ -368,17 +368,16 @@ use base qw(Scoring);
                 #       simple networks !!!! 
                 #       1/(1+(complexity/100))
                 #---------------------------------------------------------
-                my $num_protodomains = @{[$anc_model =~ /ProtoDomain :/g]};
-                my $num_domains = @{[$anc_model =~ /\sDomain :/g]};
-                my $num_proteins = @{[$anc_model =~ /Protein :/g]};
-                my $num_rules = @{[$anc_model =~ /CanBindRule :/g]};
+                my @protodomains = $anc_model =~ /ReactionSite/g;
+                my @domains = $anc_model =~ /AllostericStructure/g;
+                my @proteins = $anc_model =~ /Structure/g;
+                my @rules = $anc_model =~ /CanBindRule/g;
+                my $num_protodomains = scalar @protodomains;
+                my $num_domains = scalar @domains;
+                my $num_proteins = scalar @proteins;
+                my $num_rules = scalar @rules;
                 $stats_ref->{num_rules} = $num_rules;
                 printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules" if $verbosity >= 1;
-                # check that number of species is less than maximum
-                my $species_complexity = 0;
-                if ($stats_ref->{num_anc_species} > $config_ref->{max_species}) {
-                    $species_complexity += 100;
-                }
                 $stats_ref->{complexity} = $num_protodomains + $num_domains + $num_proteins + $num_rules;
                 $stats_ref->{complexity_score} = n_hill(($stats_ref->{complexity} + $species_complexity), 100, 1);
                 #---------------------------------------------------------
@@ -391,8 +390,12 @@ use base qw(Scoring);
                 $stats_ref->{num_reactions_tg_1} = $num_reactions_tg_1;
                 $network_connectivity += 100 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
                 $network_connectivity += 100 * ($num_reactions_tg_0 > 1 ? 1 : $num_reactions_tg_0);
+                # check that number of species is less than maximum
+                if ($stats_ref->{num_anc_species} > $config_ref->{max_species}) {
+                    $network_connectivity += 100;
+                }
             }
-            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 700) ? 1 : 0;
+            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 800) ? 1 : 0;
 
             #########################################################################################
             #---------------------------------------------------------
@@ -681,13 +684,13 @@ use base qw(Scoring);
             my $ultrasensitivity_score = $stats_ref->{ultrasensitivity_score} || 0;
 
             # don't optimize network_score once the network is connected
-            $final_score =  ($network_score * $g0n + $g0)**$w_n;
+            # $final_score =  ($network_score * $g0n + $g0)**$w_n;
             # optimize complexity only if the network is connected
-            $final_score *= (1e-3    + $complexity_score * $g0)**$w_c;
+            $final_score = (1e-3    + $complexity_score * $g0)**$w_c;
             # optimize amplitude if ANC output ok and no timeout during simulation
             $final_score *= (1e-12  + $amplitude_score * $g1)**$w_a;
 
-            $final_score = $final_score**(1/($w_n + $w_c + $w_a));  # re-normalization
+            $final_score = $final_score**(1/($w_c + $w_a));  # re-normalization
         }
 
 
