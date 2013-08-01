@@ -379,7 +379,7 @@ use base qw(Scoring);
                 $stats_ref->{num_rules} = $num_rules;
                 printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules" if $verbosity >= 1;
                 $stats_ref->{complexity} = $num_protodomains + $num_domains + $num_proteins + $num_rules;
-                $stats_ref->{complexity_score} = n_hill(($stats_ref->{complexity} + $species_complexity), 100, 1);
+                $stats_ref->{complexity_score} = n_hill(($stats_ref->{complexity}), 100, 1);
                 #---------------------------------------------------------
                 # CHECK ANC/FACILE MODEL
                 #---------------------------------------------------------
@@ -391,7 +391,7 @@ use base qw(Scoring);
                 $network_connectivity += 100 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
                 $network_connectivity += 100 * ($num_reactions_tg_0 > 1 ? 1 : $num_reactions_tg_0);
                 # check that number of species is less than maximum
-                if ($stats_ref->{num_anc_species} > $config_ref->{max_species}) {
+                if ($stats_ref->{num_anc_species} < $config_ref->{max_species}) {
                     $network_connectivity += 100;
                 }
             }
@@ -459,7 +459,12 @@ use base qw(Scoring);
                 for (my $i = 2; $i < @event_times; $i++) {
                    push(@substr_times, $event_times[$i] - $event_times[$i - 1]);
                 }
-                my $ss_time_max = max @substr_times;
+                my $ss_time_max = 0;
+                foreach my $ss_time (@substr_times) {
+                    if ($ss_time_max < $ss_time) {
+                        $ss_time_max = $ss_time;
+                    }
+                }
                 $stats_ref->{steady_state_score} = n_hill(
                     $ss_time_max, $steady_state_threshold,1);
 
@@ -748,7 +753,7 @@ work_dir = ultrasensitive
 # Scaling: all concentrations in uM, all 2nd-order rates in uM^-1 s^-1
 
 # Genome class
-radius = 3
+radius = 2
 kf_max = 1e3    # uM^-1 s^-1
 kf_min = 1e-3
 kb_max = 1e3
@@ -789,8 +794,8 @@ Keq_ratio_min = 1e-2
 #----------------------------------------
 max_external_iterations = -1
 max_internal_iterations = -1
-max_complex_size = 4
-max_species = 80
+max_complex_size = 8
+max_species = 256
 max_csite_bound_to_msite_number = 1
 default_max_count = 2          # this prevents polymerization (see ANC manual)
 default_steric_factor = 1e3    # in micro-mol/L
@@ -831,12 +836,12 @@ amplitude_threshold = 0.01      # absolute measure of amplitude
 ultrasensitivity_threshold = 5  # ratio of 2nd step over 1st step
 
 w_n = 1.0
-w_c = 0.1
-#w_s = 0.1
+w_c = 1.0
+w_s = 1.0
 w_a = 1.0
 w_u = 1.0
 w_u1 = 1.0
-w_u3 = 0.1
+w_u3 = 1.0
 
 LG_range = 10          # uM (about 6 molecules in 1e-18L vol ???)
 LG_delay = ~
@@ -851,11 +856,11 @@ stimulus = ss_ramp_equation
 hill_n = 40
 hill_k = 5
 
-TG_init = 1  # uM
+TG_init = 1000  # uM
 cell_volume = 1e-18             # 1e-18L --> sub-cellular volume
 
-lg_binding_profile = 0101001110
-tg_binding_profile = 1010001110
+lg_binding_profile = 0110011010
+tg_binding_profile = 1011101000
 
 END
 
@@ -928,7 +933,7 @@ END
                     UNUSED => "0000",
                     domains => [
                         {
-                            allosteric_flag => 0,
+                            allosteric_flag => 1,
                             RT_transition_rate => 1.00,
                             TR_transition_rate => 1.00,
                             RT_phi => 1.0,
@@ -951,10 +956,10 @@ END
                                 {
                                     type => "csite",
                                     substrate_polarity => 0,
-                                    binding_profile => "0011101110",
-                                    kf_profile => "11111100111111001110",
-                                    kb_profile => "11000000110000001000",
-                                    kp_profile => "11111100111111001110",
+                                    binding_profile => "0101111111",
+                                    kf_profile => "11101101111101100000",
+                                    kb_profile => "10010101100001100111",
+                                    kp_profile => "11110000010000110010",
                                     Keq_ratio => 1.0,
                                     kf_polarity_mask => "0",
                                     kb_polarity_mask => "0",
@@ -974,7 +979,7 @@ END
                     UNUSED => "0000",
                     domains => [
                         {
-                            allosteric_flag => 0,
+                            allosteric_flag => 1,
                             RT_transition_rate => 1.00,
                             TR_transition_rate => 1.00,
                             RT_phi => 1.0,
@@ -982,14 +987,14 @@ END
                                 {
                                     type => "msite",
                                     substrate_polarity => 0,
-                                    binding_profile => BindingProfile->binding_complement("0011101110")->sprint(),
-                                    kf_profile => "00010010010010001000",
-                                    kb_profile => "11000000110000001000",
-                                    kp_profile => "00011111000111110011",
+                                    binding_profile => BindingProfile->binding_complement("0101111111")->sprint(),
+                                    kf_profile => "01111111010110111000",
+                                    kb_profile => "10011001111111001000",
+                                    kp_profile => "01110100110011000011",
                                     Keq_ratio => 1.0,
                                     kf_polarity_mask => "0",
                                     kb_polarity_mask => "0",
-                                    kf_conformation_mask => "11111100111111001110",
+                                    kf_conformation_mask => "11101101111111111000",
                                     kb_conformation_mask => "0",
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
@@ -998,9 +1003,9 @@ END
                                     type => "csite",
                                     substrate_polarity => 0,
                                     binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
-                                    kf_profile => "11111100111111001110",
-                                    kb_profile => "11000000110000001000",
-                                    kp_profile => "11111100111111001110",
+                                    kf_profile => "11010111000001100000",
+                                    kb_profile => "11101010101110011000",
+                                    kp_profile => "11001011010100010000",
                                     Keq_ratio => 1.0,
                                     kf_polarity_mask => "0",
                                     kb_polarity_mask => "0",
@@ -1028,7 +1033,7 @@ END
                                 {
                                     type => "csite",
                                     substrate_polarity => 1,
-                                    binding_profile => "0011101110",
+                                    binding_profile => "0101111111",
                                     kf_profile => "11111100111111001110",
                                     kb_profile => "11000000110000001000",
                                     kp_profile => "11111100111111001110",
@@ -1060,9 +1065,9 @@ END
                                     type => "csite",
                                     substrate_polarity => 1,
                                     binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
-                                    kf_profile => "11111100111111001110",
-                                    kb_profile => "11000000110000001000",
-                                    kp_profile => "11111100111111001110",
+                                    kf_profile => "11101010101011011010",
+                                    kb_profile => "11001011101111100000",
+                                    kp_profile => "11000001010101111101",
                                     Keq_ratio => 2.0,
                                     kf_polarity_mask => "0",
                                     kb_polarity_mask => "0",
