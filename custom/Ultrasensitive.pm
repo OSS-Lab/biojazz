@@ -368,10 +368,10 @@ use base qw(Scoring);
                 #       simple networks !!!! 
                 #       1/(1+(complexity/100))
                 #---------------------------------------------------------
-                my @protodomains = $anc_model =~ /ReactionSite/g;
-                my @domains = $anc_model =~ /AllostericStructure/g;
-                my @proteins = $anc_model =~ /Structure/g;
-                my @rules = $anc_model =~ /CanBindRule/g;
+                my @protodomains = $anc_model =~ /ReactionSite/gi;
+                my @domains = $anc_model =~ /AllostericStructure/gi;
+                my @proteins = $anc_model =~ /Structure/gi;
+                my @rules = $anc_model =~ /CanBindRule/gi;
                 my $num_protodomains = scalar @protodomains;
                 my $num_domains = scalar @domains;
                 my $num_proteins = scalar @proteins;
