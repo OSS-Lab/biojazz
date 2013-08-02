@@ -626,7 +626,6 @@ use base qw(Scoring);
                         $ultrasensitivity_dy1 = $mean_dy2/($mean_dy1);
                         $ultrasensitivity_dy3 = $mean_dy2/($mean_dy3);
                     }
-                    $stats_ref->{amplitude} = $amplitude;
                     #		$stats_ref->{amplitude_score} = p_hill($amplitude, $config_ref->{amplitude_threshold}, 1);
                     $stats_ref->{amplitude_score} = $amplitude;
                     $stats_ref->{ultrasensitivity_dy1} = $ultrasensitivity_dy1;
