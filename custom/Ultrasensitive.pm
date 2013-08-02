@@ -266,7 +266,6 @@ use base qw(Scoring);
             # SCORING: 90 + 400 pts -- LG/TG subnets
             #---------------------------------------------------------
             if ($network_connectivity == 2) { # LG/TF connected
-                #$stats_ref->{network_connected_flag} = 1;
                 my (@lg_subnet, @tg0_subnet, @tg1_subnet);   # protodomain subnets
                 @lg_subnet = $genome_ref->get_connected(key => "protodomains", ref => $lg_protodomain_ref);
                 @tg0_subnet = $genome_ref->get_connected(key => "protodomains", ref => $tg_protodomain_ref, state => 0);
@@ -305,6 +304,7 @@ use base qw(Scoring);
             }
             
             if ($network_connectivity >= 500) {
+                $stats_ref->{network_connected_flag} = 1;
                 # exclude proteins not in LG/TG subnet from export
                 my (@lg_subnet, @tg_subnet);   # gene subnets
                 @lg_subnet = map {$_->[0]} $genome_ref->get_connected(key => "genes", ref => $lg_gene_ref);
@@ -380,7 +380,7 @@ use base qw(Scoring);
                 printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules" if $verbosity >= 1;
                 $stats_ref->{complexity} = $num_protodomains + $num_domains + $num_proteins + $num_rules;
                 my $complexity_threshold = defined $config_ref->{complexity_threshold} ? $config_ref->{complexity_threshold} : 100;
-                $stats_ref->{complexity_score} = n_hill(($stats_ref->{complexity}), $complexity_threshold, 1);
+                $stats_ref->{complexity_score} = n_hill(($stats_ref->{complexity} - 15), $complexity_threshold, 1);
                 #---------------------------------------------------------
                 # CHECK ANC/FACILE MODEL
                 #---------------------------------------------------------
@@ -664,6 +664,12 @@ use base qw(Scoring);
         # FINAL SCORE
         #---------------------------------------------------------
         my $final_score = 0;
+        my $network_score = $stats_ref->{network_score} = $stats_ref->{network_score} || 0;
+        my $complexity_score = $stats_ref->{complexity_score} = $stats_ref->{complexity_score} || 0;
+        my $steady_state_score = $stats_ref->{steady_state_score} = $stats_ref->{steady_state_score} || 0;
+        my $amplitude_score = $stats_ref->{amplitude_score} = $stats_ref->{amplitude_score} || 0;
+        my $ultrasensitivity_score = $stats_ref->{ultrasensitivity_score} = $stats_ref->{ultrasensitivity_score} || 0;
+
 
         if ($parse_successful) {
             my $w_n = $config_ref->{w_n};
@@ -678,25 +684,21 @@ use base qw(Scoring);
             # ANC network is OK (i.e. max species not reached) and was therefore simulated?
             # Also, no timeout occurred while simulating to steady-state?
             # No strange numerical problems?
-            my $g1  = $stats_ref->{sim_flag} && !$stats_ref->{timeout_flag} && $stats_ref->{sim_flag} ? 1 : 0;
+            my $g1  = !$stats_ref->{timeout_flag} && $stats_ref->{sim_flag} ? 1 : 0;
             # is the output amplitude large enough that the output can be trusted artifact-free?
             my $g3  = $g1 && ($stats_ref->{delta_score} > 0.5) ? 1 : 0;
             my $g3n = !$g3 ? 1 : 0;
 
-            my $network_score = $stats_ref->{network_score} || 0;
-            my $complexity_score = $stats_ref->{complexity_score} || 0;
-            my $steady_state_score = $stats_ref->{steady_state_score} || 0;
-            my $amplitude_score = $stats_ref->{amplitude_score} || 0;
-            my $ultrasensitivity_score = $stats_ref->{ultrasensitivity_score} || 0;
-
             # don't optimize network_score once the network is connected
             # $final_score =  ($network_score * $g0n + $g0)**$w_n;
             # optimize complexity only if the network is connected
-            $final_score = (1e-3    + $complexity_score * $g0)**$w_c;
+            $final_score = (1e-3 + $complexity_score * $g0)**$w_c;
             # optimize amplitude if ANC output ok and no timeout during simulation
-            $final_score *= (1e-12  + $amplitude_score * $g1)**$w_a;
+            $final_score *= (1e-6 + $amplitude_score * $g1)**$w_a;
+            # optimize ultrasensitivity if ANC output ok and no timeout during simulation
+            $final_score *= (1e-6 + $ultrasensitivity_score * $g1)**$w_u;
 
-            $final_score = $final_score**(1/($w_c + $w_a));  # re-normalization
+            $final_score = $final_score**(1/($w_c + $w_a + $w_u));  # re-normalization
         }
 
 
