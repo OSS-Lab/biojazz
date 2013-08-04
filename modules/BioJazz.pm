@@ -144,7 +144,11 @@ sub evolve {
         `echo $config_ref->{work_dir}/$TAG/matlab/*  | xargs rm -f`;
         `echo $config_ref->{work_dir}/$TAG/obj/*     | xargs rm -f`;
         `echo $config_ref->{work_dir}/$TAG/source*   | xargs rm -rf`;
-        `echo $config_ref->{work_dir}/$TAG/stats/*   | xargs rm -rf`;
+        `echo $config_ref->{work_dir}/$TAG/stats/*   | xargs rm -f`;
+        `echo $config_ref->{work_dir}/matlab/G*      | xargs rm -f`;
+        if (defined $config_ref->{local_dir}) {
+            `echo $config_ref->{local_dir}/matlab/G*     | xargs rm -f`;
+        }
         printn "Done removing files.";
     } else {
         printn "Keeping old files in $config_ref->{work_dir}/$TAG";
