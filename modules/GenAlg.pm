@@ -48,6 +48,9 @@ use base qw();
 
     my %current_generation_ref_of :ATTR(get => 'current_generation_ref', set => 'current_generation_ref');
     my %current_generation_number_of :ATTR(get => 'current_generation_number', set => 'current_generation_number');
+    
+    my %score_array_ref_of      :ATTR(get => 'score_array_ref', set => 'score_array_ref');
+    my %index_array_ref_of      :ATTR(get => 'index_array_ref', set => 'index_array_ref');
 
     #######################################################################################
     # FUNCTIONS
@@ -56,6 +59,13 @@ use base qw();
     #######################################################################################
     # CLASS METHODS
     #######################################################################################
+    sub BUILD {
+        my ($self, $objID, $arg_ref) = @_;
+
+        # INIT
+        $score_array_ref_of{$objID} = [];
+        $index_array_ref_of{$objID} = [];
+    }
 
     #######################################################################################
     # INSTANCE METHODS
@@ -200,6 +210,7 @@ use base qw();
                     });
 
                 # reset all score/stats for first generation
+                my $i = 0;
                 foreach my $genome_model_ref (@genome_model_refs) {
                     $genome_model_ref->clear_stats(preserve => []);
                     $genome_model_ref->set_score(undef);
@@ -214,6 +225,12 @@ use base qw();
                     $scoring_ref->score_genome($genome_model_ref);
                     $genome_model_ref->static_analyse($config_ref->{rescore_elite});
                     $genome_model_ref->set_elite_flag(1);
+                    if ($config_ref->selection_method eq 'population_based_selection') {
+                        my $score = $genome_model_ref->get_score();
+                        push @{$score_array_ref_of{$objID}}, $score;
+                        push @{$index_array_ref_of{$objID}}, $i;
+                    }
+                    $i++;
                 }
             }
 
@@ -224,7 +241,7 @@ use base qw();
 
             my $loaded_genome_num = 0;
             foreach my $genome_model_ref (@genome_model_refs) {
-                if (!defined ($genome_model_ref->get_number())) {
+                if (!defined $genome_model_ref->get_number()) {
                     $genome_model_ref->set_number(1);
                 }
                 $loaded_genome_num += $genome_model_ref->get_number();
@@ -237,6 +254,8 @@ use base qw();
                     my $current_number = $genome_model_ref->get_number();
                     $genome_model_ref->set_number($current_number + 1);
                 }
+            } else {
+                confess "The inum is smaller than number of genome loaded for initial generation!";
             }
 
         } else {
