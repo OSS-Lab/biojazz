@@ -38,7 +38,7 @@ use base qw(Model);
     my %number_of       :ATTR(get => 'number', set => 'number', default => 0);
     my %score_of       :ATTR(get => 'score', set => 'score', default => 0);
     my %elite_flag_of  :ATTR(get => 'elite_flag', set => 'elite_flag', default => 0);
-    my %mutation_index_of   :ATTR(get => 'mutation_index', set => 'mutation_index');
+    my %mutation_index_of   :ATTR(get => 'mutation_index', set => 'mutation_index', default => undef);
 
     my %mutations_of    :ATTR(get => 'mutations', set => 'mutations', default => 0);
     my %point_mutations_of    :ATTR(get => 'point_mutations', set => 'point_mutations', default => 0);
@@ -77,6 +77,7 @@ use base qw(Model);
         $elite_flag_of{$obj_ID} = 0;
         $mutations_of{$obj_ID} = 0;
         $point_mutations_of{$obj_ID} = 0;
+        $mutation_index_of{$obj_ID} = undef;
 #	$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
     }
     

@@ -210,7 +210,6 @@ use base qw();
                     });
 
                 # reset all score/stats for first generation
-                my $i = 0;
                 foreach my $genome_model_ref (@genome_model_refs) {
                     $genome_model_ref->clear_stats(preserve => []);
                     $genome_model_ref->set_score(undef);
@@ -225,26 +224,31 @@ use base qw();
                     $scoring_ref->score_genome($genome_model_ref);
                     $genome_model_ref->static_analyse($config_ref->{rescore_elite});
                     $genome_model_ref->set_elite_flag(1);
-                    if ($config_ref->selection_method eq 'population_based_selection') {
-                        my $score = $genome_model_ref->get_score();
-                        push @{$score_array_ref_of{$objID}}, $score;
-                        push @{$index_array_ref_of{$objID}}, $i;
-                    }
-                    $i++;
                 }
             }
 
             my $inum = $config_ref->{inum_genomes};
             if ($config_ref->{selection_method} eq "kimura_selection") {
                 $inum = 1;
+            } elsif ($config_ref->selection_method eq 'population_based_selection') {
+                $inum = $config_ref->{evolve_population};
             }
 
             my $loaded_genome_num = 0;
+            my $i = 0;
             foreach my $genome_model_ref (@genome_model_refs) {
                 if (!defined $genome_model_ref->get_number()) {
                     $genome_model_ref->set_number(1);
                 }
-                $loaded_genome_num += $genome_model_ref->get_number();
+                my $number = $genome_model_ref->get_number();
+                $loaded_genome_num += $number;
+
+                if ($config_ref->{selection_method} eq 'population_based_selection') {
+                    my $score = $genome_model_ref->get_score();
+                    push @{$score_array_ref_of{$obj_ID}}, ($score) x $number;
+                    push @{$index_array_ref_of{$obj_ID}}, ($i) x $number;
+                }
+                $i++;
             }
 
             if ($inum > $loaded_genome_num) {
@@ -253,11 +257,24 @@ use base qw();
                     my $genome_model_ref = $genome_model_refs[$index];
                     my $current_number = $genome_model_ref->get_number();
                     $genome_model_ref->set_number($current_number + 1);
+
+                    if ($config_ref->{selection_method} eq 'population_based_selection') {
+                        my $score = $genome_model_ref->get_score();
+                        push @{$score_array_ref_of{$obj_ID}}, $score;
+                        push @{$index_array_ref_of{$obj_ID}}, $index;
+                    }
                 }
-            } else {
+            } elsif ($inum < $loaded_genome_num) {
                 confess "The inum is smaller than number of genome loaded for initial generation!";
             }
 
+            # check if those two array have the same size as well as with numbers.
+            if ($config_ref->{selection_method} eq 'population_based_selection') {
+                if (scalar @{$score_array_ref_of{$obj_ID}} != scalar @{$index_array_ref_of{$obj_ID}} 
+                    || scalar @{$score_array_ref_of{$obj_ID}} != $config_ref->{evolve_population}) {
+                    confess "The evolve_population is not equal to the size of score array and index array for selection.";
+                }
+            }
         } else {
             printn "create_initial_generation: creating $config_ref->{inum_genomes} individuals";
             $current_generation_ref->create_random_genomes($config_ref);
@@ -297,11 +314,20 @@ use base qw();
             }
 
             my $loaded_genome_num = 0;
+            my $i = 0;
             foreach my $genome_model_ref (@genome_model_refs) {
-                if (!defined ($genome_model_ref->get_number())) {
+                if (!defined $genome_model_ref->get_number()) {
                     $genome_model_ref->set_number(1);
                 }
-                $loaded_genome_num += $genome_model_ref->get_number();
+                my $number = $genome_model_ref->get_number();
+                $loaded_genome_num += $number;
+
+                if ($config_ref->{selection_method} eq 'population_based_selection') {
+                    my $score = $genome_model_ref->get_score();
+                    push @{$score_array_ref_of{$obj_ID}}, ($score) x $number;
+                    push @{$index_array_ref_of{$obj_ID}}, ($i) x $number;
+                }
+                $i++;
             }
 
             if ($population > $loaded_genome_num) {
@@ -310,9 +336,24 @@ use base qw();
                     my $genome_model_ref = $genome_model_refs[$index];
                     my $current_number = $genome_model_ref->get_number();
                     $genome_model_ref->set_number($current_number + 1);
+
+                    if ($config_ref->{selection_method} eq 'population_based_selection') {
+                        my $score = $genome_model_ref->get_score();
+                        push @{$score_array_ref_of{$obj_ID}}, $score;
+                        push @{$index_array_ref_of{$obj_ID}}, $index;
+                    }
                 }
+            } elsif ($population < $loaded_genome_num) {
+                confess "The inum is smaller than number of genome loaded for initial generation!";
             }
 
+            # check if those two array have the same size as well as with numbers.
+            if ($config_ref->{selection_method} eq 'population_based_selection') {
+                if (scalar @{$score_array_ref_of{$obj_ID}} != scalar @{$index_array_ref_of{$obj_ID}} 
+                    || scalar @{$score_array_ref_of{$obj_ID}} != $config_ref->{evolve_population}) {
+                    confess "The evolve_population is not equal to the size of score array and index array for selection.";
+                }
+            }
 
         }
         $current_generation_ref->refresh_individual_names($config_ref->{first_generation});
@@ -458,6 +499,7 @@ use base qw();
         my @genome_model_refs = $current_generation_ref->get_elements();
         printn "MUTATION: mutating the $current_generation_number th generation.";
 
+        my $genotype_num = scalar @genome_model_refs;
         foreach my $genome_ref (@genome_model_refs) {
             my $parent_name = $genome_ref->get_name();
             my $population = $genome_ref->get_number();
@@ -480,9 +522,14 @@ use base qw();
                         $child_ref->clear_stats(preserve => []);
                         $child_ref->set_elite_flag(0);
                         $child_ref->set_number(1);
+                        $child_ref->set_mutation_index($i);
                         $current_generation_ref->add_element($child_ref);
                         printn "MUTATION: new genotype appear, mutated from $parent_name.";
                         $genome_ref->set_number($population - 1);
+                        ${$score_array_ref_of{$obj_ID}}[$i] = 0;
+                        ${$index_array_ref_of{$obj_ID}}[$i] = $genotype_num;
+                        $genotype_num++;
+
                     } else {
                         $child_ref->DEMOLISH();
                     }
