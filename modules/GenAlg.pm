@@ -500,39 +500,39 @@ use base qw();
         printn "MUTATION: mutating the $current_generation_number th generation.";
 
         my $genotype_num = scalar @genome_model_refs;
-        foreach my $genome_ref (@genome_model_refs) {
+        my $population = $config_ref->{evolve_population};
+        for (my $i = 0; $i < $population; $i++) {
+            my $genome_ref = $genome_model_refs[${$index_array_ref_of{$obj_ID}}[$i]];
             my $parent_name = $genome_ref->get_name();
-            my $population = $genome_ref->get_number();
-            for (my $i = 0; $i < $population; $i++) {
-                if (rand(1) < $mutation_rate) {
-                    my $child_ref = $genome_ref->duplicate();
-                    printn "MUTATION: mutating genome $parent_name.";
-                    my $mutation_count = $child_ref->mutate(
-                        mutation_rate_params => $config_ref->{mutation_rate_params},
-                        mutation_rate_global => $config_ref->{mutation_rate_global},
-                        gene_duplication_rate => $config_ref->{gene_duplication_rate},
-                        gene_deletion_rate => $config_ref->{gene_deletion_rate},
-                        domain_duplication_rate => $config_ref->{domain_duplication_rate},
-                        domain_deletion_rate => $config_ref->{domain_deletion_rate},
-                        recombination_rate => $config_ref->{recombination_rate},
-                    );
+            confess "ERROR: The score of $parent_name is UNDEFINED!" if !defined $genome_ref->get_score();
+            if (rand(1) < $mutation_rate) {
+                my $child_ref = $genome_ref->duplicate();
+                printn "MUTATION: mutating genome $parent_name.";
+                my $mutation_count = $child_ref->mutate(
+                    mutation_rate_params => $config_ref->{mutation_rate_params},
+                    mutation_rate_global => $config_ref->{mutation_rate_global},
+                    gene_duplication_rate => $config_ref->{gene_duplication_rate},
+                    gene_deletion_rate => $config_ref->{gene_deletion_rate},
+                    domain_duplication_rate => $config_ref->{domain_duplication_rate},
+                    domain_deletion_rate => $config_ref->{domain_deletion_rate},
+                    recombination_rate => $config_ref->{recombination_rate},
+                );
 
-                    if ($mutation_count) {
-                        $child_ref->set_score(undef);
-                        $child_ref->clear_stats(preserve => []);
-                        $child_ref->set_elite_flag(0);
-                        $child_ref->set_number(1);
-                        $child_ref->set_mutation_index($i);
-                        $current_generation_ref->add_element($child_ref);
-                        printn "MUTATION: new genotype appear, mutated from $parent_name.";
-                        $genome_ref->set_number($population - 1);
-                        ${$score_array_ref_of{$obj_ID}}[$i] = 0;
-                        ${$index_array_ref_of{$obj_ID}}[$i] = $genotype_num;
-                        $genotype_num++;
-
-                    } else {
-                        $child_ref->DEMOLISH();
-                    }
+                if ($mutation_count) {
+                    $child_ref->set_score(undef);
+                    $child_ref->clear_stats(preserve => []);
+                    $child_ref->set_elite_flag(0);
+                    $child_ref->set_number(1);
+                    $child_ref->set_mutation_index($i);
+                    $child_ref->add_history(sprintf("MUTATION: $parent_name -> G%03d_I%02d", $current_generation_number + 1, $genotype_num));
+                    $current_generation_ref->add_element($child_ref);
+                    my $number = $genome_ref->get_number();
+                    $genome_ref->set_number($number - 1);
+                    ${$score_array_ref_of{$obj_ID}}[$i] = undef;
+                    ${$index_array_ref_of{$obj_ID}}[$i] = $genotype_num;
+                    $genotype_num++;
+                } else {
+                    $child_ref->DEMOLISH();
                 }
             }
         }
@@ -611,49 +611,70 @@ use base qw();
         my $current_generation_ref = $current_generation_ref_of{$obj_ID};
         my $current_generation_number = $current_generation_number_of{$obj_ID};
         my $current_generation_size = $current_generation_ref->get_num_elements();
+        my $population_size = $config_ref->{evolve_population};
 
         my $temp_generation_ref = Generation->new({});
 
         printn "create_next_generation: selecting from generation $current_generation_number";
+        # update the scores of mutated genotypes
+        my @genome_model_refs = $current_generation_ref->get_elements();
+        my $i = 0;
+        foreach my $genome_model_ref (@genome_model_refs) {
+            if (defined $genome_model_ref->get_mutation_index()) {
+                my $mutated_score = $genome_model_ref->get_score();
+                my $mutation_index = $genome_model_ref->get_mutation_index();
+                ${$score_array_ref_of{$obj_ID}}[$mutation_index] = $mutated_score;
+                $genome_model_ref->set_mutation_index(undef);
+                if (${$index_array_ref_of{$obj_ID}}[$mutation_index] != $i) {
+                    die "There is something wrong that mutation index recorded in genome is not same as the genotype index recoding the corresponding mutated genome";
+                }
+            }
+            $i++;
+        }
+        my @scores = @{$score_array_ref_of{$obj_ID}};
+        my @indice = @{$index_array_ref_of{$obj_ID}};
+
+        # check if @score and @indice are in the same size
+        if (scalar @scores != scalar @indice || scalar @scores != $population_size) {
+            die "The scores and indice arrays are not in same size or not equal to evolve_population size";
+        }
 
         # check scores to make sure defined and positive
-        my @scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
-        my @numbers = map {$current_generation_ref->get_element($_)->get_number()} (0..$current_generation_size-1);
-        if (grep {!defined $_} @scores || grep {!defined $_} @numbers) {
+        if (grep {!defined $_} @scores || grep {!defined $_} @indice) {
             printn "ERROR: not all scores and population numbers are defined (if this is first generation, check value of score_initial_generation in config file)";
             exit(1);
         }
-        if (grep {$_ < 0} @scores || grep {$_ < 0} @numbers) {
-            printn "ERROR: all scores and population numbers must be non-negative";
+        if (grep {$_ < 0} @scores || grep {$_ < 0} @indice) {
+            printn "ERROR: all scores and indice must be non-negative";
             exit(1);
         }
 
         # select the next generation
         my $total_score = 0;
         my @cumulative_scores;
-        for (my $i = 0; $i < $current_generation_size; $i++) {
-            $total_score += ($scores[$i] * $numbers[$i]);
+        for (my $i = 0; $i < $population_size; $i++) {
+            $total_score += $scores[$i];
             push(@cumulative_scores, $total_score);
         }
 
         my @selection_count = (0) x $current_generation_size;
-        my $evolve_population = defined $config_ref->{evolve_population} ? $config_ref->{evolve_population} : die "Not specified evolve_population in config file!";
-        for (my $i = 0; $i < $evolve_population; $i++) {
+        for (my $i = 0; $i < $population_size; $i++) {
             my $threshold = rand() * $total_score;
-            my $right = 0;
-            my $left = $current_generation_size - 1;
+            my $left = 0;
+            my $right = $population_size - 1;
             my $index = 0;
 
-            while ($right < $left) {
+            while ($left < $right) {
                 $index = int(($left + $right) / 2);
                 if ($cumulative_scores[$index] < $threshold) {
-                    $right = $index + 1;
+                    $left = $index + 1;
                 } else {
-                    $left = $index;
+                    $right = $index;
                 }
             }
-
-            $selection_count[$right]++;
+            ${$score_array_ref_of{$obj_ID}}[$i] = $scores[$left];
+            ${$index_array_ref_of{$obj_ID}}[$i] = $indice[$left];
+            $selection_count[$indice[$left]]++;
         }
 
         for (my $i = 0; $i < $current_generation_size; $i++) {
@@ -662,10 +683,10 @@ use base qw();
                 my $parent_name = $parent_ref->get_name();
 
                 my $child_ref = $parent_ref->duplicate();
-                $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $current_generation_number, $i));
+                $child_ref->add_history(sprintf("REPLICATION: $parent_name has $selection_count[$i] descendants in G%03d_I%02d", $current_generation_number, $i));
                 $child_ref->set_number($selection_count[$i]);
                 $temp_generation_ref->add_element($child_ref);
-            } 
+            }
         }
 
         $current_generation_ref->clear_genomes();
