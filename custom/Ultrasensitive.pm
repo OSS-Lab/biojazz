@@ -556,7 +556,7 @@ use base qw(Scoring);
                             title_prefix => "$TAG $genome_name",
                             axis_ref => [0, $config_ref->{LG_range},
                                 0, $config_ref->{TG_init}],
-                            filename => "$matlab_work/$genome_name.phase.png",
+                            filename => "$matlab_work/$genome_name" . "_phase.png",
                         );
                     }
 

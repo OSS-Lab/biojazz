@@ -811,7 +811,7 @@ use base qw();
         my $matlab_ref = $matlab_ref_of{$obj_ID};
         $matlab_ref->cmd("halfway = floor(size($X_complex,1)/2)");
         $matlab_ref->cmd("h=figure($figure); plot($X_complex(1:halfway), $Y_complex(1:halfway));title(\'$title_prefix $title\')");
-        $matlab_ref->cmd("hold on; plot($X_complex(halfway+1:end), $Y_complex(halfway+1:end), 'r');");
+        $matlab_ref->cmd("hold on; plot($X_complex(halfway+1:end), $Y_complex(halfway+1:end), 'r'); hold off;");
         $matlab_ref->cmd("axis([".join(" ", @$axis_ref)."])") if $axis_ref;
         $matlab_ref->cmd("saveas(h, \'$filename\', \'png\')") if $filename;
         printn "matlab_plot_phase: Figure $figure -- $Y_complex vs $X_complex" if $verbosity >= 1;
