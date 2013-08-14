@@ -209,7 +209,7 @@ use base qw();
                 my $scoring_ref = $config_ref->{scoring_class}->new({
                         config_file => $config_ref->{config_file},
                         node_ID => 999,
-                        work_dir => $config_ref->{work_dir}/$TAG,
+                        work_dir => "$config_ref->{work_dir}/$TAG",
                         local_dir => $defined_local_dir,
                         matlab_startup_options => "-nodesktop -nosplash",  # need jvm
                     });
@@ -233,18 +233,10 @@ use base qw();
                     $genome_model_ref->set_elite_flag(1);
                 }
             }
-
-            my $inum = $config_ref->{inum_genomes};
-            if ($config_ref->{selection_method} eq "kimura_selection") {
-                $inum = 1;
-            } elsif ($config_ref->selection_method eq 'population_based_selection') {
-                $inum = $config_ref->{evolve_population};
-            }
-
             my $loaded_genome_num = 0;
             my $i = 0;
             foreach my $genome_model_ref (@genome_model_refs) {
-                if ($config_ref->{selection_method} eq "kimura_selection") {
+                if ($config_ref->{selection_method} eq "kimura_selection" && !$config_ref->{continue_sim}) {
                     $genome_model_ref->set_number(0);
                 } elsif ($config_ref->{selection_method} eq "population_based_selection") {
                     if (!$genome_model_ref->get_number()) {
@@ -253,10 +245,10 @@ use base qw();
                 } else {
                     confess "The selection method is not set appropriately!";
                 }
-                my $number = $genome_model_ref->get_number();
-                $loaded_genome_num += $number;
-
                 if ($config_ref->{selection_method} eq 'population_based_selection') {
+                    my $number = $genome_model_ref->get_number();
+                    $loaded_genome_num += $number;
+
                     my $score = $genome_model_ref->get_score();
                     push @{$score_array_ref_of{$obj_ID}}, ($score) x $number;
                     push @{$index_array_ref_of{$obj_ID}}, ($i) x $number;
@@ -264,7 +256,15 @@ use base qw();
                 $i++;
             }
 
-            if ($inum > $loaded_genome_num) {
+            my $inum = $config_ref->{inum_genomes};
+            if ($config_ref->{selection_method} eq "kimura_selection") {
+                $inum = $loaded_genome_num;
+            } elsif ($config_ref->selection_method eq 'population_based_selection') {
+                $inum = $config_ref->{evolve_population};
+            }
+
+            if ($inum > $loaded_genome_num && 
+                $config_ref->{selection_method} eq 'population_based_selection') {
                 for (my $i = 0; $i < ($inum - $loaded_genome_num); $i++) {
                     my $index = int(rand($loaded_genome_num));
                     my $genome_model_ref = $genome_model_refs[$index];
@@ -305,7 +305,7 @@ use base qw();
                 my $scoring_ref = $config_ref->{scoring_class}->new({
                         config_file => $config_ref->{config_file},
                         node_ID => 999,
-                        work_dir => $config_ref->{work_dir}/$TAG,
+                        work_dir => "$config_ref->{work_dir}/$TAG",
                         local_dir => $defined_local_dir,
                         matlab_startup_options => "-nodesktop -nosplash",  # need jvm
                     });
@@ -415,7 +415,7 @@ use base qw();
         my $scoring_ref = $config_ref->{scoring_class}->new({
                 config_file => $config_ref->{config_file},
                 node_ID => 999,
-                work_dir => $config_ref->{work_dir}/$TAG,
+                work_dir => "$config_ref->{work_dir}/$TAG",
                 local_dir => $defined_local_dir,
                 matlab_startup_options => "-nodesktop -nosplash",  # need jvm
             });
