@@ -853,8 +853,10 @@ use base qw();
         my $fossil_epoch = $config_ref->{fossil_epoch};
 
         $self->create_initial_generation();
-        $self->print_attribute_names();
-        $self->report_current_generation();
+        if ($config_ref->{continue_sim} != 1) {
+            $self->print_attribute_names();
+            $self->report_current_generation();
+        }
         $self->save_current_generation();
 
         GEN_ALG: while (1) {
