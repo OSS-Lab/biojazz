@@ -689,15 +689,15 @@ use base qw(Scoring);
             my $g3n = !$g3 ? 1 : 0;
 
             # don't optimize network_score once the network is connected
-            # $final_score =  ($network_score * $g0n + $g0)**$w_n;
+            $final_score =  ($network_score * $g0n + $g0)**$w_n;
             # optimize complexity only if the network is connected
-            $final_score = (1e-3 + $complexity_score * $g0)**$w_c;
+            $final_score *= (1e-3 + $complexity_score * $g0)**$w_c;
             # optimize amplitude if ANC output ok and no timeout during simulation
             $final_score *= (1e-6 + $amplitude_score * $g1)**$w_a;
             # optimize ultrasensitivity if ANC output ok and no timeout during simulation
             $final_score *= (1e-6 + $ultrasensitivity_score * $g1)**$w_u;
 
-            $final_score = $final_score**(1/($w_c + $w_a + $w_u));  # re-normalization
+            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_u));  # re-normalization
         }
 
 
