@@ -52,6 +52,7 @@ use base qw();
     my %score_array_ref_of      :ATTR(get => 'score_array_ref', set => 'score_array_ref');
     my %index_array_ref_of      :ATTR(get => 'index_array_ref', set => 'index_array_ref');
 
+    my %reach_target_flag_of    :ATTR(get => 'reach_target_flag_of', set => 'reach_target_flag_of', default => 0)
     #######################################################################################
     # FUNCTIONS
     #######################################################################################
@@ -60,11 +61,13 @@ use base qw();
     # CLASS METHODS
     #######################################################################################
     sub BUILD {
-        my ($self, $objID, $arg_ref) = @_;
+        my ($self, $obj_ID, $arg_ref) } @_;
 
         # INIT
-        $score_array_ref_of{$objID} = [];
-        $index_array_ref_of{$objID} = [];
+        $score_array_ref_of{$obj_ID} = [];
+        $index_array_ref_of{$obj_ID} = [];
+
+        $reach_target_flag_of{$obj_ID}
     }
 
     #######################################################################################
@@ -479,6 +482,14 @@ use base qw();
         $current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
         $current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
         $current_generation_ref->refresh_individual_names($current_generation_number);
+        if (defined $config_ref->{target_score}) {
+            my @new_scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
+            my $min_score = $new_scores[0];
+            for (@new_scores) {$min_score = $_ if $_ < $min_score;}
+            if ($min_score >= $config_ref->{target_score}) {
+                $reach_target_flag_of{$obj_ID}->set_reach_target_flag(1);
+            }
+        }
     }
 
 
@@ -692,7 +703,15 @@ use base qw();
         $current_generation_ref->clear_genomes();
         $current_generation_ref = $current_generation_ref_of{$obj_ID} = $temp_generation_ref;
         $current_generation_ref->refresh_individual_names($current_generation_number);
-
+        if (defined $config_ref->{target_score}) {
+            my @new_scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
+            my $min_score = $new_scores[0];
+            for (@new_scores) {$min_score = $_ if $_ < $min_score;}
+            if ($min_score >= $config_ref->{target_score}) {
+                $reach_target_flag_of{$obj_ID}->set_reach_target_flag(1);
+            }
+        }
+ 
     }
 
     #--------------------------------------------------------------------------------------
@@ -826,7 +845,6 @@ use base qw();
         $self->report_current_generation();
         $self->save_current_generation();
 
-
         GEN_ALG: while (1) {
             my $current_generation_number = $current_generation_number_of{$obj_ID};
             printn "GEN_ALG: generation $current_generation_number";
@@ -834,7 +852,8 @@ use base qw();
             $self->load_current_generation($current_generation_number_of{$obj_ID});
 
 
-            if ($current_generation_number_of{$obj_ID} <= $config_ref->{num_generations}) {
+            if ($current_generation_number_of{$obj_ID} <= $config_ref->{num_generations}
+                && $reach_target_flag_of{$obj_ID} != 1) {
                 if ($config_ref->{selection_method} eq "kimura_selection") {
                     $self->random_walk_selection();
                     $self->print_attribute_names();
