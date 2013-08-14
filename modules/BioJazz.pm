@@ -134,22 +134,22 @@ sub evolve {
 
     # CLEAN UP PREVIOUS RUNS
     if (defined $config_ref->{remove_old_files} && $config_ref->{remove_old_files} == 1) {
-        printn "Removing old files... are you sure (y/n)? ";
-        my $answer = <>; chomp($answer);
-        if ($answer ne "y") {
-            printn "no, then fix the configuration file";
-            exit(1);
-        }
         `echo $config_ref->{work_dir}/$TAG/*.log     | xargs rm -f`;
         `echo $config_ref->{work_dir}/$TAG/matlab/*  | xargs rm -f`;
-        #`echo $config_ref->{work_dir}/$TAG/obj/*     | xargs rm -f`;
+        `echo $config_ref->{work_dir}/$TAG/obj/*     | xargs rm -f`;
         `echo $config_ref->{work_dir}/$TAG/source*   | xargs rm -rf`;
-        #`echo $config_ref->{work_dir}/$TAG/stats/*   | xargs rm -f`;
+        `echo $config_ref->{work_dir}/$TAG/stats/*   | xargs rm -f`;
         `echo $config_ref->{work_dir}/matlab/G*      | xargs rm -f`;
         if (defined $config_ref->{local_dir}) {
             `echo $config_ref->{local_dir}/matlab/G*     | xargs rm -f`;
         }
-        printn "Done removing files.";
+        printn "Done removing all files.";
+    } elsif (defined $config_ref->{continue_sim} && $config_ref->{continue_sim} == 1) {
+        `echo $config_ref->{work_dir}/matlab/G*      | xargs rm -f`;
+        if (defined $config_ref->{local_dir}) {
+            `echo $config_ref->{local_dir}/matlab/G*     | xargs rm -f`;
+        }
+        printn "Done removing previous log and intermediate files.";
     } else {
         printn "Keeping old files in $config_ref->{work_dir}/$TAG";
     }
@@ -231,7 +231,7 @@ sub score_genome {
     $scoring_ref = $config_ref->{scoring_class}->new({
             node_ID => 999,
             config_file => $config_ref->{config_file},
-            work_dir => "$config_ref->{work_dir}/scratch/$TAG",
+            work_dir => "$config_ref->{work_dir}/analysis/$TAG",
             matlab_startup_options => "-nodesktop -nosplash",  # need jvm
         });
     $config_ref = $scoring_ref->get_config_ref();
@@ -269,7 +269,7 @@ sub score_generation {
     $scoring_ref = $config_ref->{scoring_class}->new({
             node_ID => 999,
             config_file => $config_ref->{config_file},
-            work_dir => "$config_ref->{work_dir}/scratch/$TAG",
+            work_dir => "$config_ref->{work_dir}/analysis/$TAG",
             matlab_startup_options => "-nodesktop -nosplash",  # need jvm
         });
     $config_ref = $scoring_ref->get_config_ref();
@@ -313,7 +313,7 @@ sub rescore_genomes {
     $scoring_ref = $config_ref->{scoring_class}->new({
             node_ID => 999,
             config_file => $config_ref->{config_file},
-            work_dir => "$config_ref->{work_dir}/scratch/$TAG",
+            work_dir => "$config_ref->{work_dir}/analysis/$TAG",
             matlab_startup_options => "-nodesktop -nosplash",  # need jvm
         });
     $config_ref = $scoring_ref->get_config_ref();

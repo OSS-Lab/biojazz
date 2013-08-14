@@ -52,7 +52,7 @@ use base qw();
     my %score_array_ref_of      :ATTR(get => 'score_array_ref', set => 'score_array_ref');
     my %index_array_ref_of      :ATTR(get => 'index_array_ref', set => 'index_array_ref');
 
-    my %reach_target_flag_of    :ATTR(get => 'reach_target_flag_of', set => 'reach_target_flag_of', default => 0)
+    my %reach_target_flag_of    :ATTR(get => 'reach_target_flag_of', set => 'reach_target_flag_of', default => 0);
     #######################################################################################
     # FUNCTIONS
     #######################################################################################
@@ -61,13 +61,13 @@ use base qw();
     # CLASS METHODS
     #######################################################################################
     sub BUILD {
-        my ($self, $obj_ID, $arg_ref) } @_;
+        my ($self, $obj_ID, $arg_ref) = @_;
 
         # INIT
         $score_array_ref_of{$obj_ID} = [];
         $index_array_ref_of{$obj_ID} = [];
 
-        $reach_target_flag_of{$obj_ID}
+        $reach_target_flag_of{$obj_ID} = 0;
     }
 
     #######################################################################################
@@ -92,19 +92,20 @@ use base qw();
         my $host_list_ref = ref $config_ref->{host_list} ? $config_ref->{host_list} : [$config_ref->{host_list}];
 
         # assign values to cluster reference
-        my $cluster_ref = $cluster_ref_of{$obj_ID} = ScorCluster->new({
-                config_file => $config_ref->{config_file},
-                cluster_type => $config_ref->{cluster_type},
-                cluster_size => $config_ref->{cluster_size},
-                host_list => $host_list_ref,
-                nice => $config_ref->{nice},
-                work_dir => $config_ref->{work_dir},
-                local_dir => $local_dir,
-                scoring_class => $config_ref->{scoring_class},
-            });
+        if ($config_ref->{selection_method} eq "population_based_selection") {
+            my $cluster_ref = $cluster_ref_of{$obj_ID} = ScorCluster->new({
+                    config_file => $config_ref->{config_file},
+                    cluster_type => $config_ref->{cluster_type},
+                    cluster_size => $config_ref->{cluster_size},
+                    host_list => $host_list_ref,
+                    nice => $config_ref->{nice},
+                    work_dir => $config_ref->{work_dir},
+                    local_dir => $local_dir,
+                    scoring_class => $config_ref->{scoring_class},
+                });
 
-        $cluster_ref->spawn_rrobin();
-
+            $cluster_ref->spawn_rrobin();
+        }
         # check initializers
         # ...
     }
@@ -165,21 +166,21 @@ use base qw();
             my $save_tag = $TAG;
             if ($file_glob !~ /$save_tag/) {
                 printn "\nWARNING: you appear to be loading from a different run of BioJazz";
-                printn "Continue (y/n)? ";
-                my $answer = <>; chomp($answer);
-                if ($answer ne "y") {
-                    printn "no, then fix the configuration file";
-                    exit(1);
-                }
+                #printn "Continue (y/n)? ";
+                #my $answer = <>; chomp($answer);
+                #if ($answer ne "y") {
+                #    printn "no, then fix the configuration file";
+                #    exit(1);
+                #}
             }
             if (($file_glob =~ /G(...)_I/) && ($1 != $config_ref->{first_generation})) {
                 printn "\nWARNING: Configuration parameter first_generation appears not to be set correctly (not 0 or 1)";
-                printn "Continue (y/n)? ";
-                my $answer = <>; chomp($answer);
-                if ($answer ne "y") {
-                    printn "no, then fix the configuration file";
-                    exit(1);
-                }
+                #printn "Continue (y/n)? ";
+                #my $answer = <>; chomp($answer);
+                #if ($answer ne "y") {
+                #    printn "no, then fix the configuration file";
+                #    exit(1);
+                #}
             }		
             if (!@files) {
                 printn "ERROR: nothing to load... ";
@@ -197,9 +198,10 @@ use base qw();
 
             my @genome_model_refs = $current_generation_ref_of{$obj_ID}->get_elements();
             if ($config_ref->{score_initial_generation}) {
-
-                my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
-                my $defined_local_dir = (defined $local_dir ? $local_dir : "");
+                my $local_dir = (defined $config_ref->{local_dir} ?
+                    "$config_ref->{local_dir}/$config_ref->{scoring_class}" :
+                    undef);
+                my $defined_local_dir = (defined $local_dir) ? "$local_dir/$TAG" : undef;
 
                 eval("use $config_ref->{scoring_class};");
                 if ($@) {print $@; return;}
@@ -207,7 +209,7 @@ use base qw();
                 my $scoring_ref = $config_ref->{scoring_class}->new({
                         config_file => $config_ref->{config_file},
                         node_ID => 999,
-                        work_dir => $config_ref->{work_dir},
+                        work_dir => $config_ref->{work_dir}/$TAG,
                         local_dir => $defined_local_dir,
                         matlab_startup_options => "-nodesktop -nosplash",  # need jvm
                     });
@@ -220,7 +222,9 @@ use base qw();
                     if ($config_ref->{selection_method} eq "kimura_selection") {
                         $genome_model_ref->set_number(0);
                     } elsif ($config_ref->{selection_method} eq "population_based_selection") {
-                        $genome_model_ref->set_number(1);
+                        if (!$genome_model_ref->get_number()) {
+                            $genome_model_ref->set_number(1);
+                        }
                     } else {
                         confess "The selection method is not set appropriately!";
                     }
@@ -240,8 +244,14 @@ use base qw();
             my $loaded_genome_num = 0;
             my $i = 0;
             foreach my $genome_model_ref (@genome_model_refs) {
-                if (!defined $genome_model_ref->get_number()) {
-                    $genome_model_ref->set_number(1);
+                if ($config_ref->{selection_method} eq "kimura_selection") {
+                    $genome_model_ref->set_number(0);
+                } elsif ($config_ref->{selection_method} eq "population_based_selection") {
+                    if (!$genome_model_ref->get_number()) {
+                        $genome_model_ref->set_number(1);
+                    }
+                } else {
+                    confess "The selection method is not set appropriately!";
                 }
                 my $number = $genome_model_ref->get_number();
                 $loaded_genome_num += $number;
@@ -284,9 +294,10 @@ use base qw();
 
             my @genome_model_refs = $current_generation_ref_of{$obj_ID}->get_elements();
             if ($config_ref->{score_initial_generation}) {
-
-                my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
-                my $defined_local_dir = (defined $local_dir ? $local_dir : "");
+                my $local_dir = (defined $config_ref->{local_dir} ?
+                    "$config_ref->{local_dir}/$config_ref->{scoring_class}" :
+                    undef);
+                my $defined_local_dir = (defined $local_dir) ? "$local_dir/$TAG" : undef;
 
                 eval("use $config_ref->{scoring_class};");
                 if ($@) {print $@; return;}
@@ -294,7 +305,7 @@ use base qw();
                 my $scoring_ref = $config_ref->{scoring_class}->new({
                         config_file => $config_ref->{config_file},
                         node_ID => 999,
-                        work_dir => $config_ref->{work_dir},
+                        work_dir => $config_ref->{work_dir}/$TAG,
                         local_dir => $defined_local_dir,
                         matlab_startup_options => "-nodesktop -nosplash",  # need jvm
                     });
@@ -393,9 +404,10 @@ use base qw();
         }
 
         printn "@scores" if $verbosity > 1;
-
-        my $local_dir = $config_ref->{local_dir} if exists $config_ref->{local_dir};
-        my $defined_local_dir = (defined $local_dir ? $local_dir : "");
+        my $local_dir = (defined $config_ref->{local_dir} ?
+            "$config_ref->{local_dir}/$config_ref->{scoring_class}" :
+            undef);
+        my $defined_local_dir = (defined $local_dir) ? "$local_dir/$TAG" : undef;
 
         eval("use $config_ref->{scoring_class};");
         if ($@) {print $@; return;}
@@ -403,7 +415,7 @@ use base qw();
         my $scoring_ref = $config_ref->{scoring_class}->new({
                 config_file => $config_ref->{config_file},
                 node_ID => 999,
-                work_dir => $config_ref->{work_dir},
+                work_dir => $config_ref->{work_dir}/$TAG,
                 local_dir => $defined_local_dir,
                 matlab_startup_options => "-nodesktop -nosplash",  # need jvm
             });
