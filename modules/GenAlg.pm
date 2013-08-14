@@ -236,8 +236,10 @@ use base qw();
             my $loaded_genome_num = 0;
             my $i = 0;
             foreach my $genome_model_ref (@genome_model_refs) {
-                if ($config_ref->{selection_method} eq "kimura_selection" && !$config_ref->{continue_sim}) {
-                    $genome_model_ref->set_number(0);
+                if ($config_ref->{selection_method} eq "kimura_selection") {
+                    if (!$config_ref->{continue_sim}) {
+                        $genome_model_ref->set_number(0);
+                    }
                 } elsif ($config_ref->{selection_method} eq "population_based_selection") {
                     if (!$genome_model_ref->get_number()) {
                         $genome_model_ref->set_number(1);
