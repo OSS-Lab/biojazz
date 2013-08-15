@@ -52,7 +52,7 @@ use base qw();
     my %score_array_ref_of      :ATTR(get => 'score_array_ref', set => 'score_array_ref');
     my %index_array_ref_of      :ATTR(get => 'index_array_ref', set => 'index_array_ref');
 
-    my %reach_target_flag_of    :ATTR(get => 'reach_target_flag_of', set => 'reach_target_flag_of', default => 0);
+    my %reach_target_flag_of    :ATTR(get => 'reach_target_flag', set => 'reach_target_flag', default => 0);
     #######################################################################################
     # FUNCTIONS
     #######################################################################################
@@ -489,7 +489,7 @@ use base qw();
             my $min_score = $new_scores[0];
             for (@new_scores) {$min_score = $_ if $_ < $min_score;}
             if ($min_score >= $config_ref->{target_score}) {
-                $reach_target_flag_of{$obj_ID}->set_reach_target_flag(1);
+                $self->set_reach_target_flag(1);
             }
         }
     }
@@ -710,7 +710,7 @@ use base qw();
             my $min_score = $new_scores[0];
             for (@new_scores) {$min_score = $_ if $_ < $min_score;}
             if ($min_score >= $config_ref->{target_score}) {
-                $reach_target_flag_of{$obj_ID}->set_reach_target_flag(1);
+                $self->set_reach_target_flag(1);
             }
         }
  
