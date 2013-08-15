@@ -147,6 +147,7 @@ sub evolve {
     } elsif (defined $config_ref->{continue_sim} && $config_ref->{continue_sim} == 1) {
         `echo $config_ref->{work_dir}/matlab/G*      | xargs rm -f`;
         if (defined $config_ref->{local_dir}) {
+            `echo $config_ref->{local_dir}/$config_ref->{scoring_class}/$TAG/matlab/G*     | xargs rm -f`;
             `echo $config_ref->{local_dir}/matlab/G*     | xargs rm -f`;
         }
         printn "Done removing previous log and intermediate files.";

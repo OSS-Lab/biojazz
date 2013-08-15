@@ -244,52 +244,43 @@ use base qw();
                     if (!$genome_model_ref->get_number()) {
                         $genome_model_ref->set_number(1);
                     }
-                } else {
-                    confess "The selection method is not set appropriately!";
-                }
-                if ($config_ref->{selection_method} eq 'population_based_selection') {
                     my $number = $genome_model_ref->get_number();
                     $loaded_genome_num += $number;
-
                     my $score = $genome_model_ref->get_score();
                     push @{$score_array_ref_of{$obj_ID}}, ($score) x $number;
                     push @{$index_array_ref_of{$obj_ID}}, ($i) x $number;
+                } else {
+                    confess "The selection method is not set appropriately!";
                 }
                 $i++;
             }
 
-            my $inum = $config_ref->{inum_genomes};
-            if ($config_ref->{selection_method} eq "kimura_selection") {
-                $inum = $loaded_genome_num;
-            } elsif ($config_ref->selection_method eq 'population_based_selection') {
-                $inum = $config_ref->{evolve_population};
-            }
-
-            if ($inum > $loaded_genome_num && 
-                $config_ref->{selection_method} eq 'population_based_selection') {
-                for (my $i = 0; $i < ($inum - $loaded_genome_num); $i++) {
-                    my $index = int(rand($loaded_genome_num));
-                    my $genome_model_ref = $genome_model_refs[$index];
-                    my $current_number = $genome_model_ref->get_number();
-                    $genome_model_ref->set_number($current_number + 1);
-
-                    if ($config_ref->{selection_method} eq 'population_based_selection') {
-                        my $score = $genome_model_ref->get_score();
-                        push @{$score_array_ref_of{$obj_ID}}, $score;
-                        push @{$index_array_ref_of{$obj_ID}}, $index;
-                    }
-                }
-            } elsif ($inum < $loaded_genome_num) {
-                confess "The inum is smaller than number of genome loaded for initial generation!";
-            }
-
-            # check if those two array have the same size as well as with numbers.
             if ($config_ref->{selection_method} eq 'population_based_selection') {
+                my $inum = $config_ref->{evolve_population};
+
+                if ($inum > $loaded_genome_num) { 
+                    for (my $i = 0; $i < ($inum - $loaded_genome_num); $i++) {
+                        my $index = int(rand($loaded_genome_num));
+                        my $genome_model_ref = $genome_model_refs[$index];
+                        my $current_number = $genome_model_ref->get_number();
+                        $genome_model_ref->set_number($current_number + 1);
+
+                        if ($config_ref->{selection_method} eq 'population_based_selection') {
+                            my $score = $genome_model_ref->get_score();
+                            push @{$score_array_ref_of{$obj_ID}}, $score;
+                            push @{$index_array_ref_of{$obj_ID}}, $index;
+                        }
+                    }
+                } elsif ($inum < $loaded_genome_num) {
+                    confess "The inum is smaller than number of genome loaded for initial generation!";
+                }
+                # check if those two array have the same size as well as with numbers.
                 if (scalar @{$score_array_ref_of{$obj_ID}} != scalar @{$index_array_ref_of{$obj_ID}} 
                     || scalar @{$score_array_ref_of{$obj_ID}} != $config_ref->{evolve_population}) {
                     confess "The evolve_population is not equal to the size of score array and index array for selection.";
                 }
-            }
+
+           }
         } else {
             printn "create_initial_generation: creating $config_ref->{inum_genomes} individuals";
             $current_generation_ref->create_random_genomes($config_ref);
@@ -346,29 +337,26 @@ use base qw();
                 $i++;
             }
 
-            if ($population > $loaded_genome_num) {
-                for (my $i = 0; $i < ($population - $loaded_genome_num); $i++) {
-                    my $index = int(rand($loaded_genome_num));
-                    my $genome_model_ref = $genome_model_refs[$index];
-                    my $current_number = $genome_model_ref->get_number();
-                    $genome_model_ref->set_number($current_number + 1);
+            if ($config_ref->{selection_method} eq 'population_based_selection') {
+                if ($population > $loaded_genome_num) {
+                    for (my $i = 0; $i < ($population - $loaded_genome_num); $i++) {
+                        my $index = int(rand($loaded_genome_num));
+                        my $genome_model_ref = $genome_model_refs[$index];
+                        my $current_number = $genome_model_ref->get_number();
+                        $genome_model_ref->set_number($current_number + 1);
 
-                    if ($config_ref->{selection_method} eq 'population_based_selection') {
                         my $score = $genome_model_ref->get_score();
                         push @{$score_array_ref_of{$obj_ID}}, $score;
                         push @{$index_array_ref_of{$obj_ID}}, $index;
                     }
                 }
-            } elsif ($population < $loaded_genome_num) {
-                confess "The inum is smaller than number of genome loaded for initial generation!";
-            }
-
-            # check if those two array have the same size as well as with numbers.
-            if ($config_ref->{selection_method} eq 'population_based_selection') {
+                # check if those two array have the same size as well as with numbers.
                 if (scalar @{$score_array_ref_of{$obj_ID}} != scalar @{$index_array_ref_of{$obj_ID}} 
                     || scalar @{$score_array_ref_of{$obj_ID}} != $config_ref->{evolve_population}) {
                     confess "The evolve_population is not equal to the size of score array and index array for selection.";
                 }
+            } elsif ($population < $loaded_genome_num) {
+               confess "The inum is smaller than number of genome loaded for initial generation!";
             }
 
         }
