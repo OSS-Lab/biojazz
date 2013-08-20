@@ -42,7 +42,7 @@ use base qw(Model);
 
     my %mutations_of    :ATTR(get => 'mutations', set => 'mutations', default => 0);
     my %point_mutations_of    :ATTR(get => 'point_mutations', set => 'point_mutations', default => 0);
-#    my %cell_volume_of :ATTR(get => 'cell_volume', set => 'cell_volume');
+    #my %cell_volume_of :ATTR(get => 'cell_volume', set => 'cell_volume');
 
     #######################################################################################
     # FUNCTIONS
@@ -51,13 +51,6 @@ use base qw(Model);
     #######################################################################################
     # CLASS METHODS
     #######################################################################################
-#    #--------------------------------------------------------------------------------------
-#    # Function: XXX
-#    # Synopsys: 
-#    #--------------------------------------------------------------------------------------
-#    sub XXX {
-#	my $class = shift;
-#    }
 
     #######################################################################################
     # INSTANCE METHODS
@@ -78,7 +71,7 @@ use base qw(Model);
         $mutations_of{$obj_ID} = 0;
         $point_mutations_of{$obj_ID} = 0;
         $mutation_index_of{$obj_ID} = undef;
-#	$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
+        #$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
     }
     
     #===  FUNCTION  ================================================================
@@ -1537,14 +1530,6 @@ use base qw(Model);
         return $mutation_count;
     }
 
-
-    #--------------------------------------------------------------------------------------
-    # Function: xxx
-    # Synopsys: 
-    #--------------------------------------------------------------------------------------
-    sub xxx {
-        my $self = shift;
-    }
 }
 
 sub run_testcases {
@@ -1642,57 +1627,4 @@ printn $water_ref->_DUMP();
 # Package BEGIN must return true value
 return 1;
 
-#--------------------------------------------------------------------------------------
-## Function: add_gene
-## Synopsys: Append a gene to end of genome, given its sequence
-#--------------------------------------------------------------------------------------
-#sub add_gene {
-#    my $gene_sequence = $_[0];
-#    my $new_gene_start = length($sdb->{genome}{sequence});
-#    $sdb->{genome}{sequence} = $sdb->{genome}{sequence} . $gene_sequence;
-#    printn "add_gene: created gene P$new_gene_start";
-#    return $new_gene_start;
-#}
-
-#--------------------------------------------------------------------------------------
-## Function: decimate_genes
-## Synopsys: Delete parsed genes with a given probability
-#--------------------------------------------------------------------------------------
-#sub decimate_genes {
-#    my $probability = $_[0];
-
-#    my @return_list = ();
-
-#    if (!defined $probability) {
-#	printn "ERROR: delete_parsed_genes -- probability of deletion required";
-#	exit;
-#    }
-
-#    my @gene_list = get_genes();
-#    my $deleted = 0;
-#    my $gene;
-#    foreach $gene (@gene_list) {
-#	if (rand() < $probability) {
-#	    printn "delete_parsed_genes: deleting gene $gene";
-#	    push @return_list, $gene;
-#	    delete_gene($gene);
-#	    $deleted++;
-#	}
-#    }
-#    printn "delete_parsed_genes: deleted $deleted genes (".join ",",@return_list.")";
-#    return @return_list;
-#}
-
-
-#--------------------------------------------------------------------------------------
-## Function: replace_protodomain_sequence
-## Synopsys: Swap out old protodomain sequence with a new one
-#--------------------------------------------------------------------------------------
-#sub replace_protodomain_sequence {
-#    my $protodomain = shift;
-#    my $sequence = shift;
-
-#    my $locus = $sdb->{protodomain_table}{$protodomain}{locus};
-#    substr($sdb->{genome}{sequence}, $locus, $protodomain_sequence_length) = $sequence;
-#}
 

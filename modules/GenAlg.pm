@@ -188,7 +188,7 @@ use base qw();
             }
 
             # need to sort on individual number
-#	    @files = sort {$a=~/_I(\d+)/; $a_i=$1; $b=~/_I(\d+)/; $b_i=$1; return $a_i <=> $b_i} @files;
+            #@files = sort {$a=~/_I(\d+)/; $a_i=$1; $b=~/_I(\d+)/; $b_i=$1; return $a_i <=> $b_i} @files;
             printn "create_initial_generation: loading initial generation from disk";
             printn join "\n", @files;
             $current_generation_ref->retrieve_genomes(
@@ -474,7 +474,6 @@ use base qw();
             # after fix the mutation
             my $child_ref = $parent_ref->duplicate();
             $child_ref->set_number($mutation_step_num);
-            $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
             $next_generation_ref->add_element($child_ref);
         }
 
@@ -690,6 +689,7 @@ use base qw();
             $selection_count[$indice[$left]]++;
         }
 
+        my $accumulative_count = 0;
         for (my $i = 0; $i < $current_generation_size; $i++) {
             if ($selection_count[$i]) {
                 my $parent_ref = $current_generation_ref->get_element($i);
@@ -699,7 +699,12 @@ use base qw();
                 $child_ref->add_history(sprintf("REPLICATION: $parent_name has $selection_count[$i] descendants in G%03d_I%02d", $current_generation_number, $i));
                 $child_ref->set_number($selection_count[$i]);
                 $temp_generation_ref->add_element($child_ref);
+                $accumulative_count += $selection_count[$i];
             }
+        }
+
+        if ($accumulative_count != $population_size) {
+            die "The accumulative count is not equal to population size, which means the selection might be wrong!";
         }
 
         $current_generation_ref->clear_genomes();

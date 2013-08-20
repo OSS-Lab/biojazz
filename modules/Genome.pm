@@ -16,17 +16,10 @@ use Class::Std::Storable;
 use base qw(Parser Network);
 {
     use Carp;
-
-## For manipulation of bit vectors
-#use Bit::Vector;
-
     use Utils;
     use Globals qw($verbosity $VERSION $RELEASE_DATE);
 
-#use BitString;
-
     use GenomeInstance;
-
     use Gene;
 
     #######################################################################################
@@ -57,13 +50,6 @@ use base qw(Parser Network);
     #######################################################################################
     # CLASS METHODS
     #######################################################################################
-#    #--------------------------------------------------------------------------------------
-#    # Function: XXX
-#    # Synopsys: 
-#    #--------------------------------------------------------------------------------------
-#    sub XXX {
-#	my $class = shift;
-#    }
 
     #######################################################################################
     # INSTANCE METHODS
@@ -221,7 +207,7 @@ MODEL:
 
 END
         $rules_of{$obj_ID} = [];
-#	my @protodomains = $self->get_gene_parser_ref()->get_domain_parser_ref()->get_protodomain_parser_ref()->get_object_instances();
+        #my @protodomains = $self->get_gene_parser_ref()->get_domain_parser_ref()->get_protodomain_parser_ref()->get_object_instances();
         for (my $i=0; $i < @protodomains; $i++) {
             for (my $j=$i; $j < @protodomains; $j++) {
                 my @rules = ProtoDomainInstance->create_canbindrules(
