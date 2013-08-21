@@ -759,6 +759,41 @@ use base qw();
         return 1;
     }
 
+    #--------------------------------------------------------------------------------------
+    # Function: report_selection
+    # Synopsys: 
+    #--------------------------------------------------------------------------------------
+    sub report_selection {
+        my $self = shift; my $obj_ID = ident $self;
+        my $current_generation_number = $current_generation_number_of{$obj_ID};
+        my $current_generation_ref = $current_generation_ref_of{$obj_ID};
+        my $config_ref = $config_ref_of{$obj_ID};
+        
+        my $scores_ref = $score_array_ref_of{$obj_ID};
+        my $indice_ref = $index_array_ref_of{$obj_ID};
+
+        my $population = $config_ref->{evolve_population};
+
+        if ($population != scalar @{$scores_ref} || $population != scalar @{$indice_ref}) {
+            confess "The size of scores array and indice array is not equal to population size!";
+        }
+
+        my $csv = Text::CSV->new({binary => 1, eol => "\n"});
+
+        my $data_dir = "$config_ref->{work_dir}/$TAG/report";
+        my $scores_file = "$data_dir/selection_scores.csv";
+        open my $scores_data, ">> $scores_file" or die "$scores_file: $!";
+        $csv->print($scores_data, $scores_ref);
+        close($scores_data) || warn "close failed: $!";
+
+        my $indice_file = "$data_dir/selection_indice.csv";
+        open my $indice_data, ">> $indice_file" or die "$indice_file: $!";
+        $csv->print($indice_data, $indice_ref);
+        close($indice_data) || warn "close failed: $!";
+
+        return 1;
+    }
+
 
     #--------------------------------------------------------------------------------------
     # Function: report_current_generation
@@ -849,8 +884,13 @@ use base qw();
 
         $self->create_initial_generation();
         if ($config_ref->{continue_sim} != 1) {
-            $self->print_attribute_names();
-            $self->report_current_generation();
+            if ($config_ref->{report_on_fly} == 1) {
+                $self->print_attribute_names();
+                $self->report_current_generation();
+            }
+            if ($config_ref->{selection_method} eq "population_based_selection" && $config_ref->{report_selection} == 1) {
+                $self->report_selection();
+            }
         }
         $self->save_current_generation();
 
@@ -865,8 +905,10 @@ use base qw();
                 && $reach_target_flag_of{$obj_ID} != 1) {
                 if ($config_ref->{selection_method} eq "kimura_selection") {
                     $self->random_walk_selection();
-                    $self->print_attribute_names();
-                    $self->report_current_generation();
+                    if ($config_ref->{report_on_fly} == 1) {
+                        $self->print_attribute_names();
+                        $self->report_current_generation();
+                    }
                     $self->save_current_generation();
                 } elsif ($config_ref->{selection_method} eq "population_based_selection") {
                     $self->mutate_current_generation();
@@ -874,16 +916,21 @@ use base qw();
                     $self->score_mutated_genomes();
                     $self->load_current_generation($current_generation_number_of{$obj_ID});
                     $self->population_based_selection();
-                    $self->print_attribute_names();
-                    $self->report_current_generation();
+                    if ($config_ref->{report_on_fly} == 1) {
+                        $self->print_attribute_names();
+                        $self->report_current_generation();
+                    }
+                    if ($config_ref->{report_selection} == 1) {
+                        $self->report_selection();
+                    }
                     $self->clear_objs($current_generation_number_of{$obj_ID});
                     $self->save_current_generation();
                     # clear genome files in order to relife the storage burdon
                     if (defined $fossil_epoch) {
                         my $current_generation_number = $current_generation_number_of{$obj_ID};
                         if ($current_generation_number != 1 &&
-                            ($current_generation_number % $fossil_epoch) 
-                            != (($first_generation % $fossil_epoch) + 1)) {
+                            (($current_generation_number - $first_generation) % $fossil_epoch) 
+                            != 1) {
                             $self->clear_objs($current_generation_number - 1);
                         }
                     }
