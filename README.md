@@ -12,8 +12,16 @@ I have found the following to work when installing
 perl modules (e.g. Bit::Vector) as a user.
 ```
 cd ~
-    rm -rf .cpan
-    export PERL5LIB=~/myperl  # (and add to .bashrc)
+
+perl -MCPAN -e shell
+
+o conf make_arg -I/users/songfeng/CPAN
+
+o conf make_install_arg -I/users/songfeng/CPAN
+
+o conf makepl_arg "install_base=/users/songfeng/CPAN LIB=/users/songfeng/CPAN/lib INSTALLPRIVLIB=/users/songfeng/CPAN/lib INSTALLARCHLIB=/users/songfeng/CPAN/lib/arch INSTALLSITEARCH=/users/songfeng/CPAN/lib/arch INSTALLSITELIB=/users/songfeng/CPAN/lib INSTALLSCRIPT=/users/songfeng/CPAN/bin INSTALLBIN=/users/songfeng/CPAN/bin INSTALLSITEBIN=/users/songfeng/CPAN/bin INSTALLMAN1DIR=/users/songfeng/CPAN/man/man1 INSTALLSITEMAN1DIR=/users/songfeng/CPAN/man/man1 INSTALLMAN3DIR=/users/songfeng/CPAN/man/man3 INSTALLSITEMAN3DIR=/users/songfeng/CPAN/man/man3"
+
+    export PERL5LIB=/users/songfeng/CPAN  # (and add to .bashrc)
 perl -MCPAN -e shell   # (or just cpan if in path)
 ```
 answer the questions, and when asked, say LIB=~/myperl PREFIX=~/myperl
