@@ -14,12 +14,12 @@ use warnings;
 package GenAlg;
 
 use Class::Std;
-use Text::CSV;
 
 use base qw();
 {
     use Carp;
     use Storable qw(store retrieve);
+    use Text::CSV;
 
     use Utils;
 

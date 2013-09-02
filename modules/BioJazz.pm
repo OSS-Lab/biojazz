@@ -351,16 +351,6 @@ sub rescore_genomes {
 # Function: xxx_history
 # Synopsys: 
 #--------------------------------------------------------------------------------------
-sub load_history {
-    my $history_obj = "$config_ref->{work_dir}/$TAG/obj/HISTORY.obj";
-    printn "loading history from $history_obj";
-    $history_ref = retrieve("$history_obj");
-}
-sub save_history {
-    my $history_obj = "$config_ref->{work_dir}/$TAG/obj/HISTORY.obj";
-    printn "saving history to $history_obj";
-    store($history_ref, "$history_obj");
-}
 sub collect_history_from_genomes {
     my $obj_dir = "$config_ref->{work_dir}/$TAG/obj";
 
@@ -377,24 +367,6 @@ sub collect_history_from_logfile {
     $history_ref->collect_history_from_logfile(
         logfile => $logfile,
     );
-}
-# subroutine to export history which could be used to analyse the simulation results?
-sub export_history {
-    $history_ref->export(
-        filename => "$config_ref->{work_dir}/history.$TAG.xls",
-        genome_attribute_names => $config_ref->{genome_attribute_names},
-        # For kimura selection method there is no need to do population output
-        # should put the analysis at the stage after evolution. From csv files 
-        # generated "on-the-fly"
-        #population_attribute_names => $config_ref->{population_attribute_names},
-    );
-}
-
-#--------------------------------------------------------------------------------------
-# Function: xxx
-# Synopsys: 
-#--------------------------------------------------------------------------------------
-sub xxx {
 }
 
 #######################################################################################
