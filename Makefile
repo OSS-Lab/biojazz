@@ -38,8 +38,6 @@ main_modules = \
 			   test/modules/ScorNode.log \
 			   test/modules/ScorCluster.log \
 			   test/modules/GenAlg.log \
-			   test/modules/ExcelSheet.log \
-			   test/modules/ExcelBook.log \
 			   test/modules/History.log \
 
 custom_modules = \
@@ -129,13 +127,10 @@ load : FORCE
 collect : collect_from_genomes
 
 collect_from_logfile : FORCE
-	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='collect_history_from_logfile("$(basename $(config))/$(basename $(config)).$(tag).log"); save_history();'
+	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='collect_history_from_logfile("$(basename $(config))/$(basename $(config)).$(tag).log");'
 
 collect_from_genomes : FORCE
-	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='collect_history_from_genomes(); save_history();'
-
-analyze : FORCE
-	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='load_history(); export_history();'
+	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='collect_history_from_genomes();'
 
 ######################################################################################
 # ADMIN/UTILS
@@ -157,14 +152,12 @@ ipckill : FORCE
 clean: FORCE
 	@rm -rf $(basename $(config))/$(tag)
 	@rm -rf $(basename $(config))/$(basename $(config)).$(tag).log
-	@rm -rf $(basename $(config))/history.$(tag).xls
 
 clean_all: clean
 	@rm -rf $(basename $(config))/scratch/$(tag)
 
 archive:
 	@mv $(basename $(config))/$(basename $(config)).$(tag).log ~/Archive/ultrasensitive
-	@mv $(basename $(config))/history.$(tag).xls ~/Archive/ultrasensitive
 	@gzip -r $(basename $(config))/$(tag)
 	@mv $(basename $(config))/$(tag) ~/Archive/ultrasensitive
 
