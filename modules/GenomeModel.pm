@@ -40,9 +40,12 @@ use base qw(Model);
     my %elite_flag_of  :ATTR(get => 'elite_flag', set => 'elite_flag', default => 0);
     my %mutation_index_of   :ATTR(get => 'mutation_index', set => 'mutation_index', default => undef);
 
-    my %mutations_of    :ATTR(get => 'mutations', set => 'mutations', default => 0);
-    my %point_mutations_of    :ATTR(get => 'point_mutations', set => 'point_mutations', default => 0);
-    #my %cell_volume_of :ATTR(get => 'cell_volume', set => 'cell_volume');
+    my %stepwise_mutations_of    :ATTR(get => 'stepwise_mutations', set => 'stepwise_mutations', default => 0);
+    my %stepwise_point_mutations_of    :ATTR(get => 'stepwise_point_mutations', set => 'stepwise_point_mutations', default => 0);
+    my %accum_mutations_of    :ATTR(get => 'accum_mutations', set => 'accum_mutations', default => 0);
+    my %accum_point_mutations_of    :ATTR(get => 'accum_point_mutations', set => 'accum_point_mutations', default => 0);
+
+   #my %cell_volume_of :ATTR(get => 'cell_volume', set => 'cell_volume');
 
     #######################################################################################
     # FUNCTIONS
@@ -68,8 +71,10 @@ use base qw(Model);
         $number_of{$obj_ID} = 0;
         $score_of{$obj_ID} = 0;
         $elite_flag_of{$obj_ID} = 0;
-        $mutations_of{$obj_ID} = 0;
-        $point_mutations_of{$obj_ID} = 0;
+        $stepwise_mutations_of{$obj_ID} = 0;
+        $stepwise_point_mutations_of{$obj_ID} = 0;
+        $accum_mutations_of{$obj_ID} = 0;
+        $accum_point_mutations_of{$obj_ID} = 0;
         $mutation_index_of{$obj_ID} = undef;
         #$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
     }
@@ -173,6 +178,10 @@ use base qw(Model);
 
         my $str = "score=".(defined $self->get_score() ? $self->get_score() : "UNDEF");
         $str .= ", number=".(defined $self->get_number() ? $self->get_number() : "UNDEF");
+        $str .= ", accum_mutations=".(defined $self->get_accum_mutations() ? $self->get_accum_mutations() : "UNDEF");
+        $str .= ", accum_point_mutations=".(defined $self->get_accum_point_mutations() ? $self->get_accum_point_mutations() : "UNDEF");
+        $str .= ", stepwise_mutations=".(defined $self->get_stepwise_mutations() ? $self->get_stepwise_mutations() : "UNDEF");
+        $str .= ", stepwise_point_mutations=".(defined $self->get_stepwise_mutations() ? $self->get_stepwise_mutations() : "UNDEF");
         foreach my $key (sort keys %{$stats_ref}) {
             my $value = $stats_ref->{$key};
             $value = defined $value ? $value : "UNDEF";
@@ -714,7 +723,6 @@ use base qw(Model);
         confess "ERROR: specify a mutation rate" if !defined $mutation_rate;
 
         my @genes = $self->get_genes();
-        my $num_bits;
 
         my $genome_parser_ref = $self->get_genome_parser_ref();
         # first mutate only stuff between genes and junk
@@ -724,7 +732,13 @@ use base qw(Model);
         printn "mutated $mutated_junk_bits bits in junk dna" if $verbosity >= 1;
         # now mutate genes themselves, restoring saved rate
         $genome_parser_ref->set_field_mutation_rate("genes", $genes_rate);
-        return $self->mutate_genes($mutation_rate);
+        my @mutated_list = $self->mutate_genes($mutation_rate);
+        my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
+        my $history = "POINT MUTATION (GLOBAL) $total_bits bits in genes ". join ",", @mutated_list;
+        printn $history if $verbosity >= 1;
+        $self->add_history($history);
+
+        return $total_bits + $mutated_junk_bits;
     }
 
     #--------------------------------------------------------------------------------------
@@ -784,6 +798,7 @@ use base qw(Model);
         my $self = shift; my $obj_ID = ident $self;
         my $gene_name = shift;
         my $gene_ref = !defined $gene_name ? ($self->get_gene_by_index($self->pick_random_gene())) : ($self->get_gene_by_name($gene_name));
+        my $gene_length = $gene_ref->get_length();
 
         my $sequence_ref = $self->get_sequence_ref();
         my $duplicate_locus = $sequence_ref->get_length();
@@ -799,7 +814,7 @@ use base qw(Model);
             $sequence_ref->get_length() - length($gene_ref->get_STOP_linker_code()),
             length($gene_ref->get_STOP_linker_code()));
 
-        return ($gene_name, $duplicate_locus);
+        return ($gene_name, $duplicate_locus, $gene_length);
     }
 
     #--------------------------------------------------------------------------------------
@@ -916,11 +931,11 @@ use base qw(Model);
         my @interpds_unsorted = ((int rand ($num_protodomains + 1)), (int rand ($num_protodomains + 1)));
         my @interpds = sort {$a <=> $b} @interpds_unsorted;
         my $duplicate_num = abs($interpds[1] - $interpds[0]);
-        
+        my $duplicate_bits = 0; 
         my $cut_site0; my $cut_site1;
         my $mu_locus; my $mu_seq;
         if ($interpds[0] == $interpds[1]) {
-            return $duplicate_num;
+            return $duplicate_bits;
         } elsif ($interpds[1] == $num_protodomains) {
             $cut_site1 = $protodomains[$interpds[1] - 1]->get_locus() + $protodomains[$interpds[1] - 1]->get_length();
             $mu_locus = $cut_site1;
@@ -976,7 +991,7 @@ use base qw(Model);
 
         $sequence_ref->splice_subseq($mu_seq, $mu_locus);
  
-        return $duplicate_num;
+        return length($mu_seq);
     }
 
 
@@ -1201,13 +1216,13 @@ use base qw(Model);
             $middle_seq .
             $right_seq . 
             $gene_parser_ref->get_STOP_linker_code());
-
+        my $length = length($new_gene_sequence);
         my $new_gene_start = $sequence_ref->get_length() + 8;
 
         $self->get_sequence_ref()->splice_subseq("00000000".$new_gene_sequence);
         printn "recombine_genes: new gene sequence = " . $new_gene_sequence if $verbosity > 1;
 
-        return $new_gene_start;
+        return ($new_gene_start, $length);
     }
 
     #--------------------------------------------------------------------------------------
@@ -1247,16 +1262,19 @@ use base qw(Model);
         ###########################
         # gene duplication
         # by appending genes based on gene_duplication_rate
+
+        my $duplication_count = 0;
+        my $duplication_bits = 0;
+
         if ($gene_duplication_rate > 0.0 && $gene_duplication_rate <= 1.0) 	# duplicate genes
         {
             my @gene_refs = $self->get_genes();
             my @gene_names = map $_->get_name(), @gene_refs;
 
-            my $gene_duplication_count = 0;
             foreach my $gene_name (@gene_names) {
                 if ( rand() < $gene_duplication_rate ) {
                     printn "MUTATION: GENE_DUPLICATION" if $verbosity >= 1;
-                    my ($duplicated_gene, $duplicate_start) = $self->duplicate_gene($gene_name);
+                    my ($duplicated_gene, $duplicate_start, $length) = $self->duplicate_gene($gene_name);
 
                     my $duplicate_name = sprintf("G%04d",$duplicate_start);
                     my $history = "DUPLICATION of gene $duplicated_gene"; 
@@ -1265,10 +1283,10 @@ use base qw(Model);
 
                     # post-mutation parsing
                     $self->parse();
-                    $gene_duplication_count++;
+                    $duplication_bits += $length;
+                    $duplication_count++;
                 }
             }
-            $mutation_count += $gene_duplication_count;
             $self->check();
         }
         elsif ($gene_duplication_rate != 0.0) {
@@ -1276,27 +1294,30 @@ use base qw(Model);
             exit;
         }
  
+        my $shuffling_count = 0;
+        my $shuffling_bits = 0;
         #######################
         # Domain shuffling
         if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
             for (my $i = 0; $i < $num_genes; $i ++) {
                 if (rand() < $recombination_rate) {
                     printn "MUTATION: RECOMBINATION" if $verbosity >= 1;
-                    my $gene1_index = int rand $num_genes;
+                    my $gene1_index = $self->get_gene_by_index($i);
                     my $gene2_index;
                     do {
                         $gene2_index = int rand $num_genes;
                     } until ($gene2_index != $gene1_index);
                     my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
                     my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
-                    my $recombinatory_start = $self->recombine_genes($gene1_index, $gene2_index);
+                    my ($recombinatory_start, $length) = $self->recombine_genes($gene1_index, $gene2_index);
                     my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
                     printn $history if $verbosity > 1;
                     $self->add_history($history);
 
                     # post-mutation parsing
                     $self->parse();
-                    $mutation_count++;
+                    $shuffling_bits += $length;
+                    $shuffling_count++;
                 }
             }
             $self->check();
@@ -1315,7 +1336,6 @@ use base qw(Model);
         {
 
             my @gene_refs = $self->get_genes();
-            my $domain_duplication_count = 0;
 
             for (my $i = 0; $i < $num_genes; $i ++) {
                 my $gene_ref = $self->get_gene_by_index($i);
@@ -1333,12 +1353,12 @@ use base qw(Model);
                         $self->parse();
                         undef @gene_refs;
                         @gene_refs = $self->get_genes();
-                        $domain_duplication_count += $duplicate_num;
+                        $duplication_count++;
+                        $duplication_bits += $duplicate_num;
                     }
                 }
             }
 
-            $mutation_count += $domain_duplication_count;
 
             $self->check();
         }
@@ -1507,11 +1527,7 @@ use base qw(Model);
                 mutate_params_rate => 1.0,
                 mutate_network_rate => 1.0,
             );
-            my @mutated_list = $self->mutate_genome($mutation_rate_global);
-            my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
-            my $history = "POINT MUTATION (GLOBAL) $total_bits bits in genes ". join ",", @mutated_list;
-            printn $history if $verbosity >= 1;
-            $self->add_history($history);
+            my $total_bits = $self->mutate_genome($mutation_rate_global);
 
             # post-mutation parsing
             $self->parse();
@@ -1525,8 +1541,10 @@ use base qw(Model);
         $self->check();
 
         $mutation_count += $point_mutation_count;
-        $self->set_mutations($mutation_count);
-        $self->set_point_mutations($point_mutation_count);
+        
+        $self->set_stepwise_mutations($mutation_count);
+        $self->set_stepwise_point_mutations($point_mutation_count);
+
         return $mutation_count;
     }
 

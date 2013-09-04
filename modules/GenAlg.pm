@@ -746,12 +746,12 @@ use base qw();
 
         my $second_attribute = 'Population/MutationSteps';
         if ($config_ref->{selection_method} eq "kimura_selection") {
-            $second_attribute = 'Mutation_steps';
+            $second_attribute = 'Mutation_attempts';
         } elsif ($config_ref->{selection_method} eq "population_based_selection") {
             $second_attribute = 'Population_per_mutant';
         }
  
-        my @attribute_names_new = ('Name', $second_attribute, 'Mutations', 'Point_mutations', @genome_attribute_names);
+        my @attribute_names_new = ('Name', $second_attribute, 'Accum_mutations', 'Accum_point_mutations', @genome_attribute_names);
         $csv->print($data_file, \@attribute_names_new);
 
         close($data_file) || warn "close failed: $!";
