@@ -1076,7 +1076,7 @@ use base qw(Model);
         
         $sequence_ref->splice_subseq("", $cut_locus, $cut_length);
  
-        return $delete_num;
+        return $cut_length;
     }
 
 
@@ -1371,6 +1371,8 @@ use base qw(Model);
         #######################
         # DOMAIN DELETION
 
+        my $deletion_count = 0;
+        my $deletion_bits = 0;
         my @gene_need_delete_indice = ();
         if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0)  # delete domains
         {
@@ -1394,7 +1396,8 @@ use base qw(Model);
                         $self->parse();
                         undef @gene_refs;
                         @gene_refs = $self->get_genes();
-                        $mutation_count += $deleted_num;
+                        $deletion_count++;
+                        $deletion_bits += $deleted_num;
                     }
                 }
             }
@@ -1413,13 +1416,13 @@ use base qw(Model);
             printn "mutate: GENE_DELETION" if $verbosity >= 1;
 
             my $num_genes = $self->get_num_genes();
-            my $deleted_gene_num = 0;
 
             if (scalar @gene_need_delete_indice < $num_genes) {
                 if (scalar @gene_need_delete_indice > 0) {
                     my @gene_indice = sort {$b <=> $a} @gene_need_delete_indice;
                     foreach my $gene_index (@gene_indice) {
                         my $gene_need_delete = $self->get_gene_by_index($gene_index);
+                        my $length = $gene_need_delete->get_length();
                         $self->delete_gene($gene_need_delete);
                         my $deleted_gene_name = $gene_need_delete->get_name();
                         my $history = "DELETION of gene $deleted_gene_name";
@@ -1429,14 +1432,14 @@ use base qw(Model);
                         # post-mutation parsing
                         $self->parse();
 
-                        $deleted_gene_num++;
+                        $deletion_count++;
+                        $deletion_bits += $length;
                     }
                     $self->check();
                 }
                 my $num_genes_left = $num_genes - $deleted_gene_num;
                 my $current_num_genes = $self->get_num_genes();
                 printn "Warning: The number of genes after deletion is not consistant with of left ones." if ($current_num_genes != $num_genes_left && $verbosity >= 1);
-                my $deleted_gene_num2 = 0;
                 GENE_DELETION: {
                     for (my $i = 0; $i < $current_num_genes; $i++) {
                         if ($current_num_genes - $deleted_gene_num2 == 1) {
@@ -1444,6 +1447,7 @@ use base qw(Model);
                         }
                         elsif (rand() < $gene_deletion_rate) {
                             my $deleted_gene_ref = $self->erase_random_gene();
+                            my $length = $deleted_gene_ref->get_length();
                             my $deleted_gene_name = $deleted_gene_ref->get_name();
                             my $history = "ERASION of gene $deleted_gene_name";
                             printn $history if $verbosity > 1;
@@ -1453,7 +1457,8 @@ use base qw(Model);
                             $self->parse();
 
                             # conuting the deleted gene number to calculate number of rest genes
-                            $deleted_gene_num2++;
+                            $deletion_count++;
+                            $deletion_bits += $length;
                         }
                     }
                 }
@@ -1484,7 +1489,6 @@ use base qw(Model);
                     }
                 }
                 $self->check();
-                $mutation_count += $deleted_gene_num;
             }
         }
         elsif ($gene_deletion_rate != 0.0) {
@@ -1541,9 +1545,13 @@ use base qw(Model);
         $self->check();
 
         $mutation_count += $point_mutation_count;
-        
+        $mutation_count += $duplication_bits + $deletion_bits + $shuffling_bits;
         $self->set_stepwise_mutations($mutation_count);
         $self->set_stepwise_point_mutations($point_mutation_count);
+        my $accum_mutation_count = $self->get_accum_mutations();
+        my $accum_point_mutation_count = $self->get_accum_point_mutations();
+        $self->set_accum_mutations($accum_mutation_count + $mutation_count);
+        $self->set_accum_point_mutations($accum_point_mutation_count + $point_mutation_count);
 
         return $mutation_count;
     }
