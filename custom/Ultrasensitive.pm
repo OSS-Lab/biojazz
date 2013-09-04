@@ -281,23 +281,22 @@ use base qw(Scoring);
                 my $tg1_subnet_size = (@tg1_subnet > 30) ? 30 : @tg1_subnet;
                 $network_connectivity += ($lg_subnet_size + $tg0_subnet_size + $tg1_subnet_size);
 
+                # now use the gene subnet to determine the connectivity
+                my (@lg_subnet, @tg_subnet);   # gene subnets
+                @lg_subnet = map {$_->[0]} $genome_ref->get_connected(key => "genes", ref => $lg_gene_ref);
+                @tg_subnet = map {$_->[0]} $genome_ref->get_connected(key => "genes", ref => $tg_gene_ref);
+                printn "LG protein connects to ".join ",", (map {$_->get_name} @lg_subnet) if $verbosity > 1;
+                printn "TG protein connects to ".join ",", (map {$_->get_name} @tg_subnet) if $verbosity > 1;
+
                 #########################################################################################
                 # score -- LG/TG connected to each other
-                if (grep /LPD/, (map {$_->[2]} @tg0_subnet)) {
-                    printn "TG/0 fans out to LG" if $verbosity > 1;
-                    $network_connectivity += 100;
+                if (grep /LG0000/, (map {$_->[2]} @tg_subnet)) {
+                    printn "TG0000 fans out to LG0000" if $verbosity > 1;
+                    $network_connectivity += 200;
                 }
-                if (grep /LPD/, (map {$_->[2]} @tg1_subnet)) {
-                    printn "TG/1 fans out to LG" if $verbosity > 1;
-                    $network_connectivity += 100;
-                }
-                if (grep /TPD\d*\/0/, (map {$_->[2]} @lg_subnet)) {
-                    printn "LG fans out to TG/0" if $verbosity > 1;
-                    $network_connectivity += 100;
-                }
-                if (grep /TPD\d*\/1/, (map {$_->[2]} @lg_subnet)) {
-                    printn "LG fans out to TG/1" if $verbosity > 1;
-                    $network_connectivity += 100;
+                if (grep /TG0000/, (map {$_->[2]} @lg_subnet)) {
+                    printn "LG0000 fans out to TG0000" if $verbosity > 1;
+                    $network_connectivity += 200;
                 }
 
                 $network_connectivity += 100 if $network_connectivity >= 400;  # max LG/TG connectivity score
@@ -306,12 +305,6 @@ use base qw(Scoring);
             if ($network_connectivity >= 500) {
                 $stats_ref->{network_connected_flag} = 1;
                 # exclude proteins not in LG/TG subnet from export
-                my (@lg_subnet, @tg_subnet);   # gene subnets
-                @lg_subnet = map {$_->[0]} $genome_ref->get_connected(key => "genes", ref => $lg_gene_ref);
-                @tg_subnet = map {$_->[0]} $genome_ref->get_connected(key => "genes", ref => $tg_gene_ref);
-                printn "LG protein connects to ".join ",", (map {$_->get_name} @lg_subnet) if $verbosity > 1;
-                printn "TG protein connects to ".join ",", (map {$_->get_name} @tg_subnet) if $verbosity > 1;
-
                 my @proteins_not_in_subnet = simple_difference([$genome_model_ref->get_genes()], [union(\@lg_subnet, \@tg_subnet)]);
                 map {$_->set_export_flag(0)} @proteins_not_in_subnet;
 
