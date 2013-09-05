@@ -83,20 +83,6 @@ use base qw();
         }
     }
 
-# THIS IS NEVER USED!!  HANDLER PROVIDED BY SCORCLUSTER
-#    #--------------------------------------------------------------------------------------
-#    # Function: CTRL-C handler
-#    # Synopsys: Trap CTRL-C and exit cleanly, ensuring that shared memory is cleaned up.
-#    #--------------------------------------------------------------------------------------
-#    $SIG{INT} = sub {   # trapping CTRL-C ensures graceful exit via DEMOLISH/END BLOCKS etc.
-#	if ($$ == $ppid) {
-#	    printn "ScorNode: Parent process $$ exiting from CTRL-C\n";
-#	} else {
-#	    printn "ScorNode: Child process $$ exiting from CTRL-C\n";
-#	}
-#	exit;
-#    };
-
     #--------------------------------------------------------------------------------------
     # Function: set_cpid
     # Synopsys: Set the cpid after a fork.
@@ -157,9 +143,9 @@ use base qw();
             $shell_ref_of{$obj_ID}->print("exit\n");         # exit the shell (ssh, qsub, etc.)
             $shell_ref_of{$obj_ID}->expect(10, "Scoring::DEMOLISH: done");  # wait for DEMOLISH
 
-# commented out this line: works but grabs special characters (the ctrl-c?) 
-# that cause problems when cat'ing the file
-#	    $shell_ref_of{$obj_ID}->expect(1, "DUMMY");                     # flush to logfile
+        # commented out this line: works but grabs special characters (the ctrl-c?) 
+        # that cause problems when cat'ing the file
+        #$shell_ref_of{$obj_ID}->expect(1, "DUMMY");                     # flush to logfile
 
             $shell_ref_of{$obj_ID} = undef; # destroy Expect object
 
@@ -200,7 +186,7 @@ use base qw();
             printn "ScorNode::spawn spawning PBS node";
             $shell_ref->raw_pty(1);
             my $delay = $node_ID * 4;
-#	    $shell_ref->spawn("sleep $delay; /usr/pbs/bin/qsub -I genalg.pbs") or die "Couldn't start program $!\n";
+            #$shell_ref->spawn("sleep $delay; /usr/pbs/bin/qsub -I genalg.pbs") or die "Couldn't start program $!\n";
             $shell_ref->spawn("/usr/pbs/bin/qsub -I genalg.pbs") or die "Couldn't start program $!\n";
             $shell_ref->stty(qw(raw -echo));
         } else {

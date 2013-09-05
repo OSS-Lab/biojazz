@@ -14,12 +14,12 @@ use warnings;
 package GenAlg;
 
 use Class::Std;
-use Text::CSV;
 
 use base qw();
 {
     use Carp;
     use Storable qw(store retrieve);
+    use Text::CSV;
 
     use Utils;
 
@@ -188,7 +188,7 @@ use base qw();
             }
 
             # need to sort on individual number
-#	    @files = sort {$a=~/_I(\d+)/; $a_i=$1; $b=~/_I(\d+)/; $b_i=$1; return $a_i <=> $b_i} @files;
+            #@files = sort {$a=~/_I(\d+)/; $a_i=$1; $b=~/_I(\d+)/; $b_i=$1; return $a_i <=> $b_i} @files;
             printn "create_initial_generation: loading initial generation from disk";
             printn join "\n", @files;
             $current_generation_ref->retrieve_genomes(
@@ -219,40 +219,48 @@ use base qw();
                     $genome_model_ref->clear_stats(preserve => []);
                     $genome_model_ref->set_score(undef);
                     $genome_model_ref->set_elite_flag(0);
-                    if ($config_ref->{selection_method} eq "kimura_selection") {
-                        $genome_model_ref->set_number(0);
-                    } elsif ($config_ref->{selection_method} eq "population_based_selection") {
+                    if ($config_ref->{selection_method} eq "population_based_selection") {
                         if (!$genome_model_ref->get_number()) {
                             $genome_model_ref->set_number(1);
                         }
-                    } else {
-                        confess "The selection method is not set appropriately!";
-                    }
-                    $scoring_ref->score_genome($genome_model_ref);
+                    }                    $scoring_ref->score_genome($genome_model_ref);
                     $genome_model_ref->static_analyse($config_ref->{rescore_elite});
                     $genome_model_ref->set_elite_flag(1);
                 }
             }
             my $loaded_genome_num = 0;
-            my $i = 0;
-            foreach my $genome_model_ref (@genome_model_refs) {
-                if ($config_ref->{selection_method} eq "kimura_selection") {
+            if ($config_ref->{selection_method} eq "kimura_selection") {
+                foreach my $genome_model_ref (@genome_model_refs) {
                     if (!$config_ref->{continue_sim}) {
                         $genome_model_ref->set_number(0);
+                        $genome_model_ref->set_stepwise_mutations(0);
+                        $genome_model_ref->set_stepwise_mutations(0);
+                        $genome_model_ref->set_accum_mutations(0);
+                        $genome_model_ref->set_accum_mutations(0);
                     }
-                } elsif ($config_ref->{selection_method} eq "population_based_selection") {
+                }
+            } elsif ($config_ref->{selection_method} eq "population_based_selection") {
+                my $i = 0;
+                foreach my $genome_model_ref (@genome_model_refs) {
+                    $genome_model_ref->set_mutation_index(undef);
                     if (!$genome_model_ref->get_number()) {
                         $genome_model_ref->set_number(1);
+                    }
+                    if (!$config_ref->{continue_sim}) {
+                        $genome_model_ref->set_stepwise_mutations(0);
+                        $genome_model_ref->set_stepwise_mutations(0);
+                        $genome_model_ref->set_accum_mutations(0);
+                        $genome_model_ref->set_accum_mutations(0);
                     }
                     my $number = $genome_model_ref->get_number();
                     $loaded_genome_num += $number;
                     my $score = $genome_model_ref->get_score();
                     push @{$score_array_ref_of{$obj_ID}}, ($score) x $number;
                     push @{$index_array_ref_of{$obj_ID}}, ($i) x $number;
-                } else {
-                    confess "The selection method is not set appropriately!";
                 }
                 $i++;
+            } else {
+                confess "The selection method is not set appropriately!";
             }
 
             if ($config_ref->{selection_method} eq 'population_based_selection') {
@@ -311,6 +319,11 @@ use base qw();
 
                     $scoring_ref->score_genome($genome_model_ref);
                     $genome_model_ref->static_analyse($config_ref->{rescore_elite});
+                    $genome_model_ref->set_mutation_index(undef);
+                    $genome_model_ref->set_stepwise_mutations(0);
+                    $genome_model_ref->set_stepwise_mutations(0);
+                    $genome_model_ref->set_accum_mutations(0);
+                    $genome_model_ref->set_accum_mutations(0);
                     $genome_model_ref->set_elite_flag(1);
                 }
             }
@@ -436,6 +449,8 @@ use base qw();
                 $parent_ref->set_score(undef);
                 $parent_ref->clear_stats();
                 $parent_ref->set_elite_flag(0);
+                $parent_ref->set_stepwise_mutations(0);
+                $parent_ref->set_stepwise_point_mutations(0);
                 $parent_ref->mutate(
                     mutation_rate_params => $config_ref->{mutation_rate_params},
                     mutation_rate_global => $config_ref->{mutation_rate_global},
@@ -474,7 +489,6 @@ use base qw();
             # after fix the mutation
             my $child_ref = $parent_ref->duplicate();
             $child_ref->set_number($mutation_step_num);
-            $child_ref->add_history(sprintf("REPLICATION: $parent_name -> G%03d_I%02d", $next_generation_number, $i));
             $next_generation_ref->add_element($child_ref);
         }
 
@@ -520,6 +534,8 @@ use base qw();
             confess "ERROR: The score of $parent_name is UNDEFINED!" if !defined $genome_ref->get_score();
             if (rand(1) < $mutation_rate) {
                 my $child_ref = $genome_ref->duplicate();
+                $child_ref->set_stepwise_mutations(0);
+                $child_ref->set_stepwise_point_mutations(0);
                 printn "MUTATION: mutating genome $parent_name.";
                 my $mutation_count = $child_ref->mutate(
                     mutation_rate_params => $config_ref->{mutation_rate_params},
@@ -641,6 +657,9 @@ use base qw();
                 if (${$index_array_ref_of{$obj_ID}}[$mutation_index] != $i) {
                     die "There is something wrong that mutation index recorded in genome is not same as the genotype index recoding the corresponding mutated genome";
                 }
+            } else {
+                $genome_model_ref->set_stepwise_mutations(0);
+                $genome_model_ref->set_stepwise_point_mutations(0);
             }
             $i++;
         }
@@ -690,6 +709,7 @@ use base qw();
             $selection_count[$indice[$left]]++;
         }
 
+        my $accumulative_count = 0;
         for (my $i = 0; $i < $current_generation_size; $i++) {
             if ($selection_count[$i]) {
                 my $parent_ref = $current_generation_ref->get_element($i);
@@ -699,7 +719,12 @@ use base qw();
                 $child_ref->add_history(sprintf("REPLICATION: $parent_name has $selection_count[$i] descendants in G%03d_I%02d", $current_generation_number, $i));
                 $child_ref->set_number($selection_count[$i]);
                 $temp_generation_ref->add_element($child_ref);
+                $accumulative_count += $selection_count[$i];
             }
+        }
+
+        if ($accumulative_count != $population_size) {
+            die "The accumulative count is not equal to population size, which means the selection might be wrong!";
         }
 
         $current_generation_ref->clear_genomes();
@@ -741,15 +766,51 @@ use base qw();
 
         my $second_attribute = 'Population/MutationSteps';
         if ($config_ref->{selection_method} eq "kimura_selection") {
-            $second_attribute = 'Mutation_steps';
+            $second_attribute = 'Mutation_attempts';
         } elsif ($config_ref->{selection_method} eq "population_based_selection") {
             $second_attribute = 'Population_per_mutant';
         }
  
-        my @attribute_names_new = ('Name', $second_attribute, 'Mutations', 'Point_mutations', @genome_attribute_names);
+        my @attribute_names_new = ('Name', $second_attribute, 'Accum_mutations', 
+            'Accum_point_mutations', 'Stepwise_mutations', 'Stepwise_point_mutations', @genome_attribute_names);
         $csv->print($data_file, \@attribute_names_new);
 
         close($data_file) || warn "close failed: $!";
+
+        return 1;
+    }
+
+    #--------------------------------------------------------------------------------------
+    # Function: report_selection
+    # Synopsys: 
+    #--------------------------------------------------------------------------------------
+    sub report_selection {
+        my $self = shift; my $obj_ID = ident $self;
+        my $current_generation_number = $current_generation_number_of{$obj_ID};
+        my $current_generation_ref = $current_generation_ref_of{$obj_ID};
+        my $config_ref = $config_ref_of{$obj_ID};
+        
+        my $scores_ref = $score_array_ref_of{$obj_ID};
+        my $indice_ref = $index_array_ref_of{$obj_ID};
+
+        my $population = $config_ref->{evolve_population};
+
+        if ($population != scalar @{$scores_ref} || $population != scalar @{$indice_ref}) {
+            confess "The size of scores array and indice array is not equal to population size!";
+        }
+
+        my $csv = Text::CSV->new({binary => 1, eol => "\n"});
+
+        my $data_dir = "$config_ref->{work_dir}/$TAG/report";
+        my $scores_file = "$data_dir/selection_scores.csv";
+        open my $scores_data, ">> $scores_file" or die "$scores_file: $!";
+        $csv->print($scores_data, $scores_ref);
+        close($scores_data) || warn "close failed: $!";
+
+        my $indice_file = "$data_dir/selection_indice.csv";
+        open my $indice_data, ">> $indice_file" or die "$indice_file: $!";
+        $csv->print($indice_data, $indice_ref);
+        close($indice_data) || warn "close failed: $!";
 
         return 1;
     }
@@ -787,8 +848,10 @@ use base qw();
             my $genome_ref = $genomes[$i];
             push(@attributes, $genome_ref->get_name());
             push(@attributes, $genome_ref->get_number());
-            push(@attributes, $genome_ref->get_mutations());
-            push(@attributes, $genome_ref->get_point_mutations());
+            push(@attributes, $genome_ref->get_accum_mutations());
+            push(@attributes, $genome_ref->get_accum_point_mutations());
+            push(@attributes, $genome_ref->get_stepwise_mutations());
+            push(@attributes, $genome_ref->get_stepwise_point_mutations());
             # Here, we output each genome stats into a line 
             # of CSV file
             for (my $j = 0; $j < scalar @genome_attribute_names; $j++) {
@@ -844,8 +907,13 @@ use base qw();
 
         $self->create_initial_generation();
         if ($config_ref->{continue_sim} != 1) {
-            $self->print_attribute_names();
-            $self->report_current_generation();
+            if ($config_ref->{report_on_fly} == 1) {
+                $self->print_attribute_names();
+                $self->report_current_generation();
+            }
+            if ($config_ref->{selection_method} eq "population_based_selection" && $config_ref->{report_selection} == 1) {
+                $self->report_selection();
+            }
         }
         $self->save_current_generation();
 
@@ -860,8 +928,10 @@ use base qw();
                 && $reach_target_flag_of{$obj_ID} != 1) {
                 if ($config_ref->{selection_method} eq "kimura_selection") {
                     $self->random_walk_selection();
-                    $self->print_attribute_names();
-                    $self->report_current_generation();
+                    if ($config_ref->{report_on_fly} == 1) {
+                        $self->print_attribute_names();
+                        $self->report_current_generation();
+                    }
                     $self->save_current_generation();
                 } elsif ($config_ref->{selection_method} eq "population_based_selection") {
                     $self->mutate_current_generation();
@@ -869,16 +939,21 @@ use base qw();
                     $self->score_mutated_genomes();
                     $self->load_current_generation($current_generation_number_of{$obj_ID});
                     $self->population_based_selection();
-                    $self->print_attribute_names();
-                    $self->report_current_generation();
+                    if ($config_ref->{report_on_fly} == 1) {
+                        $self->print_attribute_names();
+                        $self->report_current_generation();
+                    }
+                    if ($config_ref->{report_selection} == 1) {
+                        $self->report_selection();
+                    }
                     $self->clear_objs($current_generation_number_of{$obj_ID});
                     $self->save_current_generation();
                     # clear genome files in order to relife the storage burdon
                     if (defined $fossil_epoch) {
                         my $current_generation_number = $current_generation_number_of{$obj_ID};
                         if ($current_generation_number != 1 &&
-                            ($current_generation_number % $fossil_epoch) 
-                            != (($first_generation % $fossil_epoch) + 1)) {
+                            (($current_generation_number - $first_generation) % $fossil_epoch) 
+                            != 1) {
                             $self->clear_objs($current_generation_number - 1);
                         }
                     }

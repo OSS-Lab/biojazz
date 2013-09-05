@@ -48,14 +48,6 @@ use base qw();
     # CLASS METHODS
     #######################################################################################
     #--------------------------------------------------------------------------------------
-    # Function: XXX
-    # Synopsys: 
-    #--------------------------------------------------------------------------------------
-#    sub XXX {
-# 	my $class = shift;
-#    }
-
-    #--------------------------------------------------------------------------------------
     # Function: matlab_round_value (class or instance method)
     # Synopsys: Applies optional AbsTol/RelTol to a variable's value.
     #           resulting value is rounded appropriately given RelTol and also
