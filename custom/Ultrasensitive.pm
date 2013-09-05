@@ -388,8 +388,8 @@ use base qw(Scoring);
                 $stats_ref->{num_rules} = $num_rules;
                 printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules" if $verbosity >= 1;
                 $stats_ref->{complexity} = $num_protodomains + $num_domains + $num_proteins + $num_rules;
-                my $complexity_threshold = defined $config_ref->{complexity_threshold} ? $config_ref->{complexity_threshold} : 100;
-                $stats_ref->{complexity_score} = n_hill(($stats_ref->{complexity} - 15), $complexity_threshold, 1);
+                my $complexity_threshold = defined $config_ref->{complexity_threshold} ? $config_ref->{complexity_threshold} : 250;
+                $stats_ref->{complexity_score} = n_hill($stats_ref->{complexity}, $complexity_threshold, 1);
                 #---------------------------------------------------------
                 # CHECK ANC/FACILE MODEL
                 #---------------------------------------------------------
