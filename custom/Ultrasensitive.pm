@@ -266,27 +266,27 @@ use base qw(Scoring);
             # SCORING: 90 + 400 pts -- LG/TG subnets
             #---------------------------------------------------------
             if ($network_connectivity == 2) { # LG/TF connected
-                my (@lg_subnet, @tg0_subnet, @tg1_subnet);   # protodomain subnets
-                @lg_subnet = $genome_ref->get_connected(key => "protodomains", ref => $lg_protodomain_ref);
-                @tg0_subnet = $genome_ref->get_connected(key => "protodomains", ref => $tg_protodomain_ref, state => 0);
-                @tg1_subnet = $genome_ref->get_connected(key => "protodomains", ref => $tg_protodomain_ref, state => 1);
+                my (@lg_pd_subnet, @tg0_pd_subnet, @tg1_pd_subnet);   # protodomain subnets
+                @lg_pd_subnet = $genome_ref->get_connected(key => "protodomains", ref => $lg_protodomain_ref);
+                @tg0_pd_subnet = $genome_ref->get_connected(key => "protodomains", ref => $tg_protodomain_ref, state => 0);
+                @tg1_pd_subnet = $genome_ref->get_connected(key => "protodomains", ref => $tg_protodomain_ref, state => 1);
 
-                printn "LG protodomain connects to ".join ",", (map {$_->[2]} @lg_subnet) if $verbosity > 1;
-                printn "TG/0 protodomain connects to ".join ",", (map {$_->[2]} @tg0_subnet) if $verbosity > 1;
-                printn "TG/1 protodomain connects to ".join ",", (map {$_->[2]} @tg1_subnet) if $verbosity > 1;
+                printn "LG protodomain connects to ".join ",", (map {$_->[2]} @lg_pd_subnet) if $verbosity > 1;
+                printn "TG/0 protodomain connects to ".join ",", (map {$_->[2]} @tg0_pd_subnet) if $verbosity > 1;
+                printn "TG/1 protodomain connects to ".join ",", (map {$_->[2]} @tg1_pd_subnet) if $verbosity > 1;
 
                 # max 90 points for subnet size
-                my $lg_subnet_size = (@lg_subnet > 30) ? 30 : @lg_subnet;
-                my $tg0_subnet_size = (@tg0_subnet > 30) ? 30 : @tg0_subnet;
-                my $tg1_subnet_size = (@tg1_subnet > 30) ? 30 : @tg1_subnet;
-                $network_connectivity += ($lg_subnet_size + $tg0_subnet_size + $tg1_subnet_size);
+                my $lg_pd_subnet_size = (@lg_pd_subnet > 30) ? 30 : @lg_pd_subnet;
+                my $tg0_pd_subnet_size = (@tg0_pd_subnet > 30) ? 30 : @tg0_pd_subnet;
+                my $tg1_pd_subnet_size = (@tg1_pd_subnet > 30) ? 30 : @tg1_pd_subnet;
+                $network_connectivity += ($lg_pd_subnet_size + $tg0_pd_subnet_size + $tg1_pd_subnet_size);
 
                 my @tg_adjacent_kinases = $genome_ref->find_adjacent_csites($tg_protodomain_ref, 0);
                 my @tg_adjacent_phosphatases = $genome_ref->find_adjacent_csites($tg_protodomain_ref, 1);
                 $stats_ref->{num_adjacent_kinases} = scalar(@tg_adjacent_kinases);
                 $stats_ref->{num_adjacent_phosphatases} = scalar(@tg_adjacent_phosphatases);
-                printn "Found ".@adjacent_kinases." adjacent kinases";
-                printn "Found ".@adjacent_phosphatases." adjacent phosphatases";
+                printn "Found ".@tg_adjacent_kinases." adjacent kinases";
+                printn "Found ".@tg_adjacent_phosphatases." adjacent phosphatases";
 
                 my @lg_adjacent_protodomains = union(
                     [map {$_->[0]} $genome_ref->get_adjacent(key => "protodomains", ref => $lg_protodomain_ref)],
@@ -371,11 +371,6 @@ use base qw(Scoring);
                 # SCORE COMPLEXITY
                 # Basically compute the number of genes, domains, protodomains, rules
                 # and put those values in account as how complex is the network
-                #
-                # NOTE: if the network have more genes/domains/protodomains, the complexity score
-                #       will become smaller. This must be the reason why the networks is going to 
-                #       simple networks !!!! 
-                #       1/(1+(complexity/100))
                 #---------------------------------------------------------
                 my $num_protodomains = @{[$anc_model =~ /ReactionSite :/g]};
                 my $num_domains = @{[$anc_model =~ /AllostericStructure :/g]};
