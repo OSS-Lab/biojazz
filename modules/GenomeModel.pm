@@ -1413,7 +1413,7 @@ use base qw(Model);
             exit;
         }
  
-        my @genes_need_delete_info = union(\@gene_need_delete_indice, \@gene_deletion_from_shuffling);
+        my @genes_need_delete = union(\@gene_need_delete_indice, \@gene_deletion_from_shuffling);
         ########################
         # GENE_DELETION
         if ($gene_deletion_rate > 0.0 && $gene_deletion_rate <= 1.0)  # delete genes
