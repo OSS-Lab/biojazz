@@ -191,7 +191,7 @@ use base qw();
                 if ($protodomain_states[$i] == 1) {
                     $protodomain_prunable_flags[$i] = 0 if $is_product_flag[$i];
                 } else {
-                    $protodomain_prunable_flags[$i] = 0 if $is_product_flag[$i] || !$is_substrate_flag[$i];
+                    $protodomain_prunable_flags[$i] = 0 if $is_product_flag[$i] || $is_substrate_flag[$i];
                 }
             }
         }
