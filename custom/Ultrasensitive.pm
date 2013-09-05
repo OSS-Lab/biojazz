@@ -281,6 +281,22 @@ use base qw(Scoring);
                 my $tg1_subnet_size = (@tg1_subnet > 30) ? 30 : @tg1_subnet;
                 $network_connectivity += ($lg_subnet_size + $tg0_subnet_size + $tg1_subnet_size);
 
+                my @tg_adjacent_kinases = $genome_ref->find_adjacent_csites($tg_protodomain_ref, 0);
+                my @tg_adjacent_phosphatases = $genome_ref->find_adjacent_csites($tg_protodomain_ref, 1);
+                $stats_ref->{num_adjacent_kinases} = scalar(@tg_adjacent_kinases);
+                $stats_ref->{num_adjacent_phosphatases} = scalar(@tg_adjacent_phosphatases);
+                printn "Found ".@adjacent_kinases." adjacent kinases";
+                printn "Found ".@adjacent_phosphatases." adjacent phosphatases";
+
+                my @lg_adjacent_protodomains = union(
+                    [map {$_->[0]} $genome_ref->get_adjacent(key => "protodomains", ref => $lg_protodomain_ref)],
+                );
+                @lg_adjacent_protodomains = simple_difference(
+                    \@lg_adjacent_protodomains,
+                    [$lg_protodomain_ref]
+                );
+                $stats_ref->{num_receptive_protodomains} = scalar (@lg_adjacent_protodomains);
+
                 # now use the gene subnet to determine the connectivity
                 my (@lg_subnet, @tg_subnet);   # gene subnets
                 @lg_subnet = map {$_->[0]} $genome_ref->get_connected(key => "genes", ref => $lg_gene_ref);
@@ -382,14 +398,16 @@ use base qw(Scoring);
                 my $num_reactions_tg_0 = grep (/(->|<-).* TG00000/, @facile_model);
                 $stats_ref->{num_reactions_tg_0} = $num_reactions_tg_0;
                 $stats_ref->{num_reactions_tg_1} = $num_reactions_tg_1;
-                $network_connectivity += 100 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
                 $network_connectivity += 100 * ($num_reactions_tg_0 > 1 ? 1 : $num_reactions_tg_0);
+
+                my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 600) ? 1 : 0;
+                
+                $network_connectivity += 100 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
                 # check that number of species is less than maximum
-                if ($stats_ref->{num_anc_species} < $config_ref->{max_species}) {
+                if ($stats_ref->{num_anc_species} < ($config_ref->{max_species} == -1 ? ~0 : $config_ref->{max_species}) {
                     $network_connectivity += 100;
                 }
             }
-            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 800) ? 1 : 0;
 
             #########################################################################################
             #---------------------------------------------------------
