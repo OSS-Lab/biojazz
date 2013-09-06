@@ -781,6 +781,60 @@ use base qw();
     }
 
     #--------------------------------------------------------------------------------------
+    # Function: report_current_generation
+    # Synopsys: 
+    #--------------------------------------------------------------------------------------
+    sub report_current_generation {
+        my $self = shift; my $obj_ID = ident $self;
+        my $current_generation_number = $current_generation_number_of{$obj_ID};
+        my $current_generation_ref = $current_generation_ref_of{$obj_ID};
+        my $config_ref = $config_ref_of{$obj_ID};
+
+        my @genomes = $self->get_current_generation_ref()->get_elements();
+
+        my @genome_attribute_names = @{$config_ref->{genome_attribute_names}};
+
+        confess "genome_attribute_names is not specified!" if (!@genome_attribute_names);
+        if ($genome_attribute_names[0] eq "all") {
+            undef @genome_attribute_names;
+            @genome_attribute_names = $current_generation_ref->get_attribute_names();
+        }
+
+        printn "report_current_generation: generation $current_generation_number";
+
+        my $data_dir = "$config_ref->{work_dir}/$TAG/stats";
+        my $file_name = sprintf("$data_dir/Generation%03d.csv", $current_generation_number);
+        open my $data_file, ">> $file_name" or die "$file_name: $!";
+        my $csv = Text::CSV->new({binary => 1, eol => "\n"});
+
+        my @attributes = ();
+        for (my $i=0; $i < @genomes; $i++) {
+            my $genome_ref = $genomes[$i];
+            push(@attributes, $genome_ref->get_name());
+            push(@attributes, $genome_ref->get_number());
+            push(@attributes, $genome_ref->get_accum_mutations());
+            push(@attributes, $genome_ref->get_accum_point_mutations());
+            push(@attributes, $genome_ref->get_stepwise_mutations());
+            push(@attributes, $genome_ref->get_stepwise_point_mutations());
+            # Here, we output each genome stats into a line 
+            # of CSV file
+            for (my $j = 0; $j < scalar @genome_attribute_names; $j++) {
+                my $attribute_value = $genome_ref->get_stats_ref()->{$genome_attribute_names[$j]};
+                push(@attributes, $attribute_value);
+            }
+            # process the attributes and output
+            $csv->print($data_file, \@attributes);
+
+            # destroy @attributes
+            undef @attributes;
+
+        }
+        close($data_file) || warn "close failed: $!";
+
+        return 1;
+    }
+
+    #--------------------------------------------------------------------------------------
     # Function: report_selection
     # Synopsys: 
     #--------------------------------------------------------------------------------------
@@ -814,62 +868,6 @@ use base qw();
 
         return 1;
     }
-
-
-    #--------------------------------------------------------------------------------------
-    # Function: report_current_generation
-    # Synopsys: 
-    #--------------------------------------------------------------------------------------
-    sub report_current_generation {
-        my $self = shift; my $obj_ID = ident $self;
-        my $current_generation_number = $current_generation_number_of{$obj_ID};
-        my $current_generation_ref = $current_generation_ref_of{$obj_ID};
-        my $config_ref = $config_ref_of{$obj_ID};
-
-        my @genomes = $self->get_current_generation_ref()->get_elements();
-
-        my @genome_attribute_names = @{$config_ref->{genome_attribute_names}};
-
-        confess "genome_attribute_names is not specified!" if (!@genome_attribute_names);
-        if ($genome_attribute_names[0] eq "all") {
-            undef @genome_attribute_names;
-            @genome_attribute_names = $current_generation_ref->get_attribute_names();
-        }
-
-        printn "report_current_generation: generation $current_generation_number";
-
-        my $data_dir = "$config_ref->{work_dir}/$TAG/stats";
-        my $file_name = sprintf("$data_dir/Generation%03d.csv", $current_generation_number);
-        open my $data_file, ">> $file_name" or die "$file_name: $!";
-        my $csv = Text::CSV->new({binary => 1, eol => "\n"});
-
-        my @attributes;
-        for (my $i=0; $i < @genomes; $i++) {
-            my $genome_ref = $genomes[$i];
-            push(@attributes, $genome_ref->get_name());
-            push(@attributes, $genome_ref->get_number());
-            push(@attributes, $genome_ref->get_accum_mutations());
-            push(@attributes, $genome_ref->get_accum_point_mutations());
-            push(@attributes, $genome_ref->get_stepwise_mutations());
-            push(@attributes, $genome_ref->get_stepwise_point_mutations());
-            # Here, we output each genome stats into a line 
-            # of CSV file
-            for (my $j = 0; $j < scalar @genome_attribute_names; $j++) {
-                my $attribute_value = $genome_ref->get_stats_ref()->{$genome_attribute_names[$j]};
-                push(@attributes, $attribute_value);
-            }
-            # process the attributes and output
-            $csv->print($data_file, \@attributes);
-
-            # destroy @attributes
-            undef @attributes;
-
-        }
-        close($data_file) || warn "close failed: $!";
-
-        return 1;
-    }
-
 
     #---  FUNCTION  ----------------------------------------------------------------
     #         NAME: clear_objs
