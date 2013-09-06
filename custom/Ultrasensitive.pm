@@ -323,6 +323,7 @@ use base qw(Scoring);
                 # exclude proteins not in LG/TG subnet from export
                 my @proteins_not_in_subnet = simple_difference([$genome_model_ref->get_genes()], [union(\@lg_subnet, \@tg_subnet)]);
                 map {$_->set_export_flag(0)} @proteins_not_in_subnet;
+                $stats_ref->{num_protein_out_subnet} = scalar @protein_not_in_subnet;
 
                 #---------------------------------------------------------
                 # GENERATE ANC/FACILE MODEL
@@ -350,12 +351,22 @@ use base qw(Scoring);
                 burp_file("$matlab_work/$genome_name.mod", $anc_model);
                 system("$ENV{ANC_HOME}/anc.pl --report=species $matlab_work/$genome_name.mod");
                 my @facile_model = slurp_file("$matlab_work/$genome_name.eqn");
+                my @new_anc_model = slurp_file("$matlab_work/$genome_name.mod");
 
                 $self->anc_process_species_report("$matlab_work/$genome_name.species.rpt");
                 my @anc_species = $self->anc_get_species();
                 $stats_ref->{num_anc_species} = @anc_species;
                 printn "ANC NUM SPECIES: ".scalar(@anc_species) if $verbosity > 1;
                 printn "ANC SPECIES: @anc_species" if $verbosity > 2;
+
+                #---------------------------------------------------------
+                # OUTPUT KINASE AND PHOSPHATASE
+                #---------------------------------------------------------
+                my @adjacent_kinase_names = map {$_->get_name()} @tg_adjacent_kinases;
+                my @adjacent_phosphatase_names = map {$_->get_name()} @tg_adjacent_phosphatases;
+                while (@new_anc_model) {
+                    my $anc_line = $_;
+                }
 
                 #---------------------------------------------------------
                 # RUN FACILE
@@ -392,7 +403,7 @@ use base qw(Scoring);
                 $network_connectivity += 100 * ($num_reactions_tg_0 > 1 ? 1 : $num_reactions_tg_0);
 
                 my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 600) ? 1 : 0;
-                
+
                 $network_connectivity += 100 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
                 # check that number of species is less than maximum
                 if ($stats_ref->{num_anc_species} < ($config_ref->{max_species} == -1 ? ~0 : $config_ref->{max_species}) {
