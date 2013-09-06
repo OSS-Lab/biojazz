@@ -265,6 +265,8 @@ use base qw(Scoring);
             #---------------------------------------------------------
             # SCORING: 90 + 400 pts -- LG/TG subnets
             #---------------------------------------------------------
+            my (@lg_subnet, @tg_subnet);   # gene subnets
+            my (@tg_adjacent_kinases, @tg_adjacent_phosphatases, @lg_adjacent_protodomains);
             if ($network_connectivity == 2) { # LG/TF connected
                 my (@lg_pd_subnet, @tg0_pd_subnet, @tg1_pd_subnet);   # protodomain subnets
                 @lg_pd_subnet = $genome_ref->get_connected(key => "protodomains", ref => $lg_protodomain_ref);
@@ -281,14 +283,14 @@ use base qw(Scoring);
                 my $tg1_pd_subnet_size = (@tg1_pd_subnet > 30) ? 30 : @tg1_pd_subnet;
                 $network_connectivity += ($lg_pd_subnet_size + $tg0_pd_subnet_size + $tg1_pd_subnet_size);
 
-                my @tg_adjacent_kinases = $genome_ref->find_adjacent_csites($tg_protodomain_ref, 0);
-                my @tg_adjacent_phosphatases = $genome_ref->find_adjacent_csites($tg_protodomain_ref, 1);
+                @tg_adjacent_kinases = $genome_ref->find_adjacent_csites($tg_protodomain_ref, 0);
+                @tg_adjacent_phosphatases = $genome_ref->find_adjacent_csites($tg_protodomain_ref, 1);
                 $stats_ref->{num_adjacent_kinases} = scalar(@tg_adjacent_kinases);
                 $stats_ref->{num_adjacent_phosphatases} = scalar(@tg_adjacent_phosphatases);
                 printn "Found ".@tg_adjacent_kinases." adjacent kinases";
                 printn "Found ".@tg_adjacent_phosphatases." adjacent phosphatases";
 
-                my @lg_adjacent_protodomains = union(
+                @lg_adjacent_protodomains = union(
                     [map {$_->[0]} $genome_ref->get_adjacent(key => "protodomains", ref => $lg_protodomain_ref)],
                 );
                 @lg_adjacent_protodomains = simple_difference(
@@ -298,7 +300,6 @@ use base qw(Scoring);
                 $stats_ref->{num_receptive_protodomains} = scalar (@lg_adjacent_protodomains);
 
                 # now use the gene subnet to determine the connectivity
-                my (@lg_subnet, @tg_subnet);   # gene subnets
                 @lg_subnet = map {$_->[0]} $genome_ref->get_connected(key => "genes", ref => $lg_gene_ref);
                 @tg_subnet = map {$_->[0]} $genome_ref->get_connected(key => "genes", ref => $tg_gene_ref);
                 printn "LG protein connects to ".join ",", (map {$_->get_name} @lg_subnet) if $verbosity > 1;
@@ -306,11 +307,11 @@ use base qw(Scoring);
 
                 #########################################################################################
                 # score -- LG/TG connected to each other
-                if (grep /LG0000/, (map {$_->[2]} @tg_subnet)) {
+                if (grep /LG0000/, (map {$_->get_name()} @tg_subnet)) {
                     printn "TG0000 fans out to LG0000" if $verbosity > 1;
                     $network_connectivity += 200;
                 }
-                if (grep /TG0000/, (map {$_->[2]} @lg_subnet)) {
+                if (grep /TG0000/, (map {$_->get_name()} @lg_subnet)) {
                     printn "LG0000 fans out to TG0000" if $verbosity > 1;
                     $network_connectivity += 200;
                 }
@@ -323,7 +324,7 @@ use base qw(Scoring);
                 # exclude proteins not in LG/TG subnet from export
                 my @proteins_not_in_subnet = simple_difference([$genome_model_ref->get_genes()], [union(\@lg_subnet, \@tg_subnet)]);
                 map {$_->set_export_flag(0)} @proteins_not_in_subnet;
-                $stats_ref->{num_protein_out_subnet} = scalar @protein_not_in_subnet;
+                $stats_ref->{num_protein_out_subnet} = scalar @proteins_not_in_subnet;
 
                 #---------------------------------------------------------
                 # GENERATE ANC/FACILE MODEL
@@ -368,19 +369,22 @@ use base qw(Scoring);
                 
                 my @phosphorylation = ();
                 for (my $i = 0; $i < @adjacent_kinase_names; $i++) {
-                    my $protein_concentration = 0.0;
-                    if ($anc_model ~= /Init : \{\s+structure\s?=>\s?$kinase_gene_names[$i],\s+IC\s?=>\s?(\S+),*?\n/g) {
-                        $protein_concentration = $1 + 0.0;
+                    my $protein_concentration = 0;
+                    if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$kinase_gene_names[$i],\s+IC\s?=>\s?(\S+),*?\n/g) {
+                        $protein_concentration = $1 + 0;
+                        print "!!!! concentration found !!!!!\n";
                         $stats_ref->{$kinase_gene_names[$i]} = $protein_concentration;
                     }
                     my @phos_info = ();
-                    while ($anc_model ~= /name\s?=>\s?"$adjacent_kinase_names[$i]\s?(TPD\S+)\s?\((\S)\s(\S)\s(\S)\s(\S)\).*?\n.*\n.*\n.*\n.*\n\s*?kp\s?=>\s?(\S+),\s*?\n/g) {
-                        my $rule_name = 'phos_'.$adjacent_kinase_names[$i].'_'.$1.'_'.$2.$3.$4.$5;
-                        my $rule_rate = $6 + 0.0;
+                    while ($anc_model =~ /name\s?=>\s?"$adjacent_kinase_names[$i]\s?(TPD\S+)\s?\S(\S)\s(\S)\s(\S)\s(\S)\S.*?\n.*\n.*\n.*\n.*\n\s*?kp\s?=>\s?(\S+),\s*?\n/g) {
+                        my $rule_name = 'phos_'.$adjacent_kinase_names[$i].'_'."$1".'_'."$2"."$3"."$4"."$5";
+                        my $rule_rate = $6 + 0;
                         $stats_ref->{$rule_name} = $rule_rate;
                         push(@phos_info, [$rule_name, $rule_rate, $protein_concentration]);
+                        print "!!!! rule name found !!!!!\n";
                     }
-                    my $min = $phos_info[0][1]; my $max = $min;
+                    my $min = 0; my $max = $min;
+                    #$min = $phos_info[0][1]; $max = $min;
                     for (my $i = 1; $i < @phos_info; $i++) {
                         if ($phos_info[$i][1] < $min) {
                             $min = $phos_info[$i][1];
@@ -401,17 +405,18 @@ use base qw(Scoring);
 
                 my @dephosphorylation = ();
                 for (my $i = 0; $i < @adjacent_phosphatase_names; $i++) {
-                    my $protein_concentration = 0.0;
-                    if ($anc_model ~= /Init : \{\s+structure\s?=>\s?$phosphatase_gene_names[$i],\s+IC\s?=>\s?(\S+),*?\n/g) {
-                        $protein_concentration = $1 + 0.0;
+                    my $protein_concentration = 0;
+                    if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$phosphatase_gene_names[$i],\s+IC\s?=>\s?(\S+),*?\n/g) {
+                        $protein_concentration = $1 + 0;
                         $stats_ref->{$phosphatase_gene_names[$i]} = $protein_concentration;
                     }
                     my @dephos_info = ();
-                    while ($anc_model ~= /name\s?=>\s?"$adjacent_phosphatase_names[$i]\s?(TPD\S+)\s?\((\S)\s(\S)\s(\S)\s(\S)\).*?\n.*\n.*\n.*\n.*\n\s*?kp\s?=>\s?(\S+),\s*?\n/g) {
-                        my $rule_name = 'dephos_'.$adjacent_phosphatase_names[$i].'_'.$1.'_'.$2.$3.$4.$5;
-                        my $rule_rate = $6 + 0.0;
+                    while ($anc_model =~ /name\s?=>\s?"$adjacent_phosphatase_names[$i]\s?(TPD\S+)\s?\S(\S)\s(\S)\s(\S)\s(\S)\S.*?\n.*\n.*\n.*\n.*\n\s*?kp\s?=>\s?(\S+),\s*?\n/g) {
+                        my $rule_name = 'dephos_'.$adjacent_phosphatase_names[$i].'_'."$1".'_'."$2"."$3"."$4"."$5";
+                        my $rule_rate = $6 + 0;
                         $stats_ref->{$rule_name} = $rule_rate;
                         push(@dephos_info, [$rule_name, $rule_rate, $protein_concentration]);
+                        print "!!!! rule name found !!!!!\n";
                     }
                     my $min = $dephos_info[0][1]; my $max = $min;
                     for (my $i = 1; $i < @dephos_info; $i++) {
@@ -467,11 +472,11 @@ use base qw(Scoring);
                 $stats_ref->{num_reactions_tg_1} = $num_reactions_tg_1;
                 $network_connectivity += 100 * ($num_reactions_tg_0 > 1 ? 1 : $num_reactions_tg_0);
 
-                my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 600) ? 1 : 0;
+                $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 600) ? 1 : 0;
 
                 $network_connectivity += 100 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
                 # check that number of species is less than maximum
-                if ($stats_ref->{num_anc_species} < ($config_ref->{max_species} == -1 ? ~0 : $config_ref->{max_species}) {
+                if ($stats_ref->{num_anc_species} < ($config_ref->{max_species} == -1 ? ~0 : $config_ref->{max_species})) {
                     $network_connectivity += 100;
                 }
             }
@@ -482,6 +487,7 @@ use base qw(Scoring);
             #---------------------------------------------------------
             # sim_flag indicates that network was successfully simulated
             # and that calculated results are valid
+            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag};
             $stats_ref->{sim_flag} = 0;
             if ($ANC_ok_flag) {
                 $stats_ref->{sim_flag} = 1;
