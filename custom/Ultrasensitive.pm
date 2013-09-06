@@ -351,7 +351,6 @@ use base qw(Scoring);
                 burp_file("$matlab_work/$genome_name.mod", $anc_model);
                 system("$ENV{ANC_HOME}/anc.pl --report=species $matlab_work/$genome_name.mod");
                 my @facile_model = slurp_file("$matlab_work/$genome_name.eqn");
-                my @new_anc_model = slurp_file("$matlab_work/$genome_name.mod");
 
                 $self->anc_process_species_report("$matlab_work/$genome_name.species.rpt");
                 my @anc_species = $self->anc_get_species();
@@ -363,10 +362,76 @@ use base qw(Scoring);
                 # OUTPUT KINASE AND PHOSPHATASE
                 #---------------------------------------------------------
                 my @adjacent_kinase_names = map {$_->get_name()} @tg_adjacent_kinases;
+                my @kinase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @tg_adjacent_kinases;
                 my @adjacent_phosphatase_names = map {$_->get_name()} @tg_adjacent_phosphatases;
-                while (@new_anc_model) {
-                    my $anc_line = $_;
+                my @phosphatase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @tg_adjacent_phosphatases;
+                
+                my @phosphorylation = ();
+                for (my $i = 0; $i < @adjacent_kinase_names; $i++) {
+                    my $protein_concentration = 0.0;
+                    if ($anc_model ~= /Init : \{\s+structure\s?=>\s?$kinase_gene_names[$i],\s+IC\s?=>\s?(\S+),*?\n/g) {
+                        $protein_concentration = $1 + 0.0;
+                        $stats_ref->{$kinase_gene_names[$i]} = $protein_concentration;
+                    }
+                    my @phos_info = ();
+                    while ($anc_model ~= /name\s?=>\s?"$adjacent_kinase_names[$i]\s?(TPD\S+)\s?\((\S)\s(\S)\s(\S)\s(\S)\).*?\n.*\n.*\n.*\n.*\n\s*?kp\s?=>\s?(\S+),\s*?\n/g) {
+                        my $rule_name = 'phos_'.$adjacent_kinase_names[$i].'_'.$1.'_'.$2.$3.$4.$5;
+                        my $rule_rate = $6 + 0.0;
+                        $stats_ref->{$rule_name} = $rule_rate;
+                        push(@phos_info, [$rule_name, $rule_rate, $protein_concentration]);
+                    }
+                    my $min = $phos_info[0][1]; my $max = $min;
+                    for (my $i = 1; $i < @phos_info; $i++) {
+                        if ($phos_info[$i][1] < $min) {
+                            $min = $phos_info[$i][1];
+                        }
+                        if ($phos_info[$i][1] > $max) {
+                            $max = $phos_info[$i][1];
+                        }
+                    }
+                    push(@phosphorylation, [$min * $protein_concentration, $max * $protein_concentration]);
                 }
+                my $min_phos = 0; my $max_phos = 0;
+                for (my $i = 0; $i < @phosphorylation; $i++) {
+                    $min_phos += $phosphorylation[$i][0];
+                    $max_phos += $phosphorylation[$i][1];
+                }
+                $stats_ref->{tg_phosphorylation_min} = $min_phos;
+                $stats_ref->{tg_phosphorylation_max} = $max_phos;
+
+                my @dephosphorylation = ();
+                for (my $i = 0; $i < @adjacent_phosphatase_names; $i++) {
+                    my $protein_concentration = 0.0;
+                    if ($anc_model ~= /Init : \{\s+structure\s?=>\s?$phosphatase_gene_names[$i],\s+IC\s?=>\s?(\S+),*?\n/g) {
+                        $protein_concentration = $1 + 0.0;
+                        $stats_ref->{$phosphatase_gene_names[$i]} = $protein_concentration;
+                    }
+                    my @dephos_info = ();
+                    while ($anc_model ~= /name\s?=>\s?"$adjacent_phosphatase_names[$i]\s?(TPD\S+)\s?\((\S)\s(\S)\s(\S)\s(\S)\).*?\n.*\n.*\n.*\n.*\n\s*?kp\s?=>\s?(\S+),\s*?\n/g) {
+                        my $rule_name = 'dephos_'.$adjacent_phosphatase_names[$i].'_'.$1.'_'.$2.$3.$4.$5;
+                        my $rule_rate = $6 + 0.0;
+                        $stats_ref->{$rule_name} = $rule_rate;
+                        push(@dephos_info, [$rule_name, $rule_rate, $protein_concentration]);
+                    }
+                    my $min = $dephos_info[0][1]; my $max = $min;
+                    for (my $i = 1; $i < @dephos_info; $i++) {
+                        if ($dephos_info[$i][1] < $min) {
+                            $min = $dephos_info[$i][1];
+                        }
+                        if ($dephos_info[$i][1] > $max) {
+                            $max = $dephos_info[$i][1];
+                        }
+                    }
+                    push(@dephosphorylation, [$min * $protein_concentration, $max * $protein_concentration]);
+                }
+                my $min_dephos = 0; my $max_dephos = 0;
+                for (my $i = 0; $i < @dephosphorylation; $i++) {
+                    $min_dephos += $dephosphorylation[$i][0];
+                    $max_dephos += $dephosphorylation[$i][1];
+                }
+                $stats_ref->{tg_dephosphorylation_min} = $min_dephos;
+                $stats_ref->{tg_dephosphorylation_max} = $max_dephos;
+
 
                 #---------------------------------------------------------
                 # RUN FACILE
