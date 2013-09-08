@@ -373,11 +373,10 @@ use base qw(Scoring);
                     for (my $i = 0; $i < @adjacent_kinase_names; $i++) {
                         my $pd_name = $adjacent_kinase_names[$i];
                         my $gene_name = $kinase_gene_names[$i];
-                        printn "Search kp of $pd_name and concentration of $gene_name";
+                        #printn "Search kp of $pd_name and concentration of $gene_name";
                         my $protein_concentration = 0;
                         if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene_name,\s+IC\s?=>\s?(\S+),/g) {
                             $protein_concentration = $1 + 0;
-                            printn "!!!! $gene_name concentration $protein_concentration found !!!!!";
                             $stats_ref->{$gene_name} = $protein_concentration;
                         }
                         my @phos_info = ();
@@ -385,8 +384,7 @@ use base qw(Scoring);
                             my $rule_name = 'phos_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
                             my $rule_rate = $6 + 0;
                             $stats_ref->{$rule_name} = $rule_rate;
-                            push(@phos_info, $rule_rate * $protein_concentration);
-                            printn "!!!! rule $rule_name found !!!!!";
+                            push(@phos_info, $rule_rate);
                         }
                         my $min = 0; my $max = $min;
                         if (scalar @phos_info >= scalar @tg_adjacent_kinases) {
@@ -402,12 +400,12 @@ use base qw(Scoring);
                         } else {
                             die "The number of phos_info is less than number of adjacent kinases";
                         }
-                        $min_phos += $min; $max_phos += $max;
+                        $min_phos += $min * $protein_concentration; $max_phos += $max * $protein_concentration;
                     }
                 }
                 $stats_ref->{tg_phosphorylation_min} = $min_phos;
                 $stats_ref->{tg_phosphorylation_max} = $max_phos;
-                printn "phosphorylation min: $min_phos; phosphosrylation max: $max_phos";
+                printn "phosphorylation min: $min_phos; phosphosrylation max: $max_phos" if $verbosity >= 1;
 
                 my $min_dephos = 0; my $max_dephos = 0;
                 if (scalar @adjacent_phosphatase_names > 0) {
@@ -415,11 +413,9 @@ use base qw(Scoring);
                     for (my $i = 0; $i < @adjacent_phosphatase_names; $i++) {
                         my $pd_name = $adjacent_phosphatase_names[$i];
                         my $gene_name = $phosphatase_gene_names[$i];
-                        printn "Search kp of $pd_name and concentration of $gene_name";
                         my $protein_concentration = 0;
                         if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene_name,\s+IC\s?=>\s?(\S+),/g) {
                             $protein_concentration = $1 + 0;
-                            printn "!!!! $gene_name concentration: $protein_concentration found !!!!!";
                             $stats_ref->{$gene_name} = $protein_concentration;
                         }
                         my @dephos_info = ();
@@ -427,8 +423,7 @@ use base qw(Scoring);
                             my $rule_name = 'dephos_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
                             my $rule_rate = $6 + 0;
                             $stats_ref->{$rule_name} = $rule_rate;
-                            push(@dephos_info, $rule_rate * $protein_concentration);
-                            printn "!!!! rule $rule_name found !!!!!";
+                            push(@dephos_info, $rule_rate);
                         }
                         my $min = 0; my $max = $min;
                         if (scalar @dephos_info >= scalar @tg_adjacent_phosphatases) {
@@ -444,12 +439,12 @@ use base qw(Scoring);
                         } else {
                             die "The number of dephos_info is less than number of adjacent phosphatases";
                         }
-                        $min_dephos += $min; $max_dephos += $max;
+                        $min_dephos += $min * $protein_concentration; $max_dephos += $max * $protein_concentration;
                     }
                 }
                 $stats_ref->{tg_dephosphorylation_min} = $min_dephos;
                 $stats_ref->{tg_dephosphorylation_max} = $max_dephos;
-                printn "dephosphorylation min: $min_dephos; dephosphosrylation max: $max_dephos";
+                printn "dephosphorylation min: $min_dephos; dephosphosrylation max: $max_dephos" if $verbosity >= 1;
 
 
                 #---------------------------------------------------------
