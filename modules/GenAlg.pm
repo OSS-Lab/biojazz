@@ -546,7 +546,7 @@ use base qw();
         my $genotype_num = scalar @genome_model_refs;
         my $population = $config_ref->{evolve_population};
         for (my $i = 0; $i < $population; $i++) {
-            my $genome_ref = $genome_model_refs[${$index_array_ref_of{$obj_ID}}[$i]];
+            my $genome_ref = $genome_model_refs[$index_array_ref_of{$obj_ID}->[$i]];
             my $parent_name = $genome_ref->get_name();
             confess "ERROR: The score of $parent_name is UNDEFINED!" if !defined $genome_ref->get_score();
             if (rand(1) < $mutation_rate) {
@@ -574,8 +574,8 @@ use base qw();
                     $current_generation_ref->add_element($child_ref);
                     my $number = $genome_ref->get_number();
                     $genome_ref->set_number($number - 1);
-                    ${$score_array_ref_of{$obj_ID}}[$i] = undef;
-                    ${$index_array_ref_of{$obj_ID}}[$i] = $genotype_num;
+                    $score_array_ref_of{$obj_ID}->[$i] = undef;
+                    $index_array_ref_of{$obj_ID}->[$i] = $genotype_num;
                     $genotype_num++;
                 } else {
                     $child_ref->DEMOLISH();
@@ -669,9 +669,9 @@ use base qw();
             if (defined $genome_model_ref->get_mutation_index()) {
                 my $mutated_score = $genome_model_ref->get_score();
                 my $mutation_index = $genome_model_ref->get_mutation_index();
-                ${$score_array_ref_of{$obj_ID}}[$mutation_index] = $mutated_score;
+                $score_array_ref_of{$obj_ID}->[$mutation_index] = $mutated_score;
                 $genome_model_ref->set_mutation_index(undef);
-                if (${$index_array_ref_of{$obj_ID}}[$mutation_index] != $i) {
+                if ($index_array_ref_of{$obj_ID}->[$mutation_index] != $i) {
                     die "There is something wrong that mutation index recorded in genome is not same as the genotype index recoding the corresponding mutated genome";
                 }
             } else {
@@ -721,12 +721,13 @@ use base qw();
                     $right = $index;
                 }
             }
-            ${$score_array_ref_of{$obj_ID}}[$i] = $scores[$left];
-            ${$index_array_ref_of{$obj_ID}}[$i] = $indice[$left];
+            $score_array_ref_of{$obj_ID}->[$i] = $scores[$left];
+            $index_array_ref_of{$obj_ID}->[$i] = $indice[$left];
             $selection_count[$indice[$left]]++;
         }
 
         my $accumulative_count = 0;
+        my $not_selected_num = 0;
         for (my $i = 0; $i < $current_generation_size; $i++) {
             if ($selection_count[$i]) {
                 my $parent_ref = $current_generation_ref->get_element($i);
@@ -737,6 +738,13 @@ use base qw();
                 $child_ref->set_number($selection_count[$i]);
                 $temp_generation_ref->add_element($child_ref);
                 $accumulative_count += $selection_count[$i];
+                for (my $j = 0; $j < $population_size; $j++) {
+                    if ($index_array_ref_of{$obj_ID}->[$j] == $i) {
+                        $index_array_ref_of{$obj_ID}->[$j] = $i - $not_selected_num;
+                    }
+                }
+            } else {
+                $not_selected_num++;
             }
         }
 
@@ -745,11 +753,16 @@ use base qw();
         }
 
         $current_generation_ref->clear_genomes();
-        $current_generation_number = $current_generation_number_of{$obj_ID};
         $current_generation_ref = $current_generation_ref_of{$obj_ID} = $temp_generation_ref;
+        $current_generation_size = $current_generation_ref->get_num_elements();
+        $current_generation_number = $current_generation_number_of{$obj_ID};
         $current_generation_ref->refresh_individual_names($current_generation_number);
+
+        if (grep {$_ >= $current_generation_size} @{$index_array_ref_of{$obj_ID}}) {
+            die "The indice array is not set properly after selection: some index are larger than genotype number in generation $current_generation_number";
+        }
+
         if (defined $config_ref->{target_score}) {
-            $current_generation_size = $current_generation_ref->get_num_elements();
             my @new_scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
             my $min_score = $new_scores[0];
             for (@new_scores) {$min_score = $_ if $_ < $min_score;}
