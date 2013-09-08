@@ -163,7 +163,7 @@ use base qw(ParserInstance);
                     my $kp_masked = BindingProfile->XOR($kp_profile, $kp_conformation_mask)->sprint();
                     my $kp = loglinear($args{kp_min}, $args{kp_max}, (2**$kp_profile_width)-1, bin2dec($kp_masked));
                     printn "create_canbindrule: state=(@$state_ref) kp_final = $kp kp_masked=$kp_masked for $x_name($kp_profile, $kp_conformation_mask)" if $verbosity >= 2;
-                    $kp_line = "  kp => $kp,\n";
+                    $kp_line = "kp => $kp,\n";
                 }
 
                 my $str = <<END;

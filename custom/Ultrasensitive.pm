@@ -369,11 +369,9 @@ use base qw(Scoring);
                 
                 my $min_phos = 0; my $max_phos = 0;
                 if (scalar @adjacent_kinase_names > 0) {
-                    my @phosphorylation = ();
                     for (my $i = 0; $i < @adjacent_kinase_names; $i++) {
                         my $pd_name = $adjacent_kinase_names[$i];
                         my $gene_name = $kinase_gene_names[$i];
-                        #printn "Search kp of $pd_name and concentration of $gene_name";
                         my $protein_concentration = 0;
                         if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene_name,\s+IC\s?=>\s?(\S+),/g) {
                             $protein_concentration = $1 + 0;
@@ -387,7 +385,7 @@ use base qw(Scoring);
                             push(@phos_info, $rule_rate);
                         }
                         my $min = 0; my $max = $min;
-                        if (scalar @phos_info >= scalar @tg_adjacent_kinases) {
+                        if (scalar @phos_info > 0) {
                             $min = $phos_info[0]; $max = $min;
                             for (my $i = 1; $i < @phos_info; $i++) {
                                 if ($phos_info[$i] < $min) {
@@ -398,7 +396,7 @@ use base qw(Scoring);
                                 }
                             }
                         } else {
-                            die "The number of phos_info is less than number of adjacent kinases";
+                            die "didn't find the rate of phosphorylation rule $stats_ref->{$rule_name}";
                         }
                         $min_phos += $min * $protein_concentration; $max_phos += $max * $protein_concentration;
                     }
@@ -409,7 +407,6 @@ use base qw(Scoring);
 
                 my $min_dephos = 0; my $max_dephos = 0;
                 if (scalar @adjacent_phosphatase_names > 0) {
-                    my @dephosphorylation = ();
                     for (my $i = 0; $i < @adjacent_phosphatase_names; $i++) {
                         my $pd_name = $adjacent_phosphatase_names[$i];
                         my $gene_name = $phosphatase_gene_names[$i];
@@ -426,7 +423,7 @@ use base qw(Scoring);
                             push(@dephos_info, $rule_rate);
                         }
                         my $min = 0; my $max = $min;
-                        if (scalar @dephos_info >= scalar @tg_adjacent_phosphatases) {
+                        if (scalar @dephos_info > 0) {
                             $min = $dephos_info[0]; $max = $min;
                             for (my $i = 1; $i < @dephos_info; $i++) {
                                 if ($dephos_info[$i] < $min) {
@@ -437,7 +434,7 @@ use base qw(Scoring);
                                 }
                             }
                         } else {
-                            die "The number of dephos_info is less than number of adjacent phosphatases";
+                            die "didn't find the rate of dephosphorylation rule $stats_ref->{$rule_name}";
                         }
                         $min_dephos += $min * $protein_concentration; $max_dephos += $max * $protein_concentration;
                     }
@@ -811,15 +808,15 @@ use base qw(Scoring);
         # REMOVE FILES
         #---------------------------------------------------------
         if (defined $local_dir) {
-            `echo $local_dir/matlab/G*     | xargs rm -f`;
-            `echo $config_ref->{local_dir}/matlab/G*     | xargs rm -f`;
+            #`echo $local_dir/matlab/G*     | xargs rm -f`;
+            #`echo $config_ref->{local_dir}/matlab/G*     | xargs rm -f`;
  
-            #my $file_glob = "$matlab_work/${genome_name}*";
-            #my @files = glob($file_glob);
-            #if (@files) {
-            #    printn "Moving @files to $work_dir/matlab" if $verbosity > 1;
-            #    system("mv @files $work_dir/matlab");
-            #}
+            my $file_glob = "$matlab_work/${genome_name}*";
+            my @files = glob($file_glob);
+            if (@files) {
+                printn "Moving @files to $work_dir/matlab" if $verbosity > 1;
+                system("mv @files $work_dir/matlab");
+            }
         }
     }
 }

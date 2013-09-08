@@ -457,7 +457,7 @@ use base qw();
 
         my @isolated_genes = $self->get_isolated_genes();
         map {$_->set_export_flag(0)} @isolated_genes;
-        printn "prune_isolated_genes: pruned genes: ". join ",", map($_->get_name(), @isolated_genes);# if $verbosity >= 1;
+        printn "prune_isolated_genes: pruned genes: ". join ",", map($_->get_name(), @isolated_genes) if $verbosity >= 1;
         return @isolated_genes;
     }
 
