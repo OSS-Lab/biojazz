@@ -1303,7 +1303,7 @@ use base qw(Model);
             for (my $i = 0; $i < $num_genes; $i ++) {
                 if (rand() < $recombination_rate) {
                     printn "MUTATION: RECOMBINATION" if $verbosity >= 1;
-                    my $gene1_index = $self->get_gene_by_index($i);
+                    my $gene1_index = $i;
                     my $gene2_index;
                     do {
                         $gene2_index = int rand $num_genes;
