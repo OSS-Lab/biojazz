@@ -396,7 +396,7 @@ use base qw(Scoring);
                                 }
                             }
                         } else {
-                            die "didn't find the rate of phosphorylation rule $stats_ref->{$rule_name}";
+                            die "didn't find the rate of phosphorylation rule $stats_ref->{rule_name}";
                         }
                         $min_phos += $min * $protein_concentration; $max_phos += $max * $protein_concentration;
                     }
@@ -434,7 +434,7 @@ use base qw(Scoring);
                                 }
                             }
                         } else {
-                            die "didn't find the rate of dephosphorylation rule $stats_ref->{$rule_name}";
+                            die "didn't find the rate of dephosphorylation rule $stats_ref->{rule_name}";
                         }
                         $min_dephos += $min * $protein_concentration; $max_dephos += $max * $protein_concentration;
                     }
