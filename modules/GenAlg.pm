@@ -515,6 +515,7 @@ use base qw();
         $current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
         $current_generation_ref->refresh_individual_names($current_generation_number);
         if (defined $config_ref->{target_score}) {
+            my $current_generation_size = $current_generation_ref->get_num_elements();
             my @new_scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
             my $min_score = $new_scores[0];
             for (@new_scores) {$min_score = $_ if $_ < $min_score;}
@@ -744,9 +745,11 @@ use base qw();
         }
 
         $current_generation_ref->clear_genomes();
+        $current_generation_number = $current_generation_number_of{$obj_ID};
         $current_generation_ref = $current_generation_ref_of{$obj_ID} = $temp_generation_ref;
         $current_generation_ref->refresh_individual_names($current_generation_number);
         if (defined $config_ref->{target_score}) {
+            $current_generation_size = $current_generation_ref->get_num_elements();
             my @new_scores = map {$current_generation_ref->get_element($_)->get_score()} (0..$current_generation_size-1);
             my $min_score = $new_scores[0];
             for (@new_scores) {$min_score = $_ if $_ < $min_score;}
@@ -754,7 +757,6 @@ use base qw();
                 $self->set_reach_target_flag(1);
             }
         }
- 
     }
 
     #--------------------------------------------------------------------------------------
