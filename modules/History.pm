@@ -102,6 +102,9 @@ use base qw();
         );
         check_args(\%args,2);
         my $max_generations = $args{max_generations};
+        
+        my @config_attribute_names = @{$config_ref->{genome_attribute_names}};
+        confess "genome_attribute_names is not specified!" if (!@config_attribute_names);
 
         my $generation = $config_ref->{first_generation};
         my $fossil_epoch = 1;
@@ -133,7 +136,12 @@ use base qw();
                 $second_attribute = 'population_per_mutant';
             }
 
-            my @intrinsic_attribute_names = $gen_ref->get_attribute_names();
+            my @intrinsic_attribute_names;
+            if ($config_attribute_names[0] eq "all") {
+                @intrinsic_attribute_names = $gen_ref->get_attribute_names();
+            } else {
+                @intrinsic_attribute_names = @config_attribute_names;
+            }
             my @genome_attribute_names = ('name', $second_attribute, 'accum_mutations', 
                 'accum_point_mutations', 'Stepwise_mutations', 'stepwise_point_mutations', @intrinsic_attribute_names);
             $csv->print($data_file, \@genome_attribute_names);
