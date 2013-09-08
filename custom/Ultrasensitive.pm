@@ -485,7 +485,7 @@ use base qw(Scoring);
 
                 $network_connectivity += 100 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
                 # check that number of species is less than maximum
-                if ($stats_ref->{num_anc_species} < ($config_ref->{max_species} == -1 ? ~0 : $config_ref->{max_species})) {
+                if ($config_ref->{max_species} > 0 && $stats_ref->{num_anc_species} < $config_ref->{max_species}) {
                     $network_connectivity += 100;
                 }
             }

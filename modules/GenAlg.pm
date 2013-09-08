@@ -386,6 +386,7 @@ use base qw();
         my $self = shift; my $obj_ID = ident $self;
 
         my $config_ref = $config_ref_of{$obj_ID};
+        my $max_mutate_attempts = $config_ref->{max_mutate_attempts};
 
         my $current_generation_ref = $current_generation_ref_of{$obj_ID};
         my $current_generation_number = $current_generation_number_of{$obj_ID};
@@ -484,6 +485,21 @@ use base qw();
 
                 $fixation_p *= $amplifier_alpha;
                 $mutation_step_num++;
+                if ($max_mutate_attempts > 0 && $mutation_step_num > $max_mutate_attempts) {
+                    my $child_ref = $parent_ref->duplicate();
+                    $child_ref->set_number($mutation_step_num);
+                    $next_generation_ref->add_element($child_ref);
+
+                    # change to next generation
+                    $current_generation_ref->clear_genomes();
+                    $current_generation_ref = $current_generation_ref_of{$obj_ID} = $next_generation_ref;
+                    $current_generation_number = $current_generation_number_of{$obj_ID} = $next_generation_number;
+                    $current_generation_ref->refresh_individual_names($current_generation_number);
+                    
+                    $self->print_attribute_names();
+                    $self->report_current_generation();
+                    exit(1);
+                }
             }
 
             # after fix the mutation
