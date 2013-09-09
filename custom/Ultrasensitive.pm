@@ -477,12 +477,12 @@ use base qw(Scoring);
                 $stats_ref->{num_reactions_tg_0} = $num_reactions_tg_0;
                 $stats_ref->{num_reactions_tg_1} = $num_reactions_tg_1;
                 $network_connectivity += 100 * ($num_reactions_tg_0 > 1 ? 1 : $num_reactions_tg_0);
-
-                $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 600) ? 1 : 0;
-
                 $network_connectivity += 100 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
+
+                $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 700) ? 1 : 0;
+
                 # check that number of species is less than maximum
-                if ($config_ref->{max_species} > 0 && $stats_ref->{num_anc_species} < $config_ref->{max_species}) {
+                if (!defined $config_ref->{max_species} || $config_ref->{max_species} < 0 || $stats_ref->{num_anc_species} < $config_ref->{max_species}) {
                     $network_connectivity += 100;
                 }
             }
