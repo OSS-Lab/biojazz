@@ -833,7 +833,7 @@ sub run_testcases {
 # CPU AND CLUSTER SETTINGS
 #----------------------------------------
 nice = 10
-vmem = 2000000
+vmem = 200000000
 
 #----------------------------------------
 # WORKSPACE AND CUSTOM SCORING MODULE
