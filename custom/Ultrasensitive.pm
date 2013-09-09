@@ -1028,7 +1028,7 @@ END
                     UNUSED => "0000",
                     domains => [
                         {
-                            allosteric_flag => 1,
+                            allosteric_flag => 0,
                             RT_transition_rate => 1.00,
                             TR_transition_rate => 1.00,
                             RT_phi => 1.0,
@@ -1074,7 +1074,7 @@ END
                     UNUSED => "0000",
                     domains => [
                         {
-                            allosteric_flag => 1,
+                            allosteric_flag => 0,
                             RT_transition_rate => 1.00,
                             TR_transition_rate => 1.00,
                             RT_phi => 1.0,
