@@ -158,8 +158,8 @@ use base qw();
                 push(@attributes, $genome_ref->get_stepwise_point_mutations());
                 # Here, we output each genome stats into a line 
                 # of CSV file
-                for (my $j = 0; $j < scalar @genome_attribute_names; $j++) {
-                    my $attribute_value = $genome_ref->get_stats_ref()->{$genome_attribute_names[$j]};
+                for (my $j = 0; $j < scalar @intrinsic_attribute_names; $j++) {
+                    my $attribute_value = $genome_ref->get_stats_ref()->{$intrinsic_attribute_names[$j]};
                     push(@attributes, $attribute_value);
                 }
                 # process the attributes and output
