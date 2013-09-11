@@ -27,6 +27,7 @@ $scoring_ref
 create_workspace
 evolve
 load_genome
+save_genome
 score_genome
 score_generation
 rescore_genomes
@@ -223,6 +224,20 @@ sub load_genome {
 }
 
 #--------------------------------------------------------------------------------------
+# Function: save_genome
+# Synopsys: 
+#--------------------------------------------------------------------------------------
+sub save_genome {
+    my $genome_file = shift;
+    my $genome_ref = $ref;
+
+    # store the genome object
+    store($ref, "$genome_file");
+    return 1;
+}
+
+
+#--------------------------------------------------------------------------------------
 # Function: score_genome
 # Synopsis: scoring genome with config_ref and scoring_ref which defined in configure files
 #--------------------------------------------------------------------------------------
@@ -246,10 +261,11 @@ sub score_genome {
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
+    $config_ref->{rescore_elite} = 1;
 
-    # set_elite_flag :: need to revisit to modify according to different selection method
-    $ref->set_elite_flag(0);
-    return $scoring_ref->score_genome($ref);
+    $scoring_ref->score_genome($ref);
+    $ref->static_analyse($config_ref->{rescore_elite});
+    return 1;
 }
 
 #--------------------------------------------------------------------------------------
@@ -284,6 +300,7 @@ sub score_generation {
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
+    $config_ref->{rescore_elite} = 1;
 
     my $dir = "$config_ref->{work_dir}/$TAG/obj";
 
@@ -292,9 +309,9 @@ sub score_generation {
 
     for (my $i = 0; $i < @genome_files; $i++) {
         my $genome_model_ref = retrieve("$genome_files[$i]");
-        $genome_model_ref->set_elite_flag(0);
         $scoring_ref->score_genome($genome_model_ref);
-        $genome_model_ref->set_elite_flag(1);
+        $genome_model_ref->static_analyse($config_ref->{rescore_elite});
+        store($genome_model_ref, "$genome_files[$i]");
     }
 
 }
@@ -328,6 +345,7 @@ sub rescore_genomes {
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
+    $config_ref->{rescore_elite} = 1;
 
     my $dir = "$config_ref->{work_dir}/$TAG/obj";
 
@@ -339,9 +357,9 @@ sub rescore_genomes {
 
     for (my $i = 0; $i < @genome_files; $i++) {
         my $genome_model_ref = retrieve("$genome_files[$i]");
-        $genome_model_ref->set_elite_flag(0);
         $scoring_ref->score_genome($genome_model_ref);
-        $genome_model_ref->set_elite_flag(1);
+        $genome_model_ref->static_analyse($config_ref->{rescore_elite});
+        store($genome_model_ref, "$genome_files[$i]");
     }
 
 } ## --- end sub rescore_genomes

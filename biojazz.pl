@@ -122,7 +122,7 @@ $OUTPUT_AUTOFLUSH = 1;
 #======================================================================================
 # CMD-LINE ARGUMENT PROCESSING AND DEFAULTS
 #======================================================================================
-use vars qw($HELP $SHELL $SCRIPT $COMMAND $SEED $GENOME $SCORE $GENERATION $RESCORE);
+use vars qw($HELP $SHELL $SCRIPT $COMMAND $SEED $GENOME $SCORE $STORE $GENERATION $RESCORE);
 use vars qw($version_flag);
 
 GetOptions(
@@ -140,6 +140,7 @@ GetOptions(
     "genome=s"        => \$GENOME,
     "generation=i"    => \$GENERATION,
     "score"           => \$SCORE,
+    "store"           => \$STORE,
     "rescore"         => \$RESCORE,
     "inumg=i"         => \$config_ref->{inum_genomes},
     "mrate=f"         => \$config_ref->{mutation_rate},
@@ -182,11 +183,13 @@ if (!defined $config_ref->{config_file}) {
 #======================================================================================
 # RUN COMMANDS AND SCRIPTS
 #======================================================================================
-evolve(seed => defined $SEED ? $SEED : -1) if !$SHELL && !$COMMAND && !$GENOME && !$SCORE && !$GENERATION && !$RESCORE && defined $config_ref->{config_file};
+evolve(seed => defined $SEED ? $SEED : -1) if !$GENOME && !$SCORE && !$GENERATION && !$RESCORE && defined $config_ref->{config_file};
 
 load_genome($GENOME) if defined $GENOME || $SCORE && defined $config_ref->{config_file};
 
 score_genome() if $SCORE && defined $config_ref->{config_file};
+
+save_genome($GENOME) if defined $GENOME && $STORE;
 
 score_generation(generation_num => $GENERATION) if defined $GENERATION && defined $config_ref->{config_file};
 
