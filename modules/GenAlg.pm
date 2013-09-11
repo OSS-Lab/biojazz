@@ -223,7 +223,8 @@ use base qw();
                         if (!$genome_model_ref->get_number()) {
                             $genome_model_ref->set_number(1);
                         }
-                    }                    $scoring_ref->score_genome($genome_model_ref);
+                    }
+                    $scoring_ref->score_genome($genome_model_ref);
                     $genome_model_ref->static_analyse($config_ref->{rescore_elite});
                     $genome_model_ref->set_elite_flag(1);
                 }
@@ -234,9 +235,9 @@ use base qw();
                     if (!$config_ref->{continue_sim}) {
                         $genome_model_ref->set_number(0);
                         $genome_model_ref->set_stepwise_mutations(0);
-                        $genome_model_ref->set_stepwise_mutations(0);
+                        $genome_model_ref->set_stepwise_point_mutations(0);
                         $genome_model_ref->set_accum_mutations(0);
-                        $genome_model_ref->set_accum_mutations(0);
+                        $genome_model_ref->set_accum_point_mutations(0);
                     }
                 }
             } elsif ($config_ref->{selection_method} eq "population_based_selection") {
@@ -248,9 +249,9 @@ use base qw();
                     }
                     if (!$config_ref->{continue_sim}) {
                         $genome_model_ref->set_stepwise_mutations(0);
-                        $genome_model_ref->set_stepwise_mutations(0);
+                        $genome_model_ref->set_stepwise_point_mutations(0);
                         $genome_model_ref->set_accum_mutations(0);
-                        $genome_model_ref->set_accum_mutations(0);
+                        $genome_model_ref->set_accum_point_mutations(0);
                     }
                     my $number = $genome_model_ref->get_number();
                     $loaded_genome_num += $number;
@@ -321,9 +322,9 @@ use base qw();
                     $genome_model_ref->static_analyse($config_ref->{rescore_elite});
                     $genome_model_ref->set_mutation_index(undef);
                     $genome_model_ref->set_stepwise_mutations(0);
-                    $genome_model_ref->set_stepwise_mutations(0);
+                    $genome_model_ref->set_stepwise_point_mutations(0);
                     $genome_model_ref->set_accum_mutations(0);
-                    $genome_model_ref->set_accum_mutations(0);
+                    $genome_model_ref->set_accum_point_mutations(0);
                     $genome_model_ref->set_elite_flag(1);
                 }
             }
