@@ -714,13 +714,15 @@ use base qw();
             complex => undef,
             title_prefix => "",
             plot_command => "plot",
+            filename => "",
             @_);
-        check_args(\%args, 4);
+        check_args(\%args, 5);
 
         my $figure = $args{figure};
         my $complex = $args{complex};
         my $title_prefix = $args{title_prefix};
         my $plot_command = $args{plot_command};
+        my $filename = $args{filename};
 
         my $title = $complex;
 
@@ -729,9 +731,10 @@ use base qw();
         $title_prefix =~ s/_/\\_/g;
 
         my $matlab_ref = $matlab_ref_of{$obj_ID};
-        my $command = "figure($figure);$plot_command(t, $complex); title(\'$title_prefix $title\')";
+        my $command = "io=figure($figure);$plot_command(t, $complex); title(\'$title_prefix $title\')";
         printn "matlab_plot_complex: Figure $figure -- $complex" if $verbosity >= 1;
         $matlab_ref->cmd("$command");
+        $matlab_ref->cmd("saveas(io, \'$filename\', \'png\')") if $filename;
     }
 
     #--------------------------------------------------------------------------------------

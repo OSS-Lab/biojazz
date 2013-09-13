@@ -519,16 +519,19 @@ use base qw(Scoring);
                     $self->matlab_plot_complex(figure => 900,
                         complex => "LG0000",
                         title_prefix => "$genome_name",
+                        filename => "$genome_name" . "_input",
                     );
                 }
                 if (defined $config_ref->{plot_output} && $config_ref->{plot_output}) {
                     $self->matlab_plot_complex(figure => 901,
                         complex => "TG00000",
                         title_prefix => "$genome_name",
+                        filename => "$genome_name" . "_output0",
                     );
                     $self->matlab_plot_complex(figure => 902,
                         complex => "TG00001",
                         title_prefix => "$genome_name",
+                        filename => "$genome_name" . "_output1",
                     );
                 }
                 if (defined $config_ref->{plot_species} && $config_ref->{plot_species}) {
@@ -643,7 +646,7 @@ use base qw(Scoring);
                             figure => 904,
                             X_complex => "LG0000",
                             Y_complex => $output_node,
-                            title_prefix => "$TAG $genome_name",
+                            title_prefix => "$genome_name",
                             axis_ref => [0, $config_ref->{LG_range},
                                 0, $config_ref->{TG_init}],
                             filename => "$genome_name" . "_phase",
