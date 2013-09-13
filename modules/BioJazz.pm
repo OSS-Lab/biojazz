@@ -311,7 +311,9 @@ sub score_generation {
         my $genome_model_ref = retrieve("$genome_files[$i]");
         $scoring_ref->score_genome($genome_model_ref);
         $genome_model_ref->static_analyse($config_ref->{rescore_elite});
-        store($genome_model_ref, "$genome_files[$i]");
+        if ($config_ref->{restore_genome} == 1) {
+            store($genome_model_ref, "$genome_files[$i]");
+        }
     }
 
 }
@@ -359,7 +361,9 @@ sub rescore_genomes {
         my $genome_model_ref = retrieve("$genome_files[$i]");
         $scoring_ref->score_genome($genome_model_ref);
         $genome_model_ref->static_analyse($config_ref->{rescore_elite});
-        store($genome_model_ref, "$genome_files[$i]");
+        if ($config_ref->{restore_genome} == 1) {
+            store($genome_model_ref, "$genome_files[$i]");
+        }
     }
 
 } ## --- end sub rescore_genomes
