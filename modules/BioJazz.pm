@@ -244,11 +244,12 @@ sub save_genome {
 sub score_genome {
     eval("use $config_ref->{scoring_class};");
     if ($@) {print $@; return;}
+    my $analysis_dir = defined $config_ref->{analysis_dir} ? $config_ref->{analysis_dir} : "analysis";
 
     $scoring_ref = $config_ref->{scoring_class}->new({
             node_ID => 999,
             config_file => $config_ref->{config_file},
-            work_dir => "$config_ref->{work_dir}/analysis/$TAG",
+            work_dir => "$config_ref->{work_dir}/$analysis_dir/$TAG",
             matlab_startup_options => "-nodesktop -nosplash",  # need jvm
         });
     $config_ref = $scoring_ref->get_config_ref();
@@ -281,13 +282,14 @@ sub score_generation {
     check_args(\%args, 1);
     my $generation_num = $args{generation_num};
     printn "Scoring generation $generation_num";
+    my $analysis_dir = defined $config_ref->{analysis_dir} ? $config_ref->{analysis_dir} : "analysis";
 
     eval("use $config_ref->{scoring_class};");
 
     $scoring_ref = $config_ref->{scoring_class}->new({
             node_ID => 999,
             config_file => $config_ref->{config_file},
-            work_dir => "$config_ref->{work_dir}/analysis/$TAG",
+            work_dir => "$config_ref->{work_dir}/$analysis_dir/$TAG",
             matlab_startup_options => "-nodesktop -nosplash",  # need jvm
         });
     $config_ref = $scoring_ref->get_config_ref();
@@ -331,11 +333,12 @@ sub score_generation {
 sub rescore_genomes {
     my $regular_expression = shift;
     eval("use $config_ref->{scoring_class};");
+    my $analysis_dir = defined $config_ref->{analysis_dir} ? $config_ref->{analysis_dir} : "analysis";
 
     $scoring_ref = $config_ref->{scoring_class}->new({
             node_ID => 999,
             config_file => $config_ref->{config_file},
-            work_dir => "$config_ref->{work_dir}/analysis/$TAG",
+            work_dir => "$config_ref->{work_dir}/$analysis_dir/$TAG",
             matlab_startup_options => "-nodesktop -nosplash",  # need jvm
         });
     $config_ref = $scoring_ref->get_config_ref();
@@ -369,6 +372,20 @@ sub rescore_genomes {
     }
 
 } ## --- end sub rescore_genomes
+
+#--------------------------------------------------------------------------------------
+# Function: collect_info_from_networks
+# Synopsys: 
+#--------------------------------------------------------------------------------------
+sub collect_info_from_networks {
+    my $obj_dir = "$config_ref->{work_dir}/$TAG/obj";
+    my $analysis_dir = defined $config_ref->{analysis_dir} ? $config_ref->{analysis_dir} : "analysis";
+
+    $history_ref = History->new({});
+    $history_ref->collect_info_from_networks(
+        analysis_dir => "$config_ref->{work_dir}/$analysis_dir/$TAG",
+    );
+}
 
 
 #--------------------------------------------------------------------------------------

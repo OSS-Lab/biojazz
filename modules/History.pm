@@ -107,10 +107,8 @@ use base qw();
         confess "genome_attribute_names is not specified!" if (!@config_attribute_names);
 
         my $generation = $config_ref->{first_generation};
-        my $fossil_epoch = 1;
-        if ($config_ref->{selection_method} eq "population_based_selection") {
-            $fossil_epoch = defined $config_ref->{fossile_epoch} ? $config_ref->{fossil_epoch} : 1;
-        }
+        my $fossil_epoch = (defined $config_ref->{fossile_epoch} && $config_ref->{selection_method} eq "population_based_selection") ? $config_ref->{fossil_epoch} : 1;
+
         while(1) {
             last if ($max_generations != -1) && ($generation >= $max_generations);
             my $gen_ref;
@@ -177,6 +175,37 @@ use base qw();
             } elsif ($config_ref->{selection_method} eq "population_based_selection") {
                 $generation += $fossil_epoch;
             }
+
+        }
+    }
+
+    #--------------------------------------------------------------------------------------
+    # Function: collect_info_from_networks
+    # Synopsys: Collect structure and reaction information from ANC mod files
+    #--------------------------------------------------------------------------------------
+    sub collect_info_from_networks {
+        my $self = shift; my $obj_ID = ident $self;
+        my %args = (
+            analysis_dir => undef,
+            @_,
+        );
+        check_args(\%args,1);
+        my $analysis_dir = $args{analysis_dir};
+        
+        my $file_glob = "$analysis_dir/matlab/*.mod";
+        my @anc_files = (glob $file_glob);
+
+        foreach my $anc_file (@anc_files) {
+            my $genome_name;
+            if ($anc_file =~ /\/(G\S+?_I\S+?).mod/) {
+               $genome_name = $1; 
+            } else {
+                die "can't extract the name of the genome/ANC file $anc_file\n";
+            }
+            open (ANC, "< $anc_file") or die "Can't open file $anc_file\n";
+
+            my $anc_model = join("", <ANC>);
+            close ANC;
 
         }
     }
