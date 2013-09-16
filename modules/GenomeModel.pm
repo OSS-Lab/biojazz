@@ -40,10 +40,8 @@ use base qw(Model);
     my %elite_flag_of  :ATTR(get => 'elite_flag', set => 'elite_flag', default => 0);
     my %mutation_index_of   :ATTR(get => 'mutation_index', set => 'mutation_index', default => undef);
 
-    my %stepwise_mutations_of    :ATTR(get => 'stepwise_mutations', set => 'stepwise_mutations', default => 0);
-    my %stepwise_point_mutations_of    :ATTR(get => 'stepwise_point_mutations', set => 'stepwise_point_mutations', default => 0);
-    my %accum_mutations_of    :ATTR(get => 'accum_mutations', set => 'accum_mutations', default => 0);
-    my %accum_point_mutations_of    :ATTR(get => 'accum_point_mutations', set => 'accum_point_mutations', default => 0);
+    my %mutations_of    :ATTR(get => 'mutations', set => 'mutations', default => 0);
+    my %point_mutations_of    :ATTR(get => 'point_mutations', set => 'point_mutations', default => 0);
 
    #my %cell_volume_of :ATTR(get => 'cell_volume', set => 'cell_volume');
 
@@ -71,10 +69,8 @@ use base qw(Model);
         $number_of{$obj_ID} = 0;
         $score_of{$obj_ID} = 0;
         $elite_flag_of{$obj_ID} = 0;
-        $stepwise_mutations_of{$obj_ID} = 0;
-        $stepwise_point_mutations_of{$obj_ID} = 0;
-        $accum_mutations_of{$obj_ID} = 0;
-        $accum_point_mutations_of{$obj_ID} = 0;
+        $mutations_of{$obj_ID} = 0;
+        $point_mutations_of{$obj_ID} = 0;
         $mutation_index_of{$obj_ID} = undef;
         #$cell_volume_of{$obj_ID} = $arg_ref->{cell_volume} if exists $arg_ref->{cell_volume};
     }
@@ -178,10 +174,8 @@ use base qw(Model);
 
         my $str = "score=".(defined $self->get_score() ? $self->get_score() : "UNDEF");
         $str .= ", number=".(defined $self->get_number() ? $self->get_number() : "UNDEF");
-        $str .= ", accum_mutations=".(defined $self->get_accum_mutations() ? $self->get_accum_mutations() : "UNDEF");
-        $str .= ", accum_point_mutations=".(defined $self->get_accum_point_mutations() ? $self->get_accum_point_mutations() : "UNDEF");
-        $str .= ", stepwise_mutations=".(defined $self->get_stepwise_mutations() ? $self->get_stepwise_mutations() : "UNDEF");
-        $str .= ", stepwise_point_mutations=".(defined $self->get_stepwise_point_mutations() ? $self->get_stepwise_point_mutations() : "UNDEF");
+        $str .= ", mutations=".(defined $self->get_mutations() ? $self->get_mutations() : "UNDEF");
+        $str .= ", point_mutations=".(defined $self->get_point_mutations() ? $self->get_point_mutations() : "UNDEF");
         foreach my $key (sort keys %{$stats_ref}) {
             my $value = $stats_ref->{$key};
             $value = defined $value ? $value : "UNDEF";
@@ -1530,12 +1524,10 @@ use base qw(Model);
 
         $mutation_count += $point_mutation_count;
         $mutation_count += $duplication_bits + $deletion_bits + $shuffling_bits;
-        $self->set_stepwise_mutations($mutation_count);
-        $self->set_stepwise_point_mutations($point_mutation_count);
-        my $accum_mutation_count = $self->get_accum_mutations();
-        my $accum_point_mutation_count = $self->get_accum_point_mutations();
-        $self->set_accum_mutations($accum_mutation_count + $mutation_count);
-        $self->set_accum_point_mutations($accum_point_mutation_count + $point_mutation_count);
+        my $accum_mutation_count = $self->get_mutations();
+        my $accum_point_mutation_count = $self->get_point_mutations();
+        $self->set_mutations($accum_mutation_count + $mutation_count);
+        $self->set_point_mutations($accum_point_mutation_count + $point_mutation_count);
 
         return $mutation_count;
     }

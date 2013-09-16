@@ -234,10 +234,8 @@ use base qw();
                 foreach my $genome_model_ref (@genome_model_refs) {
                     if (!$config_ref->{continue_sim}) {
                         $genome_model_ref->set_number(0);
-                        $genome_model_ref->set_stepwise_mutations(0);
-                        $genome_model_ref->set_stepwise_point_mutations(0);
-                        $genome_model_ref->set_accum_mutations(0);
-                        $genome_model_ref->set_accum_point_mutations(0);
+                        $genome_model_ref->set_mutations(0);
+                        $genome_model_ref->set_point_mutations(0);
                     }
                 }
             } elsif ($config_ref->{selection_method} eq "population_based_selection") {
@@ -248,10 +246,8 @@ use base qw();
                         $genome_model_ref->set_number(1);
                     }
                     if (!$config_ref->{continue_sim}) {
-                        $genome_model_ref->set_stepwise_mutations(0);
-                        $genome_model_ref->set_stepwise_point_mutations(0);
-                        $genome_model_ref->set_accum_mutations(0);
-                        $genome_model_ref->set_accum_point_mutations(0);
+                        $genome_model_ref->set_mutations(0);
+                        $genome_model_ref->set_point_mutations(0);
                     }
                     my $number = $genome_model_ref->get_number();
                     $loaded_genome_num += $number;
@@ -321,10 +317,8 @@ use base qw();
                     $scoring_ref->score_genome($genome_model_ref);
                     $genome_model_ref->static_analyse($config_ref->{rescore_elite});
                     $genome_model_ref->set_mutation_index(undef);
-                    $genome_model_ref->set_stepwise_mutations(0);
-                    $genome_model_ref->set_stepwise_point_mutations(0);
-                    $genome_model_ref->set_accum_mutations(0);
-                    $genome_model_ref->set_accum_point_mutations(0);
+                    $genome_model_ref->set_mutations(0);
+                    $genome_model_ref->set_point_mutations(0);
                     $genome_model_ref->set_elite_flag(1);
                 }
             }
@@ -451,8 +445,6 @@ use base qw();
                 $parent_ref->set_score(undef);
                 $parent_ref->clear_stats();
                 $parent_ref->set_elite_flag(0);
-                $parent_ref->set_stepwise_mutations(0);
-                $parent_ref->set_stepwise_point_mutations(0);
                 $parent_ref->mutate(
                     mutation_rate_params => $config_ref->{mutation_rate_params},
                     mutation_rate_global => $config_ref->{mutation_rate_global},
@@ -552,8 +544,6 @@ use base qw();
             confess "ERROR: The score of $parent_name is UNDEFINED!" if !defined $genome_ref->get_score();
             if (rand(1) < $mutation_rate) {
                 my $child_ref = $genome_ref->duplicate();
-                $child_ref->set_stepwise_mutations(0);
-                $child_ref->set_stepwise_point_mutations(0);
                 printn "MUTATION: mutating genome $parent_name.";
                 my $mutation_count = $child_ref->mutate(
                     mutation_rate_params => $config_ref->{mutation_rate_params},
@@ -675,9 +665,6 @@ use base qw();
                 if ($index_array_ref_of{$obj_ID}->[$mutation_index] != $i) {
                     die "There is something wrong that mutation index recorded in genome is not same as the genotype index recoding the corresponding mutated genome";
                 }
-            } else {
-                $genome_model_ref->set_stepwise_mutations(0);
-                $genome_model_ref->set_stepwise_point_mutations(0);
             }
             $i++;
         }
@@ -803,8 +790,9 @@ use base qw();
             $second_attribute = 'Population_per_mutant';
         }
  
-        my @attribute_names_new = ('Name', $second_attribute, 'Accum_mutations', 
-            'Accum_point_mutations', 'Stepwise_mutations', 'Stepwise_point_mutations', @genome_attribute_names);
+        my @attribute_names_new = ('Name', $second_attribute, 'Accum_mutations', 'Accum_point_mutations', 
+            #'Stepwise_mutations', 'Stepwise_point_mutations', 
+            @genome_attribute_names);
         $csv->print($data_file, \@attribute_names_new);
 
         close($data_file) || warn "close failed: $!";
@@ -844,10 +832,8 @@ use base qw();
             my $genome_ref = $genomes[$i];
             push(@attributes, $genome_ref->get_name());
             push(@attributes, $genome_ref->get_number());
-            push(@attributes, $genome_ref->get_accum_mutations());
-            push(@attributes, $genome_ref->get_accum_point_mutations());
-            push(@attributes, $genome_ref->get_stepwise_mutations());
-            push(@attributes, $genome_ref->get_stepwise_point_mutations());
+            push(@attributes, $genome_ref->get_mutations());
+            push(@attributes, $genome_ref->get_point_mutations());
             # Here, we output each genome stats into a line 
             # of CSV file
             for (my $j = 0; $j < scalar @genome_attribute_names; $j++) {
