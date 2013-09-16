@@ -301,6 +301,7 @@ sub score_generation {
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
     $config_ref->{rescore_elite} = 1;
+    $config_ref->{restore_genome} = $config_ref->{restore_genome} || 0;
 
     my $dir = "$config_ref->{work_dir}/$TAG/obj";
 
@@ -348,6 +349,7 @@ sub rescore_genomes {
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
     $config_ref->{rescore_elite} = 1;
+    $config_ref->{restore_genome} = $config_ref->{restore_genome} || 0;
 
     my $dir = "$config_ref->{work_dir}/$TAG/obj";
 
