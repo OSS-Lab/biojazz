@@ -2,7 +2,7 @@
 
 BioJazz is a tool for evolving and designing biochemical reaction networks using genetic algorithm (GA).  Typically, a BioJazz user wishes to evolve or design a small network or motif which accomplishes a specific function, such as a switch or an oscillator module.  The network comprises a set of proteins whose attributes are encoded in a network's ''genome''.  The ''genome'' is a binary string which  contains all the information necessary to determine how many proteins are present in the network, their structure, which proteins interact and the biochemical parameters of their interaction. 
 
-BioJazz implements a genetic algorithm which through a random process of replication, mutation, and selection (with either population-based or random walk style), attempts to incrementally improve how well those "genomes" perform a user-specified function. By encoding the network in a fashion that mimics the way nature does, BioJazz can use a larger variety of mutational operators than do traditional GAs (which use point mutations and crossover), such as gene duplications, gene deletions, and domain shuffling.  Thus, BioJazz has the ability to change and evolve networks with respect to both topology and biochemical parameters, by starting from a designed network ''de novo'', or a partially or completely functional seed network.
+BioJazz implements a genetic algorithm which through a random process of replication, mutation, and selection (with either population-based or random walk style), attempts to incrementally improve how well those "genomes" perform a user-specified function. By encoding the network in a fashion that mimics the way nature does, BioJazz can use a larger variety of mutational operators than do traditional GAs (which use point mutations and crossover), such as gene duplications, gene deletions, and domain shuffling.  Thus, BioJazz has the ability to change and evolve networks with respect to both topology and biochemical parameters, by starting from a designed network ''_de novo_'', or a partially or completely functional seed network.
 
 Much of BioJazz's ability to design realistic networks comes from the accompanying Allosteric Network Compiler (ANC).  ANC is a stand-alone, rule-based compiler which has the ability to turn a high-level description of allosteric proteins into the corresponding set of biochemical equations.  The proteins can exhibit many of the behaviours observed in nature, such as co-localization, allosteric transitions, binding and catalytic reactions.  BioJazz is likely the first tool to couple a rule-based compiler with an evolutionary algorithm.  
 
@@ -15,7 +15,7 @@ While the genetic algorithm itself is not very tasking, scoring each individual 
 The main features of BioJazz are:
 
 * evolves both network topology and connection weights
-* designs a network ''de novo'', or starting from user-specified seed network
+* designs a network ''_de novo_'', or starting from user-specified seed network
 * uses workstation clusters to speed up the design
 * produces a human-readable model of the winning network
 * highly configurable and parameterized
@@ -47,14 +47,16 @@ BioJazz requires Matlab to be installed on all nodes used for computation, and a
 Note that if you decide to use a cluster of workstations, these installation instructions apply to all workstations used.
 
 #####CPAN modules
-CPAN is an internet database of Perl modules.  BioJazz/ANC/Facile use several of them and they must be installed prior to use.  You will need system administrator priviledges to install these modules (or see  for instructions on how to install them in your home directory).  You or your sysadmin will typically need to run the following commands on each system used:
+CPAN is an internet database of Perl modules.  BioJazz/ANC/Facile use several of them and they must be installed prior to use.  You will need system administrator priviledges to install these modules (or see  for instructions on how to install them in your home directory).  You or your sysadmin will typically need to run the following commands on each system used (use sudo as prefix if available, if you don't have a admin privilege [here is a solution](http://twiki.org/cgi-bin/view/TWiki/HowToInstallCpanModules#Install_CPAN_modules_into_your_l) let you install perl modules in your user directory):
 ```sh
  cpan -i Class::Std
  cpan -i Class::Std::Storable
+ cpan -i String::CRC32
  cpan -i Expect
  cpan -i Carp
- cpan -i IPC::Shareable
  cpan -i WeakRef
+ cpan -i IPC::Shareable
+ cpan -i Linux::Pid
  cpan -i Text::CSV
 ```
 
@@ -195,13 +197,13 @@ Where `ggg` is the generation number and `ii` is the individual number.
 
 There are two modes of replication in BioJazz.  They are rank-based and fitness-based replication.
 
-===Rank-based replication===
+#####Rank-based replication
 
 In the rank-based mode, the fitness score returned by the user-defined evaluation routine are not used as is to compute the actual fitness of each network (the actual fitness being the expectation value for the number of children).  This mode is appropriate when small numerical differences in the score do not meaningfully correspond to the number of children an individual should have.  Therefore, BioJazz uses the fitness score of each individual to produce a ranking of the entire generation.
 
 Children are generated according to the following procedure.  First, the top ''elite_pool_size'' individuals are copied as is to the next generation, without any mutations.  Next, an additional (''max_population'' - ''elite_pool_size'') children need to be created to keep the population size constant.  
 
-===Fitness-based replication===
+#####Fitness-based replication
 
 In this mode, the computed fitness dictates the relative proportion of the available pool of children that a genome is to have.
 
@@ -210,92 +212,61 @@ Children are generated according to the following procedure.  First, the top ''e
 To decide which individuals become parents a sampling procedure called the "roulette wheel" is used.  Imagine a roulette wheel where each parent has a slot whose size is proportional to the fitness....
 
 
-==Mutation Operators==
-===Point Mutation===
-===Gene Duplication===
-===Gene Deletion===
-===Domain Shuffling===
+####Mutation Operators
+#####Point Mutation
+#####Gene Duplication
+#####Gene Deletion
+#####Domain Duplication
+#####Domain Deletion
+#####Domain Shuffling
 
-=Network Encoding Model=
+###Network Encoding Model
 
-
-==Complementarity Encoding Scheme==
+####Complementarity Encoding Scheme
 
 The complementarity encoding scheme is currently implemented in BioJazz.
 
-|Sequence Fields | Field Name | Length (L) | Allowed Values RegExp | Scaling | Dynamic Range | Resolution | Description|
-|-------------|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|-------------:|
-|**Genome** |  |  |  |  |  |  |  |
-|PRE-JUNK | Any | [01]* | | | |Untranslated sequence preceding first gene.|
+| Field Name | Length (L) | Allowed Values RegExp | Scaling | Dynamic Range | Resolution | Description |
+|-------------|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
+|**Genome** |  |  |  |  |  |  |
+|PRE_JUNK | Any | [01]* | | | |Untranslated sequence preceding first gene|
+|*genes*| 1 or more genes | Any legal gene | | | | One or more genes separated by untranslated sub-sequences|
+|POST_JUNK | Any | [01]* | | | | Untranslated sequence following last gene|
+|**Genw** |  |  |  |  |  |  |
+|START_CODE | 8 | 01111110 | | | | Untranslated sequence preceding first gene|
+|concentration | 10 | [01]{L} | Log-linear | 1e3/1e-3 | 1.36% | Encodes the initial concentration of the protein|
+|UNUSED | 4 | [01]{L} | | | | Reserved field|
+|*domains* | 1 or more domains | Any legal domain | | | | One or more domains separated by a soft linker pattern ("001")|
+|STOP_CODE | 3 | 111 | | | | Terminates the gene|
+|**Domain** |  |  |  |  |  |  |
+|allosteric flag | 1 | [01]{1} | | | | Maps directly to ANC domain attribute of the same name|
+|R <--> T rates | 10 | [01]{L} | Loglinear | 1e+2/1e-2 | 0.90% | Embedded in ANC model|
+|&Phi; | 10 | [01]{10} | Linear | 0.0 - 1.0 | ~1e-3 | Scaled to a number between 0 and 1 (inclusive), embedded in ANC model|
+|UNUSED | 4 | [01]{L} | | | | Reserved field|
+|*protodomains* | 1 or more protodomains | Any legal protodomain | | | |One or more protodomains separated by a hard linker pattern ("000")|
+|**ProtoDomain** |  |  |  |  |  |  |
+|type | 2 | [01]{2} | | | | Maps to protodomain type in ANC model, determines enzyme polarity. 00=bsite, 01=msite, 10=csite, 11=csite|
+|substrate polarity | 1 | [01]{1} | | | | If the protodomain is a csite, determines whether it modifies (0, kinase) or unmodifies (1, phosphatase) the substrate|
+|binding profile | 10 | [01]{L} | | | | Determines ligands pairs. If the binding profiles of two protodomains are sufficiently complementary, then a binding reaction occurs using kinetic rates calculated from the following attributes|
+|kf profile | 20 | [01]{L} | Log-linear profile | 1e3/1e-3 | 1.99x | Determines the association kinetics of two protodomains|
+|kb profile | 20 | [01]{L} | Loglinear-profile | 1e3/1e-3 | 1.99x | Determines the dissociation kinetics of two protodomains|
+|kp profile | 10 | [01]{L} | Loglinear | 1e3/1e-3 | 1.36% | For csite protodomains only, determines rate of product reaction when modifying|
+|Keq ratio (&Gamma;) | 10 | [01]{10} | Loglinear | 1e2/1e-2 | 0.90% | Determines allosteric effect of msite modification. Embedded in ANC model|
+|kf polarity mask | 20 | [01]{L} | | | | XORed with "kf profile" to determine profile of modified (msite=1) version of protodomain|
+|kf conformation mask | 20 | [01]{L} | | | | XORed with "kf profile" to determine new profile of 'T' conformation|
+|kb polarity mask | 20 | [01]{L} | | | | XORed with "kb profile" to determine profile of modified (msite=1) version of protodomain|
+|kb conformation mask | 20 | [01]{8} | | | | XORed with "kb profile" to determine new profile of 'T' conformation|
+|kp conformation mask | 10 | [01]{8} | | | | XORed with "kp profile" to determine new profile of 'T' conformation|
+| UNUSED | 4 | [01]{L} | | | | Reserved field|
 
 
-
-
-|genes||1 or more genes||Any legal gene||||||||One or more genes separated by untranslated sub-sequences.
-|-
-|POST-JUNK||Any||[01]*||||||||Untranslated sequence following last gene.
-|-
-|colspan="7"|'''Gene'''
-|-
-|START_CODE||8||01111110||||||||Untranslated sequence preceding first gene.
-|-
-|regulated_concentration||10||[01]{L}||Loglinear||1e3/1e-3||1.36%||Encodes the initial concentration of the protein.
-|-
-|UNUSED||4||[01]{L}||||||||Reserved field.
-|-
-|domains||1 or more domains||Any legal domain||||||||One or more domains separated by a soft linker pattern ("001")
-|-
-|STOP_CODE||3||111||||||||Terminates the gene.
-|-
-|colspan="7"|'''Domain'''
-|-
-|allosteric_flag||1||[01]||||||||Maps directly to ANC domain attribute of the same name.
-|-
-|RT/TR_transition_rate||10||[01]{L}||Loglinear||1e+2/1e-2||0.90%||With scaling, maps to ANC domain attribute of same name.
-|-
-|RT_phi||10||[01]{10}||Linear||0.0-1.0||~1e-3||Scaled to a number between 0 and 1 (inclusive), maps to ANC domain attribute of the same name.
-|-
-|UNUSED||4||[01]{L}||||||||Reserved field.
-|-
-|protodomains||1 or more protodomains||Any legal protodomain||||||||One or more protodomains separated by a hard linker pattern ("000")
-|-
-|colspan="7"|'''ProtoDomain'''
-|-
-|type||2||[01]{2}||||||||Maps to ANC protodomain type attribute and determines enzyme polarity.  00=bsite, 01=msite, 10=csite, 11=csite
-|-
-|substrate_polarity||1||[01]{1}||||||||If the protodomain is a csite, determines whether it modifies (0) or unmodifies (1) the substrate.
-|-
-|binding_profile||10||[01]{L}||||||||Determines ligands pairs.  If the binding_profiles of two putative ligands are sufficiently complementary, then a binding reaction occurs using kinetic rates calculated from the following attributes.
-|-
-|kf_profile||20||[01]{L}||Loglinear-profile||1e3/1e-3||1.99x||Determines the association kinetics of two ligands.
-|-
-|kb_profile||20||[01]{L}||Loglinear-profile||1e3/1e-3||1.99x||Determines the dissociation kinetics of two ligands.
-|-
-|kp_profile||10||[01]{L}||Loglinear||1e3/1e-3||1.36%||For csite protodomains only, determines rate of product reaction when modifying.
-|-
-|Keq_ratio||10||[01]{10}||Loglinear||1e2/1e-2||0.90%||Determines allosteric effect of msite modification.  With scaling, maps to ANC domain attribute of same name.
-|-
-|kf_polarity_mask||20||[01]{L}||||||||XORed with kf_profile to determine profile of modified (msite=1) version of protodomain.
-|-
-|kf_conformation_mask||20||[01]{L}||||||||XORed with kf_profile to determine new profile of T conformation.
-|-
-|kb_polarity_mask||20||[01]{L}||||||||XORed with kb_profile to determine profile of modified (msite=1) version of protodomain.
-|-
-|kb_conformation_mask||20||[01]{8}||||||||XORed with kb_profile to determine new profile of T conformation.
-|-
-|kp_conformation_mask||10||[01]{8}||||||||XORed with kp_profile to determine new profile of T conformation.
-|-
-|UNUSED||4||[01]{L}||||||||Reserved field.
-|-
-|}
-
-==Field Scaling==
+####Field Scaling
 
 All the above fields correspond to parameter values whose scale and dynamic range is given in a configuration file.  This section deals with the issue of translating an integer (binary encoded) scale into parameter values.  In all sections, x is the integer value corresponding to a binary field, which goes from 0 to x_max=2^L-1 where L is the length of the field.  Also, y_min is the minimum value of the parameter, and y_max is the maximum value.  For example, the regulated_concentration parameter can be made to range from 1e-3 (y_min) to 1e+3 (y_max).
 
-===Linearly Scaled Fields===
+#####Linearly Scaled Fields
 
-Relevant field(s): RT_phi.
+Relevant field(s): &Phi;.
 
 Here the value of the parameter is y(x) = y_min + (y_max - y_min)*(x/x_max);
 
@@ -303,7 +274,7 @@ The resolution R(n) for an n-bit field is given by:
 
 R(n) = (y_max-y_min)/(2^n-1)
 
-===Loglinear Scaled Fields===
+#####Loglinear Scaled Fields
 
 Relevant field(s): kp_profile, RT/TR_transition_rate, Keq_ratio, regulated_concentration
 
@@ -323,7 +294,7 @@ In other words, you can change by 5.57% increments.  For 10 bits,
 
 FC(10bits) = 1e6^(1/1023) = 1.0136.
 
-===Loglinear Scaled Profiles===
+#####Loglinear Scaled Profiles
 
 Fields: kf_profile, kb_profile
 
@@ -341,9 +312,9 @@ FC(30) = 1e6^(1/30) = 1.5849
 
 I.e. a 2x or 60% change per increment.
 
-====Improvement====
+######Improvement
 
-Note that there is some inefficiency in this method of coding because we need extremely long fields to get goo resolution,  because x_max=L and not 2^L.
+Note that there is some inefficiency in this method of coding because we need extremely long fields to get good resolution,  because x_max=L and not 2^L.
 
 Currently for profiles X and Y, we have:
 
@@ -356,7 +327,7 @@ MISMATCH = HAMMING(X, complement(Y))
 
 An alternative would scale the MISMATCH_VECTOR, which has a range of 2^L, instead of MISMATCH, which has a range of just L.  Caveat is that we must get the same thing if the profiles are commuted, but in fact the MISMATCH_VECTOR gets flipped, so the msb becomes the lsb.  One way around this is to designate the 2 outer bits as msbs, and the 2 most inner bits as lsbs.  You break the MISMATCH_VECTOR in two, flip the 2nd half and add to the first.  This gets us a range of 0 to [2^(L/2)-1]*2.
 
-=Scoring Functions=
+###Scoring Functions
 
 ### Authors and Contributors
 The project is firstly developed by Julien Ollivier, then modified and currently maintained by Song Feng (@LifeWorks).
