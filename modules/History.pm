@@ -19,6 +19,7 @@ use base qw();
     use Text::CSV;
     use Utils;
     use Generation;
+    use Matrix;
 
     use Globals qw ($verbosity $TAG $config_ref);
 
@@ -206,9 +207,43 @@ use base qw();
 
             my $anc_model = join("", <ANC>);
             close ANC;
-
+            print "EXTRACTION: extract interaction information from ANC file\n" if $verbosity >= 1;
+            $self->extract_network_matrix(anc_model => $anc_model, genome_name => $genome_name,);
         }
     }
+
+
+#===  FUNCTION  ================================================================
+#         NAME: extract_network_matrix
+#      PURPOSE: extract the network infomation from an anc model
+#   PARAMETERS: anc_model as a string
+#      RETURNS: save the interation info into a CSV file
+#  DESCRIPTION: 
+#       THROWS: no exceptions
+#     COMMENTS: none
+#     SEE ALSO: n/a
+#===============================================================================
+
+    sub extract_network_matrix {
+        my $self = shift; my $obj_ID = ident $self;
+
+        my %args = (
+            genome_name => undef,
+            anc_model => undef,
+            @_,
+        );
+        check_args(\%args, 2);
+
+        my $genome_name = $args{genome_name};
+        my $anc_model = $args{anc_model};
+
+        my $matrix_ref = Matrix->new({});
+        my @matrix_nodes = ();
+
+        return 1;
+    } ## --- end sub extract_network_matrix
+
+
 }
 
 sub run_testcases {
