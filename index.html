@@ -1,42 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <title>BioJazz by LifeWorks</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <title>BioJazz by LifeWorks</title>
   </head>
-
   <body>
-    <div id="container">
-      <div class="inner">
+    <div class="wrapper">
+      <header>
+        <h1 class="header">BioJazz</h1>
+        <p class="header">Evolving &amp; Design Biochemical Reaction Networks</p>
 
-        <header>
-          <h1>BioJazz</h1>
-          <h2>Evolving &amp; Design of Biochemical Reaction Networks</h2>
-        </header>
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/LifeWorks/biojazz/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/LifeWorks/biojazz/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/LifeWorks/biojazz">View On GitHub</a></li>
+        </ul>
 
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/LifeWorks/biojazz/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/LifeWorks/biojazz/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/LifeWorks/biojazz" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/LifeWorks">LifeWorks</a></p>
 
-        <hr>
 
-        <section id="main_content">
-          <h3>
+      </header>
+      <section>
+        <h3>
 <a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h3>
 
 <p>BioJazz is a tool for evolving and designing biochemical reaction networks using genetic algorithm (GA).  Typically, a BioJazz user wishes to evolve or design a small network or motif which accomplishes a specific function, such as a switch or an oscillator module.  The network comprises a set of proteins whose attributes are encoded in a network's ''genome''.  The ''genome'' is a binary string which  contains all the information necessary to determine how many proteins are present in the network, their structure, which proteins interact and the biochemical parameters of their interaction. </p>
 
-<p>BioJazz implements a genetic algorithm which through a random process of replication, mutation, and selection (with either population-based or random walk style), attempts to incrementally improve how well those "genomes" perform a user-specified function. By encoding the network in a fashion that mimics the way nature does, BioJazz can use a larger variety of mutational operators than do traditional GAs (which use point mutations and crossover), such as gene duplications, gene deletions, and domain shuffling.  Thus, BioJazz has the ability to change and evolve networks with respect to both topology and biochemical parameters, by starting from a designed network ''de novo'', or a partially or completely functional seed network.</p>
+<p>BioJazz implements a genetic algorithm which through a random process of replication, mutation, and selection (with either population-based or random walk style), attempts to incrementally improve how well those "genomes" perform a user-specified function. By encoding the network in a fashion that mimics the way nature does, BioJazz can use a larger variety of mutational operators than do traditional GAs (which use point mutations and crossover), such as gene duplications, gene deletions, and domain shuffling.  Thus, BioJazz has the ability to change and evolve networks with respect to both topology and biochemical parameters, by starting from a designed network ''_de novo_'', or a partially or completely functional seed network.</p>
 
 <p>Much of BioJazz's ability to design realistic networks comes from the accompanying Allosteric Network Compiler (ANC).  ANC is a stand-alone, rule-based compiler which has the ability to turn a high-level description of allosteric proteins into the corresponding set of biochemical equations.  The proteins can exhibit many of the behaviours observed in nature, such as co-localization, allosteric transitions, binding and catalytic reactions.  BioJazz is likely the first tool to couple a rule-based compiler with an evolutionary algorithm.  </p>
 
@@ -50,7 +49,7 @@
 
 <ul>
 <li>evolves both network topology and connection weights</li>
-<li>designs a network ''de novo'', or starting from user-specified seed network</li>
+<li>designs a network ''_de novo_'', or starting from user-specified seed network</li>
 <li>uses workstation clusters to speed up the design</li>
 <li>produces a human-readable model of the winning network</li>
 <li>highly configurable and parameterized</li>
@@ -62,7 +61,7 @@
 
 <p>BioJazz requires the ANC and Facile tools.  You can tell BioJazz where to get them by setting the ANC_HOME and FACILE_HOME environment variables to point to the appropriate directories.  It is recommended to add the following lines to your ''~/.bashrc'' file:</p>
 
-<div class="highlight"><pre> <span class="nb">export </span><span class="nv">ANC_HOME</span>    <span class="o">=</span> ~/workspace/anc
+<div class="highlight highlight-sh"><pre> <span class="nb">export </span><span class="nv">ANC_HOME</span>    <span class="o">=</span> ~/workspace/anc
  <span class="nb">export </span><span class="nv">FACILE_HOME</span> <span class="o">=</span> ~/workspace/facile
  <span class="nb">alias  </span><span class="nv">anc</span><span class="o">=</span><span class="s1">'$ANC_HOME/anc.pl'</span>
  <span class="nb">alias  </span><span class="nv">facile</span><span class="o">=</span><span class="s1">'$FACILE_HOME/facile.pl'</span>
@@ -73,7 +72,7 @@
 
 <p>BioJazz requires Matlab to be installed on all nodes used for computation, and assumes matlab can be started with the command ''matlab''. Here is an example of configuration in "~/.bashrc" file (on Mac OS X):</p>
 
-<div class="highlight"><pre> <span class="nb">export </span><span class="nv">MATLAB_HOME</span> <span class="o">=</span> /Applications/MATLAB_R2011b.app/bin
+<div class="highlight highlight-sh"><pre> <span class="nb">export </span><span class="nv">MATLAB_HOME</span> <span class="o">=</span> /Applications/MATLAB_R2011b.app/bin
  <span class="nb">alias  </span><span class="nv">matlab</span><span class="o">=</span><span class="s1">'$MATLAB_HOME/matlab'</span>
  <span class="nb">export </span><span class="nv">PATH</span> <span class="o">=</span> <span class="nv">$MATLAB_HOME</span>:<span class="nv">$PATH</span>
 
@@ -86,20 +85,22 @@
 <h5>
 <a name="cpan-modules" class="anchor" href="#cpan-modules"><span class="octicon octicon-link"></span></a>CPAN modules</h5>
 
-<p>CPAN is an internet database of Perl modules.  BioJazz/ANC/Facile use several of them and they must be installed prior to use.  You will need system administrator priviledges to install these modules (or see  for instructions on how to install them in your home directory).  You or your sysadmin will typically need to run the following commands on each system used:</p>
+<p>CPAN is an internet database of Perl modules.  BioJazz/ANC/Facile use several of them and they must be installed prior to use.  You will need system administrator priviledges to install these modules (or see  for instructions on how to install them in your home directory).  You or your sysadmin will typically need to run the following commands on each system used (use sudo as prefix if available, if you don't have a admin privilege <a href="http://twiki.org/cgi-bin/view/TWiki/HowToInstallCpanModules#Install_CPAN_modules_into_your_l">here is a solution</a> let you install perl modules in your user directory):</p>
 
-<div class="highlight"><pre> cpan -i Class::Std
+<div class="highlight highlight-sh"><pre> cpan -i Class::Std
  cpan -i Class::Std::Storable
+ cpan -i String::CRC32
  cpan -i Expect
  cpan -i Carp
- cpan -i IPC::Shareable
  cpan -i WeakRef
+ cpan -i IPC::Shareable
+ cpan -i Linux::Pid
  cpan -i Text::CSV
 </pre></div>
 
 <p>Test your installation by running Facile, ANC and BioJazz without any arguments:</p>
 
-<div class="highlight"><pre> <span class="nv">$FACILE_HOME</span>/facile.pl
+<div class="highlight highlight-sh"><pre> <span class="nv">$FACILE_HOME</span>/facile.pl
  <span class="nv">$ANC_HOME</span>/anc.pl
  <span class="nv">$BIOJAZZ_HOME</span>/biojazz.pl
 </pre></div>
@@ -111,7 +112,7 @@
 
 <p>If you would like ANC to generate diagrams of the reaction network and species, you will the ''dot'' application and the following CPAN module:</p>
 
-<div class="highlight"><pre> cpan -i GraphViz
+<div class="highlight highlight-sh"><pre> cpan -i GraphViz
 </pre></div>
 
 <h5>
@@ -124,14 +125,14 @@
 
 <p>To facilitate this, BioJazz can create the workspace for and populate it with the required directories and with template files to get you started.  To do this, run the following command:</p>
 
-<div class="highlight"><pre> biojazz --command<span class="o">=</span><span class="s1">'create_workspace("bjazz")'</span>
+<div class="highlight highlight-sh"><pre> biojazz --command<span class="o">=</span><span class="s1">'create_workspace("bjazz")'</span>
 </pre></div>
 
 <p>This will create the directory <code>bjazz</code> and various sub-directories including <code>config</code> and <code>custom</code>.  Your configuration files go in the <code>config</code> directory, while your custom scoring functions go in the <code>custom</code> directory.  At this point, the user should familiarize him/herself with some the template files that are provided, and try to run BioJazz.  </p>
 
 <p>The template file will try to design a network which contains a high concentration of dimers, and demonstrates how to use some of the functions available to the user.</p>
 
-<div class="highlight"><pre> <span class="nb">cd </span>bjazz
+<div class="highlight highlight-sh"><pre> <span class="nb">cd </span>bjazz
  less config/template.cfg   <span class="c"># template configuration file</span>
  less config/Template.pm    <span class="c"># template application-specific scoring function</span>
 </pre></div>
@@ -141,12 +142,12 @@
 
 <p>After taking a look around, try to run BioJazz.  The <code>cluster_type</code> and <code>cluster_size</code> arguments override the specification contained in the configuration file, and will launch both slave nodes of the cluster on your machine.</p>
 
-<div class="highlight"><pre> biojazz --config<span class="o">=</span>config/template.cfg --tag<span class="o">=</span>first_try --cluster_type<span class="o">=</span><span class="s2">"LOCAL"</span> --cluster_size<span class="o">=</span>2
+<div class="highlight highlight-sh"><pre> biojazz --config<span class="o">=</span>config/template.cfg --tag<span class="o">=</span>first_try --cluster_type<span class="o">=</span><span class="s2">"LOCAL"</span> --cluster_size<span class="o">=</span>2
 </pre></div>
 
 <p>This will evolve the network for only a couple generations.  The <code>tag</code> argument is very important.  In BioJazz, each design attempt is associated with a specific, user-specified tag.  BioJazz will create a directory in your workspace containing all the results and other files generated during the optimization.  This allows the user to attempt several optimizations simultaneously without fear of accidental loss of files.  The name of the design's working directory is <code>work_dir/tag</code>.  The <code>work_dir</code> parameter is specified in your configuration file (and has a value of <code>template</code> in this example).  Thus the results of the above run are contained in the directory <code>template/first_try</code>.</p>
 
-<div class="highlight"><pre> <span class="o">[</span>user@host bjazz<span class="o">]</span><span class="nv">$ </span>ls -la template/test_main/
+<div class="highlight highlight-sh"><pre> <span class="o">[</span>user@host bjazz<span class="o">]</span><span class="nv">$ </span>ls -la template/test_main/
  total 168
  drwx------ 5 user group  4096 2008-06-03 14:53 .
  drwx------ 3 user group  4096 2008-06-03 14:51 ..
@@ -188,7 +189,7 @@
 <h4>
 <a name="workspace-directory-structure" class="anchor" href="#workspace-directory-structure"><span class="octicon octicon-link"></span></a>Workspace Directory Structure</h4>
 
-<div class="highlight"><pre> bjazz                               <span class="c"># workspace home</span>
+<div class="highlight highlight-sh"><pre> bjazz                               <span class="c"># workspace home</span>
    config                            <span class="c"># configuration files</span>
    custom                            <span class="c"># application-specific modules and functions (incl. scoring function)</span>
    <span class="nb">test</span>/custom                       <span class="c"># recommended location for test results of custom modules</span>
@@ -246,13 +247,15 @@
 
 <p>There are two modes of replication in BioJazz.  They are rank-based and fitness-based replication.</p>
 
-<p>===Rank-based replication===</p>
+<h5>
+<a name="rank-based-replication" class="anchor" href="#rank-based-replication"><span class="octicon octicon-link"></span></a>Rank-based replication</h5>
 
 <p>In the rank-based mode, the fitness score returned by the user-defined evaluation routine are not used as is to compute the actual fitness of each network (the actual fitness being the expectation value for the number of children).  This mode is appropriate when small numerical differences in the score do not meaningfully correspond to the number of children an individual should have.  Therefore, BioJazz uses the fitness score of each individual to produce a ranking of the entire generation.</p>
 
 <p>Children are generated according to the following procedure.  First, the top ''elite_pool_size'' individuals are copied as is to the next generation, without any mutations.  Next, an additional (''max_population'' - ''elite_pool_size'') children need to be created to keep the population size constant.  </p>
 
-<p>===Fitness-based replication===</p>
+<h5>
+<a name="fitness-based-replication" class="anchor" href="#fitness-based-replication"><span class="octicon octicon-link"></span></a>Fitness-based replication</h5>
 
 <p>In this mode, the computed fitness dictates the relative proportion of the available pool of children that a genome is to have.</p>
 
@@ -260,28 +263,44 @@
 
 <p>To decide which individuals become parents a sampling procedure called the "roulette wheel" is used.  Imagine a roulette wheel where each parent has a slot whose size is proportional to the fitness....</p>
 
-<p>==Mutation Operators==
-===Point Mutation===
-===Gene Duplication===
-===Gene Deletion===
-===Domain Shuffling===</p>
+<h4>
+<a name="mutation-operators" class="anchor" href="#mutation-operators"><span class="octicon octicon-link"></span></a>Mutation Operators</h4>
 
-<p>=Network Encoding Model=</p>
+<h5>
+<a name="point-mutation" class="anchor" href="#point-mutation"><span class="octicon octicon-link"></span></a>Point Mutation</h5>
 
-<p>==Complementarity Encoding Scheme==</p>
+<h5>
+<a name="gene-duplication" class="anchor" href="#gene-duplication"><span class="octicon octicon-link"></span></a>Gene Duplication</h5>
+
+<h5>
+<a name="gene-deletion" class="anchor" href="#gene-deletion"><span class="octicon octicon-link"></span></a>Gene Deletion</h5>
+
+<h5>
+<a name="domain-duplication" class="anchor" href="#domain-duplication"><span class="octicon octicon-link"></span></a>Domain Duplication</h5>
+
+<h5>
+<a name="domain-deletion" class="anchor" href="#domain-deletion"><span class="octicon octicon-link"></span></a>Domain Deletion</h5>
+
+<h5>
+<a name="domain-shuffling" class="anchor" href="#domain-shuffling"><span class="octicon octicon-link"></span></a>Domain Shuffling</h5>
+
+<h3>
+<a name="network-encoding-model" class="anchor" href="#network-encoding-model"><span class="octicon octicon-link"></span></a>Network Encoding Model</h3>
+
+<h4>
+<a name="complementarity-encoding-scheme" class="anchor" href="#complementarity-encoding-scheme"><span class="octicon octicon-link"></span></a>Complementarity Encoding Scheme</h4>
 
 <p>The complementarity encoding scheme is currently implemented in BioJazz.</p>
 
 <table>
 <thead><tr>
-<th>Sequence Fields</th>
-<th align="center">Field Name</th>
+<th>Field Name</th>
 <th align="center">Length (L)</th>
 <th align="center">Allowed Values RegExp</th>
 <th align="center">Scaling</th>
 <th align="center">Dynamic Range</th>
 <th align="center">Resolution</th>
-<th align="right">Description</th>
+<th align="center">Description</th>
 </tr></thead>
 <tbody>
 <tr>
@@ -292,84 +311,278 @@
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="right"></td>
 </tr>
 <tr>
-<td>PRE-JUNK</td>
+<td>PRE_JUNK</td>
 <td align="center">Any</td>
 <td align="center">[01]*</td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
-<td align="center">Untranslated sequence preceding first gene.</td>
-<td align="right"></td>
+<td align="center">Untranslated sequence preceding first gene</td>
+</tr>
+<tr>
+<td><em>genes</em></td>
+<td align="center">1 or more genes</td>
+<td align="center">Any legal gene</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">One or more genes separated by untranslated sub-sequences</td>
+</tr>
+<tr>
+<td>POST_JUNK</td>
+<td align="center">Any</td>
+<td align="center">[01]*</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Untranslated sequence following last gene</td>
+</tr>
+<tr>
+<td><strong>Genw</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>START_CODE</td>
+<td align="center">8</td>
+<td align="center">01111110</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Untranslated sequence preceding first gene</td>
+</tr>
+<tr>
+<td>concentration</td>
+<td align="center">10</td>
+<td align="center">[01]{L}</td>
+<td align="center">Log-linear</td>
+<td align="center">1e3/1e-3</td>
+<td align="center">1.36%</td>
+<td align="center">Encodes the initial concentration of the protein</td>
+</tr>
+<tr>
+<td>UNUSED</td>
+<td align="center">4</td>
+<td align="center">[01]{L}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Reserved field</td>
+</tr>
+<tr>
+<td><em>domains</em></td>
+<td align="center">1 or more domains</td>
+<td align="center">Any legal domain</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">One or more domains separated by a soft linker pattern ("001")</td>
+</tr>
+<tr>
+<td>STOP_CODE</td>
+<td align="center">3</td>
+<td align="center">111</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Terminates the gene</td>
+</tr>
+<tr>
+<td><strong>Domain</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>allosteric flag</td>
+<td align="center">1</td>
+<td align="center">[01]{1}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Maps directly to ANC domain attribute of the same name</td>
+</tr>
+<tr>
+<td>R &lt;--&gt; T rates</td>
+<td align="center">10</td>
+<td align="center">[01]{L}</td>
+<td align="center">Loglinear</td>
+<td align="center">1e+2/1e-2</td>
+<td align="center">0.90%</td>
+<td align="center">Embedded in ANC model</td>
+</tr>
+<tr>
+<td>Φ</td>
+<td align="center">10</td>
+<td align="center">[01]{10}</td>
+<td align="center">Linear</td>
+<td align="center">0.0 - 1.0</td>
+<td align="center">~1e-3</td>
+<td align="center">Scaled to a number between 0 and 1 (inclusive), embedded in ANC model</td>
+</tr>
+<tr>
+<td>UNUSED</td>
+<td align="center">4</td>
+<td align="center">[01]{L}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Reserved field</td>
+</tr>
+<tr>
+<td><em>protodomains</em></td>
+<td align="center">1 or more protodomains</td>
+<td align="center">Any legal protodomain</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">One or more protodomains separated by a hard linker pattern ("000")</td>
+</tr>
+<tr>
+<td><strong>ProtoDomain</strong></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>type</td>
+<td align="center">2</td>
+<td align="center">[01]{2}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Maps to protodomain type in ANC model, determines enzyme polarity. 00=bsite, 01=msite, 10=csite, 11=csite</td>
+</tr>
+<tr>
+<td>substrate polarity</td>
+<td align="center">1</td>
+<td align="center">[01]{1}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">If the protodomain is a csite, determines whether it modifies (0, kinase) or unmodifies (1, phosphatase) the substrate</td>
+</tr>
+<tr>
+<td>binding profile</td>
+<td align="center">10</td>
+<td align="center">[01]{L}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Determines ligands pairs. If the binding profiles of two protodomains are sufficiently complementary, then a binding reaction occurs using kinetic rates calculated from the following attributes</td>
+</tr>
+<tr>
+<td>kf profile</td>
+<td align="center">20</td>
+<td align="center">[01]{L}</td>
+<td align="center">Log-linear profile</td>
+<td align="center">1e3/1e-3</td>
+<td align="center">1.99x</td>
+<td align="center">Determines the association kinetics of two protodomains</td>
+</tr>
+<tr>
+<td>kb profile</td>
+<td align="center">20</td>
+<td align="center">[01]{L}</td>
+<td align="center">Loglinear-profile</td>
+<td align="center">1e3/1e-3</td>
+<td align="center">1.99x</td>
+<td align="center">Determines the dissociation kinetics of two protodomains</td>
+</tr>
+<tr>
+<td>kp profile</td>
+<td align="center">10</td>
+<td align="center">[01]{L}</td>
+<td align="center">Loglinear</td>
+<td align="center">1e3/1e-3</td>
+<td align="center">1.36%</td>
+<td align="center">For csite protodomains only, determines rate of product reaction when modifying</td>
+</tr>
+<tr>
+<td>Keq ratio (Γ)</td>
+<td align="center">10</td>
+<td align="center">[01]{10}</td>
+<td align="center">Loglinear</td>
+<td align="center">1e2/1e-2</td>
+<td align="center">0.90%</td>
+<td align="center">Determines allosteric effect of msite modification. Embedded in ANC model</td>
+</tr>
+<tr>
+<td>kf polarity mask</td>
+<td align="center">20</td>
+<td align="center">[01]{L}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">XORed with "kf profile" to determine profile of modified (msite=1) version of protodomain</td>
+</tr>
+<tr>
+<td>kf conformation mask</td>
+<td align="center">20</td>
+<td align="center">[01]{L}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">XORed with "kf profile" to determine new profile of 'T' conformation</td>
+</tr>
+<tr>
+<td>kb polarity mask</td>
+<td align="center">20</td>
+<td align="center">[01]{L}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">XORed with "kb profile" to determine profile of modified (msite=1) version of protodomain</td>
+</tr>
+<tr>
+<td>kb conformation mask</td>
+<td align="center">20</td>
+<td align="center">[01]{8}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">XORed with "kb profile" to determine new profile of 'T' conformation</td>
+</tr>
+<tr>
+<td>kp conformation mask</td>
+<td align="center">10</td>
+<td align="center">[01]{8}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">XORed with "kp profile" to determine new profile of 'T' conformation</td>
+</tr>
+<tr>
+<td>UNUSED</td>
+<td align="center">4</td>
+<td align="center">[01]{L}</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">Reserved field</td>
 </tr>
 </tbody>
-</table><p>|genes||1 or more genes||Any legal gene||||||||One or more genes separated by untranslated sub-sequences.
-|-
-|POST-JUNK||Any||[01]*||||||||Untranslated sequence following last gene.
-|-
-|colspan="7"|'''Gene'''
-|-
-|START_CODE||8||01111110||||||||Untranslated sequence preceding first gene.
-|-
-|regulated_concentration||10||[01]{L}||Loglinear||1e3/1e-3||1.36%||Encodes the initial concentration of the protein.
-|-
-|UNUSED||4||[01]{L}||||||||Reserved field.
-|-
-|domains||1 or more domains||Any legal domain||||||||One or more domains separated by a soft linker pattern ("001")
-|-
-|STOP_CODE||3||111||||||||Terminates the gene.
-|-
-|colspan="7"|'''Domain'''
-|-
-|allosteric_flag||1||[01]||||||||Maps directly to ANC domain attribute of the same name.
-|-
-|RT/TR_transition_rate||10||[01]{L}||Loglinear||1e+2/1e-2||0.90%||With scaling, maps to ANC domain attribute of same name.
-|-
-|RT_phi||10||[01]{10}||Linear||0.0-1.0||~1e-3||Scaled to a number between 0 and 1 (inclusive), maps to ANC domain attribute of the same name.
-|-
-|UNUSED||4||[01]{L}||||||||Reserved field.
-|-
-|protodomains||1 or more protodomains||Any legal protodomain||||||||One or more protodomains separated by a hard linker pattern ("000")
-|-
-|colspan="7"|'''ProtoDomain'''
-|-
-|type||2||[01]{2}||||||||Maps to ANC protodomain type attribute and determines enzyme polarity.  00=bsite, 01=msite, 10=csite, 11=csite
-|-
-|substrate_polarity||1||[01]{1}||||||||If the protodomain is a csite, determines whether it modifies (0) or unmodifies (1) the substrate.
-|-
-|binding_profile||10||[01]{L}||||||||Determines ligands pairs.  If the binding_profiles of two putative ligands are sufficiently complementary, then a binding reaction occurs using kinetic rates calculated from the following attributes.
-|-
-|kf_profile||20||[01]{L}||Loglinear-profile||1e3/1e-3||1.99x||Determines the association kinetics of two ligands.
-|-
-|kb_profile||20||[01]{L}||Loglinear-profile||1e3/1e-3||1.99x||Determines the dissociation kinetics of two ligands.
-|-
-|kp_profile||10||[01]{L}||Loglinear||1e3/1e-3||1.36%||For csite protodomains only, determines rate of product reaction when modifying.
-|-
-|Keq_ratio||10||[01]{10}||Loglinear||1e2/1e-2||0.90%||Determines allosteric effect of msite modification.  With scaling, maps to ANC domain attribute of same name.
-|-
-|kf_polarity_mask||20||[01]{L}||||||||XORed with kf_profile to determine profile of modified (msite=1) version of protodomain.
-|-
-|kf_conformation_mask||20||[01]{L}||||||||XORed with kf_profile to determine new profile of T conformation.
-|-
-|kb_polarity_mask||20||[01]{L}||||||||XORed with kb_profile to determine profile of modified (msite=1) version of protodomain.
-|-
-|kb_conformation_mask||20||[01]{8}||||||||XORed with kb_profile to determine new profile of T conformation.
-|-
-|kp_conformation_mask||10||[01]{8}||||||||XORed with kp_profile to determine new profile of T conformation.
-|-
-|UNUSED||4||[01]{L}||||||||Reserved field.
-|-
-|}</p>
-
-<p>==Field Scaling==</p>
+</table><h4>
+<a name="field-scaling" class="anchor" href="#field-scaling"><span class="octicon octicon-link"></span></a>Field Scaling</h4>
 
 <p>All the above fields correspond to parameter values whose scale and dynamic range is given in a configuration file.  This section deals with the issue of translating an integer (binary encoded) scale into parameter values.  In all sections, x is the integer value corresponding to a binary field, which goes from 0 to x_max=2^L-1 where L is the length of the field.  Also, y_min is the minimum value of the parameter, and y_max is the maximum value.  For example, the regulated_concentration parameter can be made to range from 1e-3 (y_min) to 1e+3 (y_max).</p>
 
-<p>===Linearly Scaled Fields===</p>
+<h5>
+<a name="linearly-scaled-fields" class="anchor" href="#linearly-scaled-fields"><span class="octicon octicon-link"></span></a>Linearly Scaled Fields</h5>
 
-<p>Relevant field(s): RT_phi.</p>
+<p>Relevant field(s): Φ.</p>
 
 <p>Here the value of the parameter is y(x) = y_min + (y_max - y_min)*(x/x_max);</p>
 
@@ -377,7 +590,8 @@
 
 <p>R(n) = (y_max-y_min)/(2^n-1)</p>
 
-<p>===Loglinear Scaled Fields===</p>
+<h5>
+<a name="loglinear-scaled-fields" class="anchor" href="#loglinear-scaled-fields"><span class="octicon octicon-link"></span></a>Loglinear Scaled Fields</h5>
 
 <p>Relevant field(s): kp_profile, RT/TR_transition_rate, Keq_ratio, regulated_concentration</p>
 
@@ -397,7 +611,8 @@
 
 <p>FC(10bits) = 1e6^(1/1023) = 1.0136.</p>
 
-<p>===Loglinear Scaled Profiles===</p>
+<h5>
+<a name="loglinear-scaled-profiles" class="anchor" href="#loglinear-scaled-profiles"><span class="octicon octicon-link"></span></a>Loglinear Scaled Profiles</h5>
 
 <p>Fields: kf_profile, kb_profile</p>
 
@@ -415,9 +630,10 @@
 
 <p>I.e. a 2x or 60% change per increment.</p>
 
-<p>====Improvement====</p>
+<h6>
+<a name="improvement" class="anchor" href="#improvement"><span class="octicon octicon-link"></span></a>Improvement</h6>
 
-<p>Note that there is some inefficiency in this method of coding because we need extremely long fields to get goo resolution,  because x_max=L and not 2^L.</p>
+<p>Note that there is some inefficiency in this method of coding because we need extremely long fields to get good resolution,  because x_max=L and not 2^L.</p>
 
 <p>Currently for profiles X and Y, we have:</p>
 
@@ -430,7 +646,8 @@ MISMATCH = ones(MISMATCH_VECTOR)</p>
 
 <p>An alternative would scale the MISMATCH_VECTOR, which has a range of 2^L, instead of MISMATCH, which has a range of just L.  Caveat is that we must get the same thing if the profiles are commuted, but in fact the MISMATCH_VECTOR gets flipped, so the msb becomes the lsb.  One way around this is to designate the 2 outer bits as msbs, and the 2 most inner bits as lsbs.  You break the MISMATCH_VECTOR in two, flip the 2nd half and add to the first.  This gets us a range of 0 to [2^(L/2)-1]*2.</p>
 
-<p>=Scoring Functions=</p>
+<h3>
+<a name="scoring-functions" class="anchor" href="#scoring-functions"><span class="octicon octicon-link"></span></a>Scoring Functions</h3>
 
 <h3>
 <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
@@ -441,15 +658,12 @@ MISMATCH = ones(MISMATCH_VECTOR)</p>
 <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
 
 <p>If have any problems, please contact <a href="https://github.com/LifeWorks" class="user-mention">@LifeWorks</a> or email <a href="mailto:lifeworks.song@gmail.com">lifeworks.song@gmail.com</a></p>
-        </section>
-
-        <footer>
-          BioJazz is maintained by <a href="https://github.com/LifeWorks">LifeWorks</a><br>
-          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
-        </footer>
-
-        
-      </div>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
     </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
   </body>
 </html>
