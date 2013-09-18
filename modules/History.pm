@@ -237,8 +237,15 @@ use base qw();
         my $genome_name = $args{genome_name};
         my $anc_model = $args{anc_model};
 
-        my $matrix_ref = Matrix->new({});
+        my $kf_matrix_ref = Matrix->new({});
+        my $kb_matrix_ref = Matrix->new({});
+        my $kd_matrix_ref = Matrix->new({});
+        my $kp_matrix_ref = Matrix->new({});
         my @matrix_nodes = ();
+        my @matrix_pds = ();
+        my @node_genes = ();
+        my @concentration = ():
+
 
         return 1;
     } ## --- end sub extract_network_matrix
