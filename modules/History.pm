@@ -197,18 +197,8 @@ use base qw();
         my @anc_files = (glob $file_glob);
 
         foreach my $anc_file (@anc_files) {
-            my $genome_name;
-            if ($anc_file =~ /\/(G\S+?_I\S+?).mod/) {
-               $genome_name = $1; 
-            } else {
-                die "can't extract the name of the genome/ANC file $anc_file\n";
-            }
-            open (ANC, "< $anc_file") or die "Can't open file $anc_file\n";
-
-            my $anc_model = join("", <ANC>);
-            close ANC;
             print "EXTRACTION: extract interaction information from ANC file\n" if $verbosity >= 1;
-            $self->extract_network_matrix(anc_model => $anc_model, genome_name => $genome_name,);
+            $self->extract_network_matrix(anc_file => $anc_file, );
         }
     }
 
@@ -228,23 +218,105 @@ use base qw();
         my $self = shift; my $obj_ID = ident $self;
 
         my %args = (
-            genome_name => undef,
-            anc_model => undef,
+            anc_file => undef,
             @_,
         );
-        check_args(\%args, 2);
+        check_args(\%args, 1);
 
-        my $genome_name = $args{genome_name};
-        my $anc_model = $args{anc_model};
+        my $anc_file = $args{anc_file};
 
-        my $kf_matrix_ref = Matrix->new({});
-        my $kb_matrix_ref = Matrix->new({});
         my $kd_matrix_ref = Matrix->new({});
         my $kp_matrix_ref = Matrix->new({});
         my @matrix_nodes = ();
         my @matrix_pds = ();
         my @node_genes = ();
         my @concentration = ():
+
+        my $genome_name;
+        if ($anc_file =~ /\/(G\S+?_I\S+?).mod/) {
+            $genome_name = $1; 
+        } else {
+            die "can't extract the name of the genome/ANC file $anc_file\n";
+        }
+        open (ANC, "< $anc_file") or die "Can't open file $anc_file\n";
+
+        my $anc_model = "";
+        # preprocessing the model file
+        LINES: while (<ANC>) {
+            $_ =~ s/^\s+//;         # Strip out leading whitespace
+            $_ =~ s/\s+$//;         # Strip out trailing whitespace (including \n)
+            $_ =~ s/\s*\#.*//;      # Strip out trailing comment and whitespace
+            $_ =~ s/\s*\/\/.*//;    # Strip out trailing comment and whitespace
+            next if($_ =~ /^$/);    # Skip empty lines
+            my $line = $_;
+
+            $anc_model .= "$line\n"; # add \n since closing part will always follow
+        }
+        close ANC;
+
+        # now, go over the first iteration to extract all the reactant information
+        while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?"(\S+)\s?(\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)",\n.*\n.*\n.*\n\s+kf\s?=>\s?(\S+),\n\s+kb\s?=>\s?(\S+),\n/g) {
+            my $pd0 = $1; my $pd1 = $2;
+            my $ms0 = $3; my $rt0 = $4;
+            my $ms1 = $5; my $rt1 = $6;
+            my $kf = $7; my $kb = $8;
+            print "Found interaction: $pd0 ($ms0, $rt0) and $pd1 ($ms1, $rt1) with kf = $kf , kb = $kb \n";
+
+            my $node0 = join("_", $pd0, $ms0, $rt0); my $index0;
+            my $node1 = join("_", $pd1, $ms1, $rt1); my $index1;
+            if (grep {$_ eq $node0} @matrix_nodes) {
+                $index0 = grep {$matrix_nodes{$_} eq $node0} 0..$#matrix_nodes;
+            } else {
+                push(@matrix_nodes, $node0);
+                $index0 = $#matrix_nodes;
+            }
+            if (grep {$_ eq $node1} @matrix_nodes) {
+                $index1 = grep {$matrix_nodes{$_} eq $node1} 0..$#matrix_nodes;
+            } else {
+                push(@matrix_nodes, $node1);
+                $index1 = $#matrix_nodes;
+            }
+
+            if ($index0 < $index1) {
+                $kd_matrix_ref->set_element($index0, $index1, "kf=$kf");
+                $kd_matrix_ref->set_element($index1, $index0, "kb=$kb");
+            } elsif ($index0 > $index1) {
+                $kd_matrix_ref->set_element($index1, $index0, "kf=$kf");
+                $kd_matrix_ref->set_element($index0, $index1, "kb=$kb");
+            } else {
+                $kd_matrix_ref->set_element($index0, $index1, "kf=$kf; kb=$kb");
+            }
+
+        }
+
+        # now consider the kp rates
+         while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?"(\S+)\s?(\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)",\n.*\n.*\n.*\n.*\n.*\n\s+kp\s?=>\s?(\S+),\n/g) {
+            my $pd0 = $1; my $pd1 = $2;
+            my $ms0 = $3; my $rt0 = $4;
+            my $ms1 = $5; my $rt1 = $6;
+            my $kp = $7; 
+            print "Found catalytic reaction: $pd0 ($ms0, $rt0) catalyse $pd1 ($ms1, $rt1) with kp = $kp\n";
+
+            my $node0 = join("_", $pd0, $ms0, $rt0); my $index0;
+            my $node1 = join("_", $pd1, $ms1, $rt1); my $index1;
+            if (grep {$_ eq $node0} @matrix_nodes) {
+                $index0 = grep {$matrix_nodes{$_} eq $node0} 0..$#matrix_nodes;
+            } else {
+                die "ERROR: $node0 is not in node array!";
+            }
+            if (grep {$_ eq $node1} @matrix_nodes) {
+                $index1 = grep {$matrix_nodes{$_} eq $node1} 0..$#matrix_nodes;
+            } else {
+                die "ERROR: $node1 is not in node array!";
+            }
+
+            $kp_matrix_ref->set_element($index0, $index1, "kp=$kp");
+            }
+
+        }
+        
+        # now consider the concentrations
+
 
 
         return 1;
