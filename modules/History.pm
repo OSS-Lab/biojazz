@@ -229,10 +229,11 @@ use base qw();
         my $kp_matrix_ref = Matrix->new({});
         my @matrix_nodes = ();
         my @matrix_pds = ();
+        my @node_domains = ();
         my @node_genes = ();
-        my @concentration = ():
-
+        my @concentrations = ();
         my $genome_name;
+
         if ($anc_file =~ /\/(G\S+?_I\S+?).mod/) {
             $genome_name = $1; 
         } else {
@@ -255,7 +256,7 @@ use base qw();
         close ANC;
 
         # now, go over the first iteration to extract all the reactant information
-        while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?"(\S+)\s?(\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)",\n.*\n.*\n.*\n\s+kf\s?=>\s?(\S+),\n\s+kb\s?=>\s?(\S+),\n/g) {
+        while ($anc_model =~ /CanBindRule : \{\s+?name\s?=>\s?"(\S+)\s?(\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)",\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\n/g) {
             my $pd0 = $1; my $pd1 = $2;
             my $ms0 = $3; my $rt0 = $4;
             my $ms1 = $5; my $rt1 = $6;
@@ -265,16 +266,18 @@ use base qw();
             my $node0 = join("_", $pd0, $ms0, $rt0); my $index0;
             my $node1 = join("_", $pd1, $ms1, $rt1); my $index1;
             if (grep {$_ eq $node0} @matrix_nodes) {
-                $index0 = grep {$matrix_nodes{$_} eq $node0} 0..$#matrix_nodes;
+                $index0 = grep {$matrix_nodes[$_] eq $node0} 0..$#matrix_nodes;
             } else {
                 push(@matrix_nodes, $node0);
                 $index0 = $#matrix_nodes;
+                push(@matrix_pds, $pd0);
             }
             if (grep {$_ eq $node1} @matrix_nodes) {
-                $index1 = grep {$matrix_nodes{$_} eq $node1} 0..$#matrix_nodes;
+                $index1 = grep {$matrix_nodes[$_] eq $node1} 0..$#matrix_nodes;
             } else {
                 push(@matrix_nodes, $node1);
                 $index1 = $#matrix_nodes;
+                push(@matrix_pds, $pd1);
             }
 
             if ($index0 < $index1) {
@@ -290,7 +293,7 @@ use base qw();
         }
 
         # now consider the kp rates
-         while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?"(\S+)\s?(\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)",\n.*\n.*\n.*\n.*\n.*\n\s+kp\s?=>\s?(\S+),\n/g) {
+        while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?"(\S+)\s?(\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)",\n.*\n.*\n.*\n.*\n.*\s+kp\s?=>\s?(\S+),\n/g) {
             my $pd0 = $1; my $pd1 = $2;
             my $ms0 = $3; my $rt0 = $4;
             my $ms1 = $5; my $rt1 = $6;
@@ -300,24 +303,45 @@ use base qw();
             my $node0 = join("_", $pd0, $ms0, $rt0); my $index0;
             my $node1 = join("_", $pd1, $ms1, $rt1); my $index1;
             if (grep {$_ eq $node0} @matrix_nodes) {
-                $index0 = grep {$matrix_nodes{$_} eq $node0} 0..$#matrix_nodes;
+                $index0 = grep {$matrix_nodes[$_] eq $node0} 0..$#matrix_nodes;
             } else {
                 die "ERROR: $node0 is not in node array!";
             }
             if (grep {$_ eq $node1} @matrix_nodes) {
-                $index1 = grep {$matrix_nodes{$_} eq $node1} 0..$#matrix_nodes;
+                $index1 = grep {$matrix_nodes[$_] eq $node1} 0..$#matrix_nodes;
             } else {
                 die "ERROR: $node1 is not in node array!";
             }
 
             $kp_matrix_ref->set_element($index0, $index1, "kp=$kp");
-            }
-
         }
-        
+
+
         # now consider the concentrations
-
-
+        for my $PD (@matrix_pds) {
+            if ($anc_model =~ /AllostericStructure : \{\s+name\s?=>\s?"(\S++)",\n.*\n.*\n.*\s+?elements\s?=>\s?\S+?$PD\S+?\s+\}/) {
+                push(@node_domains, $1);
+            }
+            else {
+                die "Can't find the domain for $PD";
+            }
+        }
+        for my $domain (@node_domains) {
+            if ($anc_model =~ /\s+Structure : \{"(\S++)",\s+elements\s?=>\s?\S+?$domain\S+?,\n.*\s+\}/) {
+                push(@node_genes, $1);
+            }
+            else {
+                die "Can't find the gene for $domain";
+            }
+        }
+        for my $gene (@node_genes) {
+            if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene,\s+IC\s?=>\s?(\S++),\s+\}/) {
+                push(@concentrations, $1);
+            }
+            else {
+                die "Can't find the concentration for $gene";
+            }
+        }
 
         return 1;
     } ## --- end sub extract_network_matrix
