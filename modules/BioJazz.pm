@@ -35,6 +35,7 @@ load_history
 save_history
 collect_history_from_genomes
 collect_history_from_logfile
+collect_info_from_networks
 export_history
 );
 #@EXPORT_OK = qw(
