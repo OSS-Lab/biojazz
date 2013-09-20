@@ -113,7 +113,7 @@ score : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --genome=$(genome) --score --store --shell 
 
 score_generation : FORCE
-	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --generation=$(generation)
+	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --generation=$(generation) --shell
 
 rescore : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --rescore
@@ -124,13 +124,16 @@ shell : FORCE
 load : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --genome=$(genome) --shell
 
-collect : collect_from_genomes
+collect : collect_from_networks
 
 collect_from_logfile : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='collect_history_from_logfile("$(basename $(config))/$(basename $(config)).$(tag).log");'
 
 collect_from_genomes : FORCE
 	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='collect_history_from_genomes();'
+
+collect_from_networks : FORCE
+	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --command='collect_info_from_networks();'
 
 ######################################################################################
 # ADMIN/UTILS

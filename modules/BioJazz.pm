@@ -35,6 +35,7 @@ load_history
 save_history
 collect_history_from_genomes
 collect_history_from_logfile
+collect_info_from_networks
 export_history
 );
 #@EXPORT_OK = qw(
@@ -244,11 +245,12 @@ sub save_genome {
 sub score_genome {
     eval("use $config_ref->{scoring_class};");
     if ($@) {print $@; return;}
+    my $analysis_dir = defined $config_ref->{analysis_dir} ? $config_ref->{analysis_dir} : "analysis";
 
     $scoring_ref = $config_ref->{scoring_class}->new({
             node_ID => 999,
             config_file => $config_ref->{config_file},
-            work_dir => "$config_ref->{work_dir}/analysis/$TAG",
+            work_dir => "$config_ref->{work_dir}/$analysis_dir/$TAG",
             matlab_startup_options => "-nodesktop -nosplash",  # need jvm
         });
     $config_ref = $scoring_ref->get_config_ref();
@@ -257,7 +259,7 @@ sub score_genome {
     $config_ref->{plot_output} = 1;
     $config_ref->{plot_phase} = 1;
     $config_ref->{plot_species} = 0 || $config_ref->{plot_species};
-    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes";
+    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes,primary,scalar,ungrouped,canonical";
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
@@ -281,13 +283,14 @@ sub score_generation {
     check_args(\%args, 1);
     my $generation_num = $args{generation_num};
     printn "Scoring generation $generation_num";
+    my $analysis_dir = defined $config_ref->{analysis_dir} ? $config_ref->{analysis_dir} : "analysis";
 
     eval("use $config_ref->{scoring_class};");
 
     $scoring_ref = $config_ref->{scoring_class}->new({
             node_ID => 999,
             config_file => $config_ref->{config_file},
-            work_dir => "$config_ref->{work_dir}/analysis/$TAG",
+            work_dir => "$config_ref->{work_dir}/$analysis_dir/$TAG",
             matlab_startup_options => "-nodesktop -nosplash",  # need jvm
         });
     $config_ref = $scoring_ref->get_config_ref();
@@ -296,7 +299,7 @@ sub score_generation {
     $config_ref->{plot_output} = 1;
     $config_ref->{plot_phase} = 1;
     $config_ref->{plot_species} = 0 || $config_ref->{plot_species};
-    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes";
+    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes,primary,scalar,ungrouped,canonical";
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
@@ -331,11 +334,12 @@ sub score_generation {
 sub rescore_genomes {
     my $regular_expression = shift;
     eval("use $config_ref->{scoring_class};");
+    my $analysis_dir = defined $config_ref->{analysis_dir} ? $config_ref->{analysis_dir} : "analysis";
 
     $scoring_ref = $config_ref->{scoring_class}->new({
             node_ID => 999,
             config_file => $config_ref->{config_file},
-            work_dir => "$config_ref->{work_dir}/analysis/$TAG",
+            work_dir => "$config_ref->{work_dir}/$analysis_dir/$TAG",
             matlab_startup_options => "-nodesktop -nosplash",  # need jvm
         });
     $config_ref = $scoring_ref->get_config_ref();
@@ -344,7 +348,7 @@ sub rescore_genomes {
     $config_ref->{plot_output} = 1;
     $config_ref->{plot_phase} = 1;
     $config_ref->{plot_species} = 0 || $config_ref->{plot_species};
-    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes";
+    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes,primary,scalar,ungrouped,canonical";
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
@@ -369,6 +373,20 @@ sub rescore_genomes {
     }
 
 } ## --- end sub rescore_genomes
+
+#--------------------------------------------------------------------------------------
+# Function: collect_info_from_networks
+# Synopsys: 
+#--------------------------------------------------------------------------------------
+sub collect_info_from_networks {
+    my $obj_dir = "$config_ref->{work_dir}/$TAG/obj";
+    my $analysis_dir = defined $config_ref->{analysis_dir} ? $config_ref->{analysis_dir} : "analysis";
+
+    $history_ref = History->new({});
+    $history_ref->collect_info_from_networks(
+        analysis_dir => "$config_ref->{work_dir}/$analysis_dir/$TAG",
+    );
+}
 
 
 #--------------------------------------------------------------------------------------
