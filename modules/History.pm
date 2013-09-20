@@ -373,7 +373,7 @@ use base qw();
 
         close($kd_file) || warn "close failed: $!";
 
-        my $filename = "$export_dir/kp_$genome_name.csv";
+        $filename = "$export_dir/kp_$genome_name.csv";
         open my $kp_file, ">> $filename" or die "$filename: $!";
         $kp_matrix_ref->check();
         for (my $i = 0; $i < $rownum; $i++) {
