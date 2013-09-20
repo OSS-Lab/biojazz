@@ -258,7 +258,7 @@ sub score_genome {
     $config_ref->{plot_output} = 1;
     $config_ref->{plot_phase} = 1;
     $config_ref->{plot_species} = 0 || $config_ref->{plot_species};
-    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes";
+    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes,primary,scalar,ungrouped,canonical";
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
@@ -298,7 +298,7 @@ sub score_generation {
     $config_ref->{plot_output} = 1;
     $config_ref->{plot_phase} = 1;
     $config_ref->{plot_species} = 0 || $config_ref->{plot_species};
-    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes";
+    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes,primary,scalar,ungrouped,canonical";
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
@@ -347,7 +347,7 @@ sub rescore_genomes {
     $config_ref->{plot_output} = 1;
     $config_ref->{plot_phase} = 1;
     $config_ref->{plot_species} = 0 || $config_ref->{plot_species};
-    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes";
+    $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes,primary,scalar,ungrouped,canonical";
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
     $config_ref->{save_transcript} = 1;
