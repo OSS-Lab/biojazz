@@ -197,7 +197,7 @@ use base qw();
         my @anc_files = (glob $file_glob);
 
         foreach my $anc_file (@anc_files) {
-            print "EXTRACTION: extract interaction information from ANC file\n" if $verbosity >= 1;
+            print "EXTRACTION: extract interaction information from ANC file $anc_file\n" if $verbosity >= 1;
             $self->extract_network_matrix(anc_file => $anc_file, );
         }
     }
@@ -224,6 +224,8 @@ use base qw();
         check_args(\%args, 1);
 
         my $anc_file = $args{anc_file};
+        my $analysis_dir = defined $config_ref->{analysis_dir} ? $config_ref->{analysis_dir} : "analysis";
+        `mkdir -p $config_ref->{work_dir}/$analysis_dir/$TAG/networkParam`;
 
         my $kd_matrix_ref = Matrix->new({});
         my $kp_matrix_ref = Matrix->new({});
@@ -261,19 +263,19 @@ use base qw();
             my $ms0 = $3; my $rt0 = $4;
             my $ms1 = $5; my $rt1 = $6;
             my $kf = $7; my $kb = $8;
-            print "Found interaction: $pd0 ($ms0, $rt0) and $pd1 ($ms1, $rt1) with kf = $kf , kb = $kb \n";
+            print "Found interaction: $pd0 ($ms0, $rt0) and $pd1 ($ms1, $rt1) with kf = $kf , kb = $kb \n" if $verbosity > 1;
 
             my $node0 = join("_", $pd0, $ms0, $rt0); my $index0;
             my $node1 = join("_", $pd1, $ms1, $rt1); my $index1;
             if (grep {$_ eq $node0} @matrix_nodes) {
-                $index0 = grep {$matrix_nodes[$_] eq $node0} 0..$#matrix_nodes;
+                ($index0) = grep {$matrix_nodes[$_] eq $node0} 0..$#matrix_nodes;
             } else {
                 push(@matrix_nodes, $node0);
                 $index0 = $#matrix_nodes;
                 push(@matrix_pds, $pd0);
             }
             if (grep {$_ eq $node1} @matrix_nodes) {
-                $index1 = grep {$matrix_nodes[$_] eq $node1} 0..$#matrix_nodes;
+                ($index1) = grep {$matrix_nodes[$_] eq $node1} 0..$#matrix_nodes;
             } else {
                 push(@matrix_nodes, $node1);
                 $index1 = $#matrix_nodes;
@@ -287,39 +289,45 @@ use base qw();
                 $kd_matrix_ref->set_element($index1, $index0, "kf=$kf");
                 $kd_matrix_ref->set_element($index0, $index1, "kb=$kb");
             } else {
-                $kd_matrix_ref->set_element($index0, $index1, "kf=$kf; kb=$kb");
+                $kd_matrix_ref->set_element($index0, $index1, "kf=$kf;kb=$kb");
             }
 
         }
+        my $node_num = scalar @matrix_nodes;
+        if (!($kd_matrix_ref->get_element($node_num-1, $node_num-1))) {
+            $kd_matrix_ref->set_element($node_num-1, $node_num-1, 0);
+        }
 
         # now consider the kp rates
-        while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?"(\S+)\s?(\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)",\n.*\n.*\n.*\n.*\n.*\s+kp\s?=>\s?(\S+),\n/g) {
+        while ($anc_model =~ /CanBindRule : \{\s+?name\s?=>\s?"(\S+)\s?(\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)",\n.*\n.*\n.*\n.*\n.*\s+kp\s?=>\s?(\S+),\n/g) {
             my $pd0 = $1; my $pd1 = $2;
             my $ms0 = $3; my $rt0 = $4;
             my $ms1 = $5; my $rt1 = $6;
             my $kp = $7; 
-            print "Found catalytic reaction: $pd0 ($ms0, $rt0) catalyse $pd1 ($ms1, $rt1) with kp = $kp\n";
+            print "Found catalytic reaction: $pd0 ($ms0, $rt0) catalyse $pd1 ($ms1, $rt1) with kp = $kp\n" if $verbosity > 1;
 
             my $node0 = join("_", $pd0, $ms0, $rt0); my $index0;
             my $node1 = join("_", $pd1, $ms1, $rt1); my $index1;
             if (grep {$_ eq $node0} @matrix_nodes) {
-                $index0 = grep {$matrix_nodes[$_] eq $node0} 0..$#matrix_nodes;
+                ($index0) = grep {$matrix_nodes[$_] eq $node0} 0..$#matrix_nodes;
             } else {
                 die "ERROR: $node0 is not in node array!";
             }
             if (grep {$_ eq $node1} @matrix_nodes) {
-                $index1 = grep {$matrix_nodes[$_] eq $node1} 0..$#matrix_nodes;
+                ($index1) = grep {$matrix_nodes[$_] eq $node1} 0..$#matrix_nodes;
             } else {
                 die "ERROR: $node1 is not in node array!";
             }
 
             $kp_matrix_ref->set_element($index0, $index1, "kp=$kp");
         }
-
+        if (!($kp_matrix_ref->get_element($node_num-1, $node_num-1))) {
+            $kp_matrix_ref->set_element($node_num-1, $node_num-1, 0);
+        }
 
         # now consider the concentrations
         for my $PD (@matrix_pds) {
-            if ($anc_model =~ /AllostericStructure : \{\s+name\s?=>\s?"(\S++)",\n.*\n.*\n.*\s+?elements\s?=>\s?\S+?$PD\S+?\s+\}/) {
+            if ($anc_model =~ /AllostericStructure : \{\s+name\s?=>\s?"(\S+)",\n.*\n.*\n.*\s+?elements\s?=>\s?\[\S*?$PD\S*?\],\s+\}/) {
                 push(@node_domains, $1);
             }
             else {
@@ -327,7 +335,7 @@ use base qw();
             }
         }
         for my $domain (@node_domains) {
-            if ($anc_model =~ /\s+Structure : \{"(\S++)",\s+elements\s?=>\s?\S+?$domain\S+?,\n.*\s+\}/) {
+            if ($anc_model =~ /\nStructure : \{\s+name\s?=>\s?"(\S+)",\s+elements\s?=>\s?\[\S*?$domain\S*?\],\n.*\s+\}/) {
                 push(@node_genes, $1);
             }
             else {
@@ -335,13 +343,50 @@ use base qw();
             }
         }
         for my $gene (@node_genes) {
-            if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene,\s+IC\s?=>\s?(\S++),\s+\}/) {
+            if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene,\s+IC\s?=>\s?(\S+),\s+\}/) {
                 push(@concentrations, $1);
             }
             else {
                 die "Can't find the concentration for $gene";
             }
         }
+
+        my $csv = Text::CSV->new({binary => 1, eol => "\n"});
+        my $export_dir = "$config_ref->{work_dir}/$analysis_dir/$TAG/networkParam";
+
+        my ($rownum, $colnum) = $kd_matrix_ref->matdim();
+        if (($rownum != $colnum) || ($rownum != scalar @matrix_nodes) || ($rownum != scalar @node_genes) || ($rownum != scalar @concentrations)) {
+            die "Matrix dimension is not same as nodes number";
+        }
+
+        my $filename = "$export_dir/kd_$genome_name.csv";
+        open my $kd_file, ">> $filename" or die "$filename: $!";
+        $kd_matrix_ref->check();
+        for (my $i = 0; $i < $rownum; $i++) {
+            my $row_ref = $kd_matrix_ref->get_matrix_ref()->[$i];
+            $csv->print($kd_file, $row_ref);
+        }
+        $csv->print($kd_file, \@matrix_nodes);
+        $csv->print($kd_file, \@node_domains);
+        $csv->print($kd_file, \@node_genes);
+        $csv->print($kd_file, \@concentrations);
+
+        close($kd_file) || warn "close failed: $!";
+
+        my $filename = "$export_dir/kp_$genome_name.csv";
+        open my $kp_file, ">> $filename" or die "$filename: $!";
+        $kp_matrix_ref->check();
+        for (my $i = 0; $i < $rownum; $i++) {
+            my $row_ref = $kp_matrix_ref->get_matrix_ref()->[$i];
+            $csv->print($kp_file, $row_ref);
+        }
+        $csv->print($kp_file, \@matrix_nodes);
+        $csv->print($kp_file, \@node_domains);
+        $csv->print($kp_file, \@node_genes);
+        $csv->print($kp_file, \@concentrations);
+
+        close($kp_file) || warn "close failed: $!";
+
 
         return 1;
     } ## --- end sub extract_network_matrix
