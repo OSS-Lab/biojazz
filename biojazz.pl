@@ -122,7 +122,7 @@ $OUTPUT_AUTOFLUSH = 1;
 #======================================================================================
 # CMD-LINE ARGUMENT PROCESSING AND DEFAULTS
 #======================================================================================
-use vars qw($HELP $SHELL $SCRIPT $COMMAND $SEED $GENOME $SCORE $STORE $GENERATION $RESCORE);
+use vars qw($HELP $SHELL $SCRIPT $COMMAND $SEED $GENOME $SCORE $STORE $GENERATION $RESCORE $POST_EVOLUTION);
 use vars qw($version_flag);
 
 GetOptions(
@@ -142,6 +142,7 @@ GetOptions(
     "score"           => \$SCORE,
     "store"           => \$STORE,
     "rescore"         => \$RESCORE,
+    "post_evolution"  => \$POST_EVOLUTION,
     "inumg=i"         => \$config_ref->{inum_genomes},
     "mrate=f"         => \$config_ref->{mutation_rate},
 );
@@ -183,7 +184,7 @@ if (!defined $config_ref->{config_file}) {
 #======================================================================================
 # RUN COMMANDS AND SCRIPTS
 #======================================================================================
-evolve(seed => defined $SEED ? $SEED : -1) if !$SHELL !$RESCORE && !$COMMAND && defined $config_ref->{config_file};
+evolve(seed => defined $SEED ? $SEED : -1) if !$SHELL && !$POST_EVOLUTION && !$COMMAND && defined $config_ref->{config_file};
 
 load_genome($GENOME) if defined $GENOME || $SCORE && defined $config_ref->{config_file};
 
