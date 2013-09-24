@@ -307,13 +307,19 @@ use base qw(Scoring);
 
                 #########################################################################################
                 # score -- LG/TG connected to each other
-                if (grep /LG0000/, (map {$_->get_name()} @tg_subnet)) {
+                if (grep /LG/, (map {$_->get_name()} @tg_subnet)) {
                     printn "TG0000 fans out to LG0000" if $verbosity > 1;
-                    $network_connectivity += 200;
+                    $network_connectivity += 100;
                 }
-                if (grep /TG0000/, (map {$_->get_name()} @lg_subnet)) {
+                if (grep /TG/, (map {$_->get_name()} @lg_subnet)) {
                     printn "LG0000 fans out to TG0000" if $verbosity > 1;
-                    $network_connectivity += 200;
+                    $network_connectivity += 100;
+                }
+                if (scalar(@tg_adjacent_kinases) > 0) {
+                    $network_connectivity += 100;
+                }
+                if (scalar(@tg_adjacent_phosphatases) > 0) {
+                    $network_connectivity += 100;
                 }
 
                 $network_connectivity += 100 if $network_connectivity >= 400;  # max LG/TG connectivity score
