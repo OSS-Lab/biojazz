@@ -346,10 +346,10 @@ use base qw(Scoring);
                     export_graphviz => ref $config_ref->{export_graphviz} ? (join ",",@{$config_ref->{export_graphviz}}) : $config_ref->{export_graphviz},
                     equations => [$lg_source_eqn, $lg_sink_eqn],
                     matlab_ode_solver => $config_ref->{solver},
-                    matlab_odeset_options => ("odeset('InitialStep', $config_ref->{InitialStep}, ".
-                        "'AbsTol', $config_ref->{AbsTol}, ".
-                        "'RelTol', $config_ref->{RelTol}, ".
-                        "'MaxStep', $config_ref->{MaxStep})"),
+                    matlab_solver_options => ('matlab_solver_options{InitialStep} = ' . "$config_ref->{InitialStep}\n" .
+                        'matlab_solver_options{AbsTol} = ' . "$config_ref->{AbsTol}\n" . 
+                        'matlab_solver_options{RelTol} = ' . "$config_ref->{RelTol}\n" . 
+                        'matlab_solver_options{MaxStep} = ' . "$config_ref->{MaxStep}\n"),
                     t_final => $config_ref->{LG_timeout},
                     t_vector =>"[t0:$config_ref->{sampling_interval}:tf]",
                     ode_event_times => (join " ", @stimulus_event_times),
