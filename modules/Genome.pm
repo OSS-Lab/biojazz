@@ -152,7 +152,7 @@ use base qw(Parser Network);
             t_final => "UNDEF",
             t_vector => "UNDEF",
             matlab_ode_solver => "UNDEF",
-            matlab_odeset_options => "UNDEF",
+            matlab_solver_options => "UNDEF",
             @_,
         );
         check_args(\%args, 16);
@@ -252,7 +252,7 @@ END
         $str .= "t_final = $args{t_final};\n" if $args{t_final} ne "UNDEF";
         $str .= "t_vector = $args{t_vector};\n" if $args{t_vector} ne "UNDEF";
         $str .= "matlab_ode_solver = $args{matlab_ode_solver};\n" if $args{matlab_ode_solver} ne "UNDEF";
-        $str .= "matlab_odeset_options = $args{matlab_odeset_options};\n" if $args{matlab_odeset_options} ne "UNDEF";
+        $str .= "$args{matlab_solver_options};\n" if $args{matlab_solver_options} ne "UNDEF";
 
         return $str;
     }
