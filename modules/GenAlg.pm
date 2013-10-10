@@ -675,6 +675,10 @@ use base qw();
                 if ($index_array_ref_of{$obj_ID}->[$mutation_index] != $i) {
                     die "There is something wrong that mutation index recorded in genome is not same as the genotype index recoding the corresponding mutated genome";
                 }
+            } else {
+                $genome_model_ref->set_stepwise_mutations(0);
+                $genome_model_ref->set_stepwise_point_mutations(0);
+ 
             }
             $i++;
         }
