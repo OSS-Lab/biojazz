@@ -1058,7 +1058,7 @@ END
                                     UNUSED => "0",
                                 },
                                 {
-                                    type => "csite",
+                                    type => "bsite",
                                     substrate_polarity => 0,
                                     binding_profile => "0101111111",
                                     kf_profile => "11101101111101100000",
@@ -1089,7 +1089,7 @@ END
                             RT_phi => 1.0,
                             protodomains => [
                                 {
-                                    type => "msite",
+                                    type => "bsite",
                                     substrate_polarity => 0,
                                     binding_profile => BindingProfile->binding_complement("0101111111")->sprint(),
                                     kf_profile => "01111111010110111000",
@@ -1135,47 +1135,31 @@ END
                             RT_phi => 0.0,
                             protodomains => [
                                 {
-                                    type => "csite",
-                                    substrate_polarity => 1,
-                                    binding_profile => "0101111111",
-                                    kf_profile => "11111100111111001110",
-                                    kb_profile => "11000000110000001000",
-                                    kp_profile => "11111100111111001110",
-                                    Keq_ratio => 2.0,
+                                    type => "bsite",
+                                    substrate_polarity => 0,
+                                    binding_profile => BindingProfile->binding_complement("0101111111")->sprint(),
+                                    kf_profile => "01111111010110111000",
+                                    kb_profile => "10011001111111001000",
+                                    kp_profile => "01110100110011000011",
+                                    Keq_ratio => 1.0,
                                     kf_polarity_mask => "0",
                                     kb_polarity_mask => "0",
-                                    kf_conformation_mask => "0",
+                                    kf_conformation_mask => "11101101111111111000",
                                     kb_conformation_mask => "0",
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
                                 },
-                            ],
-                            UNUSED => "0",
-                        },
-                    ],
-                },
-                {
-                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
-                    regulated_concentration => 0.1, # uM
-                    UNUSED => "0000",
-                    domains => [
-                        {
-                            allosteric_flag => 0,
-                            RT_transition_rate => 1.0,
-                            TR_transition_rate => 1.0,
-                            RT_phi => 0.0,
-                            protodomains => [
                                 {
                                     type => "csite",
                                     substrate_polarity => 1,
                                     binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
-                                    kf_profile => "11101010101011011010",
-                                    kb_profile => "11001011101111100000",
-                                    kp_profile => "11000001010101111101",
-                                    Keq_ratio => 2.0,
+                                    kf_profile => "11010111000001100000",
+                                    kb_profile => "11101010101110011000",
+                                    kp_profile => "11001011010100010000",
+                                    Keq_ratio => 1.0,
                                     kf_polarity_mask => "0",
                                     kb_polarity_mask => "0",
-                                    kf_conformation_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
                                     kb_conformation_mask => "0",
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
