@@ -149,7 +149,9 @@ use base qw(Set ClassData);
                         },
                     },
                 });
-            $genome_ref->get_sequence_ref()->generate_random_sequence(5000);
+            my $gene_min_length = $genome_ref->get_gene_parser_ref->get_min_length();
+            my $seq_length = int ((rand(100) + 1) * $gene_min_length);
+            $genome_ref->get_sequence_ref()->generate_random_sequence($seq_length);
             $genome_ref->set_number(1);
             $genome_ref->add_history("random sequence created");
             $self->add_element($genome_ref);
