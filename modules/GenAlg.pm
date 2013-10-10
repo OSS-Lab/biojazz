@@ -675,9 +675,6 @@ use base qw();
                 if ($index_array_ref_of{$obj_ID}->[$mutation_index] != $i) {
                     die "There is something wrong that mutation index recorded in genome is not same as the genotype index recoding the corresponding mutated genome";
                 }
-            } else {
-                $genome_model_ref->set_stepwise_mutations(0);
-                $genome_model_ref->set_stepwise_point_mutations(0);
             }
             $i++;
         }
@@ -918,9 +915,12 @@ use base qw();
         my $config_ref = $config_ref_of{$obj_ID};
         my $obj_dir = "$config_ref->{work_dir}/$TAG/obj";
         my $removal_files = sprintf("$obj_dir/G%03d_I*.obj", $generation_number);
+        my $matlab_dir = "$config_ref->{work_dir}/$TAG/matlab";
+        my $matlab_files = sprintf("$matlab_dir/G%03d_I*.obj", $generation_number);
 
-        `rm -f $removal_files`;
-        printn "Removing genome files of the $generation_number th generation" if $verbosity > 1;
+        `echo $removal_files    |  xargs rm -f`;
+        `echo $matlab_files    |  xargs rm -f`;
+        printn "Removing genome files and matlab files of the $generation_number th generation" if $verbosity > 1;
 
         return 1;
     } ## --- end sub clear_pre_gen

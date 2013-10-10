@@ -817,15 +817,15 @@ use base qw(Scoring);
         # REMOVE FILES
         #---------------------------------------------------------
         if (defined $local_dir) {
-            `echo $local_dir/matlab/G*     | xargs rm -f`;
-            `echo $config_ref->{local_dir}/matlab/G*     | xargs rm -f`;
+            #`echo $local_dir/matlab/G*     | xargs rm -f`;
+            #`echo $config_ref->{local_dir}/matlab/G*     | xargs rm -f`;
  
-            #my $file_glob = "$matlab_work/${genome_name}*";
-            #my @files = glob($file_glob);
-            #if (@files) {
-            #    printn "Moving @files to $work_dir/matlab" if $verbosity > 1;
-            #    system("mv @files $work_dir/matlab");
-            #}
+            my $file_glob = "$matlab_work/${genome_name}*";
+            my @files = glob($file_glob);
+            if (@files) {
+                printn "Moving @files to $work_dir/matlab" if $verbosity > 1;
+                system("mv @files $work_dir/matlab");
+            }
         }
     }
 }
