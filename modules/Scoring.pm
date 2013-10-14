@@ -731,8 +731,8 @@ use base qw();
         $title_prefix =~ s/_/\\_/g;
 
         my $matlab_ref = $matlab_ref_of{$obj_ID};
-        my $command = "io=figure('Visible','off');$plot_command(t, $complex); title(\'$title_prefix $title\')";
-        #my $command = "io=figure($figure);$plot_command(t, $complex); title(\'$title_prefix $title\')";
+        my $command = "io=figure(\'Visible\',\'off\');$plot_command(t, $complex, \'-o\'); title(\'$title_prefix $title\')";
+        #my $command = "io=figure($figure);$plot_command(t, $complex,\'-o\'); title(\'$title_prefix $title\')";
         printn "matlab_plot_complex: Figure $figure -- $complex" if $verbosity >= 1;
         $matlab_ref->cmd("$command");
         $matlab_ref->cmd("saveas(io, \'$filename\', \'png\')") if $filename;
@@ -748,19 +748,20 @@ use base qw();
         my %args = (
             min_value => 0,
             plot_command => "plot",
+            file_dir => "",
             figure => 1,
             @_,
         );
-        check_args(\%args, 3);
+        check_args(\%args, 4);
 
         my $min_value = $args{min_value};
         my $plot_command = $args{plot_command};
         my $figure = $args{figure};
+        my $file_dir = $args{file_dir};
 
         return if ($min_value < 0);
 
         my @anc_species = $self->anc_get_species();
-
         foreach my $species_name (sort @anc_species) {
             my $max_value = $self->matlab_get_max_value($species_name);
             if ($max_value !~ /UNDEF/ && $max_value >= $min_value) {
@@ -768,8 +769,14 @@ use base qw();
                     figure => $figure++,
                     complex => $species_name,
                     plot_command => $plot_command,
+                    filename => "species" . $species_name,
                 );
             }
+        }
+        if (defined $file_dir && $file_dir =~ /\S+/) {
+            my $matlab_work = $matlab_work_of{$obj_ID};
+            system("mkdir -p $matlab_work/$file_dir");
+            system("mv $matlab_work/species* $matlab_work/$file_dir");
         }
     }
 
@@ -807,8 +814,8 @@ use base qw();
         my $matlab_ref = $matlab_ref_of{$obj_ID};
         $matlab_ref->cmd("halfway = floor(size($X_complex,1)/2)");
         #$matlab_ref->cmd("h=figure($figure); plot($X_complex(1:halfway), $Y_complex(1:halfway));title(\'$title_prefix $title\')");
-        $matlab_ref->cmd("h=figure('Visible','off'); plot($X_complex(1:halfway), $Y_complex(1:halfway));title(\'$title_prefix $title\')");
-        $matlab_ref->cmd("hold on; plot($X_complex(halfway+1:end), $Y_complex(halfway+1:end), 'r'); hold off;");
+        $matlab_ref->cmd("h=figure(\'Visible\',\'off\'); plot($X_complex(1:halfway), $Y_complex(1:halfway),\'-o\');title(\'$title_prefix $title\')");
+        $matlab_ref->cmd("hold on; plot($X_complex(halfway+1:end), $Y_complex(halfway+1:end), \'r-o\'); hold off;");
         $matlab_ref->cmd("axis([".join(" ", @$axis_ref)."])") if $axis_ref;
         #$matlab_ref->cmd("hgsave(h, \'$filename\')") if $filename;
         $matlab_ref->cmd("saveas(h, \'$filename\', \'png\')") if $filename;
