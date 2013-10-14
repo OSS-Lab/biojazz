@@ -919,12 +919,9 @@ use base qw();
         my $config_ref = $config_ref_of{$obj_ID};
         my $obj_dir = "$config_ref->{work_dir}/$TAG/obj";
         my $removal_files = sprintf("$obj_dir/G%03d_I*.obj", $generation_number);
-        my $matlab_dir = "$config_ref->{work_dir}/$TAG/matlab";
-        my $matlab_files = sprintf("$matlab_dir/G%03d_I*.obj", $generation_number);
 
         `echo $removal_files    |  xargs rm -f`;
-        `echo $matlab_files    |  xargs rm -f`;
-        printn "Removing genome files and matlab files of the $generation_number th generation" if $verbosity > 1;
+        printn "Removing genome files of the $generation_number th generation" if $verbosity > 1;
 
         return 1;
     } ## --- end sub clear_pre_gen
