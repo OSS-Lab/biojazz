@@ -107,7 +107,7 @@ evolve : FORCE
 	@echo "ANC_HOME =" $(ANC_HOME)
 	@echo "FACILE_HOME =" $(FACILE_HOME)
 	mkdir -p $(basename $(config))
-	$(BIOJAZZrHOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) 2>&1 | tee -a -i $(basename $(config))/$(basename $(config)).$(tag).log
+	$(BIOJAZZ_HOME)/biojazz.pl --config=config/$(config) --tag=$(tag) --cluster_type=$(cluster_type) --cluster_size=$(cluster_size) --seed=$(seed) 2>&1 | tee -a -i $(basename $(config))/$(basename $(config)).$(tag).log
 
 evolve_rescore : FORCE
 	@echo "ANC_HOME =" $(ANC_HOME)
