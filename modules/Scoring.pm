@@ -769,7 +769,7 @@ use base qw();
                     figure => $figure++,
                     complex => $species_name,
                     plot_command => $plot_command,
-                    filename => "species" . $species_name,
+                    filename => "species_" . $species_name,
                 );
             }
         }
