@@ -769,8 +769,7 @@ use base qw();
                     figure => $figure++,
                     X_complex => "LG0000",
                     Y_complex => $species_name,
-                    title_prefix => "$genome_name",
-                    axis_ref => [0, $config_ref->{LG_range},
+                    axis_ref => [0, "max(LG0000)",
                         0, "max($species_name) + 0.1*max($species_name)"],
                     filename => "species_" . "$species_name" . "_vs_LG0000_phase",
                 );
@@ -808,7 +807,7 @@ use base qw();
         my $filename = $args{filename};
         my $axis_ref = $args{axis_ref};
 
-        my $title = "PHASE PLOT ($Y_complex vs $X_complex)";
+        my $title = "$Y_complex vs $X_complex";
 
         # matlab treats underscores as indication of subscript, so escape them
         $title =~ s/_/\\_/g;
