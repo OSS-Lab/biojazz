@@ -765,11 +765,14 @@ use base qw();
         foreach my $species_name (sort @anc_species) {
             my $max_value = $self->matlab_get_max_value($species_name);
             if ($max_value !~ /UNDEF/ && $max_value >= $min_value) {
-                $self->matlab_plot_complex(
+                $self->matlab_plot_phase(
                     figure => $figure++,
-                    complex => $species_name,
-                    plot_command => $plot_command,
-                    filename => "species_" . $species_name,
+                    X_complex => "LG0000",
+                    Y_complex => $species_name,
+                    title_prefix => "$genome_name",
+                    axis_ref => [0, $config_ref->{LG_range},
+                        0, "max($species_name) + 0.1*max($species_name)"],
+                    filename => "species_" . "$species_name" . "_vs_LG0000_phase",
                 );
             }
         }
