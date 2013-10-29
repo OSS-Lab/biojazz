@@ -182,8 +182,8 @@ use base qw();
             $anc_ref_of{$obj_ID}->{complexes}{$split_line[0]} = [@split_line[1..$#split_line]];
         }
 
-        confess "ERROR: ANC species report is messed up (1)" if $num_complexes != keys %{$anc_ref_of{$obj_ID}->{complexes}};
-        confess "ERROR: ANC species report is messed up (2)" if $num_species != @{$anc_ref_of{$obj_ID}->{species}};
+        printn "ERROR: ANC species report is messed up (1)" if $num_complexes != keys %{$anc_ref_of{$obj_ID}->{complexes}};
+        printn "ERROR: ANC species report is messed up (2)" if $num_species != @{$anc_ref_of{$obj_ID}->{species}};
     }
 
     #--------------------------------------------------------------------------------------
