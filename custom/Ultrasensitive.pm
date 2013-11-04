@@ -720,10 +720,10 @@ use base qw(Scoring);
                         my $mean_dy2 = ($dy2 + $dy2n)/2;
                         my $mean_dy3 = ($dy3 + $dy3n)/2;
                         # adding 0.01*mean_dy2 means you score at most 100
-                        #		    $ultrasensitivity_dy1 = $mean_dy2/($mean_dy1 + 0.01*$mean_dy2);
-                        #		    $ultrasensitivity_dy3 = $mean_dy2/($mean_dy3 + 0.01*$mean_dy2);
-                        $ultrasensitivity_dy1 = $mean_dy2/($mean_dy1);
-                        $ultrasensitivity_dy3 = $mean_dy2/($mean_dy3);
+                        $ultrasensitivity_dy1 = $mean_dy2/($mean_dy1 + 0.01*$mean_dy2);
+                        $ultrasensitivity_dy3 = $mean_dy2/($mean_dy3 + 0.01*$mean_dy2);
+                        #$ultrasensitivity_dy1 = $mean_dy2/($mean_dy1);
+                        #$ultrasensitivity_dy3 = $mean_dy2/($mean_dy3);
                     }
                     #		$stats_ref->{amplitude_score} = p_hill($amplitude, $config_ref->{amplitude_threshold}, 1);
                     $stats_ref->{amplitude_score} = $amplitude;
