@@ -1532,6 +1532,20 @@ use base qw(Model);
         return $mutation_count;
     }
 
+
+    sub mutate_allosteric_flag {
+        my $self = shift;
+        my $domain_name = shift;
+        printn "ERROR: specify a domain name!" if !defined $domain_name;
+
+        $self->parse();
+        my $domain_ref = $self->get_domain_parser_ref()->lookup_object_instance_by_name($domain_name);
+        my $new_flag = abs($domain_ref->translate_field("allosteric_flag") - 1);
+        $domain_ref->set_field("allosteric_flag",$new_flag);
+        $self->parse();
+        return $self->check();
+    }
+
 }
 
 sub run_testcases {
