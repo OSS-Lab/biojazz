@@ -375,7 +375,7 @@ use base qw();
 
         }
         if ($config_ref->{continue_sim} == 1) {
-            my $continue_gen = $config_ref{continue_init};
+            my $continue_gen = $config_ref->{continue_init};
             $current_generation_ref->refresh_individual_names($continue_gen);
             $current_generation_number_of{$obj_ID} = $continue_gen;
             printn "create_initial_generation for continue simulation: done";
