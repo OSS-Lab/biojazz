@@ -359,137 +359,138 @@ use base qw(Scoring);
                 system("$ENV{ANC_HOME}/anc.pl --report=species $matlab_work/$genome_name.mod");
                 my @facile_model = slurp_file("$matlab_work/$genome_name.eqn");
 
-                $self->anc_process_species_report("$matlab_work/$genome_name.species.rpt");
-                my @anc_species = $self->anc_get_species();
-                $stats_ref->{num_anc_species} = @anc_species;
-                printn "ANC NUM SPECIES: ".scalar(@anc_species) if $verbosity > 1;
-                printn "ANC SPECIES: @anc_species" if $verbosity > 2;
+                $stats_ref->{species_report_flag} = $self->anc_process_species_report("$matlab_work/$genome_name.species.rpt");
+                if ($stats_ref->{species_report_flag} == 0) {
+                    my @anc_species = $self->anc_get_species();
+                    $stats_ref->{num_anc_species} = @anc_species;
+                    printn "ANC NUM SPECIES: ".scalar(@anc_species) if $verbosity > 1;
+                    printn "ANC SPECIES: @anc_species" if $verbosity > 2;
 
-                #---------------------------------------------------------
-                # OUTPUT KINASE AND PHOSPHATASE
-                #---------------------------------------------------------
-                my @adjacent_kinase_names = map {$_->get_name()} @tg_adjacent_kinases;
-                my @kinase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @tg_adjacent_kinases;
-                my @adjacent_phosphatase_names = map {$_->get_name()} @tg_adjacent_phosphatases;
-                my @phosphatase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @tg_adjacent_phosphatases;
-                
-                my $min_phos = 0; my $max_phos = 0;
-                if (scalar @adjacent_kinase_names > 0) {
-                    for (my $i = 0; $i < @adjacent_kinase_names; $i++) {
-                        my $pd_name = $adjacent_kinase_names[$i];
-                        my $gene_name = $kinase_gene_names[$i];
-                        my $protein_concentration = 0;
-                        if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene_name,\s+IC\s?=>\s?(\S+),/g) {
-                            $protein_concentration = $1 + 0;
-                            $stats_ref->{$gene_name} = $protein_concentration;
-                        }
-                        my @phos_info = ();
-                        while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?\S+,\s+kb\s?=>\s?\S+,\s+kp\s?=>\s?(\S+),/g) {
-                            my $rule_name = 'phos_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
-                            my $rule_rate = $6 + 0;
-                            $stats_ref->{$rule_name} = $rule_rate;
-                            push(@phos_info, $rule_rate);
-                        }
-                        my $min = 0; my $max = $min;
-                        if (scalar @phos_info > 0) {
-                            $min = $phos_info[0]; $max = $min;
-                            for (my $i = 1; $i < @phos_info; $i++) {
-                                if ($phos_info[$i] < $min) {
-                                    $min = $phos_info[$i];
-                                }
-                                if ($phos_info[$i] > $max) {
-                                    $max = $phos_info[$i];
-                                }
+                    #---------------------------------------------------------
+                    # OUTPUT KINASE AND PHOSPHATASE
+                    #---------------------------------------------------------
+                    my @adjacent_kinase_names = map {$_->get_name()} @tg_adjacent_kinases;
+                    my @kinase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @tg_adjacent_kinases;
+                    my @adjacent_phosphatase_names = map {$_->get_name()} @tg_adjacent_phosphatases;
+                    my @phosphatase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @tg_adjacent_phosphatases;
+
+                    my $min_phos = 0; my $max_phos = 0;
+                    if (scalar @adjacent_kinase_names > 0) {
+                        for (my $i = 0; $i < @adjacent_kinase_names; $i++) {
+                            my $pd_name = $adjacent_kinase_names[$i];
+                            my $gene_name = $kinase_gene_names[$i];
+                            my $protein_concentration = 0;
+                            if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene_name,\s+IC\s?=>\s?(\S+),/g) {
+                                $protein_concentration = $1 + 0;
+                                $stats_ref->{$gene_name} = $protein_concentration;
                             }
-                        } else {
-                            die "didn't find the rate of phosphorylation rule $stats_ref->{rule_name}";
-                        }
-                        $min_phos += $min * $protein_concentration; $max_phos += $max * $protein_concentration;
-                    }
-                }
-                $stats_ref->{tg_phosphorylation_min} = $min_phos;
-                $stats_ref->{tg_phosphorylation_max} = $max_phos;
-                printn "phosphorylation min: $min_phos; phosphosrylation max: $max_phos" if $verbosity >= 1;
-
-                my $min_dephos = 0; my $max_dephos = 0;
-                if (scalar @adjacent_phosphatase_names > 0) {
-                    for (my $i = 0; $i < @adjacent_phosphatase_names; $i++) {
-                        my $pd_name = $adjacent_phosphatase_names[$i];
-                        my $gene_name = $phosphatase_gene_names[$i];
-                        my $protein_concentration = 0;
-                        if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene_name,\s+IC\s?=>\s?(\S+),/g) {
-                            $protein_concentration = $1 + 0;
-                            $stats_ref->{$gene_name} = $protein_concentration;
-                        }
-                        my @dephos_info = ();
-                        while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\n.*\n.*\n\s+kp\s?=>\s?(\S+),/g) {
-                            my $rule_name = 'dephos_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
-                            my $rule_rate = $6 + 0;
-                            $stats_ref->{$rule_name} = $rule_rate;
-                            push(@dephos_info, $rule_rate);
-                        }
-                        my $min = 0; my $max = $min;
-                        if (scalar @dephos_info > 0) {
-                            $min = $dephos_info[0]; $max = $min;
-                            for (my $i = 1; $i < @dephos_info; $i++) {
-                                if ($dephos_info[$i] < $min) {
-                                    $min = $dephos_info[$i];
-                                }
-                                if ($dephos_info[$i] > $max) {
-                                    $max = $dephos_info[$i];
-                                }
+                            my @phos_info = ();
+                            while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?\S+,\s+kb\s?=>\s?\S+,\s+kp\s?=>\s?(\S+),/g) {
+                                my $rule_name = 'phos_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
+                                my $rule_rate = $6 + 0;
+                                $stats_ref->{$rule_name} = $rule_rate;
+                                push(@phos_info, $rule_rate);
                             }
-                        } else {
-                            die "didn't find the rate of dephosphorylation rule $stats_ref->{rule_name}";
+                            my $min = 0; my $max = $min;
+                            if (scalar @phos_info > 0) {
+                                $min = $phos_info[0]; $max = $min;
+                                for (my $i = 1; $i < @phos_info; $i++) {
+                                    if ($phos_info[$i] < $min) {
+                                        $min = $phos_info[$i];
+                                    }
+                                    if ($phos_info[$i] > $max) {
+                                        $max = $phos_info[$i];
+                                    }
+                                }
+                            } else {
+                                die "didn't find the rate of phosphorylation rule $stats_ref->{rule_name}";
+                            }
+                            $min_phos += $min * $protein_concentration; $max_phos += $max * $protein_concentration;
                         }
-                        $min_dephos += $min * $protein_concentration; $max_dephos += $max * $protein_concentration;
                     }
-                }
-                $stats_ref->{tg_dephosphorylation_min} = $min_dephos;
-                $stats_ref->{tg_dephosphorylation_max} = $max_dephos;
-                printn "dephosphorylation min: $min_dephos; dephosphosrylation max: $max_dephos" if $verbosity >= 1;
+                    $stats_ref->{tg_phosphorylation_min} = $min_phos;
+                    $stats_ref->{tg_phosphorylation_max} = $max_phos;
+                    printn "phosphorylation min: $min_phos; phosphosrylation max: $max_phos" if $verbosity >= 1;
+
+                    my $min_dephos = 0; my $max_dephos = 0;
+                    if (scalar @adjacent_phosphatase_names > 0) {
+                        for (my $i = 0; $i < @adjacent_phosphatase_names; $i++) {
+                            my $pd_name = $adjacent_phosphatase_names[$i];
+                            my $gene_name = $phosphatase_gene_names[$i];
+                            my $protein_concentration = 0;
+                            if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene_name,\s+IC\s?=>\s?(\S+),/g) {
+                                $protein_concentration = $1 + 0;
+                                $stats_ref->{$gene_name} = $protein_concentration;
+                            }
+                            my @dephos_info = ();
+                            while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\n.*\n.*\n\s+kp\s?=>\s?(\S+),/g) {
+                                my $rule_name = 'dephos_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
+                                my $rule_rate = $6 + 0;
+                                $stats_ref->{$rule_name} = $rule_rate;
+                                push(@dephos_info, $rule_rate);
+                            }
+                            my $min = 0; my $max = $min;
+                            if (scalar @dephos_info > 0) {
+                                $min = $dephos_info[0]; $max = $min;
+                                for (my $i = 1; $i < @dephos_info; $i++) {
+                                    if ($dephos_info[$i] < $min) {
+                                        $min = $dephos_info[$i];
+                                    }
+                                    if ($dephos_info[$i] > $max) {
+                                        $max = $dephos_info[$i];
+                                    }
+                                }
+                            } else {
+                                die "didn't find the rate of dephosphorylation rule $stats_ref->{rule_name}";
+                            }
+                            $min_dephos += $min * $protein_concentration; $max_dephos += $max * $protein_concentration;
+                        }
+                    }
+                    $stats_ref->{tg_dephosphorylation_min} = $min_dephos;
+                    $stats_ref->{tg_dephosphorylation_max} = $max_dephos;
+                    printn "dephosphorylation min: $min_dephos; dephosphosrylation max: $max_dephos" if $verbosity >= 1;
 
 
-                #---------------------------------------------------------
-                # RUN FACILE
-                #---------------------------------------------------------
-                my $sampling_interval = $config_ref->{sampling_interval};
-                $self->facile_run(
-                    EQN_FILE => "$matlab_work/$genome_name.eqn",
-                    SIM_TYPE => "matlab",
-                );
+                    #---------------------------------------------------------
+                    # RUN FACILE
+                    #---------------------------------------------------------
+                    my $sampling_interval = $config_ref->{sampling_interval};
+                    $self->facile_run(
+                        EQN_FILE => "$matlab_work/$genome_name.eqn",
+                        SIM_TYPE => "matlab",
+                    );
 
-                ###############################################################################
-                #---------------------------------------------------------
-                # SCORE COMPLEXITY
-                # Basically compute the number of genes, domains, protodomains, rules
-                # and put those values in account as how complex is the network
-                #---------------------------------------------------------
-                my $num_protodomains = @{[$anc_model =~ /ReactionSite :/g]};
-                my $num_domains = @{[$anc_model =~ /AllostericStructure :/g]};
-                my $num_proteins = @{[$anc_model =~ /\sStructure :/g]};
-                my $num_rules = @{[$anc_model =~ /CanBindRule :/g]};
-                $stats_ref->{num_rules} = $num_rules;
-                printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules" if $verbosity >= 1;
-                $stats_ref->{complexity} = $num_protodomains + $num_domains + $num_proteins + $num_rules;
-                my $complexity_threshold = defined $config_ref->{complexity_threshold} ? $config_ref->{complexity_threshold} : 250;
-                $stats_ref->{complexity_score} = n_hill($stats_ref->{complexity}, $complexity_threshold, 1);
-                #---------------------------------------------------------
-                # CHECK ANC/FACILE MODEL
-                #---------------------------------------------------------
-                # check that TF_0 and TF_1 are products of at least 1 reaction each
-                my $num_reactions_tg_1 = grep (/(->|<-).* TG00001/, @facile_model);
-                my $num_reactions_tg_0 = grep (/(->|<-).* TG00000/, @facile_model);
-                $stats_ref->{num_reactions_tg_0} = $num_reactions_tg_0;
-                $stats_ref->{num_reactions_tg_1} = $num_reactions_tg_1;
-                $network_connectivity += 100 * ($num_reactions_tg_0 > 1 ? 1 : $num_reactions_tg_0);
-                $network_connectivity += 100 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
+                    ###############################################################################
+                    #---------------------------------------------------------
+                    # SCORE COMPLEXITY
+                    # Basically compute the number of genes, domains, protodomains, rules
+                    # and put those values in account as how complex is the network
+                    #---------------------------------------------------------
+                    my $num_protodomains = @{[$anc_model =~ /ReactionSite :/g]};
+                    my $num_domains = @{[$anc_model =~ /AllostericStructure :/g]};
+                    my $num_proteins = @{[$anc_model =~ /\sStructure :/g]};
+                    my $num_rules = @{[$anc_model =~ /CanBindRule :/g]};
+                    $stats_ref->{num_rules} = $num_rules;
+                    printn "ANC model complexity: $num_protodomains + $num_domains + $num_proteins + $num_rules" if $verbosity >= 1;
+                    $stats_ref->{complexity} = $num_protodomains + $num_domains + $num_proteins + $num_rules;
+                    my $complexity_threshold = defined $config_ref->{complexity_threshold} ? $config_ref->{complexity_threshold} : 250;
+                    $stats_ref->{complexity_score} = n_hill($stats_ref->{complexity}, $complexity_threshold, 1);
+                    #---------------------------------------------------------
+                    # CHECK ANC/FACILE MODEL
+                    #---------------------------------------------------------
+                    # check that TF_0 and TF_1 are products of at least 1 reaction each
+                    my $num_reactions_tg_1 = grep (/(->|<-).* TG00001/, @facile_model);
+                    my $num_reactions_tg_0 = grep (/(->|<-).* TG00000/, @facile_model);
+                    $stats_ref->{num_reactions_tg_0} = $num_reactions_tg_0;
+                    $stats_ref->{num_reactions_tg_1} = $num_reactions_tg_1;
+                    $network_connectivity += 200 * ($num_reactions_tg_0 > 1 ? 1 : $num_reactions_tg_0);
+                    $network_connectivity += 200 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
 
-                $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 700) ? 1 : 0;
 
-                # check that number of species is less than maximum
-                if (!defined $config_ref->{max_species} || $config_ref->{max_species} < 0 || $stats_ref->{num_anc_species} < $config_ref->{max_species}) {
-                    $network_connectivity += 100;
+                    # check that number of species is less than maximum
+                    if (!defined $config_ref->{max_species} || $config_ref->{max_species} < 0 || $stats_ref->{num_anc_species} < $config_ref->{max_species}) {
+                        $network_connectivity += 100;
+                    }
                 }
             }
 
@@ -499,7 +500,7 @@ use base qw(Scoring);
             #---------------------------------------------------------
             # sim_flag indicates that network was successfully simulated
             # and that calculated results are valid
-            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag};
+            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 900) ? 1 : 0;
             $stats_ref->{sim_flag} = 0;
             if ($ANC_ok_flag) {
                 $stats_ref->{sim_flag} = 1;
@@ -720,8 +721,8 @@ use base qw(Scoring);
                         my $mean_dy2 = ($dy2 + $dy2n)/2;
                         my $mean_dy3 = ($dy3 + $dy3n)/2;
                         # adding 0.01*mean_dy2 means you score at most 100
-                        $ultrasensitivity_dy1 = $mean_dy2/($mean_dy1 + 0.01*$mean_dy2);
-                        $ultrasensitivity_dy3 = $mean_dy2/($mean_dy3 + 0.01*$mean_dy2);
+                        $ultrasensitivity_dy1 = $mean_dy2/($mean_dy1 + 0.01*$mean_dy2 + 0.001);
+                        $ultrasensitivity_dy3 = $mean_dy2/($mean_dy3 + 0.01*$mean_dy2 + 0.001);
                         #$ultrasensitivity_dy1 = $mean_dy2/($mean_dy1);
                         #$ultrasensitivity_dy3 = $mean_dy2/($mean_dy3);
                     }
