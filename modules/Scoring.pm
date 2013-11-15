@@ -292,7 +292,9 @@ use base qw();
 
         printn "facile_run: facile command is $facile_cmd";
         printn "facile_run: started facile on " . `date`;
-        system("$facile_cmd; rm ${file_root}_r.m ${file_root}_s.m");
+        system("$facile_cmd");
+        system("echo ${file_root}_r.m   |   xargs rm -f");
+        system("echo ${file_root}_s.m   |   xargs rm -f");
         if ($?) {
             printn "ERROR: Facile reported an error ($?)";
             exit(1);
