@@ -182,8 +182,16 @@ use base qw();
             $anc_ref_of{$obj_ID}->{complexes}{$split_line[0]} = [@split_line[1..$#split_line]];
         }
 
-        printn "ERROR: ANC species report is messed up (1)" if $num_complexes != keys %{$anc_ref_of{$obj_ID}->{complexes}};
-        printn "ERROR: ANC species report is messed up (2)" if $num_species != @{$anc_ref_of{$obj_ID}->{species}};
+        my $species_report_status = 0;
+        if ($num_complexes != keys %{$anc_ref_of{$obj_ID}->{complexes}}) {
+            printn "ERROR: ANC species report is messed up (1)";
+            $species_report_status++;
+        }
+        if ($num_species != @{$anc_ref_of{$obj_ID}->{species}}) {
+            $species_report_status++;
+            printn "ERROR: ANC species report is messed up (2)";
+        }
+        return $species_report_status;
     }
 
     #--------------------------------------------------------------------------------------
@@ -284,7 +292,9 @@ use base qw();
 
         printn "facile_run: facile command is $facile_cmd";
         printn "facile_run: started facile on " . `date`;
-        system("$facile_cmd; rm ${file_root}_r.m ${file_root}_s.m");
+        system("$facile_cmd");
+        system("echo ${file_root}_r.m   |   xargs rm -f");
+        system("echo ${file_root}_s.m   |   xargs rm -f");
         if ($?) {
             printn "ERROR: Facile reported an error ($?)";
             exit(1);

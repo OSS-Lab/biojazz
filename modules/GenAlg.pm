@@ -374,9 +374,16 @@ use base qw();
             }
 
         }
-        $current_generation_ref->refresh_individual_names($config_ref->{first_generation});
-        $current_generation_number_of{$obj_ID} = $config_ref->{first_generation};
-        printn "create_initial_generation: done";
+        if ($config_ref->{continue_sim} == 1) {
+            my $continue_gen = $config_ref->{continue_init};
+            $current_generation_ref->refresh_individual_names($continue_gen);
+            $current_generation_number_of{$obj_ID} = $continue_gen;
+            printn "create_initial_generation for continue simulation: done";
+        } else {
+            $current_generation_ref->refresh_individual_names($config_ref->{first_generation});
+            $current_generation_number_of{$obj_ID} = $config_ref->{first_generation};
+            printn "create_initial_generation: done";
+        }
     }
 
     #--------------------------------------------------------------------------------------
