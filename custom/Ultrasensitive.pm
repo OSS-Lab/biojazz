@@ -241,7 +241,7 @@ use base qw(Scoring);
             printn $genome_ref->get_connectivity_matrix_ref()->{genes}->sprint_matrix() if $verbosity > 2;
 
             # PRUNE GENES
-            $stats_ref->{num_pruned_genes} = scalar $genome_ref->prune_isolated_genes();
+            $stats_ref->{num_pruned_genes} = scalar $genome_ref->get_isolated_genes();
 
             my $gene_ref = $genome_model_ref->get_gene_parser_ref();
             my $lg_gene_ref = $gene_ref->lookup_object_instance_by_name("LG0000");
