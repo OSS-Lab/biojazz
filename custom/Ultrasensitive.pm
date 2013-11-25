@@ -897,8 +897,8 @@ Keq_ratio_min = 1e-2
 #----------------------------------------
 max_external_iterations = -1
 max_internal_iterations = -1
-max_complex_size = 8
-max_species = 256
+max_complex_size = 3
+max_species = 512
 max_csite_bound_to_msite_number = 1
 default_max_count = 2          # this prevents polymerization (see ANC manual)
 default_steric_factor = 1e3    # in micro-mol/L
@@ -938,8 +938,8 @@ delta_threshold = 0.01          # relative measure of amplitude used to filter o
 amplitude_threshold = 0.01      # absolute measure of amplitude
 ultrasensitivity_threshold = 5  # ratio of 2nd step over 1st step
 
-w_n = 1.0
-w_c = 1.0
+w_n = 0.0
+w_c = 0.5
 w_s = 1.0
 w_a = 1.0
 w_u = 1.0
@@ -962,8 +962,8 @@ hill_k = 5
 TG_init = 1000  # uM
 cell_volume = 1e-18             # 1e-18L --> sub-cellular volume
 
-lg_binding_profile = 0110011010
-tg_binding_profile = 1011101000
+lg_binding_profile = 0100111010
+tg_binding_profile = 0111000110
 
 END
 

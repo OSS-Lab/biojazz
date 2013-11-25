@@ -721,8 +721,8 @@ use base qw(Scoring);
                         my $mean_dy2 = ($dy2 + $dy2n)/2;
                         my $mean_dy3 = ($dy3 + $dy3n)/2;
                         # adding 0.01*mean_dy2 means you score at most 100
-                        $ultrasensitivity_dy1 = $mean_dy2/($mean_dy1 + 0.01*$mean_dy2 + 0.001);
-                        $ultrasensitivity_dy3 = $mean_dy2/($mean_dy3 + 0.01*$mean_dy2 + 0.001);
+                        $ultrasensitivity_dy1 = $mean_dy2/($mean_dy1 + 0.001);
+                        $ultrasensitivity_dy3 = $mean_dy2/($mean_dy3 + 0.001);
                         #$ultrasensitivity_dy1 = $mean_dy2/($mean_dy1);
                         #$ultrasensitivity_dy3 = $mean_dy2/($mean_dy3);
                     }
@@ -897,8 +897,8 @@ Keq_ratio_min = 1e-2
 #----------------------------------------
 max_external_iterations = -1
 max_internal_iterations = -1
-max_complex_size = 8
-max_species = 256
+max_complex_size = 3
+max_species = 512
 max_csite_bound_to_msite_number = 1
 default_max_count = 2          # this prevents polymerization (see ANC manual)
 default_steric_factor = 1e3    # in micro-mol/L
@@ -938,8 +938,8 @@ delta_threshold = 0.01          # relative measure of amplitude used to filter o
 amplitude_threshold = 0.01      # absolute measure of amplitude
 ultrasensitivity_threshold = 5  # ratio of 2nd step over 1st step
 
-w_n = 1.0
-w_c = 1.0
+w_n = 0.0
+w_c = 0.5
 w_s = 1.0
 w_a = 1.0
 w_u = 1.0
@@ -962,8 +962,8 @@ hill_k = 5
 TG_init = 1000  # uM
 cell_volume = 1e-18             # 1e-18L --> sub-cellular volume
 
-lg_binding_profile = 0110011010
-tg_binding_profile = 1011101000
+lg_binding_profile = 0100111010
+tg_binding_profile = 0111000110
 
 END
 
@@ -1036,72 +1036,11 @@ END
                     UNUSED => "0000",
                     domains => [
                         {
-                            allosteric_flag => 0,
+                            allosteric_flag => 1,
                             RT_transition_rate => 1.00,
                             TR_transition_rate => 1.00,
                             RT_phi => 1.0,
                             protodomains => [
-                                {
-                                    type => "bsite",
-                                    substrate_polarity => 0,
-                                    binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
-                                    kf_profile => "00101000100100010010",
-                                    kb_profile => "11001000110000001000",
-                                    kp_profile => "00011111000111110011",
-                                    Keq_ratio => 1.0,
-                                    kf_polarity_mask => "0",
-                                    kb_polarity_mask => "0",
-                                    kf_conformation_mask => "11111100111111001110",
-                                    kb_conformation_mask => "0",
-                                    kp_conformation_mask => "0",
-                                    UNUSED => "0",
-                                },
-                                {
-                                    type => "bsite",
-                                    substrate_polarity => 0,
-                                    binding_profile => "0101111111",
-                                    kf_profile => "11101101111101100000",
-                                    kb_profile => "10010101100001100111",
-                                    kp_profile => "11110000010000110010",
-                                    Keq_ratio => 1.0,
-                                    kf_polarity_mask => "0",
-                                    kb_polarity_mask => "0",
-                                    kf_conformation_mask => "11111100111111001110",
-                                    kb_conformation_mask => "0",
-                                    kp_conformation_mask => "0",
-                                    UNUSED => "0",
-                                },
-                            ],
-                            UNUSED => "0",
-                        },
-                    ],
-                },
-                {
-                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
-                    regulated_concentration => 1.0, # uM
-                    UNUSED => "0000",
-                    domains => [
-                        {
-                            allosteric_flag => 0,
-                            RT_transition_rate => 1.00,
-                            TR_transition_rate => 1.00,
-                            RT_phi => 1.0,
-                            protodomains => [
-                                {
-                                    type => "bsite",
-                                    substrate_polarity => 0,
-                                    binding_profile => BindingProfile->binding_complement("0101111111")->sprint(),
-                                    kf_profile => "01111111010110111000",
-                                    kb_profile => "10011001111111001000",
-                                    kp_profile => "01110100110011000011",
-                                    Keq_ratio => 1.0,
-                                    kf_polarity_mask => "0",
-                                    kb_polarity_mask => "0",
-                                    kf_conformation_mask => "11101101111111111000",
-                                    kb_conformation_mask => "0",
-                                    kp_conformation_mask => "0",
-                                    UNUSED => "0",
-                                },
                                 {
                                     type => "csite",
                                     substrate_polarity => 0,
@@ -1117,33 +1056,17 @@ END
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
                                 },
-                            ],
-                            UNUSED => "0",
-                        },
-                    ],
-                },
-                {
-                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
-                    regulated_concentration => 0.1, # uM
-                    UNUSED => "0000",
-                    domains => [
-                        {
-                            allosteric_flag => 0,
-                            RT_transition_rate => 1.0,
-                            TR_transition_rate => 1.0,
-                            RT_phi => 0.0,
-                            protodomains => [
                                 {
                                     type => "bsite",
                                     substrate_polarity => 0,
-                                    binding_profile => BindingProfile->binding_complement("0101111111")->sprint(),
-                                    kf_profile => "01111111010110111000",
-                                    kb_profile => "10011001111111001000",
-                                    kp_profile => "01110100110011000011",
+                                    binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
+                                    kf_profile => "00101000100100010010",
+                                    kb_profile => "11001000110000001000",
+                                    kp_profile => "00011111000111110011",
                                     Keq_ratio => 1.0,
                                     kf_polarity_mask => "0",
                                     kb_polarity_mask => "0",
-                                    kf_conformation_mask => "11101101111111111000",
+                                    kf_conformation_mask => "11111100111111001110",
                                     kb_conformation_mask => "0",
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
