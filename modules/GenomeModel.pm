@@ -1300,31 +1300,33 @@ use base qw(Model);
         #######################
         # Domain shuffling
         if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
-            for (my $i = 0; $i < $num_genes; $i ++) {
-                if (rand() < $recombination_rate) {
-                    printn "MUTATION: RECOMBINATION" if $verbosity >= 1;
-                    my $gene1_index = $i;
-                    my $gene2_index;
-                    do {
-                        $gene2_index = int rand $num_genes;
-                    } until ($gene2_index != $gene1_index);
-                    my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
-                    my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
-                    my ($recombinatory_start, $length) = $self->recombine_genes($gene1_index, $gene2_index);
-                    my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
-                    printn $history if $verbosity > 1;
-                    $self->add_history($history);
-
+            if ($num_genes >= 2) {
+                for (my $i = 0; $i < $num_genes; $i ++) {
                     if (rand() < $recombination_rate) {
-                        push @gene_deletion_from_shuffling, $i;
+                        printn "MUTATION: RECOMBINATION" if $verbosity >= 1;
+                        my $gene1_index = $i;
+                        my $gene2_index;
+                        do {
+                            $gene2_index = int rand $num_genes;
+                        } until ($gene2_index != $gene1_index);
+                        my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
+                        my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
+                        my ($recombinatory_start, $length) = $self->recombine_genes($gene1_index, $gene2_index);
+                        my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
+                        printn $history if $verbosity > 1;
+                        $self->add_history($history);
+
+                        if (rand() < $recombination_rate) {
+                            push @gene_deletion_from_shuffling, $i;
+                        }
+                        # post-mutation parsing
+                        $self->parse();
+                        $shuffling_bits += $length;
+                        $shuffling_count++;
                     }
-                    # post-mutation parsing
-                    $self->parse();
-                    $shuffling_bits += $length;
-                    $shuffling_count++;
                 }
+                $self->check();
             }
-            $self->check();
         }
         elsif ($recombination_rate != 0.0) {
             printn "ERROR: recombination_rate is not set in proper range";
