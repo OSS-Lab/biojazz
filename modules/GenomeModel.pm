@@ -1421,7 +1421,7 @@ use base qw(Model);
                 if ($self->check()) {
                     printn "mutate: GENE_DELETION" if $verbosity >= 1;
                     my $pre_num_genes = $self->get_num_genes();
-                    if (scalar @genes_need_delete <= $num_genes) {
+                    if (scalar @genes_need_delete < $num_genes) {
                         if (scalar @genes_need_delete > 0) {
                             my @gene_indice = sort {$b <=> $a} @genes_need_delete;
                             foreach my $gene_index (@gene_indice) {
