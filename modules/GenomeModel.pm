@@ -1257,287 +1257,288 @@ use base qw(Model);
 
         # pre-mutation parsing
         $self->parse();
-        $self->check();
-        my $num_genes = $self->get_num_genes();
-        ###########################
-        # gene duplication
-        # by appending genes based on gene_duplication_rate
+        if ($self->check()) {
+            my $num_genes = $self->get_num_genes();
+            ###########################
+            # gene duplication
+            # by appending genes based on gene_duplication_rate
 
-        my $duplication_count = 0;
-        my $duplication_bits = 0;
+            my $duplication_count = 0;
+            my $duplication_bits = 0;
 
-        if ($gene_duplication_rate > 0.0 && $gene_duplication_rate <= 1.0) 	# duplicate genes
-        {
-            my @gene_refs = $self->get_genes();
-            my @gene_names = map $_->get_name(), @gene_refs;
+            if ($gene_duplication_rate > 0.0 && $gene_duplication_rate <= 1.0) 	# duplicate genes
+            {
+                my @gene_refs = $self->get_genes();
+                my @gene_names = map $_->get_name(), @gene_refs;
 
-            foreach my $gene_name (@gene_names) {
-                if ( rand() < $gene_duplication_rate ) {
-                    printn "MUTATION: GENE_DUPLICATION" if $verbosity >= 1;
-                    my ($duplicated_gene, $duplicate_start, $length) = $self->duplicate_gene($gene_name);
+                foreach my $gene_name (@gene_names) {
+                    if ( rand() < $gene_duplication_rate ) {
+                        printn "MUTATION: GENE_DUPLICATION" if $verbosity >= 1;
+                        my ($duplicated_gene, $duplicate_start, $length) = $self->duplicate_gene($gene_name);
 
-                    my $duplicate_name = sprintf("G%04d",$duplicate_start);
-                    my $history = "DUPLICATION of gene $duplicated_gene"; 
-                    printn $history if $verbosity > 1;
+                        my $duplicate_name = sprintf("G%04d",$duplicate_start);
+                        my $history = "DUPLICATION of gene $duplicated_gene"; 
+                        printn $history if $verbosity > 1;
+                        $self->add_history($history);
+
+                        # post-mutation parsing
+                        $self->parse();
+                        $duplication_bits += $length;
+                        $duplication_count++;
+                    }
+                }
+            }
+            elsif ($gene_duplication_rate != 0.0) {
+                printn "ERROR: gene_duplication_rate is not set in proper range";
+                exit;
+            }
+
+            my $shuffling_count = 0;
+            my $shuffling_bits = 0;
+            my @gene_deletion_from_shuffling = ();
+            #######################
+            # Domain shuffling
+            if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
+                if ($self->check() && $num_genes >= 2) {
+                    for (my $i = 0; $i < $num_genes; $i ++) {
+                        if (rand() < $recombination_rate) {
+                            printn "MUTATION: RECOMBINATION" if $verbosity >= 1;
+                            my $gene1_index = $i;
+                            my $gene2_index;
+                            do {
+                                $gene2_index = int rand $num_genes;
+                            } until ($gene2_index != $gene1_index);
+                            my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
+                            my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
+                            my ($recombinatory_start, $length) = $self->recombine_genes($gene1_index, $gene2_index);
+                            my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
+                            printn $history if $verbosity > 1;
+                            $self->add_history($history);
+
+                            if (rand() < $recombination_rate) {
+                                push @gene_deletion_from_shuffling, $i;
+                            }
+                            # post-mutation parsing
+                            $self->parse();
+                            $shuffling_bits += $length;
+                            $shuffling_count++;
+                        }
+                    }
+                }
+            }
+            elsif ($recombination_rate != 0.0) {
+                printn "ERROR: recombination_rate is not set in proper range";
+                exit;
+            }
+
+            #######################
+            # DOMAIN DUPLICATION
+
+            # choose a gene to duplicate it, and duplicate domains in it, then 
+            # append the gene to the end and delete the orginal one. 
+            if ($domain_duplication_rate > 0.0 && $domain_duplication_rate <= 1.0) 	# duplicate domains
+            {
+
+                if ($self->check()) {
+                    my @gene_refs = $self->get_genes();
+
+                    for (my $i = 0; $i < $num_genes; $i ++) {
+                        my $gene_ref = $self->get_gene_by_index($i);
+                        my $gene_name = $gene_ref->get_name();
+                        if ($gene_name ne ($gene_refs[$i]->get_name())) {
+                            confess "The index of gene instances are not consistent with index of gene_refs array";
+                        }
+                        if (rand() < $domain_duplication_rate) {
+                            my $duplicate_num = $self->duplicate_domain($i);
+                            printn "Mutate: duplicated $duplicate_num domains in gene $gene_name" if $verbosity >= 1;
+
+                            # update the parser instances and gene_refs after reparsing
+                            if ($duplicate_num) {
+                                # post domain_duplication parsing
+                                $self->parse();
+                                undef @gene_refs;
+                                @gene_refs = $self->get_genes();
+                                $duplication_count++;
+                                $duplication_bits += $duplicate_num;
+                            }
+                        }
+                    }
+                }
+            }
+            elsif ($domain_duplication_rate != 0.0) 
+            {
+                printn "ERROR: domain_duplication_rate is not set in proper range";
+                exit;
+            }
+
+            #######################
+            # DOMAIN DELETION
+
+            my $deletion_count = 0;
+            my $deletion_bits = 0;
+            my @gene_need_delete_indice = ();
+            if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0)  # delete domains
+            {
+                if ($self->check()) {
+                    my @gene_refs = $self->get_genes();
+                    for (my $i = 0; $i < $num_genes; $i ++) {
+                        my $gene_ref = $self->get_gene_by_index($i);
+                        my $gene_name = $gene_ref->get_name();
+                        if ($gene_name ne $gene_refs[$i]->get_name()) {
+                            confess "The index of gene instances are not consistent with index of gene_refs array";
+                        }
+                        if (rand() < $domain_deletion_rate) {
+                            my $deleted_num = $self->delete_domain($i);
+                            printn "Mutate: deleted $deleted_num domains in gene $gene_name" if $verbosity >= 1;
+
+                            # update the parser instances and gene_refs after reparsing
+                            if ($deleted_num < 0) {
+                                push(@gene_need_delete_indice, $i);
+                            }
+                            elsif ($deleted_num > 0) {
+                                # post domain_deletion parsing
+                                $self->parse();
+                                undef @gene_refs;
+                                @gene_refs = $self->get_genes();
+                                $deletion_count++;
+                                $deletion_bits += $deleted_num;
+                            }
+                        }
+                    }
+                }
+            }
+            elsif ($domain_deletion_rate != 0.0) 
+            {
+                printn "ERROR: domain_deletion_rate is not set in proper range";
+                exit;
+            }
+
+            my @genes_need_delete = union(\@gene_need_delete_indice, \@gene_deletion_from_shuffling);
+            ########################
+            # GENE_DELETION
+            if ($gene_deletion_rate > 0.0 && $gene_deletion_rate <= 1.0)  # delete genes
+            {
+                if ($self->check()) {
+                    printn "mutate: GENE_DELETION" if $verbosity >= 1;
+                    my $pre_num_genes = $self->get_num_genes();
+                    if (scalar @genes_need_delete <= $num_genes) {
+                        if (scalar @genes_need_delete > 0) {
+                            my @gene_indice = sort {$b <=> $a} @genes_need_delete;
+                            foreach my $gene_index (@gene_indice) {
+                                my $gene_need_delete = $self->get_gene_by_index($gene_index);
+                                my $length = $gene_need_delete->get_length();
+                                $self->delete_gene($gene_need_delete);
+                                my $deleted_gene_name = $gene_need_delete->get_name();
+                                my $history = "DELETION of gene $deleted_gene_name";
+                                printn $history if $verbosity > 1;
+                                $self->add_history($history);
+
+                                # post-mutation parsing
+                                $self->parse();
+
+                                $deletion_count++;
+                                $deletion_bits += $length;
+                            }
+                        }
+                        if ($self->check()) {
+                            my $num_genes_left = $pre_num_genes - scalar @genes_need_delete;
+                            my $current_num_genes = $self->get_num_genes();
+                            printn "Warning: The number of genes after deletion is not consistant with of left ones." if ($current_num_genes != $num_genes_left);
+                            my $erased_gene_num = 0;
+                            GENE_DELETION: {
+                                for (my $i = 0; $i < $current_num_genes; $i++) {
+                                    if ($current_num_genes - $erased_gene_num == 1) {
+                                        last GENE_DELETION;
+                                    }
+                                    elsif (rand() < $gene_deletion_rate) {
+                                        my $erased_gene_ref = $self->erase_random_gene();
+                                        my $length = $erased_gene_ref->get_length();
+                                        my $erased_gene_name = $erased_gene_ref->get_name();
+                                        my $history = "ERASION of gene $erased_gene_name";
+                                        printn $history if $verbosity > 1;
+                                        $self->add_history($history);
+
+                                        # post-mutation parsing
+                                        $self->parse();
+
+                                        # conuting the deleted gene number to calculate number of rest genes
+                                        $deletion_count++;
+                                        $deletion_bits += $length;
+                                        $erased_gene_num++;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        printn "ERROR: number of genes need to be deleted is larger than initial gene numbers!";
+                    }
+                } 
+            }
+            elsif ($gene_deletion_rate != 0.0) {
+                printn "ERROR: gene_deletion_rate is not set in proper range";
+                exit;
+            }
+
+            my $point_mutation_count;
+
+            ########################
+            if ($mutation_rate_params > 0.0 && $mutation_rate_params <= 1.0)  # mutate parameters
+            {
+                if ($self->check()) {
+                    printn "mutate: POINT MUTATION (PARAMS)" if $verbosity >= 1;
+                    $self->set_field_mutation_rates(
+                        mutate_params_rate => 1.0,
+                        mutate_network_rate => 0.0,
+                    );
+                    my @mutated_list = $self->mutate_genes($mutation_rate_params);
+                    my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
+                    my $history = "POINT MUTATION (PARAMS) $total_bits bits in genes ". join ",", @mutated_list;
+                    printn $history if $verbosity >= 1;
                     $self->add_history($history);
 
                     # post-mutation parsing
                     $self->parse();
-                    $duplication_bits += $length;
-                    $duplication_count++;
+                    $point_mutation_count += $total_bits;
                 }
             }
-            $self->check();
-        }
-        elsif ($gene_duplication_rate != 0.0) {
-            printn "ERROR: gene_duplication_rate is not set in proper range";
-            exit;
-        }
- 
-        my $shuffling_count = 0;
-        my $shuffling_bits = 0;
-        my @gene_deletion_from_shuffling = ();
-        #######################
-        # Domain shuffling
-        if ($recombination_rate > 0.0 && $recombination_rate <= 1.0) { # recombine genes
-            if ($num_genes >= 2) {
-                for (my $i = 0; $i < $num_genes; $i ++) {
-                    if (rand() < $recombination_rate) {
-                        printn "MUTATION: RECOMBINATION" if $verbosity >= 1;
-                        my $gene1_index = $i;
-                        my $gene2_index;
-                        do {
-                            $gene2_index = int rand $num_genes;
-                        } until ($gene2_index != $gene1_index);
-                        my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
-                        my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
-                        my ($recombinatory_start, $length) = $self->recombine_genes($gene1_index, $gene2_index);
-                        my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
-                        printn $history if $verbosity > 1;
-                        $self->add_history($history);
-
-                        if (rand() < $recombination_rate) {
-                            push @gene_deletion_from_shuffling, $i;
-                        }
-                        # post-mutation parsing
-                        $self->parse();
-                        $shuffling_bits += $length;
-                        $shuffling_count++;
-                    }
-                }
-                $self->check();
-            }
-        }
-        elsif ($recombination_rate != 0.0) {
-            printn "ERROR: recombination_rate is not set in proper range";
-            exit;
-        }
- 
-        #######################
-        # DOMAIN DUPLICATION
-
-        # choose a gene to duplicate it, and duplicate domains in it, then 
-        # append the gene to the end and delete the orginal one. 
-        if ($domain_duplication_rate > 0.0 && $domain_duplication_rate <= 1.0) 	# duplicate domains
-        {
-
-            my @gene_refs = $self->get_genes();
-
-            for (my $i = 0; $i < $num_genes; $i ++) {
-                my $gene_ref = $self->get_gene_by_index($i);
-                my $gene_name = $gene_ref->get_name();
-                if ($gene_name ne ($gene_refs[$i]->get_name())) {
-                    confess "The index of gene instances are not consistent with index of gene_refs array";
-                }
-                if (rand() < $domain_duplication_rate) {
-                    my $duplicate_num = $self->duplicate_domain($i);
-                    printn "Mutate: duplicated $duplicate_num domains in gene $gene_name" if $verbosity >= 1;
-
-                    # update the parser instances and gene_refs after reparsing
-                    if ($duplicate_num) {
-                        # post domain_duplication parsing
-                        $self->parse();
-                        undef @gene_refs;
-                        @gene_refs = $self->get_genes();
-                        $duplication_count++;
-                        $duplication_bits += $duplicate_num;
-                    }
-                }
-            }
-
-
-            $self->check();
-        }
-        elsif ($domain_duplication_rate != 0.0) 
-        {
-            printn "ERROR: domain_duplication_rate is not set in proper range";
-            exit;
-        }
- 
-        #######################
-        # DOMAIN DELETION
-
-        my $deletion_count = 0;
-        my $deletion_bits = 0;
-        my @gene_need_delete_indice = ();
-        if ($domain_deletion_rate > 0.0 && $domain_deletion_rate <= 1.0)  # delete domains
-        {
-            my @gene_refs = $self->get_genes();
-            for (my $i = 0; $i < $num_genes; $i ++) {
-                my $gene_ref = $self->get_gene_by_index($i);
-                my $gene_name = $gene_ref->get_name();
-                if ($gene_name ne $gene_refs[$i]->get_name()) {
-                    confess "The index of gene instances are not consistent with index of gene_refs array";
-                }
-                if (rand() < $domain_deletion_rate) {
-                    my $deleted_num = $self->delete_domain($i);
-                    printn "Mutate: deleted $deleted_num domains in gene $gene_name" if $verbosity >= 1;
-
-                    # update the parser instances and gene_refs after reparsing
-                    if ($deleted_num < 0) {
-                        push(@gene_need_delete_indice, $i);
-                    }
-                    elsif ($deleted_num > 0) {
-                        # post domain_duplication parsing
-                        $self->parse();
-                        undef @gene_refs;
-                        @gene_refs = $self->get_genes();
-                        $deletion_count++;
-                        $deletion_bits += $deleted_num;
-                    }
-                }
-            }
-            $self->check();
-        }
-        elsif ($domain_deletion_rate != 0.0) 
-        {
-            printn "ERROR: domain_deletion_rate is not set in proper range";
-            exit;
-        }
- 
-        my @genes_need_delete = union(\@gene_need_delete_indice, \@gene_deletion_from_shuffling);
-        ########################
-        # GENE_DELETION
-        if ($gene_deletion_rate > 0.0 && $gene_deletion_rate <= 1.0)  # delete genes
-        {
-            printn "mutate: GENE_DELETION" if $verbosity >= 1;
-
-            my $pre_num_genes = $self->get_num_genes();
-
-            if (scalar @genes_need_delete <= $num_genes) {
-                if (scalar @genes_need_delete > 0) {
-                    my @gene_indice = sort {$b <=> $a} @genes_need_delete;
-                    foreach my $gene_index (@gene_indice) {
-                        my $gene_need_delete = $self->get_gene_by_index($gene_index);
-                        my $length = $gene_need_delete->get_length();
-                        $self->delete_gene($gene_need_delete);
-                        my $deleted_gene_name = $gene_need_delete->get_name();
-                        my $history = "DELETION of gene $deleted_gene_name";
-                        printn $history if $verbosity > 1;
-                        $self->add_history($history);
-
-                        # post-mutation parsing
-                        $self->parse();
-
-                        $deletion_count++;
-                        $deletion_bits += $length;
-                    }
-                    $self->check();
-                }
-                my $num_genes_left = $pre_num_genes - scalar @genes_need_delete;
-                my $current_num_genes = $self->get_num_genes();
-                printn "Warning: The number of genes after deletion is not consistant with of left ones." if ($current_num_genes != $num_genes_left);
-                my $erased_gene_num = 0;
-                GENE_DELETION: {
-                    for (my $i = 0; $i < $current_num_genes; $i++) {
-                        if ($current_num_genes - $erased_gene_num == 1) {
-                            last GENE_DELETION;
-                        }
-                        elsif (rand() < $gene_deletion_rate) {
-                            my $erased_gene_ref = $self->erase_random_gene();
-                            my $length = $erased_gene_ref->get_length();
-                            my $erased_gene_name = $erased_gene_ref->get_name();
-                            my $history = "ERASION of gene $erased_gene_name";
-                            printn $history if $verbosity > 1;
-                            $self->add_history($history);
-
-                            # post-mutation parsing
-                            $self->parse();
-
-                            # conuting the deleted gene number to calculate number of rest genes
-                            $deletion_count++;
-                            $deletion_bits += $length;
-                            $erased_gene_num++;
-                        }
-                    }
-                }
-                $self->check();
-            } else {
-                printn "ERROR: number of genes need to be deleted is larger than initial gene numbers!";
+            elsif ($mutation_rate_params != 0.0) 
+            {
+                printn "ERROR: mutation_rate_params is not set in proper range";
                 exit;
-            } 
-        }
-        elsif ($gene_deletion_rate != 0.0) {
-            printn "ERROR: gene_deletion_rate is not set in proper range";
-            exit;
-        }
- 
-        my $point_mutation_count;
- 
-        ########################
-        if ($mutation_rate_params > 0.0 && $mutation_rate_params <= 1.0)  # mutate parameters
-        {
-            printn "mutate: POINT MUTATION (PARAMS)" if $verbosity >= 1;
-            $self->set_field_mutation_rates(
-                mutate_params_rate => 1.0,
-                mutate_network_rate => 0.0,
-            );
-            my @mutated_list = $self->mutate_genes($mutation_rate_params);
-            my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
-            my $history = "POINT MUTATION (PARAMS) $total_bits bits in genes ". join ",", @mutated_list;
-            printn $history if $verbosity >= 1;
-            $self->add_history($history);
+            }
 
-            # post-mutation parsing
-            $self->parse();
-            $point_mutation_count += $total_bits;
-        }
-        elsif ($mutation_rate_params != 0.0) 
-        {
-            printn "ERROR: mutation_rate_params is not set in proper range";
-            exit;
-        }
-        $self->check();
- 
-        ########################
-        if ($mutation_rate_global > 0.0 && $mutation_rate_global <= 1.0)  # mutate the whole network
-        {
-            printn "mutate: POINT MUTATION (GLOBAL)" if $verbosity >= 1;
-            $self->set_field_mutation_rates(
-                mutate_params_rate => 1.0,
-                mutate_network_rate => 1.0,
-            );
-            my $total_bits = $self->mutate_genome($mutation_rate_global);
+            ########################
+            if ($mutation_rate_global > 0.0 && $mutation_rate_global <= 1.0)  # mutate the whole network
+            {
+                if ($self->check()) {
+                    printn "mutate: POINT MUTATION (GLOBAL)" if $verbosity >= 1;
+                    $self->set_field_mutation_rates(
+                        mutate_params_rate => 1.0,
+                        mutate_network_rate => 1.0,
+                    );
+                    my $total_bits = $self->mutate_genome($mutation_rate_global);
 
-            # post-mutation parsing
-            $self->parse();
-            $point_mutation_count += $total_bits;
-        }
-        elsif ($mutation_rate_global != 0.0) 
-        {
-            printn "ERROR: mutation_rate_global is not set in proper range";
-            exit;
-        }
-        $self->check();
+                    # post-mutation parsing
+                    $self->parse();
+                    $point_mutation_count += $total_bits;
+                }
+            }
+            elsif ($mutation_rate_global != 0.0) 
+            {
+                printn "ERROR: mutation_rate_global is not set in proper range";
+                exit;
+            }
+            $self->check();
 
-        $mutation_count += $point_mutation_count;
-        $mutation_count += $duplication_bits + $deletion_bits + $shuffling_bits;
-        $self->set_stepwise_mutations($mutation_count);
-        $self->set_stepwise_point_mutations($point_mutation_count);
-        my $accum_mutation_count = $self->get_accum_mutations();
-        my $accum_point_mutation_count = $self->get_accum_point_mutations();
-        $self->set_accum_mutations($accum_mutation_count + $mutation_count);
-        $self->set_accum_point_mutations($accum_point_mutation_count + $point_mutation_count);
+            $mutation_count += $point_mutation_count;
+            $mutation_count += $duplication_bits + $deletion_bits + $shuffling_bits;
+            $self->set_stepwise_mutations($mutation_count);
+            $self->set_stepwise_point_mutations($point_mutation_count);
+            my $accum_mutation_count = $self->get_accum_mutations();
+            my $accum_point_mutation_count = $self->get_accum_point_mutations();
+            $self->set_accum_mutations($accum_mutation_count + $mutation_count);
+            $self->set_accum_point_mutations($accum_point_mutation_count + $point_mutation_count);
+        }
 
         return $mutation_count;
     }
