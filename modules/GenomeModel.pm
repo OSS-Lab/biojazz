@@ -673,7 +673,7 @@ use base qw(Model);
         $protodomain_parser_ref->set_field_mutation_rate("UNUSED", $mutate_network_rate);
 
         my $domain_parser_ref = $self->get_domain_parser_ref();
-        $domain_parser_ref->set_field_mutation_rate("allosteric_flag", $mutate_network_rate);
+        $domain_parser_ref->set_field_mutation_rate("allosteric_flag", 0.0);
         $domain_parser_ref->set_field_mutation_rate("RT_transition_rate", $mutate_params_rate);
         $domain_parser_ref->set_field_mutation_rate("TR_transition_rate", $mutate_params_rate);
         $domain_parser_ref->set_field_mutation_rate("RT_phi", $mutate_params_rate);
