@@ -500,7 +500,7 @@ use base qw(Scoring);
             #---------------------------------------------------------
             # sim_flag indicates that network was successfully simulated
             # and that calculated results are valid
-            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 900) ? 1 : 0;
+            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 1000) ? 1 : 0;
             $stats_ref->{sim_flag} = 0;
             if ($ANC_ok_flag) {
                 $stats_ref->{sim_flag} = 1;
