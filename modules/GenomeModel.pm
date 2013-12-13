@@ -1134,7 +1134,7 @@ use base qw(Model);
         printn "recombine_genes: $gene2_name sequence = " . $gene2_ref->get_sequence() if $verbosity > 1;
 
         my $domain_head_width = $domain_parser_ref->get_allosteric_flag_width() + $domain_parser_ref->get_TR_transition_rate_width() + $domain_parser_ref->get_RT_transition_rate_width() + $domain_parser_ref->get_RT_phi_width() + $domain_parser_ref->get_unused_width();
-        
+
         my $left_seq; my $middle_seq; my $right_seq;
         my $gene2_init = $gene2_ref->get_locus(); my $gene2_term = $gene2_init + $gene2_ref->get_length();
         if (!(grep $_ == $gene1_interpds[0], @gene1_accum_nums) && !(grep $_ == $gene1_interpds[1], @gene1_accum_nums) 
