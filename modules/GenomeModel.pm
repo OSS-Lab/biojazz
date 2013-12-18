@@ -1133,6 +1133,8 @@ use base qw(Model);
         printn "recombine_genes: $gene1_name sequence = " . $gene1_ref->get_sequence() if $verbosity > 1;
         printn "recombine_genes: $gene2_name sequence = " . $gene2_ref->get_sequence() if $verbosity > 1;
 
+        my $domain_head_width = $domain_parser_ref->get_allosteric_flag_width() + $domain_parser_ref->get_TR_transition_rate_width() + $domain_parser_ref->get_RT_transition_rate_width() + $domain_parser_ref->get_RT_phi_width() + $domain_parser_ref->get_unused_width();
+
         my $left_seq; my $middle_seq; my $right_seq;
         my $gene2_init = $gene2_ref->get_locus(); my $gene2_term = $gene2_init + $gene2_ref->get_length();
         if (!(grep $_ == $gene1_interpds[0], @gene1_accum_nums) && !(grep $_ == $gene1_interpds[1], @gene1_accum_nums) 
@@ -1182,11 +1184,7 @@ use base qw(Model);
                     my $gene2_site = $gene2_domains[0]->get_locus();
                     $right_seq = ($soft_linker_code . $sequence_ref->get_subseq($gene2_site, $gene2_term - $gene2_site));
                     $left_seq = ($sequence_ref->get_subseq($gene2_init, $gene2_site - $gene2_init) .
-                        Sequence->new()->generate_random_sequence(1) .
-                        Sequence->new()->generate_random_sequence($domain_parser_ref->get_RT_transition_rate_width()) .
-                        Sequence->new()->generate_random_sequence($domain_parser_ref->get_TR_transition_rate_width()) .
-                        Sequence->new()->generate_random_sequence($domain_parser_ref->get_RT_phi_width()) .
-                        Sequence->new()->generate_random_sequence($domain_parser_ref->get_unused_width())
+                        Sequence->new()->generate_random_sequence($domain_head_width)
                         );
                 } else {
                     confess "The gene2 interpd[0] is not at the last one" if ($gene2_interpds[0] != $gene2_num_pds || $gene2_interpds[1] != $gene2_interpds[0]);
