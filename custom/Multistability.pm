@@ -659,18 +659,20 @@ use base qw(Scoring);
                         );
                     }
 
-                    ######### ultrasensitivity measure should be multistability measure!
+                    ######### multistability measure should be multistability measure!
 
                     ######################################################################################################
-                    # ultrasensitivity measure
+                    # multistability measure
                     my @output_vector_slopes = map {$output_vector[$_] - $output_vector[$_-1]} (1..$#output_vector);
                     my $LG_steps = $config_ref->{LG_steps};
                     confess "ERROR: LG_steps must be odd" if (int $LG_steps/2) == ($LG_steps/2);
-                    #my $dy1  = max_numeric(0, $output_vector_slopes[$i_dy2_bottom-1]);
-                    my $dy2  = max_numeric(0, $output_vector_slopes[$i_dy2_top-1]);
-                    #my $dy3  = max_numeric(0, $output_vector_slopes[$i_dy2_top]);
+                    #my $dy1 = max_numeric(0, $output_vector_slopes[$i_dy2_bottom-1]);
+                    my $dy2 = max_numeric(0, $output_vector_slopes[$i_dy2_top - 1]);
+                    my $dy4 = max_numeric(0, $output_vector_slopes[$i_dy4_top - 1]);
+                    #my $dy3 = max_numeric(0, $output_vector_slopes[$i_dy2_top]);
                     #my $dy1n = max_numeric(0, -$output_vector_slopes[$i_dy2n_bottom]);
-                    my $dy2n = max_numeric(0, -$output_vector_slopes[$i_dy2n_top]);
+                    my $dy2n = max_numeric(0, - $output_vector_slopes[$i_dy2n_top]);
+                    my $dy4n = max_numeric(0, - $output_vector_slopes[$i_dy4n_top]);
                     #my $dy3n = max_numeric(0, -$output_vector_slopes[$i_dy2n_top-1]);
 
                     my ($dy1_min, $dy1_max)   = $self->matlab_get_state_range(
@@ -693,45 +695,61 @@ use base qw(Scoring);
                         t1 => $sampling_times[$i_dy2n_top-1],
                         t2 => $sampling_times[$i_dy2n_top],
                     );
+                    my ($dy5_min, $dy5_max)   = $self->matlab_get_state_range(
+                        complex => $output_complex,
+                        t1 => $sampling_times[$i_dy4_top],
+                        t2 => $sampling_times[$i_dy4_top+1],
+                    );
+                    my ($dy5n_min, $dy5n_max) = $self->matlab_get_state_range(
+                        complex => $output_complex,
+                        t1 => $sampling_times[$i_dy4n_top-1],
+                        t2 => $sampling_times[$i_dy4n_top],
+                    );
                     printn "dy1_min/max = ($dy1_min, $dy1_max) dy1n_min/max = ($dy1n_min, $dy1n_max)" if $verbosity > 1;
                     printn "dy3_min/max = ($dy3_min, $dy3_max) dy3n_min/max = ($dy3n_min, $dy3n_max)" if $verbosity > 1;
+                    printn "dy5_min/max = ($dy5_min, $dy5_max) dy5n_min/max = ($dy5n_min, $dy5n_max)" if $verbosity > 1;
                     my $dy1 =  $dy1_max  - $dy1_min;
                     my $dy1n = $dy1n_max - $dy1n_min;
                     my $dy3 =  $dy3_max  - $dy3_min;
                     my $dy3n = $dy3n_max - $dy3n_min;
+                    my $dy5 =  $dy5_max  - $dy5_min;
+                    my $dy5n = $dy5n_max - $dy5n_min;
 
-                    printn "dy1 = $dy1 dy2 = $dy2 dy3 = $dy3" if $verbosity > 1;
-                    printn "dy1n = $dy1n dy2n = $dy2n dy3n=$dy3n" if $verbosity > 1;
+                    printn "dy1 = $dy1 dy2 = $dy2 dy3 = $dy3 dy4 = $dy4 dy5 = $dy5" if $verbosity > 1;
+                    printn "dy1n = $dy1n dy2n = $dy2n dy3n=$dy3n dy4n = $dy4n dy5n = $dy5n" if $verbosity > 1;
 
                     my $max_dy = $config_ref->{TG_init};
 
                     my $amplitude = 0;
-                    my $ultrasensitivity_dy1 = 0;
-                    my $ultrasensitivity_dy3 = 0;
-                    if ($delta > 0 && $max_dy != 0 && $dy2 > 0 && $dy2n > 0) {
-                        $amplitude = ($dy2 + $dy2n)/2/$max_dy;
+                    my $step1_bottom_dy = 0;
+                    my $step1_top_dy = 0;
+                    my $step2_bottom_dy = 0;
+                    my $step2_top_dy = 0;
+                    if ($delta > 0 && $max_dy != 0 && $dy2 > 0 && $dy2n > 0 && $dy4 > 0 && $dy4n > 0) {
+                        $amplitude = ($dy2 + $dy2n + $dy4 + $dy4n)/4/$max_dy;
                         my $mean_dy1 = ($dy1 + $dy1n)/2;
                         my $mean_dy2 = ($dy2 + $dy2n)/2;
                         my $mean_dy3 = ($dy3 + $dy3n)/2;
+                        my $mean_dy4 = ($dy4 + $dy4n)/2;
+                        my $mean_dy5 = ($dy5 + $dy5n)/2;
                         # adding 0.01*mean_dy2 means you score at most 100
-                        $ultrasensitivity_dy1 = $mean_dy2/($mean_dy1 + 0.001);
-                        $ultrasensitivity_dy3 = $mean_dy2/($mean_dy3 + 0.001);
-                        #$ultrasensitivity_dy1 = $mean_dy2/($mean_dy1);
-                        #$ultrasensitivity_dy3 = $mean_dy2/($mean_dy3);
+                        $step1_bottom_dy = $mean_dy2/($mean_dy1 + 0.001);
+                        $step1_top_dy = $mean_dy2/($mean_dy3 + 0.001);
+                        $step2_bottom_dy = $mean_dy4/($mean_dy3 + 0.001);
+                        $step2_top_dy = $mean_dy4/($mean_dy5 + 0.001);
                     }
-                    #		$stats_ref->{amplitude_score} = p_hill($amplitude, $config_ref->{amplitude_threshold}, 1);
                     $stats_ref->{amplitude_score} = $amplitude;
-                    $stats_ref->{ultrasensitivity_dy1} = $ultrasensitivity_dy1;
-                    $stats_ref->{ultrasensitivity_dy3} = $ultrasensitivity_dy3;
-                    my $w_u1 = $config_ref->{w_u1};
-                    my $w_u3 = $config_ref->{w_u3};
-                    $stats_ref->{ultrasensitivity_score} = (
-                        (p_hill($ultrasensitivity_dy1, $config_ref->{ultrasensitivity_threshold}, 1)**$w_u1) *
-                        (p_hill($ultrasensitivity_dy3, $config_ref->{ultrasensitivity_threshold}, 1)**$w_u3)
-                    )**(1/($w_u1+$w_u3));
-                    #		$stats_ref->{ultrasensitivity_score} = (
-                    #		    p_hill($ultrasensitivity_dy1, $config_ref->{ultrasensitivity_threshold}, 1));
-
+                    my $w_m1_bot = $config_ref->{w_m1_bot};
+                    my $w_m1_top = $config_ref->{w_m1_top};
+                    my $w_m2_bot = $config_ref->{w_m2_bot};
+                    my $w_m2_top = $config_ref->{w_m2_top};
+                    $stats_ref->{multistability_score} = (
+                        (p_hill($step1_bottom_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m1_bot) *
+                        (p_hill($step1_top_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m1_top) *
+                        (p_hill($step2_bottom_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m2_bot) *
+                        (p_hill($step2_top_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m2_top)
+                    )**(1/($w_m1_bot + $w_m1_top + $w_m2_bot + $w_m2_top));
+ 
                     # check if any concentrations are negative
                     foreach my $sample (@output_vector) {
                         if ($sample < 0) {
@@ -750,7 +768,7 @@ use base qw(Scoring);
             }
         }  # if $parse_successful
         $stats_ref->{network_connectivity} = $network_connectivity;
-        $stats_ref->{network_score} = p_hill($stats_ref->{network_connectivity}, 500, 1);
+        $stats_ref->{network_score} = p_hill($stats_ref->{network_connectivity}, 1000, 1);
 
         #---------------------------------------------------------
         # FINAL SCORE
@@ -760,7 +778,7 @@ use base qw(Scoring);
         my $complexity_score = $stats_ref->{complexity_score} = $stats_ref->{complexity_score} || 0;
         my $steady_state_score = $stats_ref->{steady_state_score} = $stats_ref->{steady_state_score} || 0;
         my $amplitude_score = $stats_ref->{amplitude_score} = $stats_ref->{amplitude_score} || 0;
-        my $ultrasensitivity_score = $stats_ref->{ultrasensitivity_score} = $stats_ref->{ultrasensitivity_score} || 0;
+        my $multistability_score = $stats_ref->{multistability_score} = $stats_ref->{multistability_score} || 0;
 
 
         if ($parse_successful) {
@@ -768,7 +786,7 @@ use base qw(Scoring);
             my $w_c = $config_ref->{w_c};
             my $w_s = $config_ref->{w_s};
             my $w_a = $config_ref->{w_a};
-            my $w_u = $config_ref->{w_u};
+            my $w_m = $config_ref->{w_m};
 
             # is the input connected to the output?
             my $g0  = $stats_ref->{network_connected_flag} ? 1 : 0;
@@ -787,10 +805,10 @@ use base qw(Scoring);
             $final_score *= (1e-3 + $complexity_score * $g0)**$w_c;
             # optimize amplitude if ANC output ok and no timeout during simulation
             $final_score *= (1e-6 + $amplitude_score * $g1)**$w_a;
-            # optimize ultrasensitivity if ANC output ok and no timeout during simulation
-            $final_score *= (1e-6 + $ultrasensitivity_score * $g1)**$w_u;
+            # optimize multistability if ANC output ok and no timeout during simulation
+            $final_score *= (1e-6 + $multistability_score * $g1)**$w_m;
 
-            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_u));  # re-normalization
+            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_m));  # re-normalization
         }
 
 
