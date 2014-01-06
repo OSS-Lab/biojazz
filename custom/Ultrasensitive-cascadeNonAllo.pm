@@ -491,6 +491,24 @@ use base qw(Scoring);
                     if (!defined $config_ref->{max_species} || $config_ref->{max_species} < 0 || $stats_ref->{num_anc_species} < $config_ref->{max_species}) {
                         $network_connectivity += 100;
                     }
+                    #############################################################################
+                    #----------------------------------------------------------
+                    # Score expression cost
+                    # compute and add up number of protodomains times concentration
+                    # of each gene.
+                    # ---------------------------------------------------------
+                    my @genes = $genome_model_ref->get_genes();
+                    my $expression_cost = 0;
+                    foreach my $gene_instance_ref (@genes) {
+                        my $pd_num = 0;
+                        my @domains = $gene_instance_ref->get_domains();
+                        foreach my $domain_ref (@domains) {
+                            $pd_num += scalar $domain_ref->get_protodomains();
+                        }
+                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration})
+                    }
+                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 50;
+                    $stats_ref->{expression_score} = n_hill($expression_cost, $expression_threshold, 1);
                 }
             }
 
