@@ -1,9 +1,9 @@
 #===============================================================================
 #
-#         FILE: Multistability.pm
+#         FILE: Adaptation.pm
 #
-#  DESCRIPTION: This is the module to scoring the multistable response accroding
-#               to the ramping up with 5 steps from input signal
+#  DESCRIPTION: This is the module to scoring the adaptive response accroding
+#               to stair case up and down input signal
 #
 #        FILES: Dependent on Scoring.pm and Stimuli.pm
 #         BUGS: ---
