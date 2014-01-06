@@ -25,7 +25,7 @@ use base qw(Scoring);
 {
     use Carp;
     use Utils;
-    use Globals qw($verbosity $TAG);
+    use Global qw($verbosity $TAG);
 
     use Stimulus;
 
@@ -564,16 +564,13 @@ use base qw(Scoring);
                 # REPORT RESULT VECTOR
                 #---------------------------------------------------------
                 printn "RESULT VECTOR: INPUT = LG OUTPUT = TG00001 DELAY = $config_ref->{LG_delay}" if $verbosity > 1;
-                my (@pos_output_vector, @neg_output_vector, @expected_output_vector);
+                my (@pos_output_vector, @neg_output_vector);
 
                 my @sampling_times = @event_times;
                 for (my $i=0; $i < @sampling_times; $i++) {
                     my $t = $sampling_times[$i]; 
                     $pos_output_vector[$i] = $self->matlab_get_state(complex => "TG00001", t => $t);
                     $neg_output_vector[$i] = $self->matlab_get_state(complex => "TG00000", t => $t);
-                    $expected_output_vector[$i] = (
-                        $config_ref->{TG_init} *
-                        p_hill($input_vector[$i], $config_ref->{hill_k}, $config_ref->{hill_n})); # positive hill function
 
                     if ($config_ref->{round_values_flag}) {
                         $pos_output_vector[$i] = $self->matlab_round_value(
@@ -586,14 +583,10 @@ use base qw(Scoring);
                             AbsTol => $config_ref->{AbsTol},
                             RelTol => $config_ref->{RelTol},
                         );
-                        $expected_output_vector[$i] = $self->matlab_round_value(
-                            value => $expected_output_vector[$i],
-                            RelTol => $config_ref->{RelTol},
-                        );
                     }
 
                     printf("RESULT VECTOR:  t=%-6.2f input vector:  %8.4g pos_output_vector: %8.6g neg_output_vector: %8.6g\n",
-                        $t, $input_vector[$i], $pos_output_vector[$i], $neg_output_vector[$i], $expected_output_vector[$i]) if $verbosity > 1;
+                        $t, $input_vector[$i], $pos_output_vector[$i], $neg_output_vector[$i]) if $verbosity > 1;
                 }
 
                 if (!$timeout_flag) {
@@ -601,9 +594,9 @@ use base qw(Scoring);
                     # SELECT BEST OUTPUT VECTOR
                     #---------------------------------------------------------
                     my $i_dy2_bottom = 1; # index at bottom of first middle step
-                    my $i_dy2_top = 2; # index at top of first middle step
+                    my $i_dy2_top    = 2; # index at top of first middle step
                     my $i_dy4_bottom = 3;
-                    my $i_dy4_top = 4;
+                    my $i_dy4_bottom = 4;
                     my $i_dy2n_bottom = $#sampling_times - $i_dy2_bottom;   # index at bottom of first middle step
                     my $i_dy2n_top    = $#sampling_times - $i_dy2_top;   # index at top of first middle step
                     my $i_dy4n_bottom = $#sampling_times - $i_dy4_bottom;   # index at bottom of first middle step
@@ -647,7 +640,7 @@ use base qw(Scoring);
                         $stats_ref->{sim_flag} = 0;
                     }
                     printn "pos_output_select = $pos_output_select" if $verbosity > 1;
-                    printn "pos_delta = $pos2_delta + $pos4_delta, neg_delta = $neg2_delta + $neg4_delta" if $verbosity > 1;
+                    printn "pos_delta = $pos_delta, neg_delta = $neg_delta" if $verbosity > 1;
                     my @output_vector = $pos_output_select ? @pos_output_vector : @neg_output_vector;
 
                     #---------------------------------------------------------
@@ -665,15 +658,6 @@ use base qw(Scoring);
                             filename => "$genome_name" . "_phase",
                         );
                     }
-
-                    #---------------------------------------------------------
-                    # COMPUTE ERROR, STATS
-                    #---------------------------------------------------------
-                    my $mean_squared_err = $stats_ref->{mean_squared_err} = mean_squared_error(\@output_vector, \@expected_output_vector);
-                    my $max_mean_squared_err = $stats_ref->{max_mean_squared_err} = ($config_ref->{TG_init}) ** 2; # since it's the maximum MEAN error^2
-                    my $min_mean_squared_err = $stats_ref->{min_mean_squared_err} = 1e-6 * $stats_ref->{max_mean_squared_err};
-                    $stats_ref->{mean_squared_err_score} = (log($max_mean_squared_err)-log($min_mean_squared_err + $mean_squared_err))/log($max_mean_squared_err/$min_mean_squared_err);
-
 
                     ######### multistability measure should be multistability measure!
 
@@ -858,6 +842,4 @@ use base qw(Scoring);
     } ## --- end sub score_genome
 }
  
-# Package BEGIN must return true value
-return 1;
 
