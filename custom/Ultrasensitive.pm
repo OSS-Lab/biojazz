@@ -491,6 +491,24 @@ use base qw(Scoring);
                     if (!defined $config_ref->{max_species} || $config_ref->{max_species} < 0 || $stats_ref->{num_anc_species} < $config_ref->{max_species}) {
                         $network_connectivity += 100;
                     }
+                    #############################################################################
+                    #----------------------------------------------------------
+                    # Score expression cost
+                    # compute and add up number of protodomains times concentration
+                    # of each gene.
+                    # ---------------------------------------------------------
+                    my @genes = $genome_model_ref->get_genes();
+                    my $expression_cost = 0;
+                    foreach my $gene_instance_ref (@genes) {
+                        my $pd_num = 0;
+                        my @domains = $gene_instance_ref->get_domains();
+                        foreach my $domain_ref (@domains) {
+                            $pd_num += scalar $domain_ref->get_protodomains();
+                        }
+                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration})
+                    }
+                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 50;
+                    $stats_ref->{expression_score} = n_hill($expression_cost, $expression_threshold, 1);
                 }
             }
 
@@ -500,7 +518,7 @@ use base qw(Scoring);
             #---------------------------------------------------------
             # sim_flag indicates that network was successfully simulated
             # and that calculated results are valid
-            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 900) ? 1 : 0;
+            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 1000) ? 1 : 0;
             $stats_ref->{sim_flag} = 0;
             if ($ANC_ok_flag) {
                 $stats_ref->{sim_flag} = 1;
@@ -897,8 +915,8 @@ Keq_ratio_min = 1e-2
 #----------------------------------------
 max_external_iterations = -1
 max_internal_iterations = -1
-max_complex_size = 8
-max_species = 256
+max_complex_size = 3
+max_species = 512
 max_csite_bound_to_msite_number = 1
 default_max_count = 2          # this prevents polymerization (see ANC manual)
 default_steric_factor = 1e3    # in micro-mol/L
@@ -938,8 +956,8 @@ delta_threshold = 0.01          # relative measure of amplitude used to filter o
 amplitude_threshold = 0.01      # absolute measure of amplitude
 ultrasensitivity_threshold = 5  # ratio of 2nd step over 1st step
 
-w_n = 1.0
-w_c = 1.0
+w_n = 0.0
+w_c = 0.5
 w_s = 1.0
 w_a = 1.0
 w_u = 1.0
@@ -962,8 +980,8 @@ hill_k = 5
 TG_init = 1000  # uM
 cell_volume = 1e-18             # 1e-18L --> sub-cellular volume
 
-lg_binding_profile = 0110011010
-tg_binding_profile = 1011101000
+lg_binding_profile = 0100111010
+tg_binding_profile = 0111000110
 
 END
 

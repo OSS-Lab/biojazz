@@ -1054,7 +1054,7 @@ END
                     UNUSED => "0000",
                     domains => [
                         {
-                            allosteric_flag => 0,
+                            allosteric_flag => 1,
                             RT_transition_rate => 1.00,
                             TR_transition_rate => 1.00,
                             RT_phi => 1.0,

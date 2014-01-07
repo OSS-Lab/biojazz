@@ -491,6 +491,7 @@ use base qw(Scoring);
                     if (!defined $config_ref->{max_species} || $config_ref->{max_species} < 0 || $stats_ref->{num_anc_species} < $config_ref->{max_species}) {
                         $network_connectivity += 100;
                     }
+
                     #############################################################################
                     #----------------------------------------------------------
                     # Score expression cost
@@ -509,6 +510,7 @@ use base qw(Scoring);
                     }
                     my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 50;
                     $stats_ref->{expression_score} = n_hill($expression_cost, $expression_threshold, 1);
+
                 }
             }
 
@@ -1054,11 +1056,72 @@ END
                     UNUSED => "0000",
                     domains => [
                         {
-                            allosteric_flag => 0,
+                            allosteric_flag => 1,
                             RT_transition_rate => 1.00,
                             TR_transition_rate => 1.00,
                             RT_phi => 1.0,
                             protodomains => [
+                                {
+                                    type => "bsite",
+                                    substrate_polarity => 0,
+                                    binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
+                                    kf_profile => "00101000100100010010",
+                                    kb_profile => "11001000110000001000",
+                                    kp_profile => "00011111000111110011",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                                {
+                                    type => "bsite",
+                                    substrate_polarity => 0,
+                                    binding_profile => "0010010100",
+                                    kf_profile => "01111111010110111000",
+                                    kb_profile => "10011001111111001000",
+                                    kp_profile => "01110100110011000011",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11101101111111111000",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 1.0, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 1,
+                            RT_transition_rate => 1.00,
+                            TR_transition_rate => 1.00,
+                            RT_phi => 1.0,
+                            protodomains => [
+                                {
+                                    type => "bsite",
+                                    substrate_polarity => 0,
+                                    binding_profile => BindingProfile->binding_complement("0010010100")->sprint(),
+                                    kf_profile => "01111111010110111000",
+                                    kb_profile => "10011001111111001000",
+                                    kp_profile => "01110100110011000011",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11101101111111111000",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
                                 {
                                     type => "csite",
                                     substrate_polarity => 0,
@@ -1074,17 +1137,33 @@ END
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
                                 },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 0.1, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 1,
+                            RT_transition_rate => 1.0,
+                            TR_transition_rate => 1.0,
+                            RT_phi => 0.0,
+                            protodomains => [
                                 {
                                     type => "bsite",
                                     substrate_polarity => 0,
-                                    binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
-                                    kf_profile => "00101000100100010010",
-                                    kb_profile => "11001000110000001000",
-                                    kp_profile => "00011111000111110011",
+                                    binding_profile => BindingProfile->binding_complement("0010010100")->sprint(),
+                                    kf_profile => "01111111010110111000",
+                                    kb_profile => "10011001111111001000",
+                                    kp_profile => "01110100110011000011",
                                     Keq_ratio => 1.0,
                                     kf_polarity_mask => "0",
                                     kb_polarity_mask => "0",
-                                    kf_conformation_mask => "11111100111111001110",
+                                    kf_conformation_mask => "11101101111111111000",
                                     kb_conformation_mask => "0",
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
