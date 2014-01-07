@@ -19,13 +19,13 @@ use strict;
 use warnings;
 use diagnostics;
 
-package Multistability;
+package Adaptation;
 use Class::Std::Storable;
 use base qw(Scoring);
 {
     use Carp;
     use Utils;
-    use Global qw($verbosity $TAG);
+    use Globals qw($verbosity $TAG);
 
     use Stimulus;
 
@@ -482,6 +482,25 @@ use base qw(Scoring);
                     if (!defined $config_ref->{max_species} || $config_ref->{max_species} < 0 || $stats_ref->{num_anc_species} < $config_ref->{max_species}) {
                         $network_connectivity += 100;
                     }
+ 
+                    #############################################################################
+                    #----------------------------------------------------------
+                    # Score expression cost
+                    # compute and add up number of protodomains times concentration
+                    # of each gene.
+                    # ---------------------------------------------------------
+                    my @genes = $genome_model_ref->get_genes();
+                    my $expression_cost = 0;
+                    foreach my $gene_instance_ref (@genes) {
+                        my $pd_num = 0;
+                        my @domains = $gene_instance_ref->get_domains();
+                        foreach my $domain_ref (@domains) {
+                            $pd_num += scalar $domain_ref->get_protodomains();
+                        }
+                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration})
+                    }
+                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 50;
+                    $stats_ref->{expression_score} = n_hill($expression_cost, $expression_threshold, 1);
                 }
             }
 
@@ -560,210 +579,88 @@ use base qw(Scoring);
                 $stats_ref->{steady_state_score} = n_hill(
                     $ss_time_max, $steady_state_threshold,1);
 
-                #---------------------------------------------------------
-                # REPORT RESULT VECTOR
-                #---------------------------------------------------------
-                printn "RESULT VECTOR: INPUT = LG OUTPUT = TG00001 DELAY = $config_ref->{LG_delay}" if $verbosity > 1;
-                my (@pos_output_vector, @neg_output_vector);
-
-                my @sampling_times = @event_times;
-                for (my $i=0; $i < @sampling_times; $i++) {
-                    my $t = $sampling_times[$i]; 
-                    $pos_output_vector[$i] = $self->matlab_get_state(complex => "TG00001", t => $t);
-                    $neg_output_vector[$i] = $self->matlab_get_state(complex => "TG00000", t => $t);
-
-                    if ($config_ref->{round_values_flag}) {
-                        $pos_output_vector[$i] = $self->matlab_round_value(
-                            value => $pos_output_vector[$i],
-                            AbsTol => $config_ref->{AbsTol},
-                            RelTol => $config_ref->{RelTol},
-                        );
-                        $neg_output_vector[$i] = $self->matlab_round_value(
-                            value => $neg_output_vector[$i],
-                            AbsTol => $config_ref->{AbsTol},
-                            RelTol => $config_ref->{RelTol},
-                        );
-                    }
-
-                    printf("RESULT VECTOR:  t=%-6.2f input vector:  %8.4g pos_output_vector: %8.6g neg_output_vector: %8.6g\n",
-                        $t, $input_vector[$i], $pos_output_vector[$i], $neg_output_vector[$i]) if $verbosity > 1;
-                }
-
                 if (!$timeout_flag) {
-                    #---------------------------------------------------------
-                    # SELECT BEST OUTPUT VECTOR
-                    #---------------------------------------------------------
-                    my $i_dy2_bottom = 1; # index at bottom of first middle step
-                    my $i_dy2_top    = 2; # index at top of first middle step
-                    my $i_dy4_bottom = 3;
-                    my $i_dy4_bottom = 4;
-                    my $i_dy2n_bottom = $#sampling_times - $i_dy2_bottom;   # index at bottom of first middle step
-                    my $i_dy2n_top    = $#sampling_times - $i_dy2_top;   # index at top of first middle step
-                    my $i_dy4n_bottom = $#sampling_times - $i_dy4_bottom;   # index at bottom of first middle step
-                    my $i_dy4n_top    = $#sampling_times - $i_dy4_top;   # index at top of first middle step
+                    my (@diff_output_vector, @ss_output_vector);
+                    my @sampling_times = @event_times;
+                    my $output_complex = "TG00001";
 
-                    my $t_bottom2 = $sampling_times[$i_dy2_bottom];
-                    my $t_top2 = $sampling_times[$i_dy2_top];
-                    my $t_bottom_n2 = $sampling_times[$i_dy2n_bottom];
-                    my $t_top_n2 = $sampling_times[$i_dy2n_top];
-                    my $t_bottom4 = $sampling_times[$i_dy4_bottom];
-                    my $t_top4 = $sampling_times[$i_dy4_top];
-                    my $t_bottom_n4 = $sampling_times[$i_dy4n_bottom];
-                    my $t_top_n4 = $sampling_times[$i_dy4n_top];
-
-                    my $pos2_t1 = $pos_output_vector[$i_dy2_bottom];
-                    my $pos2_t2 = $pos_output_vector[$i_dy2_top];
-                    my $neg2_t1 = $neg_output_vector[$i_dy2n_bottom];
-                    my $neg2_t2 = $neg_output_vector[$i_dy2n_top];
-                    my $pos4_t1 = $pos_output_vector[$i_dy4_bottom];
-                    my $pos4_t2 = $pos_output_vector[$i_dy4_top];
-                    my $neg4_t1 = $neg_output_vector[$i_dy4n_bottom];
-                    my $neg4_t2 = $neg_output_vector[$i_dy4n_top];
-
+                    my $t = $sampling_times[0];
+                    my $steady_state_output = $self->matlab_get_state(complex => $output_complex, t => $t);
                     if ($config_ref->{round_values_flag}) {
-                        ($pos2_t1, $pos2_t2, $neg2_t1, $neg2_t2, $pos4_t1, $pos4_t2, $neg4_t1, $neg4_t2) = map {
-                        $self->matlab_round_value(value => $_, AbsTol => $config_ref->{AbsTol}, RelTol => $config_ref->{RelTol})
-                        } ($pos2_t1, $pos2_t2, $neg2_t1, $neg2_t2, $pos4_t1, $pos4_t2, $neg4_t1, $neg4_t2);
-                    }
-                    my $pos2_delta = ($pos2_t2 - $pos2_t1)/($pos2_t2 + $pos2_t1)*2; # relative measure the time points (how fast reach steady state?)
-                    my $neg2_delta = ($neg2_t2 - $neg2_t1)/($neg2_t2 + $neg2_t1)*2;
-                    my $pos4_delta = ($pos4_t2 - $pos4_t1)/($pos4_t2 + $pos4_t1)*2; # relative measure the time points (how fast reach steady state?)
-                    my $neg4_delta = ($neg4_t2 - $neg4_t1)/($neg4_t2 + $neg4_t1)*2;
-
-                    my $pos_output_select = ((($pos2_delta >= $neg2_delta) ? 1 : 0) + (($pos4_delta >= $neg4_delta) ? 1 : 0) > 0) ? 1 : 0;
-                    my $output_complex = $pos_output_select ? "TG00001" : "TG00000";
-                    my $delta = $stats_ref->{delta} = $pos_output_select ? ($pos2_delta + $pos4_delta)/2 : ($neg2_delta + $neg4_delta)/2;
-                    my $delta_score = $stats_ref->{delta_score} = p_hill($stats_ref->{delta}, $config_ref->{delta_threshold}, 1);
-
-                    if ($delta <= 0) {
-                        printn "\nWARNING: pos_delta and neg_delta are both zero or negative\n";
-                        $stats_ref->{sim_flag} = 0;
-                    }
-                    printn "pos_output_select = $pos_output_select" if $verbosity > 1;
-                    printn "pos_delta = $pos_delta, neg_delta = $neg_delta" if $verbosity > 1;
-                    my @output_vector = $pos_output_select ? @pos_output_vector : @neg_output_vector;
-
-                    #---------------------------------------------------------
-                    # PHASE PLOT
-                    #---------------------------------------------------------
-                    if (defined $config_ref->{plot_phase} && $config_ref->{plot_phase}) {
-                        my $output_node = $pos_output_select ? "TG00001" : "TG00000";
-                        $self->matlab_plot_phase(
-                            figure => 904,
-                            X_complex => "LG0000",
-                            Y_complex => $output_node,
-                            title_prefix => "$genome_name",
-                            axis_ref => [0, $config_ref->{LG_range},
-                                0, $config_ref->{TG_init}],
-                            filename => "$genome_name" . "_phase",
+                        $steady_state_output = $self->matlab_round_value(
+                            value => $steady_state_output,
+                            AbsTol => $config_ref->{AbsTol},
+                            RelTol => $config_ref->{RelTol},
                         );
                     }
+                    for (my $i=0; $i < $#sampling_times; $i++) {
+                        # Delta_steady_state
+                        my ($diff_min, $diff_max) = $self->matlab_get_state_range(
+                            complex => $output_complex,
+                            t1 => $sampling_times[$i],
+                            t2 => $sampling_times[$i+1],
+                        );
 
-                    ######### multistability measure should be multistability measure!
+                        my $diff_max0 = abs($diff_min - $steady_state_output);
+                        my $diff_max1 = abs($diff_max - $steady_state_output);
 
-                    ######################################################################################################
-                    # multistability measure
-                    my @output_vector_slopes = map {$output_vector[$_] - $output_vector[$_-1]} (1..$#output_vector);
-                    my $LG_steps = $config_ref->{LG_steps};
-                    confess "ERROR: LG_steps must be odd" if (int $LG_steps/2) == ($LG_steps/2);
-                    #my $dy1 = max_numeric(0, $output_vector_slopes[$i_dy2_bottom-1]);
-                    my $dy2 = max_numeric(0, $output_vector_slopes[$i_dy2_top - 1]);
-                    my $dy4 = max_numeric(0, $output_vector_slopes[$i_dy4_top - 1]);
-                    #my $dy3 = max_numeric(0, $output_vector_slopes[$i_dy2_top]);
-                    #my $dy1n = max_numeric(0, -$output_vector_slopes[$i_dy2n_bottom]);
-                    my $dy2n = max_numeric(0, - $output_vector_slopes[$i_dy2n_top]);
-                    my $dy4n = max_numeric(0, - $output_vector_slopes[$i_dy4n_top]);
-                    #my $dy3n = max_numeric(0, -$output_vector_slopes[$i_dy2n_top-1]);
+                        $diff_output_vector[$i] = ($diff_max0 > $diff_max1) ? $diff_max0 : $diff_max1; 
 
-                    my ($dy1_min, $dy1_max)   = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2_bottom-1],
-                        t2 => $sampling_times[$i_dy2_bottom],
-                    );
-                    my ($dy1n_min, $dy1n_max) = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2n_bottom],
-                        t2 => $sampling_times[$i_dy2n_bottom+1],
-                    );
-                    my ($dy3_min, $dy3_max)   = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2_top],
-                        t2 => $sampling_times[$i_dy2_top+1],
-                    );
-                    my ($dy3n_min, $dy3n_max) = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2n_top-1],
-                        t2 => $sampling_times[$i_dy2n_top],
-                    );
-                    my ($dy5_min, $dy5_max)   = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy4_top],
-                        t2 => $sampling_times[$i_dy4_top+1],
-                    );
-                    my ($dy5n_min, $dy5n_max) = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy4n_top-1],
-                        t2 => $sampling_times[$i_dy4n_top],
-                    );
-                    printn "dy1_min/max = ($dy1_min, $dy1_max) dy1n_min/max = ($dy1n_min, $dy1n_max)" if $verbosity > 1;
-                    printn "dy3_min/max = ($dy3_min, $dy3_max) dy3n_min/max = ($dy3n_min, $dy3n_max)" if $verbosity > 1;
-                    printn "dy5_min/max = ($dy5_min, $dy5_max) dy5n_min/max = ($dy5n_min, $dy5n_max)" if $verbosity > 1;
-                    my $dy1 =  $dy1_max  - $dy1_min;
-                    my $dy1n = $dy1n_max - $dy1n_min;
-                    my $dy3 =  $dy3_max  - $dy3_min;
-                    my $dy3n = $dy3n_max - $dy3n_min;
-                    my $dy5 =  $dy5_max  - $dy5_min;
-                    my $dy5n = $dy5n_max - $dy5n_min;
-
-                    printn "dy1 = $dy1 dy2 = $dy2 dy3 = $dy3 dy4 = $dy4 dy5 = $dy5" if $verbosity > 1;
-                    printn "dy1n = $dy1n dy2n = $dy2n dy3n=$dy3n dy4n = $dy4n dy5n = $dy5n" if $verbosity > 1;
-
-                    my $max_dy = $config_ref->{TG_init};
-
-                    my $amplitude = 0;
-                    my $step1_bottom_dy = 0;
-                    my $step1_top_dy = 0;
-                    my $step2_bottom_dy = 0;
-                    my $step2_top_dy = 0;
-                    if ($delta > 0 && $max_dy != 0 && $dy2 > 0 && $dy2n > 0 && $dy4 > 0 && $dy4n > 0) {
-                        $amplitude = ($dy2 + $dy2n + $dy4 + $dy4n)/4/$max_dy;
-                        my $mean_dy1 = ($dy1 + $dy1n)/2;
-                        my $mean_dy2 = ($dy2 + $dy2n)/2;
-                        my $mean_dy3 = ($dy3 + $dy3n)/2;
-                        my $mean_dy4 = ($dy4 + $dy4n)/2;
-                        my $mean_dy5 = ($dy5 + $dy5n)/2;
-                        # adding 0.01*mean_dy2 means you score at most 100
-                        $step1_bottom_dy = $mean_dy2/($mean_dy1 + 0.001);
-                        $step1_top_dy = $mean_dy2/($mean_dy3 + 0.001);
-                        $step2_bottom_dy = $mean_dy4/($mean_dy3 + 0.001);
-                        $step2_top_dy = $mean_dy4/($mean_dy5 + 0.001);
-                    }
-                    $stats_ref->{amplitude_score} = $amplitude;
-                    my $w_m1_bot = $config_ref->{w_m1_bot};
-                    my $w_m1_top = $config_ref->{w_m1_top};
-                    my $w_m2_bot = $config_ref->{w_m2_bot};
-                    my $w_m2_top = $config_ref->{w_m2_top};
-                    $stats_ref->{multistability_score} = (
-                        (p_hill($step1_bottom_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m1_bot) *
-                        (p_hill($step1_top_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m1_top) *
-                        (p_hill($step2_bottom_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m2_bot) *
-                        (p_hill($step2_top_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m2_top)
-                    )**(1/($w_m1_bot + $w_m1_top + $w_m2_bot + $w_m2_top));
- 
-                    # check if any concentrations are negative
-                    foreach my $sample (@output_vector) {
-                        if ($sample < 0) {
+                        # check if any concentrations are negative
+                        if ($steady_state_output < 0) {
                             printn "\nWARNING: detected negative concentrations in output vector\n";
                             $stats_ref->{sim_flag} = 0;
                         }
+                        $ss_output_vector[$i] = $steady_state_output;
+                        $t = $sampling_times[$i + 1]; 
+                        $steady_state_output = $self->matlab_get_state(complex => $output_complex, t => $t);
+                        if ($config_ref->{round_values_flag}) {
+                            $steady_state_output = $self->matlab_round_value(
+                                value => $steady_state_output,
+                                AbsTol => $config_ref->{AbsTol},
+                                RelTol => $config_ref->{RelTol},
+                            );
+                        }
+                        $ss_output_vector[$i] = abs($steady_state_output - $ss_output_vector[$i]);
                     }
 
-                    if (($stats_ref->{mean_squared_err_score} < 0) || ($stats_ref->{mean_squared_err_score} > $stats_ref->{max_mean_squared_err})) {
-                        #		if (($stats_ref->{mean_squared_err_score} < 0) || ($stats_ref->{mean_squared_err_score} > 1)) {
-                        # numerics got messed up, set score to zero
-                        printn "\nWARNING: computed mean_squared_error_score out of bounds\n";
-                        $stats_ref->{sim_flag} = 0;
+                    #---------------------------
+                    # adaptation measure
+                    #---------------------------
+                    my $max_dy = $config_ref->{TG_init};
+                    my $steps = defined $config_ref->{LG_steps} ? $config_ref->{LG_steps} : 1;
+                    confess "The steps number is not consist as sampling times number" if ($steps != scalar(@ss_output_vector)/2 || $steps != scalar(@diff_output_vector)/2);
+                    my $adaptation_diff_threshold = (defined $config_ref->{adaptation_diff_threshold}) ? $config_ref->{adaptation_diff_threshold} : 0.25;
+                    my $adaptation_ss_threshold = (defined $config_ref->{adaptation_ss_threshold}) ? $config_ref->{adaptation_ss_threshold} : 0.01;
+                    $adaptation_diff_threshold = $adaptation_diff_threshold * $max_dy / 2;
+                    $adaptation_ss_threshold = $adaptation_ss_threshold * $max_dy / 2;
+                    my $up_diff_adaptation = 0.0001;
+                    my $down_diff_adaptation = 0.0001;
+                    my $up_ss_adaptation = 0.0001;
+                    my $down_ss_adaptation = 0.0001;
+                    for (my $j = 0; $j < $steps; $j++) {
+                        $up_diff_adaptation *= p_hill($diff_output_vector[$j], $adaptation_diff_threshold, 1);
+                        $down_diff_adaptation *= p_hill($diff_output_vector[2*$steps-$j-1], $adaptation_diff_threshold, 1);
+                        $up_ss_adaptation *= n_hill($ss_output_vector[$j], $adaptation_ss_threshold, 1);
+                        $down_ss_adaptation *= n_hill($ss_output_vector[2*$steps-$j-1], $adaptation_ss_threshold, 1);
                     }
+                    ##########################################
+                    $up_diff_adaptation /= 0.0001;
+                    $down_diff_adaptation /= 0.0001;
+                    $up_ss_adaptation /= 0.0001;
+                    $down_ss_adaptation /= 0.0001;
+                    $up_diff_adaptation **= (1/$steps);
+                    $down_diff_adaptation **= (1/$steps);
+                    $up_ss_adaptation **= (1/$steps);
+                    $down_ss_adaptation **= (1/$steps);
+                    my $w_diff = defined $config_ref->{w_diff} ? $config_ref->{w_diff} : 1.0;
+                    my $w_ss = defined $config_ref->{w_ss} ? $config_ref->{w_ss} : 1.0;
+                    my $w_down = defined $config_ref->{w_down} ? $config_ref->{w_down} : 1.0;
+                    my $w_up = defined $config_ref->{w_up} ? $config_ref->{w_up} : 1.0;
+
+                    my $up_adaptation_score = $stats_ref->{up_adaptation_score} = (($up_diff_adaptation ** $w_diff) * ($up_ss_adaptation ** $w_ss))**(1/($w_diff+$w_ss));
+                    my $down_adaptation_score = $stats_ref->{down_adaptation_score} = (($down_diff_adaptation ** $w_diff)*($down_ss_adaptation**$w_ss))**(1/($w_diff+$w_ss));
+                    $stats_ref->{adaptation_score} = (($up_adaptation_score**$w_up)*($down_adaptation_score**$w_down))**(1/($w_up+$w_down));
                 }
             }
         }  # if $parse_successful
@@ -777,16 +674,16 @@ use base qw(Scoring);
         my $network_score = $stats_ref->{network_score} = $stats_ref->{network_score} || 0;
         my $complexity_score = $stats_ref->{complexity_score} = $stats_ref->{complexity_score} || 0;
         my $steady_state_score = $stats_ref->{steady_state_score} = $stats_ref->{steady_state_score} || 0;
-        my $amplitude_score = $stats_ref->{amplitude_score} = $stats_ref->{amplitude_score} || 0;
-        my $multistability_score = $stats_ref->{multistability_score} = $stats_ref->{multistability_score} || 0;
+        my $expression_score = $stats_ref->{expression_score} = $stats_ref->{expression_score} || 0;
+        my $adaptation_score = $stats_ref->{adaptation_score} = $stats_ref->{adaptation_score} || 0;
 
 
         if ($parse_successful) {
-            my $w_n = $config_ref->{w_n};
-            my $w_c = $config_ref->{w_c};
-            my $w_s = $config_ref->{w_s};
-            my $w_a = $config_ref->{w_a};
-            my $w_m = $config_ref->{w_m};
+            my $w_n = defined $config_ref->{w_n} ? $config_ref->{w_n} : 0.1;
+            my $w_c = defined $config_ref->{w_c} ? $config_ref->{w_c} : 0.0;
+            my $w_s = defined $config_ref->{w_s} ? $config_ref->{w_s} : 0.0;
+            my $w_e = defined $config_ref->{w_e} ? $config_ref->{w_e} : 0.5;
+            my $w_a = defined $config_ref->{w_a} ? $config_ref->{w_a} : 1.0;
 
             # is the input connected to the output?
             my $g0  = $stats_ref->{network_connected_flag} ? 1 : 0;
@@ -803,12 +700,12 @@ use base qw(Scoring);
             $final_score =  ($network_score * $g0n + $g0)**$w_n;
             # optimize complexity only if the network is connected
             $final_score *= (1e-3 + $complexity_score * $g0)**$w_c;
-            # optimize amplitude if ANC output ok and no timeout during simulation
-            $final_score *= (1e-6 + $amplitude_score * $g1)**$w_a;
+            # optimize expression if ANC output ok and no timeout during simulation
+            $final_score *= (1e-6 + $expression_score * $g1)**$w_e;
             # optimize multistability if ANC output ok and no timeout during simulation
-            $final_score *= (1e-6 + $multistability_score * $g1)**$w_m;
+            $final_score *= (1e-6 + $adaptation_score * $g1)**$w_a;
 
-            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_m));  # re-normalization
+            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_e));  # re-normalization
         }
 
 
@@ -842,4 +739,294 @@ use base qw(Scoring);
     } ## --- end sub score_genome
 }
  
+
+sub run_testcases {
+    $verbosity = 1;
+
+    $TAG = "test";
+    srand(33433);
+
+    my $config_file = <<END;
+#----------------------------------------
+# CPU AND CLUSTER SETTINGS
+#----------------------------------------
+cluster_type = LOCAL
+cluster_size = 1
+nice = 15
+vmem = 200000000
+
+#----------------------------------------
+# WORKSPACE AND CUSTOM SCORING MODULES
+#----------------------------------------
+scoring_class = Adaptation
+work_dir = adaptive
+local_dir = adaptive/localdir
+
+#initial_genome = random
+initial_genome = load test/custom/Adaptive.obj
+
+
+#----------------------------------------
+# GENOME PARAMS
+#----------------------------------------
+
+# Scaling: all concentrations in uM, all 2nd-order rates in uM^-1 s^-1
+# Genome class
+radius = 2      # should be reasonable. Binomial[Width,radius..0]/2^width
+kf_max = 1e3    # uM^-1 s^-1
+kf_min = 1e-3
+kb_max = 1e3
+kb_min = 1e-3
+kp_max = 1e3
+kp_min = 1e-3
+
+# Gene class
+regulated_concentration_width = 10
+gene_unused_width = 4
+regulated_concentration_max = 1e3    # 1mM
+regulated_concentration_min = 1e-3   # 1nM  ~ 1 molecule in prokaryote
+
+# Domain class
+RT_transition_rate_width = 10
+TR_transition_rate_width = 10
+RT_phi_width = 10
+domain_unused_width = 4
+RT_transition_rate_max = 1e2
+RT_transition_rate_min = 1e-2
+TR_transition_rate_max = 1e2
+TR_transition_rate_min = 1e-2
+RT_phi_max = 1.0
+RT_phi_min = 0.0
+
+# ProtoDomain class
+binding_profile_width = 10
+kf_profile_width = 20
+kb_profile_width = 20
+kp_profile_width = 10
+steric_factor_profile_width = 20
+Keq_profile_width = 10
+protodomain_unused_width = 4
+Keq_ratio_max = 1e2
+Keq_ratio_min = 1e-2
+
+#----------------------------------------
+# ANC PARAMS
+#----------------------------------------
+max_external_iterations = -1
+max_internal_iterations = -1
+max_complex_size = 3  #MATLAB has maximal length of names, if using MATLAB as simulator, this value should always be less than 9. Either -1(unlimited) or 6 should be resonable, please ref the Plos ONE paper from Vincent Danos group.
+max_species = 512
+max_csite_bound_to_msite_number = 1 # originally set as 1, but if consider more complex situation, we should put this unlimited, which means in complex multiple csite-msite bindings could happen.
+default_max_count = 2          # this prevents polymerization (see ANC manual)
+default_steric_factor = 1000      # in micro-mol/L
+#export_graphviz = nothing
+export_graphviz = network,collapse_states,collapse_complexes
+#export_graphviz = network,collapse_states,collapse_complexes,primary,scalar,ungrouped,canonical # possibly there are more information could be output
+
+#----------------------------------------
+# FACILE/MATLAB SETTINGS
+#----------------------------------------
+solver = ode23s
+#solver = stoch
+
+sampling_interval = 1.0
+SS_timescale = 500.0
+
+# MATLAB odeset params
+InitialStep = 1e-8
+AbsTol = 1e-9
+RelTol = 1e-3
+MaxStep = 500.0
+
+#----------------------------------------
+# SIMULATION/SCORING PARAMS
+#----------------------------------------
+plot_input = 1
+plot_output = 1
+plot_species = 0
+
+round_values_flag = 0
+
+steady_state_threshold = 1000   # IC settling time
+steady_state_score_threshold = 0.5
+
+complexity_threshold = 250
+expression_threshold = 50
+adaptation_diff_threshold = 1
+adaptation_ss_threshold = 0.1
+
+w_n = 0.0
+w_c = 0.5   # complexity score weight   
+w_e = 1.0
+w_s = 1.0
+w_a = 1.0  # adaptation score weight
+w_diff = 1.0
+w_ss = 1.0
+w_up = 1.0
+w_down = 1.0
+
+LG_range = 10          # uM (about 6 molecules in 1e-18L vol ???)
+LG_delay = ~
+LG_strength = 4.0      # in Hz
+LG_ramp_time = 1
+LG_steps = 1
+
+LG_timeout = 20000
+
+#stimulus = staircase_equation
+#stimulus = ramp_equation
+stimulus = ss_ramp_equation
+
+TG_init = 10  # uM
+cell_volume = 1e-18             # 1e-18L --> sub-cellular volume
+
+# to make sure the input and output have relatively large distance and also have relative large distance from themselves
+# and also make sure their binding partner to have relatively large distance in this case the intermediate binding profile could be 0010110100 have both 5 distanct to all four binding profiles
+# it depends the problem, whether want far distances between initial profiles or shorter distances
+lg_binding_profile = 0100111010
+tg_binding_profile = 0111000110   
+
+END
+
+    burp_file("test/custom/Adaptive.cfg", $config_file);
+
+    my $scoring_ref = Adaptation->new({
+            node_ID => 98,
+            config_file => "test/custom/Adaptive.cfg",
+            work_dir    => "test/custom",
+            matlab_startup_options => "-nodesktop -nosplash",
+        });
+
+    printn $scoring_ref->_DUMP();
+
+    my $config_ref = {};
+    read_config($config_ref, "test/custom/Adaptive.cfg");
+
+    use GenomeModel;
+    my $genome_model_ref = GenomeModel->new({
+            name => "Adaptive",
+            Genome => {
+                radius => $config_ref->{radius},
+                kf_max => $config_ref->{kf_max},
+                kf_min => $config_ref->{kf_min},
+                kb_max => $config_ref->{kb_max},
+                kb_min => $config_ref->{kb_min},
+                kp_max => $config_ref->{kp_max},
+                kp_min => $config_ref->{kp_min},
+                Gene => {
+                    regulated_concentration_width => $config_ref->{regulated_concentration_width},
+                    unused_width => $config_ref->{gene_unused_width},
+                    regulated_concentration_max => $config_ref->{regulated_concentration_max},
+                    regulated_concentration_min => $config_ref->{regulated_concentration_min},
+                    Domain => {
+                        RT_transition_rate_width => $config_ref->{RT_transition_rate_width},
+                        TR_transition_rate_width => $config_ref->{TR_transition_rate_width},
+                        RT_phi_width => $config_ref->{RT_phi_width},
+                        unused_width => $config_ref->{domain_unused_width},
+                        RT_transition_rate_max => $config_ref->{RT_transition_rate_max},
+                        RT_transition_rate_min => $config_ref->{RT_transition_rate_min},
+                        TR_transition_rate_max => $config_ref->{TR_transition_rate_max},
+                        TR_transition_rate_min => $config_ref->{TR_transition_rate_min},
+                        RT_phi_max => $config_ref->{RT_phi_max},
+                        RT_phi_min => $config_ref->{RT_phi_min},
+                        ProtoDomain => {
+                            binding_profile_width => $config_ref->{binding_profile_width},
+                            kf_profile_width => $config_ref->{kf_profile_width},
+                            kb_profile_width => $config_ref->{kb_profile_width},
+                            kp_profile_width => $config_ref->{kp_profile_width},
+                            Keq_profile_width => $config_ref->{Keq_profile_width},
+                            unused_width => $config_ref->{protodomain_unused_width},
+                            Keq_ratio_max => $config_ref->{Keq_ratio_max},
+                            Keq_ratio_min => $config_ref->{Keq_ratio_min},
+                        },
+                    },
+                },
+            },
+        });
+
+    # CONFIGURE/CREATE GENOME
+    my $lg_binding_profile = $config_ref->{lg_binding_profile};
+    my $tg_binding_profile = $config_ref->{tg_binding_profile};
+    my $sequence_ref = $genome_model_ref->get_genome_parser_ref()->create_sequence({
+            PRE_JUNK => undef,   # undef == ""
+            POST_JUNK => "0000",
+            genes => [
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 1.0, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.00,
+                            TR_transition_rate => 1.00,
+                            RT_phi => 1.0,
+                            protodomains => [
+                                {
+                                    type => "csite",
+                                    substrate_polarity => 0,
+                                    binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
+                                    kf_profile => "11010111000001100000",
+                                    kb_profile => "11101010101110011000",
+                                    kp_profile => "11001011010100010000",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                                {
+                                    type => "bsite",
+                                    substrate_polarity => 0,
+                                    binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
+                                    kf_profile => "00101000100100010010",
+                                    kb_profile => "11001000110000001000",
+                                    kp_profile => "00011111000111110011",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                                {
+                                    type => "csite",
+                                    substrate_polarity => 1,
+                                    binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
+                                    kf_profile => "11010111000001100000",
+                                    kb_profile => "11101010101110011000",
+                                    kp_profile => "11001011010100010000",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+            ],
+        });
+    printn "sequence=".$sequence_ref->get_sequence();
+    $genome_model_ref->set_sequence_ref($sequence_ref);
+
+    # save the genome object
+    use Storable qw(store retrieve);
+    store($genome_model_ref, "test/custom/Adaptive.obj");
+
+    $scoring_ref->score_genome($genome_model_ref);
+    printn $genome_model_ref->_DUMP();
+    sleep 20;
+}
+
+
+# Package BEGIN must return true value
+return 1;
 
