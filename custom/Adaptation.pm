@@ -579,211 +579,77 @@ use base qw(Scoring);
                 $stats_ref->{steady_state_score} = n_hill(
                     $ss_time_max, $steady_state_threshold,1);
 
-                #---------------------------------------------------------
-                # REPORT RESULT VECTOR
-                #---------------------------------------------------------
-                printn "RESULT VECTOR: INPUT = LG OUTPUT = TG00001 DELAY = $config_ref->{LG_delay}" if $verbosity > 1;
-                my (@pos_output_vector, @neg_output_vector);
-
-                my @sampling_times = @event_times;
-                for (my $i=0; $i < @sampling_times; $i++) {
-                    my $t = $sampling_times[$i]; 
-                    $pos_output_vector[$i] = $self->matlab_get_state(complex => "TG00001", t => $t);
-                    $neg_output_vector[$i] = $self->matlab_get_state(complex => "TG00000", t => $t);
-
-                    if ($config_ref->{round_values_flag}) {
-                        $pos_output_vector[$i] = $self->matlab_round_value(
-                            value => $pos_output_vector[$i],
-                            AbsTol => $config_ref->{AbsTol},
-                            RelTol => $config_ref->{RelTol},
-                        );
-                        $neg_output_vector[$i] = $self->matlab_round_value(
-                            value => $neg_output_vector[$i],
-                            AbsTol => $config_ref->{AbsTol},
-                            RelTol => $config_ref->{RelTol},
-                        );
-                    }
-
-                    printf("RESULT VECTOR:  t=%-6.2f input vector:  %8.4g pos_output_vector: %8.6g neg_output_vector: %8.6g\n",
-                        $t, $input_vector[$i], $pos_output_vector[$i], $neg_output_vector[$i]) if $verbosity > 1;
-                }
-
                 if (!$timeout_flag) {
-                    #---------------------------------------------------------
-                    # SELECT BEST OUTPUT VECTOR
-                    #---------------------------------------------------------
-                    my $i_dy2_bottom = 1; # index at bottom of first middle step
-                    my $i_dy2_top    = 2; # index at top of first middle step
-                    my $i_dy4_bottom = 3;
-                    my $i_dy4_bottom = 4;
-                    my $i_dy2n_bottom = $#sampling_times - $i_dy2_bottom;   # index at bottom of first middle step
-                    my $i_dy2n_top    = $#sampling_times - $i_dy2_top;   # index at top of first middle step
-                    my $i_dy4n_bottom = $#sampling_times - $i_dy4_bottom;   # index at bottom of first middle step
-                    my $i_dy4n_top    = $#sampling_times - $i_dy4_top;   # index at top of first middle step
+                    my (@diff_output_vector, @ss_output_vector);
+                    my @sampling_times = @event_times;
+                    my $output_complex = "TG00001";
 
-                    my $t_bottom2 = $sampling_times[$i_dy2_bottom];
-                    my $t_top2 = $sampling_times[$i_dy2_top];
-                    my $t_bottom_n2 = $sampling_times[$i_dy2n_bottom];
-                    my $t_top_n2 = $sampling_times[$i_dy2n_top];
-                    my $t_bottom4 = $sampling_times[$i_dy4_bottom];
-                    my $t_top4 = $sampling_times[$i_dy4_top];
-                    my $t_bottom_n4 = $sampling_times[$i_dy4n_bottom];
-                    my $t_top_n4 = $sampling_times[$i_dy4n_top];
-
-                    my $pos2_t1 = $pos_output_vector[$i_dy2_bottom];
-                    my $pos2_t2 = $pos_output_vector[$i_dy2_top];
-                    my $neg2_t1 = $neg_output_vector[$i_dy2n_bottom];
-                    my $neg2_t2 = $neg_output_vector[$i_dy2n_top];
-                    my $pos4_t1 = $pos_output_vector[$i_dy4_bottom];
-                    my $pos4_t2 = $pos_output_vector[$i_dy4_top];
-                    my $neg4_t1 = $neg_output_vector[$i_dy4n_bottom];
-                    my $neg4_t2 = $neg_output_vector[$i_dy4n_top];
-
+                    my $t = $sampling_times[0];
+                    my $steady_state_ouput = $self->matlab_get_state(complex => $output_complex, t => $t);
                     if ($config_ref->{round_values_flag}) {
-                        ($pos2_t1, $pos2_t2, $neg2_t1, $neg2_t2, $pos4_t1, $pos4_t2, $neg4_t1, $neg4_t2) = map {
-                        $self->matlab_round_value(value => $_, AbsTol => $config_ref->{AbsTol}, RelTol => $config_ref->{RelTol})
-                        } ($pos2_t1, $pos2_t2, $neg2_t1, $neg2_t2, $pos4_t1, $pos4_t2, $neg4_t1, $neg4_t2);
-                    }
-                    my $pos2_delta = ($pos2_t2 - $pos2_t1)/($pos2_t2 + $pos2_t1)*2; # relative measure the time points (how fast reach steady state?)
-                    my $neg2_delta = ($neg2_t2 - $neg2_t1)/($neg2_t2 + $neg2_t1)*2;
-                    my $pos4_delta = ($pos4_t2 - $pos4_t1)/($pos4_t2 + $pos4_t1)*2; # relative measure the time points (how fast reach steady state?)
-                    my $neg4_delta = ($neg4_t2 - $neg4_t1)/($neg4_t2 + $neg4_t1)*2;
-
-                    my $pos_output_select = ((($pos2_delta >= $neg2_delta) ? 1 : 0) + (($pos4_delta >= $neg4_delta) ? 1 : 0) > 0) ? 1 : 0;
-                    my $output_complex = $pos_output_select ? "TG00001" : "TG00000";
-                    my $delta = $stats_ref->{delta} = $pos_output_select ? ($pos2_delta + $pos4_delta)/2 : ($neg2_delta + $neg4_delta)/2;
-                    my $delta_score = $stats_ref->{delta_score} = p_hill($stats_ref->{delta}, $config_ref->{delta_threshold}, 1);
-
-                    if ($delta <= 0) {
-                        printn "\nWARNING: pos_delta and neg_delta are both zero or negative\n";
-                        $stats_ref->{sim_flag} = 0;
-                    }
-                    printn "pos_output_select = $pos_output_select" if $verbosity > 1;
-                    printn "pos_delta = $pos_delta, neg_delta = $neg_delta" if $verbosity > 1;
-                    my @output_vector = $pos_output_select ? @pos_output_vector : @neg_output_vector;
-
-                    #---------------------------------------------------------
-                    # PHASE PLOT
-                    #---------------------------------------------------------
-                    if (defined $config_ref->{plot_phase} && $config_ref->{plot_phase}) {
-                        my $output_node = $pos_output_select ? "TG00001" : "TG00000";
-                        $self->matlab_plot_phase(
-                            figure => 904,
-                            X_complex => "LG0000",
-                            Y_complex => $output_node,
-                            title_prefix => "$genome_name",
-                            axis_ref => [0, $config_ref->{LG_range},
-                                0, $config_ref->{TG_init}],
-                            filename => "$genome_name" . "_phase",
+                        $steady_state_output = $self->matlab_round_value(
+                            value => $steady_state_output,
+                            AbsTol => $config_ref->{AbsTol},
+                            RelTol => $config_ref->{RelTol},
                         );
                     }
+                    for (my $i=0; $i < $#sampling_times; $i++) {
+                        # Delta_steady_state
+                        my ($diff_min, $diff_max) = $self->matlab_get_state_range(
+                            complex => $output_complex,
+                            t1 => $sampling_times[$i],
+                            t2 => $sampling_times[$i+1],
+                        );
 
-                    ######### multistability measure should be multistability measure!
+                        my $diff_max0 = abs($diff_min - $steady_state_output);
+                        my $diff_max1 = abs($diff_max - $steady_state_output);
 
-                    ######################################################################################################
-                    # multistability measure
-                    my @output_vector_slopes = map {$output_vector[$_] - $output_vector[$_-1]} (1..$#output_vector);
-                    my $LG_steps = $config_ref->{LG_steps};
-                    confess "ERROR: LG_steps must be odd" if (int $LG_steps/2) == ($LG_steps/2);
-                    #my $dy1 = max_numeric(0, $output_vector_slopes[$i_dy2_bottom-1]);
-                    my $dy2 = max_numeric(0, $output_vector_slopes[$i_dy2_top - 1]);
-                    my $dy4 = max_numeric(0, $output_vector_slopes[$i_dy4_top - 1]);
-                    #my $dy3 = max_numeric(0, $output_vector_slopes[$i_dy2_top]);
-                    #my $dy1n = max_numeric(0, -$output_vector_slopes[$i_dy2n_bottom]);
-                    my $dy2n = max_numeric(0, - $output_vector_slopes[$i_dy2n_top]);
-                    my $dy4n = max_numeric(0, - $output_vector_slopes[$i_dy4n_top]);
-                    #my $dy3n = max_numeric(0, -$output_vector_slopes[$i_dy2n_top-1]);
+                        $diff_output_vector[$i] = ($diff_max0 > $diff_max1) ? $diff_max0 : $diff_max1; 
 
-                    my ($dy1_min, $dy1_max)   = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2_bottom-1],
-                        t2 => $sampling_times[$i_dy2_bottom],
-                    );
-                    my ($dy1n_min, $dy1n_max) = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2n_bottom],
-                        t2 => $sampling_times[$i_dy2n_bottom+1],
-                    );
-                    my ($dy3_min, $dy3_max)   = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2_top],
-                        t2 => $sampling_times[$i_dy2_top+1],
-                    );
-                    my ($dy3n_min, $dy3n_max) = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2n_top-1],
-                        t2 => $sampling_times[$i_dy2n_top],
-                    );
-                    my ($dy5_min, $dy5_max)   = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy4_top],
-                        t2 => $sampling_times[$i_dy4_top+1],
-                    );
-                    my ($dy5n_min, $dy5n_max) = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy4n_top-1],
-                        t2 => $sampling_times[$i_dy4n_top],
-                    );
-                    printn "dy1_min/max = ($dy1_min, $dy1_max) dy1n_min/max = ($dy1n_min, $dy1n_max)" if $verbosity > 1;
-                    printn "dy3_min/max = ($dy3_min, $dy3_max) dy3n_min/max = ($dy3n_min, $dy3n_max)" if $verbosity > 1;
-                    printn "dy5_min/max = ($dy5_min, $dy5_max) dy5n_min/max = ($dy5n_min, $dy5n_max)" if $verbosity > 1;
-                    my $dy1 =  $dy1_max  - $dy1_min;
-                    my $dy1n = $dy1n_max - $dy1n_min;
-                    my $dy3 =  $dy3_max  - $dy3_min;
-                    my $dy3n = $dy3n_max - $dy3n_min;
-                    my $dy5 =  $dy5_max  - $dy5_min;
-                    my $dy5n = $dy5n_max - $dy5n_min;
-
-                    printn "dy1 = $dy1 dy2 = $dy2 dy3 = $dy3 dy4 = $dy4 dy5 = $dy5" if $verbosity > 1;
-                    printn "dy1n = $dy1n dy2n = $dy2n dy3n=$dy3n dy4n = $dy4n dy5n = $dy5n" if $verbosity > 1;
-
-                    my $max_dy = $config_ref->{TG_init};
-
-                    my $amplitude = 0;
-                    my $step1_bottom_dy = 0;
-                    my $step1_top_dy = 0;
-                    my $step2_bottom_dy = 0;
-                    my $step2_top_dy = 0;
-                    if ($delta > 0 && $max_dy != 0 && $dy2 > 0 && $dy2n > 0 && $dy4 > 0 && $dy4n > 0) {
-                        $amplitude = ($dy2 + $dy2n + $dy4 + $dy4n)/4/$max_dy;
-                        my $mean_dy1 = ($dy1 + $dy1n)/2;
-                        my $mean_dy2 = ($dy2 + $dy2n)/2;
-                        my $mean_dy3 = ($dy3 + $dy3n)/2;
-                        my $mean_dy4 = ($dy4 + $dy4n)/2;
-                        my $mean_dy5 = ($dy5 + $dy5n)/2;
-                        # adding 0.01*mean_dy2 means you score at most 100
-                        $step1_bottom_dy = $mean_dy2/($mean_dy1 + 0.001);
-                        $step1_top_dy = $mean_dy2/($mean_dy3 + 0.001);
-                        $step2_bottom_dy = $mean_dy4/($mean_dy3 + 0.001);
-                        $step2_top_dy = $mean_dy4/($mean_dy5 + 0.001);
-                    }
-                    $stats_ref->{amplitude_score} = $amplitude;
-                    my $w_m1_bot = $config_ref->{w_m1_bot};
-                    my $w_m1_top = $config_ref->{w_m1_top};
-                    my $w_m2_bot = $config_ref->{w_m2_bot};
-                    my $w_m2_top = $config_ref->{w_m2_top};
-                    $stats_ref->{multistability_score} = (
-                        (p_hill($step1_bottom_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m1_bot) *
-                        (p_hill($step1_top_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m1_top) *
-                        (p_hill($step2_bottom_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m2_bot) *
-                        (p_hill($step2_top_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m2_top)
-                    )**(1/($w_m1_bot + $w_m1_top + $w_m2_bot + $w_m2_top));
- 
-                    # check if any concentrations are negative
-                    foreach my $sample (@output_vector) {
-                        if ($sample < 0) {
+                        # check if any concentrations are negative
+                        if ($steady_state_ouput < 0) {
                             printn "\nWARNING: detected negative concentrations in output vector\n";
                             $stats_ref->{sim_flag} = 0;
                         }
-                    }
+                        $ss_output_vector[$i] = $steady_state_output;
+                        $t = $sampling_times[$i + 1]; 
+                        $stedy_state_ouput = $self->matlab_get_state(complex => $output_complex, t => $t);
+                        if ($config_ref->{round_values_flag}) {
+                            $steady_state_ouput = $self->matlab_round_value(
+                                value => $steady_state_output,
+                                AbsTol => $config_ref->{AbsTol},
+                                RelTol => $config_ref->{RelTol},
+                            );
+                        }
+                        $ss_output_vector[$i] = abs($steady_state_output - $ss_output_vector[$i]);
+                   }
 
-                    if (($stats_ref->{mean_squared_err_score} < 0) || ($stats_ref->{mean_squared_err_score} > $stats_ref->{max_mean_squared_err})) {
-                        #		if (($stats_ref->{mean_squared_err_score} < 0) || ($stats_ref->{mean_squared_err_score} > 1)) {
-                        # numerics got messed up, set score to zero
-                        printn "\nWARNING: computed mean_squared_error_score out of bounds\n";
-                        $stats_ref->{sim_flag} = 0;
-                    }
-                }
+                   #---------------------------
+                   # adaptation measure
+                   #---------------------------
+                   my $max_dy = $config_ref->{TG_init};
+                   my $steps = $config_ref->{steps};
+                   confess "The steps number is not consist as sampling times number" if ($steps != @ss_output_vector/2 || $steps != @diff_output_vector/2);
+                   my $adaptation_diff_threshold = (defined $config_ref->{adaptation_diff_threshold}) ? $config_ref->{adaptation_diff_threshold} : 0.25;
+                   my $adaptation_ss_threshold = (defined $config_ref->{adaptation_ss_threshold}) ? $config_ref->{adaptation_ss_threshold} : 0.01;
+                   $adaptation_diff_threshold = $adaptation_diff_threshold * $max_dy / 2;
+                   $adaptation_ss_threshold = $adaptation_ss_threshold * $max_dy / 2;
+                   my $up_diff_adaptation = 0.0001;
+                   my $down_diff_adaptation = 0.0001;
+                   my $up_ss_adaptation = 0.0001;
+                   my $down_ss_adaptation = 0.0001;
+                   for (my $j = 0, $j < $steps, $j++) {
+                       $up_diff_adaptation *= p_hill($diff_output_vector[$i], $adaptation_diff_threshold, 1);
+                       $down_diff_adaptation *= p_hill($diff_output_vector[2*$steps-$i-1], $adaptation_diff_threshold, 1);
+                       $up_ss_adaptation *= n_hill($ss_output_vector[$i], $adaptation_ss_threshold, 1);
+                       $down_ss_adaptation *= n_hill($ss_output_vector[2*$steps-$i-1], $adaptation_ss_threshold, 1);
+                   }
+                   ##########################################
+                   my $up_diff_adaptation = 0.0001;
+                   my $down_diff_adaptation = 0.0001;
+                   my $up_ss_adaptation = 0.0001;
+                   my $down_ss_adaptation = 0.0001;
+               }
             }
         }  # if $parse_successful
         $stats_ref->{network_connectivity} = $network_connectivity;
