@@ -628,8 +628,8 @@ use base qw(Scoring);
                     # adaptation measure
                     #---------------------------
                     my $max_dy = $config_ref->{TG_init};
-                    my $steps = $config_ref->{steps};
-                    confess "The steps number is not consist as sampling times number" if ($steps != @ss_output_vector/2 || $steps != @diff_output_vector/2);
+                    my $steps = defined $config_ref->{LG_steps} ? $config_ref->{LG_steps} : 1;
+                    confess "The steps number is not consist as sampling times number" if ($steps != scalar(@ss_output_vector)/2 || $steps != scalar(@diff_output_vector)/2);
                     my $adaptation_diff_threshold = (defined $config_ref->{adaptation_diff_threshold}) ? $config_ref->{adaptation_diff_threshold} : 0.25;
                     my $adaptation_ss_threshold = (defined $config_ref->{adaptation_ss_threshold}) ? $config_ref->{adaptation_ss_threshold} : 0.01;
                     $adaptation_diff_threshold = $adaptation_diff_threshold * $max_dy / 2;
