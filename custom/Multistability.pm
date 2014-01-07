@@ -874,6 +874,300 @@ use base qw(Scoring);
     } ## --- end sub score_genome
 }
  
+
+sub run_testcases {
+    $verbosity = 1;
+
+    $TAG = "test";
+    srand(33433);
+
+    my $config_file = <<END;
+#----------------------------------------
+# CPU AND CLUSTER SETTINGS
+#----------------------------------------
+cluster_type = LOCAL
+cluster_size = 1
+nice = 15
+vmem = 200000000
+
+#----------------------------------------
+# WORKSPACE AND CUSTOM SCORING MODULES
+#----------------------------------------
+scoring_class = Multistability
+work_dir = multistable
+local_dir = multistable/localdir
+
+#initial_genome = random
+initial_genome = load test/custom/Multistable.obj
+
+
+#----------------------------------------
+# GENOME PARAMS
+#----------------------------------------
+
+# Scaling: all concentrations in uM, all 2nd-order rates in uM^-1 s^-1
+
+# Genome class
+radius = 2      # should be reasonable. Binomial[Width,radius..0]/2^width
+kf_max = 1e3    # uM^-1 s^-1
+kf_min = 1e-3
+kb_max = 1e3
+kb_min = 1e-3
+kp_max = 1e3
+kp_min = 1e-3
+
+# Gene class
+regulated_concentration_width = 10
+gene_unused_width = 4
+regulated_concentration_max = 1e3    # 1mM
+regulated_concentration_min = 1e-3   # 1nM  ~ 1 molecule in prokaryote
+
+# Domain class
+RT_transition_rate_width = 10
+TR_transition_rate_width = 10
+RT_phi_width = 10
+domain_unused_width = 4
+RT_transition_rate_max = 1e2
+RT_transition_rate_min = 1e-2
+TR_transition_rate_max = 1e2
+TR_transition_rate_min = 1e-2
+RT_phi_max = 1.0
+RT_phi_min = 0.0
+
+# ProtoDomain class
+binding_profile_width = 10
+kf_profile_width = 20
+kb_profile_width = 20
+kp_profile_width = 10
+steric_factor_profile_width = 20
+Keq_profile_width = 10
+protodomain_unused_width = 4
+Keq_ratio_max = 1e2
+Keq_ratio_min = 1e-2
+#----------------------------------------
+# ANC PARAMS
+#----------------------------------------
+max_external_iterations = -1
+max_internal_iterations = -1
+max_complex_size = 3  #MATLAB has maximal length of names, if using MATLAB as simulator, this value should always be less than 9. Either -1(unlimited) or 6 should be resonable, please ref the Plos ONE paper from Vincent Danos group.
+max_species = 512
+max_csite_bound_to_msite_number = 1 # originally set as 1, but if consider more complex situation, we should put this unlimited, which means in complex multiple csite-msite bindings could happen.
+default_max_count = 2          # this prevents polymerization (see ANC manual)
+default_steric_factor = 1000      # in micro-mol/L
+#export_graphviz = nothing
+export_graphviz = network,collapse_states,collapse_complexes
+#export_graphviz = network,collapse_states,collapse_complexes,primary,scalar,ungrouped,canonical # possibly there are more information could be output
+
+#----------------------------------------
+# FACILE/MATLAB SETTINGS
+#----------------------------------------
+solver = ode23s
+#solver = stoch
+
+sampling_interval = 1.0
+SS_timescale = 500.0
+
+# MATLAB odeset params
+InitialStep = 1e-8
+AbsTol = 1e-9
+RelTol = 1e-3
+MaxStep = 500.0
+
+#----------------------------------------
+# SIMULATION/SCORING PARAMS
+#----------------------------------------
+plot_input = 1
+plot_output = 1
+plot_species = 0
+
+round_values_flag = 0
+
+steady_state_threshold = 1000   # IC settling time
+steady_state_score_threshold = 0.5
+
+delta_threshold = 0.01          # relative measure of amplitude used to filter out integration noise
+amplitude_threshold = 1      # absolute measure of amplitude
+ultrasensitivity_threshold = 5  # ratio of 2nd step over 1st step
+complexity_threshold = 250
+expression_threshold = 50
+
+w_n = 0.0
+w_c = 0.5   # complexity score weight
+w_e = 1.0
+w_s = 1.0
+w_a = 1.0
+w_m = 1.0
+w_m1_bot = 1.0
+w_m1_top = 1.0
+w_m2_bot = 1.0
+w_m2_top = 1.0
+
+LG_range = 10          # uM (about 6 molecules in 1e-18L vol ???)
+LG_delay = ~
+LG_strength = 4.0      # in Hz
+LG_ramp_time = 3000
+LG_steps = 5
+
+LG_timeout = 50000
+
+#stimulus = staircase_equation
+#stimulus = ramp_equation
+stimulus = ss_ramp_equation
+
+#hill_n = 8
+hill_n = 40
+hill_k = 5
+
+TG_init = 10  # uM
+cell_volume = 1e-18             # 1e-18L --> sub-cellular volume
+
+# to make sure the input and output have relatively large distance and also have relative large distance from themselves
+# and also make sure their binding partner to have relatively large distance in this case the intermediate binding profile could be 0010110100 have both 5 distanct to all four binding profiles
+# it depends the problem, whether want far distances between initial profiles or shorter distances
+lg_binding_profile = 0100111010
+tg_binding_profile = 0111000110   
+
+END
+
+    burp_file("test/custom/Multistable.cfg", $config_file);
+
+    my $scoring_ref = Multistable->new({
+            node_ID => 98,
+            config_file => "test/custom/Multistable.cfg",
+            work_dir    => "test/custom",
+            matlab_startup_options => "-nodesktop -nosplash",
+        });
+
+    printn $scoring_ref->_DUMP();
+
+    my $config_ref = {};
+    read_config($config_ref, "test/custom/Multistable.cfg");
+
+    use GenomeModel;
+    my $genome_model_ref = GenomeModel->new({
+            name => "Multistable",
+            Genome => {
+                radius => $config_ref->{radius},
+                kf_max => $config_ref->{kf_max},
+                kf_min => $config_ref->{kf_min},
+                kb_max => $config_ref->{kb_max},
+                kb_min => $config_ref->{kb_min},
+                kp_max => $config_ref->{kp_max},
+                kp_min => $config_ref->{kp_min},
+                Gene => {
+                    regulated_concentration_width => $config_ref->{regulated_concentration_width},
+                    unused_width => $config_ref->{gene_unused_width},
+                    regulated_concentration_max => $config_ref->{regulated_concentration_max},
+                    regulated_concentration_min => $config_ref->{regulated_concentration_min},
+                    Domain => {
+                        RT_transition_rate_width => $config_ref->{RT_transition_rate_width},
+                        TR_transition_rate_width => $config_ref->{TR_transition_rate_width},
+                        RT_phi_width => $config_ref->{RT_phi_width},
+                        unused_width => $config_ref->{domain_unused_width},
+                        RT_transition_rate_max => $config_ref->{RT_transition_rate_max},
+                        RT_transition_rate_min => $config_ref->{RT_transition_rate_min},
+                        TR_transition_rate_max => $config_ref->{TR_transition_rate_max},
+                        TR_transition_rate_min => $config_ref->{TR_transition_rate_min},
+                        RT_phi_max => $config_ref->{RT_phi_max},
+                        RT_phi_min => $config_ref->{RT_phi_min},
+                        ProtoDomain => {
+                            binding_profile_width => $config_ref->{binding_profile_width},
+                            kf_profile_width => $config_ref->{kf_profile_width},
+                            kb_profile_width => $config_ref->{kb_profile_width},
+                            kp_profile_width => $config_ref->{kp_profile_width},
+                            Keq_profile_width => $config_ref->{Keq_profile_width},
+                            unused_width => $config_ref->{protodomain_unused_width},
+                            Keq_ratio_max => $config_ref->{Keq_ratio_max},
+                            Keq_ratio_min => $config_ref->{Keq_ratio_min},
+                        },
+                    },
+                },
+            },
+        });
+
+    # CONFIGURE/CREATE GENOME
+    my $lg_binding_profile = $config_ref->{lg_binding_profile};
+    my $tg_binding_profile = $config_ref->{tg_binding_profile};
+    my $sequence_ref = $genome_model_ref->get_genome_parser_ref()->create_sequence({
+            PRE_JUNK => undef,   # undef == ""
+            POST_JUNK => "0000",
+            genes => [
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 1.0, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.00,
+                            TR_transition_rate => 1.00,
+                            RT_phi => 1.0,
+                            protodomains => [
+                                {
+                                    type => "csite",
+                                    substrate_polarity => 0,
+                                    binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
+                                    kf_profile => "11010111000001100000",
+                                    kb_profile => "11101010101110011000",
+                                    kp_profile => "11001011010100010000",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                                {
+                                    type => "bsite",
+                                    substrate_polarity => 0,
+                                    binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
+                                    kf_profile => "00101000100100010010",
+                                    kb_profile => "11001000110000001000",
+                                    kp_profile => "00011111000111110011",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                                {
+                                    type => "csite",
+                                    substrate_polarity => 1,
+                                    binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
+                                    kf_profile => "11010111000001100000",
+                                    kb_profile => "11101010101110011000",
+                                    kp_profile => "11001011010100010000",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+            ],
+        });
+    printn "sequence=".$sequence_ref->get_sequence();
+    $genome_model_ref->set_sequence_ref($sequence_ref);
+
+    # save the genome object
+    use Storable qw(store retrieve);
+    store($genome_model_ref, "test/custom/Multistable.obj");
+
+    $scoring_ref->score_genome($genome_model_ref);
+    printn $genome_model_ref->_DUMP();
+    sleep 20;
+}
+
+
 # Package BEGIN must return true value
 return 1;
 
