@@ -1,6 +1,6 @@
 #===============================================================================
 #
-#         FILE: Multistability.pm
+#         FILE: Multistable.pm
 #
 #  DESCRIPTION: This is the module to scoring the multistable response accroding
 #               to the ramping up with 5 steps from input signal
@@ -19,7 +19,7 @@ use strict;
 use warnings;
 use diagnostics;
 
-package Multistability;
+package Multistable;
 use Class::Std::Storable;
 use base qw(Scoring);
 {
@@ -893,7 +893,7 @@ vmem = 200000000
 #----------------------------------------
 # WORKSPACE AND CUSTOM SCORING MODULES
 #----------------------------------------
-scoring_class = Multistability
+scoring_class = Multistable
 work_dir = multistable
 local_dir = multistable/localdir
 
