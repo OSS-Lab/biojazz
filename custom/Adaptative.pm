@@ -57,22 +57,22 @@ use base qw(Scoring);
         }
         my $history_ref = $genome_model_ref->get_history_ref();
 
-        printn "Ultrasensitive::score_genome scoring genome $genome_name";
+        printn "Adaptive::score_genome scoring genome $genome_name";
 
         #---------------------------------------------------------
         # INIT SCORING
         #---------------------------------------------------------
         my $elite_flag = $genome_model_ref->get_elite_flag();
         if ($elite_flag) {
-            printn "Ultrasensitive::score_genome elite individual already scored, previous score=$stats_ref->{score}";
+            printn "Adaptive::score_genome elite individual already scored, previous score=$stats_ref->{score}";
             return if ($config_ref->{rescore_elite} == 0);
-            printn "Ultrasensitive::score_genome re-scoring elite individual" if $verbosity > 1;
+            printn "Adaptive::score_genome re-scoring elite individual" if $verbosity > 1;
 
             # Should clear stats in the evolution to prevent stats loss when rescore genomes.
             $genome_model_ref->clear_stats();
             $stats_ref->{score} = 0;
         } else {
-            printn "Ultrasensitive::score_genome scoring non-elite individual..." if $verbosity > 1;
+            printn "Adaptive::score_genome scoring non-elite individual..." if $verbosity > 1;
  
             # Should clear stats in the evolution to prevent stats loss when rescore genomes.
             $genome_model_ref->clear_stats();
@@ -517,7 +517,7 @@ use base qw(Scoring);
                 #---------------------------------------------------------
                 # RUN MATLAB SIM
                 #---------------------------------------------------------
-                printn "Ultrasensitive::score_genome: running matlab driver..." if $verbosity > 1;
+                printn "Adaptive::score_genome: running matlab driver..." if $verbosity > 1;
                 my $matlab_ref = $self->get_matlab_ref();
                 $matlab_ref->cmd("clear all; ${genome_name}Driver");
                 $matlab_ref->wait_on("Facile.*done");
