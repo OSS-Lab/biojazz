@@ -1,6 +1,6 @@
 #===============================================================================
 #
-#         FILE: Adaptation.pm
+#         FILE: Adaptive.pm
 #
 #  DESCRIPTION: This is the module to scoring the adaptive response accroding
 #               to stair case up and down input signal
@@ -19,7 +19,7 @@ use strict;
 use warnings;
 use diagnostics;
 
-package Adaptation;
+package Adaptive;
 use Class::Std::Storable;
 use base qw(Scoring);
 {
@@ -758,7 +758,7 @@ vmem = 200000000
 #----------------------------------------
 # WORKSPACE AND CUSTOM SCORING MODULES
 #----------------------------------------
-scoring_class = Adaptation
+scoring_class = Adaptive
 work_dir = adaptive
 local_dir = adaptive/localdir
 
@@ -890,7 +890,7 @@ END
 
     burp_file("test/custom/Adaptive.cfg", $config_file);
 
-    my $scoring_ref = Adaptation->new({
+    my $scoring_ref = Adaptive->new({
             node_ID => 98,
             config_file => "test/custom/Adaptive.cfg",
             work_dir    => "test/custom",
