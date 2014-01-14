@@ -497,9 +497,10 @@ use base qw(Scoring);
                         foreach my $domain_ref (@domains) {
                             $pd_num += scalar $domain_ref->get_protodomains();
                         }
-                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration})
+                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration});
                     }
-                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 50;
+                    $expression_cost -= $config_ref->{TG_init};
+                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 500;
                     $stats_ref->{expression_score} = n_hill($expression_cost, $expression_threshold, 1);
                 }
             }
