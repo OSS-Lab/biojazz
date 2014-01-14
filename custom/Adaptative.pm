@@ -700,8 +700,7 @@ use base qw(Scoring);
             $final_score =  ($network_score * $g0n + $g0)**$w_n;
             # optimize complexity only if the network is connected
             $final_score *= (1e-3 + $complexity_score * $g0)**$w_c;
-            # optimize expression if ANC output ok and no timeout during simulation
-            $final_score *= (1e-6 + $expression_score * $g1)**$w_e;
+            $final_score *= (1e-3 + $expression_score * $g0)**$w_e;
             # optimize multistability if ANC output ok and no timeout during simulation
             $final_score *= (1e-6 + $adaptation_score * $g1)**$w_a;
 
