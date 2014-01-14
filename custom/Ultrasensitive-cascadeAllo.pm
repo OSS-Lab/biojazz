@@ -505,9 +505,10 @@ use base qw(Scoring);
                         foreach my $domain_ref (@domains) {
                             $pd_num += scalar $domain_ref->get_protodomains();
                         }
-                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration})
+                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration});
                     }
-                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 50;
+                    $expression_cost -= $config_ref->{TG_init};
+                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 500;
                     $stats_ref->{expression_score} = n_hill($expression_cost, $expression_threshold, 1);
                 }
             }
@@ -786,7 +787,7 @@ use base qw(Scoring);
         my $steady_state_score = $stats_ref->{steady_state_score} = $stats_ref->{steady_state_score} || 0;
         my $amplitude_score = $stats_ref->{amplitude_score} = $stats_ref->{amplitude_score} || 0;
         my $ultrasensitivity_score = $stats_ref->{ultrasensitivity_score} = $stats_ref->{ultrasensitivity_score} || 0;
-
+        my $expression_score = $stats_ref->{expression_score} = $stats_ref->{expression_score} || 0;
 
         if ($parse_successful) {
             my $w_n = $config_ref->{w_n};
@@ -794,6 +795,7 @@ use base qw(Scoring);
             my $w_s = $config_ref->{w_s};
             my $w_a = $config_ref->{w_a};
             my $w_u = $config_ref->{w_u};
+            my $w_e = $config_ref->{w_e};
 
             # is the input connected to the output?
             my $g0  = $stats_ref->{network_connected_flag} ? 1 : 0;
@@ -810,12 +812,13 @@ use base qw(Scoring);
             $final_score =  ($network_score * $g0n + $g0)**$w_n;
             # optimize complexity only if the network is connected
             $final_score *= (1e-3 + $complexity_score * $g0)**$w_c;
+            $final_score *= (1e-3 + $expression_score * $g0)**$w_e;
             # optimize amplitude if ANC output ok and no timeout during simulation
             $final_score *= (1e-6 + $amplitude_score * $g1)**$w_a;
             # optimize ultrasensitivity if ANC output ok and no timeout during simulation
             $final_score *= (1e-6 + $ultrasensitivity_score * $g1)**$w_u;
 
-            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_u));  # re-normalization
+            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_u + $w_e));  # re-normalization
         }
 
 
@@ -958,6 +961,7 @@ ultrasensitivity_threshold = 5  # ratio of 2nd step over 1st step
 
 w_n = 0.0
 w_c = 0.5
+w_e = 0.5
 w_s = 1.0
 w_a = 1.0
 w_u = 1.0

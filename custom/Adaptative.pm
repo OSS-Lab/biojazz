@@ -497,9 +497,10 @@ use base qw(Scoring);
                         foreach my $domain_ref (@domains) {
                             $pd_num += scalar $domain_ref->get_protodomains();
                         }
-                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration})
+                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration});
                     }
-                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 50;
+                    $expression_cost -= $config_ref->{TG_init};
+                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 500;
                     $stats_ref->{expression_score} = n_hill($expression_cost, $expression_threshold, 1);
                 }
             }
@@ -630,37 +631,23 @@ use base qw(Scoring);
                     my $max_dy = $config_ref->{TG_init};
                     my $steps = defined $config_ref->{LG_steps} ? $config_ref->{LG_steps} : 1;
                     confess "The steps number is not consist as sampling times number" if ($steps != scalar(@ss_output_vector)/2 || $steps != scalar(@diff_output_vector)/2);
-                    my $adaptation_diff_threshold = (defined $config_ref->{adaptation_diff_threshold}) ? $config_ref->{adaptation_diff_threshold} : 0.25;
-                    my $adaptation_ss_threshold = (defined $config_ref->{adaptation_ss_threshold}) ? $config_ref->{adaptation_ss_threshold} : 0.01;
-                    $adaptation_diff_threshold = $adaptation_diff_threshold * $max_dy / 2;
-                    $adaptation_ss_threshold = $adaptation_ss_threshold * $max_dy / 2;
-                    my $up_diff_adaptation = 0.0001;
-                    my $down_diff_adaptation = 0.0001;
-                    my $up_ss_adaptation = 0.0001;
-                    my $down_ss_adaptation = 0.0001;
+                    my $up_adaptation = 0.0001;
+                    my $down_adaptation = 0.0001;
                     for (my $j = 0; $j < $steps; $j++) {
-                        $up_diff_adaptation *= p_hill($diff_output_vector[$j], $adaptation_diff_threshold, 1);
-                        $down_diff_adaptation *= p_hill($diff_output_vector[2*$steps-$j-1], $adaptation_diff_threshold, 1);
-                        $up_ss_adaptation *= n_hill($ss_output_vector[$j], $adaptation_ss_threshold, 1);
-                        $down_ss_adaptation *= n_hill($ss_output_vector[2*$steps-$j-1], $adaptation_ss_threshold, 1);
+                        $up_adaptation *= (min_numeric($diff_output_vector[$j] * 2 / $max_dy, 1-1e-3) + 1e-3);
+                        $down_adaptation *= (min_numeric($diff_output_vector[2*$steps-$j-1] * 2 / $max_dy, 1-1e-3) + 1e-3);
+                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[$j] * 2 / $max_dy, 1e-3), 1) + 1e-3);
+                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$steps-$j-1] * 2 / $max_dy, 1e-3), 1) + 1e-3);
                     }
                     ##########################################
-                    $up_diff_adaptation /= 0.0001;
-                    $down_diff_adaptation /= 0.0001;
-                    $up_ss_adaptation /= 0.0001;
-                    $down_ss_adaptation /= 0.0001;
-                    $up_diff_adaptation **= (1/$steps);
-                    $down_diff_adaptation **= (1/$steps);
-                    $up_ss_adaptation **= (1/$steps);
-                    $down_ss_adaptation **= (1/$steps);
-                    my $w_diff = defined $config_ref->{w_diff} ? $config_ref->{w_diff} : 1.0;
-                    my $w_ss = defined $config_ref->{w_ss} ? $config_ref->{w_ss} : 1.0;
+                    $up_adaptation /= 0.0001;
+                    $down_adaptation /= 0.0001;
+                    $up_adaptation **= (1/$steps/2);
+                    $down_adaptation **= (1/$steps/2);
                     my $w_down = defined $config_ref->{w_down} ? $config_ref->{w_down} : 1.0;
                     my $w_up = defined $config_ref->{w_up} ? $config_ref->{w_up} : 1.0;
 
-                    my $up_adaptation_score = $stats_ref->{up_adaptation_score} = (($up_diff_adaptation ** $w_diff) * ($up_ss_adaptation ** $w_ss))**(1/($w_diff+$w_ss));
-                    my $down_adaptation_score = $stats_ref->{down_adaptation_score} = (($down_diff_adaptation ** $w_diff)*($down_ss_adaptation**$w_ss))**(1/($w_diff+$w_ss));
-                    $stats_ref->{adaptation_score} = (($up_adaptation_score**$w_up)*($down_adaptation_score**$w_down))**(1/($w_up+$w_down));
+                    $stats_ref->{adaptation_score} = (($up_adaptation**$w_up)*($down_adaptation**$w_down))**(1/($w_up+$w_down));
                 }
             }
         }  # if $parse_successful
@@ -700,8 +687,7 @@ use base qw(Scoring);
             $final_score =  ($network_score * $g0n + $g0)**$w_n;
             # optimize complexity only if the network is connected
             $final_score *= (1e-3 + $complexity_score * $g0)**$w_c;
-            # optimize expression if ANC output ok and no timeout during simulation
-            $final_score *= (1e-6 + $expression_score * $g1)**$w_e;
+            $final_score *= (1e-3 + $expression_score * $g0)**$w_e;
             # optimize multistability if ANC output ok and no timeout during simulation
             $final_score *= (1e-6 + $adaptation_score * $g1)**$w_a;
 

@@ -497,9 +497,10 @@ use base qw(Scoring);
                         foreach my $domain_ref (@domains) {
                             $pd_num += scalar $domain_ref->get_protodomains();
                         }
-                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration})
+                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration});
                     }
-                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 50;
+                    $expression_cost -= $config_ref->{TG_init};
+                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 500;
                     $stats_ref->{expression_score} = n_hill($expression_cost, $expression_threshold, 1);
                 }
             }
@@ -630,12 +631,12 @@ use base qw(Scoring);
 
                     my $t_bottom2 = $sampling_times[$i_dy2_bottom];
                     my $t_top2 = $sampling_times[$i_dy2_top];
-                    my $t_bottom_n2 = $sampling_times[$i_dy2n_bottom];
-                    my $t_top_n2 = $sampling_times[$i_dy2n_top];
+                    my $t_bottom_2n = $sampling_times[$i_dy2n_bottom];
+                    my $t_top_2n = $sampling_times[$i_dy2n_top];
                     my $t_bottom4 = $sampling_times[$i_dy4_bottom];
                     my $t_top4 = $sampling_times[$i_dy4_top];
-                    my $t_bottom_n4 = $sampling_times[$i_dy4n_bottom];
-                    my $t_top_n4 = $sampling_times[$i_dy4n_top];
+                    my $t_bottom_4n = $sampling_times[$i_dy4n_bottom];
+                    my $t_top_4n = $sampling_times[$i_dy4n_top];
 
                     my $pos2_t1 = $pos_output_vector[$i_dy2_bottom];
                     my $pos2_t2 = $pos_output_vector[$i_dy2_top];
@@ -751,6 +752,8 @@ use base qw(Scoring);
                     printn "dy1n = $dy1n dy2n = $dy2n dy3n=$dy3n dy4n = $dy4n dy5n = $dy5n" if $verbosity > 1;
 
                     my $max_dy = $config_ref->{TG_init};
+                    my $w_a_1 = defined $config_ref->{w_a_1} ? $config_ref->{w_a_1} : 1.0;
+                    my $w_a_2 = defined $config_ref->{w_a_2} ? $config_ref->{w_a_2} : 1.0;
 
                     my $amplitude = 0;
                     my $step1_bottom_dy = 0;
@@ -758,7 +761,9 @@ use base qw(Scoring);
                     my $step2_bottom_dy = 0;
                     my $step2_top_dy = 0;
                     if ($delta > 0 && $max_dy != 0 && $dy2 > 0 && $dy2n > 0 && $dy4 > 0 && $dy4n > 0) {
-                        $amplitude = ($dy2 + $dy2n + $dy4 + $dy4n)/2/$max_dy;
+                        my $amplitude1 = ($dy2 + $dy2n)/$max_dy;
+                        my $amplitude2 = ($dy4 + $dy4n)/$max_dy;
+                        $amplitude = (($amplitude1**$w_a_1) * ($amplitude2**$w_a_2))**(1/($w_a_1+$w_a_2));
                         my $mean_dy1 = ($dy1 + $dy1n)/2;
                         my $mean_dy2 = ($dy2 + $dy2n)/2;
                         my $mean_dy3 = ($dy3 + $dy3n)/2;
@@ -771,10 +776,10 @@ use base qw(Scoring);
                         $step2_top_dy = $mean_dy4/($mean_dy5 + 0.001);
                     }
                     $stats_ref->{amplitude_score} = $amplitude;
-                    my $w_m1_bot = $config_ref->{w_m1_bot};
-                    my $w_m1_top = $config_ref->{w_m1_top};
-                    my $w_m2_bot = $config_ref->{w_m2_bot};
-                    my $w_m2_top = $config_ref->{w_m2_top};
+                    my $w_m1_bot = defined $config_ref->{w_m1_bot} ? $config_ref->{w_m1_bot} : 1.0;
+                    my $w_m1_top = defined $config_ref->{w_m1_top} ? $config_ref->{w_m1_top} : 1.0;
+                    my $w_m2_bot = defined $config_ref->{w_m2_bot} ? $config_ref->{w_m2_bot} : 1.0;
+                    my $w_m2_top = defined $config_ref->{w_m2_top} ? $config_ref->{w_m2_top} : 1.0;
                     $stats_ref->{multistability_score} = (
                         (p_hill($step1_bottom_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m1_bot) *
                         (p_hill($step1_top_dy, $config_ref->{ultrasensitivity_threshold}, 1)**$w_m1_top) *
@@ -811,7 +816,7 @@ use base qw(Scoring);
         my $steady_state_score = $stats_ref->{steady_state_score} = $stats_ref->{steady_state_score} || 0;
         my $amplitude_score = $stats_ref->{amplitude_score} = $stats_ref->{amplitude_score} || 0;
         my $multistability_score = $stats_ref->{multistability_score} = $stats_ref->{multistability_score} || 0;
-
+        my $expression_score = $stats_ref->{expression_score} = $stats_ref->{expression_score} || 0;
 
         if ($parse_successful) {
             my $w_n = $config_ref->{w_n};
@@ -819,6 +824,7 @@ use base qw(Scoring);
             my $w_s = $config_ref->{w_s};
             my $w_a = $config_ref->{w_a};
             my $w_m = $config_ref->{w_m};
+            my $w_e = $config_ref->{w_e};
 
             # is the input connected to the output?
             my $g0  = $stats_ref->{network_connected_flag} ? 1 : 0;
@@ -835,12 +841,13 @@ use base qw(Scoring);
             $final_score =  ($network_score * $g0n + $g0)**$w_n;
             # optimize complexity only if the network is connected
             $final_score *= (1e-3 + $complexity_score * $g0)**$w_c;
+            $final_score *= (1e-3 + $expression_score * $g0)**$w_e;
             # optimize amplitude if ANC output ok and no timeout during simulation
             $final_score *= (1e-6 + $amplitude_score * $g1)**$w_a;
             # optimize multistability if ANC output ok and no timeout during simulation
             $final_score *= (1e-6 + $multistability_score * $g1)**$w_m;
 
-            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_m));  # re-normalization
+            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_m + $w_e));  # re-normalization
         }
 
 

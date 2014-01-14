@@ -505,9 +505,10 @@ use base qw(Scoring);
                         foreach my $domain_ref (@domains) {
                             $pd_num += scalar $domain_ref->get_protodomains();
                         }
-                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration})
+                        $expression_cost += $pd_num * ($gene_instance_ref->get_translation_ref()->{regulated_concentration});
                     }
-                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 50;
+                    $expression_cost -= $config_ref->{TG_init};
+                    my $expression_threshold = defined $config_ref->{expression_threshold} ? $config_ref->{expression_threshold} : 500;
                     $stats_ref->{expression_score} = n_hill($expression_cost, $expression_threshold, 1);
                 }
             }
@@ -786,7 +787,7 @@ use base qw(Scoring);
         my $steady_state_score = $stats_ref->{steady_state_score} = $stats_ref->{steady_state_score} || 0;
         my $amplitude_score = $stats_ref->{amplitude_score} = $stats_ref->{amplitude_score} || 0;
         my $ultrasensitivity_score = $stats_ref->{ultrasensitivity_score} = $stats_ref->{ultrasensitivity_score} || 0;
-
+        my $expression_score = $stats_ref->{expression_score} = $stats_ref->{expression_score} || 0;
 
         if ($parse_successful) {
             my $w_n = $config_ref->{w_n};
@@ -794,6 +795,7 @@ use base qw(Scoring);
             my $w_s = $config_ref->{w_s};
             my $w_a = $config_ref->{w_a};
             my $w_u = $config_ref->{w_u};
+            my $w_e = $config_ref->{w_e};
 
             # is the input connected to the output?
             my $g0  = $stats_ref->{network_connected_flag} ? 1 : 0;
@@ -810,12 +812,13 @@ use base qw(Scoring);
             $final_score =  ($network_score * $g0n + $g0)**$w_n;
             # optimize complexity only if the network is connected
             $final_score *= (1e-3 + $complexity_score * $g0)**$w_c;
+            $final_score *= (1e-3 + $expression_score * $g0)**$w_e;
             # optimize amplitude if ANC output ok and no timeout during simulation
             $final_score *= (1e-6 + $amplitude_score * $g1)**$w_a;
             # optimize ultrasensitivity if ANC output ok and no timeout during simulation
             $final_score *= (1e-6 + $ultrasensitivity_score * $g1)**$w_u;
 
-            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_u));  # re-normalization
+            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_u + $w_e));  # re-normalization
         }
 
 
@@ -958,6 +961,7 @@ ultrasensitivity_threshold = 5  # ratio of 2nd step over 1st step
 
 w_n = 0.0
 w_c = 0.5
+w_e = 0.5
 w_s = 1.0
 w_a = 1.0
 w_u = 1.0
@@ -1060,21 +1064,6 @@ END
                             RT_phi => 1.0,
                             protodomains => [
                                 {
-                                    type => "csite",
-                                    substrate_polarity => 0,
-                                    binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
-                                    kf_profile => "11010111000001100000",
-                                    kb_profile => "11101010101110011000",
-                                    kp_profile => "11001011010100010000",
-                                    Keq_ratio => 1.0,
-                                    kf_polarity_mask => "0",
-                                    kb_polarity_mask => "0",
-                                    kf_conformation_mask => "11111100111111001110",
-                                    kb_conformation_mask => "0",
-                                    kp_conformation_mask => "0",
-                                    UNUSED => "0",
-                                },
-                                {
                                     type => "bsite",
                                     substrate_polarity => 0,
                                     binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
@@ -1089,6 +1078,114 @@ END
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
                                 },
+                                {
+                                    type => "csite",
+                                    substrate_polarity => 0,
+                                    binding_profile => "0010010100",
+                                    kf_profile => "11010111000001100000",
+                                    kb_profile => "11101010101110011000",
+                                    kp_profile => "11001011010100010000",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 1.0, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.00,
+                            TR_transition_rate => 1.00,
+                            RT_phi => 1.0,
+                            protodomains => [
+                                {
+                                    type => "msite",
+                                    substrate_polarity => 0,
+                                    binding_profile => BindingProfile->binding_complement("0010010100")->sprint(),
+                                    kf_profile => "01111111010110111000",
+                                    kb_profile => "10011001111111001000",
+                                    kp_profile => "01110100110011000011",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11101101111111111000",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                                {
+                                    type => "csite",
+                                    substrate_polarity => 0,
+                                    binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
+                                    kf_profile => "11010111000001100000",
+                                    kb_profile => "11101010101110011000",
+                                    kp_profile => "11001011010100010000",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 0.1, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.0,
+                            TR_transition_rate => 1.0,
+                            RT_phi => 0.0,
+                            protodomains => [
+                                {
+                                    type => "csite",
+                                    substrate_polarity => 1,
+                                    binding_profile => "0010010100",
+                                    kf_profile => "11010111000001100000",
+                                    kb_profile => "11101010101110011000",
+                                    kp_profile => "11001011010100010000",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 0.1, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.0,
+                            TR_transition_rate => 1.0,
+                            RT_phi => 0.0,
+                            protodomains => [
                                 {
                                     type => "csite",
                                     substrate_polarity => 1,
