@@ -680,8 +680,6 @@ use base qw(Scoring);
             # No strange numerical problems?
             my $g1  = !$stats_ref->{timeout_flag} && $stats_ref->{sim_flag} ? 1 : 0;
             # is the output amplitude large enough that the output can be trusted artifact-free?
-            my $g3  = $g1 && ($stats_ref->{delta_score} > 0.5) ? 1 : 0;
-            my $g3n = !$g3 ? 1 : 0;
 
             # don't optimize network_score once the network is connected
             $final_score =  ($network_score * $g0n + $g0)**$w_n;
