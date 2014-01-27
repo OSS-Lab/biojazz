@@ -758,7 +758,7 @@ initial_genome = load test/custom/Adaptive.obj
 
 # Scaling: all concentrations in uM, all 2nd-order rates in uM^-1 s^-1
 # Genome class
-radius = 2      # should be reasonable. Binomial[Width,radius..0]/2^width
+radius = 10      # should be reasonable. Binomial[Width,radius..0]/2^width
 kf_max = 1e3    # uM^-1 s^-1
 kf_min = 1e-3
 kb_max = 1e3
@@ -785,7 +785,7 @@ RT_phi_max = 1.0
 RT_phi_min = 0.0
 
 # ProtoDomain class
-binding_profile_width = 10
+binding_profile_width = 20
 kf_profile_width = 20
 kb_profile_width = 20
 kp_profile_width = 10
@@ -843,7 +843,7 @@ adaptation_ss_threshold = 0.1
 
 w_n = 0.0
 w_c = 0.5   # complexity score weight   
-w_e = 1.0
+w_e = 0.5
 w_s = 1.0
 w_a = 1.0  # adaptation score weight
 w_diff = 1.0
@@ -869,8 +869,8 @@ cell_volume = 1e-18             # 1e-18L --> sub-cellular volume
 # to make sure the input and output have relatively large distance and also have relative large distance from themselves
 # and also make sure their binding partner to have relatively large distance in this case the intermediate binding profile could be 0010110100 have both 5 distanct to all four binding profiles
 # it depends the problem, whether want far distances between initial profiles or shorter distances
-lg_binding_profile = 0100111010
-tg_binding_profile = 0111000110   
+lg_binding_profile = 00100010011101010100
+tg_binding_profile = 01101001111011010010
 
 END
 
@@ -951,7 +951,7 @@ END
                                 {
                                     type => "csite",
                                     substrate_polarity => 0,
-                                    binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
+                                    binding_profile => "11110100100010111011",
                                     kf_profile => "11010111000001100000",
                                     kb_profile => "11101010101110011000",
                                     kp_profile => "11001011010100010000",
@@ -963,25 +963,27 @@ END
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
                                 },
-                                {
-                                    type => "bsite",
-                                    substrate_polarity => 0,
-                                    binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
-                                    kf_profile => "00101000100100010010",
-                                    kb_profile => "11001000110000001000",
-                                    kp_profile => "00011111000111110011",
-                                    Keq_ratio => 1.0,
-                                    kf_polarity_mask => "0",
-                                    kb_polarity_mask => "0",
-                                    kf_conformation_mask => "11111100111111001110",
-                                    kb_conformation_mask => "0",
-                                    kp_conformation_mask => "0",
-                                    UNUSED => "0",
-                                },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 1.0, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.00,
+                            TR_transition_rate => 1.00,
+                            RT_phi => 1.0,
+                            protodomains => [
+
                                 {
                                     type => "csite",
                                     substrate_polarity => 1,
-                                    binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
+                                    binding_profile => "10010101000101101001",
                                     kf_profile => "11010111000001100000",
                                     kb_profile => "11101010101110011000",
                                     kp_profile => "11001011010100010000",
