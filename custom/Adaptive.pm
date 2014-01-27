@@ -636,8 +636,8 @@ use base qw(Scoring);
                     for (my $j = 0; $j < $steps; $j++) {
                         $up_adaptation *= (min_numeric($diff_output_vector[$j] * 2 / $max_dy, 1-1e-3) + 1e-3);
                         $down_adaptation *= (min_numeric($diff_output_vector[2*$steps-$j-1] * 2 / $max_dy, 1-1e-3) + 1e-3);
-                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[$j] * 2 / $max_dy, 1e-3), 1) + 1e-3);
-                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$steps-$j-1] * 2 / $max_dy, 1e-3), 1) + 1e-3);
+                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[$j] * 2 / $max_dy / 0.1, 1e-3), 1) + 1e-3);
+                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$steps-$j-1] * 2 / $max_dy / 0.1, 1e-3), 1) + 1e-3);
                     }
                     ##########################################
                     $up_adaptation /= 0.0001;
