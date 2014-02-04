@@ -729,12 +729,11 @@ use base qw(Model);
         my $genes_rate = $genome_parser_ref->get_field_mutation_rate("genes");
         $genome_parser_ref->set_field_mutation_rate("genes", 0.0);
         my $mutated_junk_bits = $self->get_genome()->mutate($mutation_rate);
-        printn "mutated $mutated_junk_bits bits in junk dna" if $verbosity >= 1;
         # now mutate genes themselves, restoring saved rate
         $genome_parser_ref->set_field_mutation_rate("genes", $genes_rate);
         my @mutated_list = $self->mutate_genes($mutation_rate);
         my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
-        my $history = "POINT MUTATION (GLOBAL) $total_bits bits in genes ". join ",", @mutated_list;
+        my $history = "POINT MUTATION (GLOBAL): $mutated_junk_bits bits in junk dna, $total_bits bits in genes ". join ",", @mutated_list;
         printn $history if $verbosity >= 1;
         $self->add_history($history);
 
@@ -991,7 +990,7 @@ use base qw(Model);
 
         $sequence_ref->splice_subseq($mu_seq, $mu_locus);
  
-        return length($mu_seq);
+        return ($duplicate_num, length($mu_seq));
     }
 
 
@@ -1025,7 +1024,7 @@ use base qw(Model);
         my $delete_num = abs($interpds[1] - $interpds[0]);
         
         if ($delete_num == $num_protodomains) {
-            return (- $delete_num);
+            return (-$delete_num, 0);
         }
 
         my $cut_locus; my $cut_length;
@@ -1076,7 +1075,7 @@ use base qw(Model);
         
         $sequence_ref->splice_subseq("", $cut_locus, $cut_length);
  
-        return $cut_length;
+        return ($delete_num, $cut_length);
     }
 
 
@@ -1273,7 +1272,7 @@ use base qw(Model);
                         my ($duplicated_gene, $duplicate_start, $length) = $self->duplicate_gene($gene_name);
 
                         my $duplicate_name = sprintf("G%04d",$duplicate_start);
-                        my $history = "DUPLICATION of gene $duplicated_gene"; 
+                        my $history = "DUPLICATION: duplicate gene $duplicated_gene"; 
                         printn $history if $verbosity > 1;
                         $self->add_history($history);
 
@@ -1298,7 +1297,7 @@ use base qw(Model);
                 if ($self->check() && $num_genes >= 2) {
                     for (my $i = 0; $i < $num_genes; $i ++) {
                         if (rand() < $recombination_rate) {
-                            printn "MUTATION: RECOMBINATION" if $verbosity >= 1;
+                            printn "MUTATION: RECOMBINATION" if $verbosity > 0;
                             my $gene1_index = $i;
                             my $gene2_index;
                             do {
@@ -1307,7 +1306,7 @@ use base qw(Model);
                             my $gene1_name = $self->get_gene_by_index($gene1_index)->get_name();
                             my $gene2_name = $self->get_gene_by_index($gene2_index)->get_name();
                             my ($recombinatory_start, $length) = $self->recombine_genes($gene1_index, $gene2_index);
-                            my $history = "RECOMBINATION ($gene1_name, $gene2_name) to G$recombinatory_start";
+                            my $history = "RECOMBINATION: recombine ($gene1_name, $gene2_name) to G$recombinatory_start with length $length";
                             printn $history if $verbosity > 1;
                             $self->add_history($history);
 
@@ -1345,17 +1344,19 @@ use base qw(Model);
                             confess "The index of gene instances are not consistent with index of gene_refs array";
                         }
                         if (rand() < $domain_duplication_rate) {
-                            my $duplicate_num = $self->duplicate_domain($i);
-                            printn "Mutate: duplicated $duplicate_num domains in gene $gene_name" if $verbosity >= 1;
-
+                            my ($duplicate_num, $length) = $self->duplicate_domain($i);
                             # update the parser instances and gene_refs after reparsing
-                            if ($duplicate_num) {
+                            if ($length) {
+                                my $history = "DOMAIN DUPLICATION: duplicated $duplicate_num domains with total length $length in gene $gene_name";
+                                printn $history if $verbosity > 1;
+                                $self->add_history($history);
+
                                 # post domain_duplication parsing
                                 $self->parse();
                                 undef @gene_refs;
                                 @gene_refs = $self->get_genes();
                                 $duplication_count++;
-                                $duplication_bits += $duplicate_num;
+                                $duplication_bits += $length;
                             }
                         }
                     }
@@ -1384,20 +1385,22 @@ use base qw(Model);
                             confess "The index of gene instances are not consistent with index of gene_refs array";
                         }
                         if (rand() < $domain_deletion_rate) {
-                            my $deleted_num = $self->delete_domain($i);
-                            printn "Mutate: deleted $deleted_num domains in gene $gene_name" if $verbosity >= 1;
-
+                            my ($deleted_num, $length) = $self->delete_domain($i);
                             # update the parser instances and gene_refs after reparsing
                             if ($deleted_num < 0) {
                                 push(@gene_need_delete_indice, $i);
                             }
-                            elsif ($deleted_num > 0) {
+                            elsif ($length > 0) {
+                                my $history = "DOMAIN DELETION: deleted $deleted_num domains with total $length bits in gene $gene_name";
+                                printn $history if $verbosity > 1;
+                                $self->add_history($history);
+
                                 # post domain_deletion parsing
                                 $self->parse();
                                 undef @gene_refs;
                                 @gene_refs = $self->get_genes();
                                 $deletion_count++;
-                                $deletion_bits += $deleted_num;
+                                $deletion_bits += $length;
                             }
                         }
                     }
@@ -1425,7 +1428,7 @@ use base qw(Model);
                                 my $length = $gene_need_delete->get_length();
                                 $self->delete_gene($gene_need_delete);
                                 my $deleted_gene_name = $gene_need_delete->get_name();
-                                my $history = "DELETION of gene $deleted_gene_name";
+                                my $history = "DELETION: delete gene $deleted_gene_name";
                                 printn $history if $verbosity > 1;
                                 $self->add_history($history);
 
@@ -1440,17 +1443,17 @@ use base qw(Model);
                             my $num_genes_left = $pre_num_genes - scalar @genes_need_delete;
                             my $current_num_genes = $self->get_num_genes();
                             printn "Warning: The number of genes after deletion is not consistant with of left ones." if ($current_num_genes != $num_genes_left);
-                            my $erased_gene_num = 0;
+                            my $deleted_gene_num = 0;
                             GENE_DELETION: {
                                 for (my $i = 0; $i < $current_num_genes; $i++) {
-                                    if ($current_num_genes - $erased_gene_num == 1) {
+                                    if ($current_num_genes - $deleted_gene_num == 1) {
                                         last GENE_DELETION;
                                     }
                                     elsif (rand() < $gene_deletion_rate) {
-                                        my $erased_gene_ref = $self->erase_random_gene();
-                                        my $length = $erased_gene_ref->get_length();
-                                        my $erased_gene_name = $erased_gene_ref->get_name();
-                                        my $history = "ERASION of gene $erased_gene_name";
+                                        my $deleted_gene_ref = $self->delete_random_gene();
+                                        my $length = $deleted_gene_ref->get_length();
+                                        my $deleted_gene_name = $deleted_gene_ref->get_name();
+                                        my $history = "DELETION: delete gene $deleted_gene_name";
                                         printn $history if $verbosity > 1;
                                         $self->add_history($history);
 
@@ -1460,7 +1463,7 @@ use base qw(Model);
                                         # conuting the deleted gene number to calculate number of rest genes
                                         $deletion_count++;
                                         $deletion_bits += $length;
-                                        $erased_gene_num++;
+                                        $deleted_gene_num++;
                                     }
                                 }
                             }
@@ -1488,7 +1491,7 @@ use base qw(Model);
                     );
                     my @mutated_list = $self->mutate_genes($mutation_rate_params);
                     my $total_bits = 0; for (my $i = 0; $i < @mutated_list; $i++) {$total_bits += $mutated_list[$i] if $i % 2};
-                    my $history = "POINT MUTATION (PARAMS) $total_bits bits in genes ". join ",", @mutated_list;
+                    my $history = "POINT MUTATION (PARAMS): $total_bits bits in genes ". join ",", @mutated_list;
                     printn $history if $verbosity >= 1;
                     $self->add_history($history);
 
@@ -1507,7 +1510,7 @@ use base qw(Model);
             if ($mutation_rate_global > 0.0 && $mutation_rate_global <= 1.0)  # mutate the whole network
             {
                 if ($self->check()) {
-                    printn "mutate: POINT MUTATION (GLOBAL)" if $verbosity >= 1;
+                    printn "POINT MUTATION (GLOBAL)" if $verbosity >= 1;
                     $self->set_field_mutation_rates(
                         mutate_params_rate => 1.0,
                         mutate_network_rate => 1.0,
