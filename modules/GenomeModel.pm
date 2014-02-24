@@ -1310,13 +1310,13 @@ use base qw(Model);
                             printn $history if $verbosity > 1;
                             $self->add_history($history);
 
-                            if (rand() < $recombination_rate) {
-                                push @gene_deletion_from_shuffling, $i;
-                            }
-                            # post-mutation parsing
+                           # post-mutation parsing
                             $self->parse();
                             $shuffling_bits += $length;
                             $shuffling_count++;
+                        }
+                        if (rand() < $recombination_rate) {
+                            push @gene_deletion_from_shuffling, $i;
                         }
                     }
                 }
