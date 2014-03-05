@@ -194,7 +194,7 @@ save_genome($GENOME) if defined $GENOME && $STORE;
 
 score_generation(generation_num => $GENERATION) if defined $GENERATION && defined $config_ref->{config_file};
 
-rescore_genomes() if $RESCORE && defined $config_ref->{config_file};
+rescore_genomes() if $RESCORE && $POST_EVOLUTION && defined $config_ref->{config_file};
 
 
 if (defined $COMMAND) {

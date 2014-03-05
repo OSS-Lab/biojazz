@@ -44,6 +44,7 @@ collect_info_from_networks
 #######################################################################################
 use FindBin qw($Bin);
 use Storable qw(store retrieve);
+use Text::CSV;
 
 use Utils;
 use Globals qw ($verbosity $TAG $config_ref);
@@ -360,14 +361,28 @@ sub rescore_genomes {
     }
     my @genome_files = (glob $file_glob);
 
+    my $data_dir = "$config_ref->{work_dir}/$TAG/report";
+    my $file_name = "$data_dir/kinasePhosphatase.csv";
+    open my $data_file, ">> $file_name" or die "$file_name: $!";
+    my $csv = Text::CSV->new({binary => 1, eol => "\n"});
+    my @attributeNames = ("phoMin", "dephoMin", "phoMax", "dephoMax");
+    $csv->print($data_file, \@attributeNames);
+
     for (my $i = 0; $i < @genome_files; $i++) {
         my $genome_model_ref = retrieve("$genome_files[$i]");
         $scoring_ref->score_genome($genome_model_ref);
         $genome_model_ref->static_analyse($config_ref->{rescore_elite});
-        if ($config_ref->{restore_genome} == 1) {
-            store($genome_model_ref, "$genome_files[$i]");
-        }
+        my @attributes = ();
+        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_phosphorylation_min});
+        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_dephosphorylation_min});
+        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_phosphorylation_max});
+        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_dephosphorylation_max});
+        $csv->print($data_file, \@attributes);
+
+        undef $genome_model_ref;
     }
+    close($data_file) || warn "close failed: $!";
+
 
 } ## --- end sub rescore_genomes
 
