@@ -384,9 +384,9 @@ use base qw(Scoring);
                             $stats_ref->{$gene_name} = $protein_concentration;
                         }
                         my @phos_info = ();
-                        while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?\S+,\s+kb\s?=>\s?\S+,\s+kp\s?=>\s?(\S+),/g) {
-                            my $rule_name = 'phos_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
-                            my $rule_rate = $6 + 0;
+                        while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
+                            my $rule_name = 'K1_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
+                            my $rule_rate = ($7 + $8)/$6;
                             $stats_ref->{$rule_name} = $rule_rate;
                             push(@phos_info, $rule_rate);
                         }
@@ -404,11 +404,11 @@ use base qw(Scoring);
                         } else {
                             die "didn't find the rate of phosphorylation rule $stats_ref->{rule_name}";
                         }
-                        $min_phos += $min * $protein_concentration; $max_phos += $max * $protein_concentration;
+                        $min_phos += $min / $config_ref->{TG_init}; $max_phos += $max / $config_ref->{TG_init};
                     }
                 }
-                $stats_ref->{tg_phosphorylation_min} = $min_phos;
-                $stats_ref->{tg_phosphorylation_max} = $max_phos;
+                $stats_ref->{tg_K1_min} = $min_phos;
+                $stats_ref->{tg_K1_max} = $max_phos;
                 printn "phosphorylation min: $min_phos; phosphosrylation max: $max_phos" if $verbosity >= 1;
 
                 my $min_dephos = 0; my $max_dephos = 0;
@@ -422,9 +422,9 @@ use base qw(Scoring);
                             $stats_ref->{$gene_name} = $protein_concentration;
                         }
                         my @dephos_info = ();
-                        while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\n.*\n.*\n\s+kp\s?=>\s?(\S+),/g) {
-                            my $rule_name = 'dephos_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
-                            my $rule_rate = $6 + 0;
+                        while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
+                            my $rule_name = 'K2'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
+                            my $rule_rate = ($7 + $8)/$6;
                             $stats_ref->{$rule_name} = $rule_rate;
                             push(@dephos_info, $rule_rate);
                         }
@@ -442,11 +442,11 @@ use base qw(Scoring);
                         } else {
                             die "didn't find the rate of dephosphorylation rule $stats_ref->{rule_name}";
                         }
-                        $min_dephos += $min * $protein_concentration; $max_dephos += $max * $protein_concentration;
+                        $min_dephos += $min / $config_ref->{TG_init}; $max_dephos += $max / $config_ref->{TG_init};
                     }
                 }
-                $stats_ref->{tg_dephosphorylation_min} = $min_dephos;
-                $stats_ref->{tg_dephosphorylation_max} = $max_dephos;
+                $stats_ref->{tg_K2_min} = $min_dephos;
+                $stats_ref->{tg_K2_max} = $max_dephos;
                 printn "dephosphorylation min: $min_dephos; dephosphosrylation max: $max_dephos" if $verbosity >= 1;
             }
         }

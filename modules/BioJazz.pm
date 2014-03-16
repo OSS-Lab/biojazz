@@ -362,7 +362,7 @@ sub rescore_genomes {
     my @genome_files = (glob $file_glob);
 
     my $data_dir = "$config_ref->{work_dir}/$TAG/report";
-    my $file_name = "$data_dir/kinasePhosphatase.csv";
+    my $file_name = "$data_dir/kinasePhosphatase_K1_K2.csv";
     open my $data_file, ">> $file_name" or die "$file_name: $!";
     my $csv = Text::CSV->new({binary => 1, eol => "\n"});
     my @attributeNames = ("phoMin", "dephoMin", "phoMax", "dephoMax");
@@ -373,10 +373,10 @@ sub rescore_genomes {
         $scoring_ref->score_genome($genome_model_ref);
         $genome_model_ref->static_analyse($config_ref->{rescore_elite});
         my @attributes = ();
-        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_phosphorylation_min});
-        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_dephosphorylation_min});
-        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_phosphorylation_max});
-        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_dephosphorylation_max});
+        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_K1_min});
+        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_K2_min});
+        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_K1_max});
+        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_K2_max});
         $csv->print($data_file, \@attributes);
 
         undef $genome_model_ref;
