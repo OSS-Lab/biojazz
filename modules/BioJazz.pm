@@ -365,7 +365,7 @@ sub rescore_genomes {
     my $file_name = "$data_dir/K1_K2_output.csv";
     open my $data_file, ">> $file_name" or die "$file_name: $!";
     my $csv = Text::CSV->new({binary => 1, eol => "\n"});
-    my @attributeNames = ("K1_R", "K2_R", "K1_T", "K2_T");
+    my @attributeNames = ("K1", "K2");
     $csv->print($data_file, \@attributeNames);
 
     for (my $i = 0; $i < @genome_files; $i++) {
@@ -373,10 +373,8 @@ sub rescore_genomes {
         $scoring_ref->score_genome($genome_model_ref);
         $genome_model_ref->static_analyse($config_ref->{rescore_elite});
         my @attributes = ();
-        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_K1_R});
-        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_K2_R});
-        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_K1_T});
-        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_K2_T});
+        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_K1});
+        push(@attributes, $genome_model_ref->get_stats_ref()->{tg_K2});
         $csv->print($data_file, \@attributes);
 
         undef $genome_model_ref;
