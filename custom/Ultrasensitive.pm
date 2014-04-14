@@ -399,16 +399,17 @@ use base qw(Scoring);
                             }
                         }
                         for (my $i = 0; $i < @R_K1s; $i++) {
-                            $R_K1 += $R_K1s[$i];
+                            $R_K1 *= $R_K1s[$i];
                         }
                         for (my $i = 0; $i < @T_K1s; $i++) {
-                            $T_K1 += $T_K1s[$i];
+                            $T_K1 *= $T_K1s[$i];
                         }
                         $R_K1 /= $config_ref->{TG_init}; $T_K1 /= $config_ref->{TG_init};
                     }
                 }
-                $stats_ref->{tg_K1_R} = $R_K1;
-                $stats_ref->{tg_K1_T} = $T_K1;
+                $stats_ref->{tg_K1_R} = $R_K1^(1 / (scalar @R_K1s));
+                $stats_ref->{tg_K1_T} = $T_K1^(1 / (scalar @T_K1s));
+                $stats_ref->{tg_K1} = sqrt($R_K1 * $T_K1);
 
                 my $R_K2 = 0; my $T_K2 = 0;
                 if (scalar @adjacent_phosphatase_names > 0) {
@@ -436,16 +437,17 @@ use base qw(Scoring);
                             }
                         }
                         for (my $i = 0; $i < @R_K2s; $i++) {
-                            $R_K2 += $R_K2s[$i];
+                            $R_K2 *= $R_K2s[$i];
                         }
                         for (my $i = 0; $i < @T_K2s; $i++) {
-                            $T_K2 += $T_K2s[$i];
+                            $T_K2 *= $T_K2s[$i];
                         }
                         $R_K2 /= $config_ref->{TG_init}; $T_K2 /= $config_ref->{TG_init};
                     }
                 }
-                $stats_ref->{tg_K2_R} = $R_K2;
-                $stats_ref->{tg_K2_T} = $T_K2;
+                $stats_ref->{tg_K2_R} = $R_K2^(1 / (scalar @R_K2s));
+                $stats_ref->{tg_K2_T} = $T_K2^(1 / (scalar @T_K2s));
+                $stats_ref->{tg_K2} = sqrt($R_K2 * $T_K2);
             }
         }
 
