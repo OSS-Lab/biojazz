@@ -391,9 +391,9 @@ use base qw(Scoring);
                             push(@K1s, $rule_rate);
                         }
                         if (scalar @K1s > 0) {
-                            $K1 = $K1s[0];
+                            $K1 = $K1s[0] / $config_ref->{TG_init};
                             for (my $i = 1; $i < @K1s; $i++) {
-                                $K1 *= $K1s[$i];
+                                $K1 *= ($K1s[$i] / $config_ref->{TG_init});
                             }
                         } else {
                             die "didn't find the rate of phosphorylation rule";
@@ -421,9 +421,9 @@ use base qw(Scoring);
                             push(@K2s, $rule_rate);
                         }
                         if (scalar @K2s > 0) {
-                            $K2 = $K2s[0];
+                            $K2 = $K2s[0] / $config_ref->{TG_init};
                             for (my $i = 1; $i < @K2s; $i++) {
-                                $K2 *= $K2s[$i];
+                                $K2 *= ($K2s[$i] / $config_ref->{TG_init});
                             }
                         } else {
                             die "didn't find the rate of phosphorylation rule";
