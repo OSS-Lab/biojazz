@@ -373,7 +373,7 @@ use base qw(Scoring);
                 my @adjacent_phosphatase_names = map {$_->get_name()} @tg_adjacent_phosphatases;
                 my @phosphatase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @tg_adjacent_phosphatases;
                 
-                my $K1 = 0;
+                my $K1 = 0.0;
                 if (scalar @adjacent_kinase_names > 0) {
                     for (my $i = 0; $i < @adjacent_kinase_names; $i++) {
                         my $pd_name = $adjacent_kinase_names[$i];
@@ -398,12 +398,12 @@ use base qw(Scoring);
                         } else {
                             die "didn't find the rate of phosphorylation rule";
                         }
-                        $K1 = $K1^(1/(scalar @K1s));
+                        $K1 = $K1**(1/(scalar @K1s));
                     }
                 }
                 $stats_ref->{tg_K1} = $K1;
 
-                my $K2 = 0;
+                my $K2 = 0.0;
                 if (scalar @adjacent_phosphatase_names > 0) {
                     for (my $i = 0; $i < @adjacent_phosphatase_names; $i++) {
                         my $pd_name = $adjacent_phosphatase_names[$i];
@@ -428,7 +428,7 @@ use base qw(Scoring);
                         } else {
                             die "didn't find the rate of phosphorylation rule";
                         }
-                        $K2 = $K2^(1/(scalar @K2s));
+                        $K2 = $K2**(1/(scalar @K2s));
                     }
                 }
                 $stats_ref->{tg_K2} = $K2;
