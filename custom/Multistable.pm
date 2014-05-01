@@ -744,8 +744,8 @@ use base qw(Scoring);
                     my $step2_bottom_dy = 0;
                     my $step2_top_dy = 0;
                     if ($delta > 0 && $max_dy != 0 && $dy2 > 0 && $dy2n > 0 && $dy4 > 0 && $dy4n > 0) {
-                        my $amplitude1 = ($dy2 + $dy2n)/$max_dy > 1.0 ? 1.0 : ($dy2 + $dy2n)/$max_dy;
-                        my $amplitude2 = ($dy4 + $dy4n)/$max_dy > 1.0 ? 1.0 : ($dy4 + $dy4n)/$max_dy;
+                        my $amplitude1 = (min_numeric(($max_dy - $dy2),$dy2) + min_numeric(($max_dy - $dy2n),$dy2n))/$max_dy;
+                        my $amplitude2 = (min_numeric(($max_dy - $dy4),$dy4) + min_numeric(($max_dy - $dy4n),$dy4n))/$max_dy;
                         $amplitude = (($amplitude1**$w_a_1) * ($amplitude2**$w_a_2))**(1/($w_a_1+$w_a_2));
                         my $mean_dy1 = ($dy1 + $dy1n)/2;
                         my $mean_dy2 = ($dy2 + $dy2n)/2;
