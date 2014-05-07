@@ -92,7 +92,7 @@ use base qw(Scoring);
         #---------------------------------------------------------
         # CREATE I/O GENES
         #---------------------------------------------------------
-        my $lg0_sequence_ref = $genome_model_ref->get_gene_parser_ref()->create_sequence({
+        my $l0g_sequence_ref = $genome_model_ref->get_gene_parser_ref()->create_sequence({
                 START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
                 regulated_concentration => $config_ref->{regulated_concentration_min}, # all-zeroes
                 UNUSED => "0000",
@@ -106,7 +106,7 @@ use base qw(Scoring);
                             {
                                 type => "bsite",
                                 substrate_polarity => 0,
-                                binding_profile => $config_ref->{lg0_binding_profile},
+                                binding_profile => $config_ref->{l0g_binding_profile},
                                 kf_profile => "0",
                                 kb_profile => "0",
                                 kp_profile => "0",
@@ -123,8 +123,8 @@ use base qw(Scoring);
                     },
                 ],
             });
-        printn "lg0_sequence=".$lg0_sequence_ref->get_sequence() if $verbosity > 1;
-        my $tg0_sequence_ref = $genome_model_ref->get_gene_parser_ref()->create_sequence({
+        printn "l0g_sequence=".$l0g_sequence_ref->get_sequence() if $verbosity > 1;
+        my $t0g_sequence_ref = $genome_model_ref->get_gene_parser_ref()->create_sequence({
                 START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
                 regulated_concentration => $config_ref->{TG_init}, # all-zeroes
                 UNUSED => "0000",
@@ -138,7 +138,7 @@ use base qw(Scoring);
                             {
                                 type => "msite",
                                 substrate_polarity => 0,
-                                binding_profile => $config_ref->{tg0_binding_profile},
+                                binding_profile => $config_ref->{t0g_binding_profile},
                                 kf_profile => "0",
                                 kb_profile => "0",
                                 kp_profile => "0",
@@ -155,9 +155,9 @@ use base qw(Scoring);
                     },
                 ],
             });
-        printn "tg0_sequence=".$tg0_sequence_ref->get_sequence() if $verbosity > 1;
+        printn "t0g_sequence=".$t0g_sequence_ref->get_sequence() if $verbosity > 1;
 
-        my $lg1_sequence_ref = $genome_model_ref->get_gene_parser_ref()->create_sequence({
+        my $l1g_sequence_ref = $genome_model_ref->get_gene_parser_ref()->create_sequence({
                 START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
                 regulated_concentration => $config_ref->{regulated_concentration_min}, # all-zeroes
                 UNUSED => "0000",
@@ -171,7 +171,7 @@ use base qw(Scoring);
                             {
                                 type => "bsite",
                                 substrate_polarity => 0,
-                                binding_profile => $config_ref->{lg1_binding_profile},
+                                binding_profile => $config_ref->{l1g_binding_profile},
                                 kf_profile => "0",
                                 kb_profile => "0",
                                 kp_profile => "0",
@@ -188,8 +188,8 @@ use base qw(Scoring);
                     },
                 ],
             });
-        printn "lg1_sequence=".$lg1_sequence_ref->get_sequence() if $verbosity > 1;
-        my $tg1_sequence_ref = $genome_model_ref->get_gene_parser_ref()->create_sequence({
+        printn "l1g_sequence=".$l1g_sequence_ref->get_sequence() if $verbosity > 1;
+        my $t1g_sequence_ref = $genome_model_ref->get_gene_parser_ref()->create_sequence({
                 START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
                 regulated_concentration => $config_ref->{TG_init}, # all-zeroes
                 UNUSED => "0000",
@@ -203,7 +203,7 @@ use base qw(Scoring);
                             {
                                 type => "msite",
                                 substrate_polarity => 0,
-                                binding_profile => $config_ref->{tg1_binding_profile},
+                                binding_profile => $config_ref->{t1g_binding_profile},
                                 kf_profile => "0",
                                 kb_profile => "0",
                                 kp_profile => "0",
@@ -220,7 +220,72 @@ use base qw(Scoring);
                     },
                 ],
             });
-        printn "tg1_sequence=".$tg1_sequence_ref->get_sequence() if $verbosity > 1;
+        printn "t1g_sequence=".$t1g_sequence_ref->get_sequence() if $verbosity > 1;
+
+        #---------------------------------------------------------
+        # STIMULUS/SAMPLING EQUATIONS
+        #---------------------------------------------------------
+        # basically generate two square input signals for each two LG and overlap one of them but seperate the other ones.
+        # eventually we could generate such signal to calculate the output comparing input.
+        my $stimulus_sub_ref = \&{$config_ref->{stimulus}};
+        my $stimulus0_ref = undef;
+        my $stimulus1_ref = undef;
+        if ($config_ref->{stimulus} eq "clamping_equation") {
+            $stimulus0_ref = &$stimulus_sub_ref(
+                NODE => "L0G0000",
+                DELAY => $config_ref->{L0G_delay},
+                PERIOD => $config_ref->{L0G_period},
+                STRENGTH => $config_ref->{L0G_strength},
+                CONCENTRATION => $config_ref->{L0G_range},
+                DUTY => $config_ref->{L0G_duty},
+            );
+            $stimulus1_ref = &$stimulus_sub_ref(
+                NODE => "L1G0000",
+                DELAY => $config_ref->{L1G_delay},
+                PERIOD => $config_ref->{L1G_period},
+                STRENGTH => $config_ref->{L1G_strength},
+                CONCENTRATION => $config_ref->{L1G_range},
+                DUTY => $config_ref->{L1G_duty},
+            );
+        } else {
+            confess "ERROR: unknown stimulus subroutine";
+        }
+ 
+        my ($l0g_source_eqn, $l0g_sink_eqn) = @{$stimulus0_ref};
+        my ($l1g_source_eqn, $l1g_sink_eqn) = @{$stimulus1_ref};
+        if ($verbosity > 1) {
+            printn "Stimulus:";
+            printn $l0g_source_eqn;
+            printn $l0g_sink_eqn;
+            printn $l1g_source_eqn;
+            printn $l1g_sink_eqn;
+        }
+
+        #---------------------------------------------------------
+        # PARSE/TRANSLATE GENOME AND I/O GENES
+        #---------------------------------------------------------
+        my $genome_iref = $genome_model_ref->parse(
+            [
+                sequence_ref => $l0g_sequence_ref,
+                prefix => "L0",
+            ],
+            [
+                sequence_ref => $t0g_sequence_ref,
+                prefix => "T0",
+            ],
+            [
+                sequence_ref => $l1g_sequence_ref,
+                prefix => "L1",
+            ],
+            [
+                sequence_ref => $t1g_sequence_ref,
+                prefix => "T1",
+            ],
+        );
+        my $parse_successful = $stats_ref->{parse_successful} = $genome_model_ref->check();
+
+        my $history = $genome_model_ref->sprint_history(10);
+        printn $history if $verbosity > 1 || $config_ref->{sprint_history};
 
 
 
