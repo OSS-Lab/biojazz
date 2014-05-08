@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>BioJazz by LifeWorks</title>
+    <title>BioJazz by OSS-Lab</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -20,12 +20,12 @@
         <p class="header">Evolving &amp; Design Biochemical Reaction Networks</p>
 
         <ul>
-          <li class="download"><a class="buttons" href="https://github.com/LifeWorks/biojazz/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/LifeWorks/biojazz/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/LifeWorks/biojazz">View On GitHub</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/OSS-Lab/biojazz/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/OSS-Lab/biojazz/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/OSS-Lab/biojazz">View On GitHub</a></li>
         </ul>
 
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/LifeWorks">LifeWorks</a></p>
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/OSS-Lab">OSS-Lab</a></p>
 
 
       </header>
@@ -35,7 +35,7 @@
 
 <p>BioJazz is a tool for evolving and designing biochemical reaction networks using genetic algorithm (GA).  Typically, a BioJazz user wishes to evolve or design a small network or motif which accomplishes a specific function, such as a switch or an oscillator module.  The network comprises a set of proteins whose attributes are encoded in a network's ''genome''.  The ''genome'' is a binary string which  contains all the information necessary to determine how many proteins are present in the network, their structure, which proteins interact and the biochemical parameters of their interaction. </p>
 
-<p>BioJazz implements a genetic algorithm which through a random process of replication, mutation, and selection (with either population-based or random walk style), attempts to incrementally improve how well those "genomes" perform a user-specified function. By encoding the network in a fashion that mimics the way nature does, BioJazz can use a larger variety of mutational operators than do traditional GAs (which use point mutations and crossover), such as gene duplications, gene deletions, and domain shuffling.  Thus, BioJazz has the ability to change and evolve networks with respect to both topology and biochemical parameters, by starting from a designed network ''_de novo_'', or a partially or completely functional seed network.</p>
+<p>BioJazz implements a genetic algorithm which through a random process of replication, mutation, and selection (with either population-based or random walk style), attempts to incrementally improve how well those "genomes" perform a user-specified function. By encoding the network in a fashion that mimics the way nature does, BioJazz can use a larger variety of mutational operators than do traditional GAs (which use point mutations and crossover), such as gene duplications, gene deletions, and domain shuffling.  Thus, BioJazz has the ability to change and evolve networks with respect to both topology and biochemical parameters, by starting from a designed network ''<em>de novo</em>'', or a partially or completely functional seed network.</p>
 
 <p>Much of BioJazz's ability to design realistic networks comes from the accompanying Allosteric Network Compiler (ANC).  ANC is a stand-alone, rule-based compiler which has the ability to turn a high-level description of allosteric proteins into the corresponding set of biochemical equations.  The proteins can exhibit many of the behaviours observed in nature, such as co-localization, allosteric transitions, binding and catalytic reactions.  BioJazz is likely the first tool to couple a rule-based compiler with an evolutionary algorithm.  </p>
 
@@ -49,7 +49,7 @@
 
 <ul>
 <li>evolves both network topology and connection weights</li>
-<li>designs a network ''_de novo_'', or starting from user-specified seed network</li>
+<li>designs a network ''<em>de novo</em>'', or starting from user-specified seed network</li>
 <li>uses workstation clusters to speed up the design</li>
 <li>produces a human-readable model of the winning network</li>
 <li>highly configurable and parameterized</li>
@@ -746,7 +746,7 @@ MISMATCH = ones(MISMATCH_VECTOR)</p>
 <p>If have any problems, please contact <a href="https://github.com/LifeWorks" class="user-mention">@LifeWorks</a> or email <a href="mailto:lifeworks.song@gmail.com">lifeworks.song@gmail.com</a></p>
       </section>
       <footer>
-        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
       </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
