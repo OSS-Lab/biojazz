@@ -483,7 +483,7 @@ use base qw(Scoring);
                     default_max_count => $config_ref->{default_max_count},
                     default_steric_factor => $config_ref->{default_steric_factor},
                     export_graphviz => ref $config_ref->{export_graphviz} ? (join ",",@{$config_ref->{export_graphviz}}) : $config_ref->{export_graphviz},
-                    equations => [$lg_source_eqn, $lg_sink_eqn],
+                    equations => [$l0g_source_eqn, $l0g_sink_eqn, $l1g_source_eqn, $l1g_sink_eqn],
                     matlab_ode_solver => $config_ref->{solver},
                     matlab_solver_options => ('matlab_solver_options{InitialStep} = ' . "$config_ref->{InitialStep};\n" .
                         'matlab_solver_options{AbsTol} = ' . "$config_ref->{AbsTol};\n" . 
@@ -505,48 +505,48 @@ use base qw(Scoring);
                     printn "ANC SPECIES: @anc_species" if $verbosity > 2;
 
                     #---------------------------------------------------------
-                    # OUTPUT KINASE AND PHOSPHATASE
+                    # OUTPUT KINASE AND PHOSPHATASE of T0G
                     #---------------------------------------------------------
-                    my @adjacent_kinase_names = map {$_->get_name()} @tg_adjacent_kinases;
-                    my @kinase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @tg_adjacent_kinases;
-                    my @adjacent_phosphatase_names = map {$_->get_name()} @tg_adjacent_phosphatases;
-                    my @phosphatase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @tg_adjacent_phosphatases;
+                    my @t0g_adjacent_kinase_names = map {$_->get_name()} @t0g_adjacent_kinases;
+                    my @t0g_kinase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @t0g_adjacent_kinases;
+                    my @t0g_adjacent_phosphatase_names = map {$_->get_name()} @t0g_adjacent_phosphatases;
+                    my @t0g_phosphatase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @t0g_adjacent_phosphatases;
 
-                    my $K1 = 0.0;
-                    if (scalar @adjacent_kinase_names > 0) {
-                        for (my $i = 0; $i < @adjacent_kinase_names; $i++) {
-                            my $pd_name = $adjacent_kinase_names[$i];
-                            my $gene_name = $kinase_gene_names[$i];
+                    my $t0g_K1 = 0.0;
+                    if (scalar @t0g_adjacent_kinase_names > 0) {
+                        for (my $i = 0; $i < @t0g_adjacent_kinase_names; $i++) {
+                            my $pd_name = $t0g_adjacent_kinase_names[$i];
+                            my $gene_name = $t0g_kinase_gene_names[$i];
                             my $protein_concentration = 0;
                             if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene_name,\s+IC\s?=>\s?(\S+),/g) {
                                 $protein_concentration = $1 + 0;
                                 $stats_ref->{$gene_name} = $protein_concentration;
                             }
-                            my @K1s = ();
-                            while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
-                                my $rule_name = 'K1_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
+                            my @t0g_K1s = ();
+                            while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(T1PD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
+                                my $rule_name = 'T0G_K1_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
                                 my $rule_rate = ($7 + $8) / $6;
                                 $stats_ref->{$rule_name} = $rule_rate;
-                                push(@K1s, $rule_rate);
+                                push(@t0g_K1s, $rule_rate);
                             }
-                            if (scalar @K1s > 0) {
-                                $K1 = $K1s[0] / $config_ref->{TG_init};
-                                for (my $i = 1; $i < @K1s; $i++) {
-                                    $K1 *= ($K1s[$i] / $config_ref->{TG_init});
+                            if (scalar @t0g_K1s > 0) {
+                                $t0g_K1 = $t0g_K1s[0] / $config_ref->{TG_init};
+                                for (my $i = 1; $i < @t0g_K1s; $i++) {
+                                    $t0g_K1 *= ($t0g_K1s[$i] / $config_ref->{TG_init});
                                 }
                             } else {
                                 die "didn't find the rate of phosphorylation rule";
                             }
-                            $K1 = $K1**(1/(scalar @K1s));
+                            $t0g_K1 = $t0g_K1**(1/(scalar @t0g_K1s));
                         }
                     }
-                    $stats_ref->{tg_K1} = $K1;
+                    $stats_ref->{t0g_K1} = $t0g_K1;
 
-                    my $K2 = 0.0;
-                    if (scalar @adjacent_phosphatase_names > 0) {
-                        for (my $i = 0; $i < @adjacent_phosphatase_names; $i++) {
-                            my $pd_name = $adjacent_phosphatase_names[$i];
-                            my $gene_name = $phosphatase_gene_names[$i];
+                    my $t0g_K2 = 0.0;
+                    if (scalar @t0g_adjacent_phosphatase_names > 0) {
+                        for (my $i = 0; $i < @t0g_adjacent_phosphatase_names; $i++) {
+                            my $pd_name = $t0g_adjacent_phosphatase_names[$i];
+                            my $gene_name = $t0g_phosphatase_gene_names[$i];
                             my $protein_concentration = 0;
                             if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene_name,\s+IC\s?=>\s?(\S+),/g) {
                                 $protein_concentration = $1 + 0;
