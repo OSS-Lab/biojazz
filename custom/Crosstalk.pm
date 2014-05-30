@@ -126,7 +126,7 @@ use base qw(Scoring);
         printn "l0g_sequence=".$l0g_sequence_ref->get_sequence() if $verbosity > 1;
         my $t0g_sequence_ref = $genome_model_ref->get_gene_parser_ref()->create_sequence({
                 START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
-                regulated_concentration => $config_ref->{TG_init}, # all-zeroes
+                regulated_concentration => $config_ref->{T0G_init}, # all-zeroes
                 UNUSED => "0000",
                 domains => [
                     {
@@ -191,7 +191,7 @@ use base qw(Scoring);
         printn "l1g_sequence=".$l1g_sequence_ref->get_sequence() if $verbosity > 1;
         my $t1g_sequence_ref = $genome_model_ref->get_gene_parser_ref()->create_sequence({
                 START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
-                regulated_concentration => $config_ref->{TG_init}, # all-zeroes
+                regulated_concentration => $config_ref->{T1G_init}, # all-zeroes
                 UNUSED => "0000",
                 domains => [
                     {
@@ -523,16 +523,16 @@ use base qw(Scoring);
                                 $stats_ref->{$gene_name} = $protein_concentration;
                             }
                             my @t0g_K1s = ();
-                            while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(T1PD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
+                            while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(T0PD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
                                 my $rule_name = 'T0G_K1_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
                                 my $rule_rate = ($7 + $8) / $6;
                                 $stats_ref->{$rule_name} = $rule_rate;
                                 push(@t0g_K1s, $rule_rate);
                             }
                             if (scalar @t0g_K1s > 0) {
-                                $t0g_K1 = $t0g_K1s[0] / $config_ref->{TG_init};
+                                $t0g_K1 = $t0g_K1s[0] / $config_ref->{T0G_init};
                                 for (my $i = 1; $i < @t0g_K1s; $i++) {
-                                    $t0g_K1 *= ($t0g_K1s[$i] / $config_ref->{TG_init});
+                                    $t0g_K1 *= ($t0g_K1s[$i] / $config_ref->{T0G_init});
                                 }
                             } else {
                                 die "didn't find the rate of phosphorylation rule";
@@ -552,25 +552,93 @@ use base qw(Scoring);
                                 $protein_concentration = $1 + 0;
                                 $stats_ref->{$gene_name} = $protein_concentration;
                             }
-                            my @K2s = ();
-                            while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
-                                my $rule_name = 'K2_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
+                            my @t0g_K2s = ();
+                            while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(T0PD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
+                                my $rule_name = 'T0G_K2_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
                                 my $rule_rate = ($7 + $8) / $6;
                                 $stats_ref->{$rule_name} = $rule_rate;
-                                push(@K2s, $rule_rate);
+                                push(@t0g_K2s, $rule_rate);
                             }
-                            if (scalar @K2s > 0) {
-                                $K2 = $K2s[0] / $config_ref->{TG_init};
-                                for (my $i = 1; $i < @K2s; $i++) {
-                                    $K2 *= ($K2s[$i] / $config_ref->{TG_init});
+                            if (scalar @t0g_K2s > 0) {
+                                $t0g_K2 = $t0g_K2s[0] / $config_ref->{T0G_init};
+                                for (my $i = 1; $i < @t0g_K2s; $i++) {
+                                    $t0g_K2 *= ($t0g_K2s[$i] / $config_ref->{T0G_init});
                                 }
                             } else {
                                 die "didn't find the rate of phosphorylation rule";
                             }
-                            $K2 = $K2**(1/(scalar @K2s));
+                            $t0g_K2 = $t0g_K2**(1/(scalar @t0g_K2s));
                         }
                     }
-                    $stats_ref->{tg_K2} = $K2;
+                    $stats_ref->{t0g_K2} = $t0g_K2;
+
+                    #---------------------------------------------------------
+                    # OUTPUT KINASE AND PHOSPHATASE of T1G
+                    #---------------------------------------------------------
+                    my @t1g_adjacent_kinase_names = map {$_->get_name()} @t1g_adjacent_kinases;
+                    my @t1g_kinase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @t1g_adjacent_kinases;
+                    my @t1g_adjacent_phosphatase_names = map {$_->get_name()} @t1g_adjacent_phosphatases;
+                    my @t1g_phosphatase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @t1g_adjacent_phosphatases;
+
+                    my $t1g_K1 = 0.0;
+                    if (scalar @t1g_adjacent_kinase_names > 0) {
+                        for (my $i = 0; $i < @t1g_adjacent_kinase_names; $i++) {
+                            my $pd_name = $t1g_adjacent_kinase_names[$i];
+                            my $gene_name = $t1g_kinase_gene_names[$i];
+                            my $protein_concentration = 0;
+                            if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene_name,\s+IC\s?=>\s?(\S+),/g) {
+                                $protein_concentration = $1 + 0;
+                                $stats_ref->{$gene_name} = $protein_concentration;
+                            }
+                            my @t1g_K1s = ();
+                            while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(T0PD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
+                                my $rule_name = 'T0G_K1_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
+                                my $rule_rate = ($7 + $8) / $6;
+                                $stats_ref->{$rule_name} = $rule_rate;
+                                push(@t1g_K1s, $rule_rate);
+                            }
+                            if (scalar @t1g_K1s > 0) {
+                                $t1g_K1 = $t1g_K1s[0] / $config_ref->{T0G_init};
+                                for (my $i = 1; $i < @t1g_K1s; $i++) {
+                                    $t1g_K1 *= ($t1g_K1s[$i] / $config_ref->{T0G_init});
+                                }
+                            } else {
+                                die "didn't find the rate of phosphorylation rule";
+                            }
+                            $t1g_K1 = $t1g_K1**(1/(scalar @t1g_K1s));
+                        }
+                    }
+                    $stats_ref->{t1g_K1} = $t1g_K1;
+
+                    my $t1g_K2 = 0.0;
+                    if (scalar @t1g_adjacent_phosphatase_names > 0) {
+                        for (my $i = 0; $i < @t1g_adjacent_phosphatase_names; $i++) {
+                            my $pd_name = $t1g_adjacent_phosphatase_names[$i];
+                            my $gene_name = $t1g_phosphatase_gene_names[$i];
+                            my $protein_concentration = 0;
+                            if ($anc_model =~ /Init : \{\s+structure\s?=>\s?$gene_name,\s+IC\s?=>\s?(\S+),/g) {
+                                $protein_concentration = $1 + 0;
+                                $stats_ref->{$gene_name} = $protein_concentration;
+                            }
+                            my @t1g_K2s = ();
+                            while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(T0PD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
+                                my $rule_name = 'T0G_K2_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
+                                my $rule_rate = ($7 + $8) / $6;
+                                $stats_ref->{$rule_name} = $rule_rate;
+                                push(@t1g_K2s, $rule_rate);
+                            }
+                            if (scalar @t1g_K2s > 0) {
+                                $t1g_K2 = $t1g_K2s[0] / $config_ref->{T0G_init};
+                                for (my $i = 1; $i < @t1g_K2s; $i++) {
+                                    $t1g_K2 *= ($t1g_K2s[$i] / $config_ref->{T0G_init});
+                                }
+                            } else {
+                                die "didn't find the rate of phosphorylation rule";
+                            }
+                            $t1g_K2 = $t1g_K2**(1/(scalar @t1g_K2s));
+                        }
+                    }
+                    $stats_ref->{t1g_K2} = $t1g_K2;
 
 
                     #---------------------------------------------------------
@@ -601,12 +669,20 @@ use base qw(Scoring);
                     # CHECK ANC/FACILE MODEL
                     #---------------------------------------------------------
                     # check that TF_0 and TF_1 are products of at least 1 reaction each
-                    my $num_reactions_tg_1 = grep (/(->|<-).* TG00001/, @facile_model);
-                    my $num_reactions_tg_0 = grep (/(->|<-).* TG00000/, @facile_model);
-                    $stats_ref->{num_reactions_tg_0} = $num_reactions_tg_0;
-                    $stats_ref->{num_reactions_tg_1} = $num_reactions_tg_1;
-                    $network_connectivity += 200 * ($num_reactions_tg_0 > 1 ? 1 : $num_reactions_tg_0);
-                    $network_connectivity += 200 * ($num_reactions_tg_1 > 1 ? 1 : $num_reactions_tg_1);
+                    my $num_reactions_t0g_1 = grep (/(->|<-).* T0G00001/, @facile_model);
+                    my $num_reactions_t0g_0 = grep (/(->|<-).* T0G00000/, @facile_model);
+                    $stats_ref->{num_reactions_t0g_0} = $num_reactions_t0g_0;
+                    $stats_ref->{num_reactions_t0g_1} = $num_reactions_t0g_1;
+                    $network_connectivity += 100 * ($num_reactions_t0g_0 > 1 ? 1 : $num_reactions_t0g_0);
+                    $network_connectivity += 100 * ($num_reactions_t0g_1 > 1 ? 1 : $num_reactions_t0g_1);
+
+                    my $num_reactions_t1g_1 = grep (/(->|<-).* T1G00001/, @facile_model);
+                    my $num_reactions_t1g_0 = grep (/(->|<-).* T1G00000/, @facile_model);
+                    $stats_ref->{num_reactions_t1g_0} = $num_reactions_t1g_0;
+                    $stats_ref->{num_reactions_t1g_1} = $num_reactions_t1g_1;
+                    $network_connectivity += 100 * ($num_reactions_t1g_0 > 1 ? 1 : $num_reactions_t1g_0);
+                    $network_connectivity += 100 * ($num_reactions_t1g_1 > 1 ? 1 : $num_reactions_t1g_1);
+
 
 
                     # check that number of species is less than maximum
