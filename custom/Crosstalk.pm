@@ -712,10 +712,210 @@ use base qw(Scoring);
             }
 
 
+            ###### Need to finish!!!
+
+            #########################################################################################
+            #---------------------------------------------------------
+            # NETWORK SIMULATION
+            #---------------------------------------------------------
+            # sim_flag indicates that network was successfully simulated
+            # and that calculated results are valid
+            my $ANC_ok_flag = $stats_ref->{ANC_ok_flag} = ($network_connectivity >= 1000) ? 1 : 0;
+            $stats_ref->{sim_flag} = 0;
+            if ($ANC_ok_flag) {
+                $stats_ref->{sim_flag} = 1;
+                #---------------------------------------------------------
+                # RUN MATLAB SIM
+                #---------------------------------------------------------
+                printn "Ultrasensitive::score_genome: running matlab driver..." if $verbosity > 1;
+                my $matlab_ref = $self->get_matlab_ref();
+                $matlab_ref->cmd("clear all; ${genome_name}Driver");
+                $matlab_ref->wait_on("Facile.*done");
 
 
+                #---------------------------------------------------------
+                # PLOT RESULTS
+                #---------------------------------------------------------
+                if (defined $config_ref->{plot_input} && $config_ref->{plot_input}) {
+                    $self->matlab_plot_complex(figure => 900,
+                        complex => "L0G0000",
+                        title_prefix => "$genome_name",
+                        filename => "$genome_name" . "_input_L0G",
+                    );
+                }
+                if (defined $config_ref->{plot_output} && $config_ref->{plot_output}) {
+                    $self->matlab_plot_complex(figure => 901,
+                        complex => "T0G00000",
+                        title_prefix => "$genome_name",
+                        filename => "$genome_name" . "_output_T0G0",
+                    );
+                    $self->matlab_plot_complex(figure => 902,
+                        complex => "T0G00001",
+                        title_prefix => "$genome_name",
+                        filename => "$genome_name" . "_output_T0G1",
+                    );
+                }
+                #---------------------------------------------------------
+                # PLOT RESULTS
+                #---------------------------------------------------------
+                if (defined $config_ref->{plot_input} && $config_ref->{plot_input}) {
+                    $self->matlab_plot_complex(figure => 903,
+                        complex => "L1G0000",
+                        title_prefix => "$genome_name",
+                        filename => "$genome_name" . "_input_L1G",
+                    );
+                }
+                if (defined $config_ref->{plot_output} && $config_ref->{plot_output}) {
+                    $self->matlab_plot_complex(figure => 904,
+                        complex => "T1G00000",
+                        title_prefix => "$genome_name",
+                        filename => "$genome_name" . "_output_L1G0",
+                    );
+                    $self->matlab_plot_complex(figure => 905,
+                        complex => "T1G00001",
+                        title_prefix => "$genome_name",
+                        filename => "$genome_name" . "_output_L1G1",
+                    );
+                }
+                if (defined $config_ref->{plot_species} && $config_ref->{plot_species}) {
+                    $self->matlab_plot_all_complexes();
+                }
+                $self->matlab_cmd("disp('Done plotting')\n");
+                $self->matlab_wait_on("Done plotting");
 
-           
+                #########################################################################
+                #---------------------------------------------------------
+                # SCORE STEADY STATE
+                # Should be better if we caculate all event_times's delays
+                # and add them togethoer
+                #---------------------------------------------------------
+                printn "computing steady-state slopes...(the steady state scoring is not implemented yet)" if $verbosity > 1;
+
+                #---------------------------------------------------------
+                # SELECT BEST OUTPUT VECTOR
+                #---------------------------------------------------------
+                #---------------------------------------------------------
+                # Input/Output PLOT
+                #---------------------------------------------------------
+                if (defined $config_ref->{plot_IO} && $config_ref->{plot_IO}) {
+                    my $output_node = "T0G00001";
+                    $self->matlab_plot_IO(
+                        figure => 904,
+                        X_complex => "L0G0000",
+                        Y_complex => $output_node,
+                        title_prefix => "$genome_name",
+                        axis_ref => [0, $config_ref->{L0G_range},
+                            0, $config_ref->{T0G_init}],
+                        filename => "$genome_name" . "_IO0",
+                    );
+                }
+
+                if (defined $config_ref->{plot_IO} && $config_ref->{plot_IO}) {
+                    my $output_node = "T1G00001";
+                    $self->matlab_plot_IO(
+                        figure => 904,
+                        X_complex => "L1G0000",
+                        Y_complex => $output_node,
+                        title_prefix => "$genome_name",
+                        axis_ref => [0, $config_ref->{L1G_range},
+                            0, $config_ref->{T1G_init}],
+                        filename => "$genome_name" . "_IO1",
+                    );
+                }
+
+
+                ######################################################################################################
+                # Preprocess the input and output vectors inorder to score the multiple IO scoring function 
+                ######################################################################################################
+                #
+                #
+                #
+                #
+                #
+                #
+                #
+                #
+                #
+                ##########################################
+                # Get the crosstalk score 
+                ##########################################
+                #
+                #
+                #
+                #
+                #
+                #
+                #
+            }
+        }
+
+        $stats_ref->{network_connectivity} = $network_connectivity;
+        $stats_ref->{network_score} = p_hill($stats_ref->{network_connectivity}, 1000, 1);
+
+        #---------------------------------------------------------
+        # FINAL SCORE
+        #---------------------------------------------------------
+        my $final_score = 0;
+        my $network_score = $stats_ref->{network_score} = $stats_ref->{network_score} || 0;
+        my $complexity_score = $stats_ref->{complexity_score} = $stats_ref->{complexity_score} || 0;
+        my $steady_state_score = $stats_ref->{steady_state_score} = $stats_ref->{steady_state_score} || 0;
+        my $expression_score = $stats_ref->{expression_score} = $stats_ref->{expression_score} || 0;
+
+        if ($parse_successful) {
+            my $w_n = $config_ref->{w_n};
+            my $w_c = $config_ref->{w_c};
+            my $w_s = $config_ref->{w_s};
+            my $w_e = $config_ref->{w_e};
+
+            # is the input connected to the output?
+            my $g0  = $stats_ref->{network_connected_flag} ? 1 : 0;
+            my $g0n = !$g0 ? 1 : 0;
+            # ANC network is OK (i.e. max species not reached) and was therefore simulated?
+            # Also, no timeout occurred while simulating to steady-state?
+            # No strange numerical problems?
+            my $g1  = !$stats_ref->{timeout_flag} && $stats_ref->{sim_flag} ? 1 : 0;
+            # is the output amplitude large enough that the output can be trusted artifact-free?
+            my $g3  = $g1 && ($stats_ref->{delta_score} > 0.5) ? 1 : 0;
+            my $g3n = !$g3 ? 1 : 0;
+
+            # don't optimize network_score once the network is connected
+            $final_score =  ($network_score * $g0n + $g0)**$w_n;
+            # optimize complexity only if the network is connected
+            $final_score *= (1e-3 + $complexity_score * $g0)**$w_c;
+            $final_score *= (1e-3 + $expression_score * $g0)**$w_e;
+            # optimize amplitude if ANC output ok and no timeout during simulation
+            $final_score *= (1e-6 + $amplitude_score * $g1)**$w_a;
+            # optimize ultrasensitivity if ANC output ok and no timeout during simulation
+            $final_score *= (1e-6 + $ultrasensitivity_score * $g1)**$w_u;
+
+            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_u + $w_e));  # re-normalization
+        }
+
+
+        # prevent neg've scores
+        if ($final_score < 0) {
+            printn "\nWARNING: negative score detected, setting to 0\n";
+            $final_score = 0;
+        }
+
+        $stats_ref->{score} = $final_score;
+
+        $genome_model_ref->set_score($stats_ref->{score});
+
+        printn $genome_model_ref->sprint_stats();
+        printn "final_score = $final_score";
+
+        #---------------------------------------------------------
+        # REMOVE FILES
+        #---------------------------------------------------------
+        if (defined $local_dir) {
+            `echo $local_dir/matlab/${genome_name}*     | xargs rm -f`;
+            #my $file_glob = "$matlab_work/${genome_name}*";
+            #my @files = glob($file_glob);
+            #if (@files) {
+            #    printn "Moving @files to $work_dir/matlab" if $verbosity > 1;
+            #    system("mv @files $work_dir/matlab");
+            #}
         }
 
 
@@ -725,4 +925,7 @@ use base qw(Scoring);
 }
 
 
+
+# Package BEGIN must return true value
+return 1;
 
