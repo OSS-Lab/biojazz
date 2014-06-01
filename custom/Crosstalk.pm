@@ -742,6 +742,11 @@ use base qw(Scoring);
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_input_L0G",
                     );
+                    $self->matlab_plot_complex(figure => 903,
+                        complex => "L1G0000",
+                        title_prefix => "$genome_name",
+                        filename => "$genome_name" . "_input_L1G",
+                    );
                 }
                 if (defined $config_ref->{plot_output} && $config_ref->{plot_output}) {
                     $self->matlab_plot_complex(figure => 901,
@@ -754,18 +759,6 @@ use base qw(Scoring);
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_output_T0G1",
                     );
-                }
-                #---------------------------------------------------------
-                # PLOT RESULTS
-                #---------------------------------------------------------
-                if (defined $config_ref->{plot_input} && $config_ref->{plot_input}) {
-                    $self->matlab_plot_complex(figure => 903,
-                        complex => "L1G0000",
-                        title_prefix => "$genome_name",
-                        filename => "$genome_name" . "_input_L1G",
-                    );
-                }
-                if (defined $config_ref->{plot_output} && $config_ref->{plot_output}) {
                     $self->matlab_plot_complex(figure => 904,
                         complex => "T1G00000",
                         title_prefix => "$genome_name",
@@ -792,8 +785,23 @@ use base qw(Scoring);
                 printn "computing steady-state slopes...(the steady state scoring is not implemented yet)" if $verbosity > 1;
 
                 #---------------------------------------------------------
-                # SELECT BEST OUTPUT VECTOR
+                # TO PROCESS THE INPUT AND OUTPUT DATA (NORMALIZATION)
                 #---------------------------------------------------------
+                my $input_l0g = "L0G0000";
+                my $input_l1g = "L1G0000";
+                my $output_t0g1 = "T0G00001";
+                my $output_t1g1 = "T1G00001";
+                my $norm_input_l0g = "L0G0000_norm";
+                my $norm_input_l1g = "L1G0000_norm";
+                my $norm_output_t0g1 = "T0G00001_norm";
+                my $norm_output_t1g1 = "T1G00001_norm";
+                $self->matlab_cmd("");
+
+
+
+
+
+
                 #---------------------------------------------------------
                 # Input/Output PLOT
                 #---------------------------------------------------------
@@ -808,9 +816,6 @@ use base qw(Scoring);
                             0, $config_ref->{T0G_init}],
                         filename => "$genome_name" . "_IO0",
                     );
-                }
-
-                if (defined $config_ref->{plot_IO} && $config_ref->{plot_IO}) {
                     my $output_node = "T1G00001";
                     $self->matlab_plot_IO(
                         figure => 904,
