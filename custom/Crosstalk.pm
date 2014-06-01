@@ -728,9 +728,8 @@ use base qw(Scoring);
                 # RUN MATLAB SIM
                 #---------------------------------------------------------
                 printn "Ultrasensitive::score_genome: running matlab driver..." if $verbosity > 1;
-                my $matlab_ref = $self->get_matlab_ref();
-                $matlab_ref->cmd("clear all; ${genome_name}Driver");
-                $matlab_ref->wait_on("Facile.*done");
+                $self->matlab_cmd("clear all; ${genome_name}Driver");
+                $self->matlab_wait_on("Facile.*done");
 
 
                 #---------------------------------------------------------
