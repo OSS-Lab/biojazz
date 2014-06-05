@@ -945,7 +945,7 @@ ultrasensitivity_threshold = 5  # ratio of 2nd step over 1st step
 
 w_n = 0.0
 w_c = 0.5
-w_e = 0.5
+w_e = 0.0
 w_s = 1.0
 w_a = 1.0
 w_u = 1.0
