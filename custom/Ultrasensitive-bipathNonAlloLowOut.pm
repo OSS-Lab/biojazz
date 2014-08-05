@@ -375,6 +375,7 @@ use base qw(Scoring);
                     my @phosphatase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @tg_adjacent_phosphatases;
 
                     my $K1 = 0.0;
+                    my $K1_concentration = 0.0;
                     if (scalar @adjacent_kinase_names > 0) {
                         for (my $i = 0; $i < @adjacent_kinase_names; $i++) {
                             my $pd_name = $adjacent_kinase_names[$i];
@@ -384,6 +385,7 @@ use base qw(Scoring);
                                 $protein_concentration = $1 + 0;
                                 $stats_ref->{$gene_name} = $protein_concentration;
                             }
+                            $K1_concentration += $protein_concentration;
                             my @K1s = ();
                             while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
                                 my $rule_name = 'K1_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
@@ -403,8 +405,10 @@ use base qw(Scoring);
                         }
                     }
                     $stats_ref->{tg_K1} = $K1;
+                    $stats_ref->{tg_K1_concentration} = $K1_concentration;
 
                     my $K2 = 0.0;
+                    my $K2_concentration = 0.0;
                     if (scalar @adjacent_phosphatase_names > 0) {
                         for (my $i = 0; $i < @adjacent_phosphatase_names; $i++) {
                             my $pd_name = $adjacent_phosphatase_names[$i];
@@ -414,6 +418,7 @@ use base qw(Scoring);
                                 $protein_concentration = $1 + 0;
                                 $stats_ref->{$gene_name} = $protein_concentration;
                             }
+                            $K2_concentration += $protein_concentration;
                             my @K2s = ();
                             while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
                                 my $rule_name = 'K2_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
@@ -433,7 +438,7 @@ use base qw(Scoring);
                         }
                     }
                     $stats_ref->{tg_K2} = $K2;
-
+                    $stats_ref->{tg_K2_concentration} = $K2_concentration;
 
                     #---------------------------------------------------------
                     # RUN FACILE
@@ -945,7 +950,7 @@ ultrasensitivity_threshold = 5  # ratio of 2nd step over 1st step
 
 w_n = 0.0
 w_c = 0.5
-w_e = 0.5
+w_e = 0.0
 w_s = 1.0
 w_a = 1.0
 w_u = 1.0
@@ -965,7 +970,7 @@ stimulus = ss_ramp_equation
 hill_n = 40
 hill_k = 5
 
-TG_init = 1000  # uM
+TG_init = 10  # uM
 cell_volume = 1e-18             # 1e-18L --> sub-cellular volume
 
 lg_binding_profile = 0100111010
@@ -1038,15 +1043,76 @@ END
             genes => [
                 {
                     START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
-                    regulated_concentration => 1.0, # uM
+                    regulated_concentration => 10, # uM
                     UNUSED => "0000",
                     domains => [
                         {
-                            allosteric_flag => 1,
+                            allosteric_flag => 0,
                             RT_transition_rate => 1.00,
                             TR_transition_rate => 1.00,
                             RT_phi => 1.0,
                             protodomains => [
+                                {
+                                    type => "bsite",
+                                    substrate_polarity => 0,
+                                    binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
+                                    kf_profile => "00101000100100010010",
+                                    kb_profile => "11001000110000001000",
+                                    kp_profile => "00011111000111110011",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11111100111111001110",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                                {
+                                    type => "bsite",
+                                    substrate_polarity => 0,
+                                    binding_profile => "0010010100",
+                                    kf_profile => "01111111010110111000",
+                                    kb_profile => "10011001111111001000",
+                                    kp_profile => "01110100110011000011",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11101101111111111000",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 10, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.00,
+                            TR_transition_rate => 1.00,
+                            RT_phi => 1.0,
+                            protodomains => [
+                                {
+                                    type => "bsite",
+                                    substrate_polarity => 0,
+                                    binding_profile => BindingProfile->binding_complement("0010010100")->sprint(),
+                                    kf_profile => "01111111010110111000",
+                                    kb_profile => "10011001111111001000",
+                                    kp_profile => "01110100110011000011",
+                                    Keq_ratio => 1.0,
+                                    kf_polarity_mask => "0",
+                                    kb_polarity_mask => "0",
+                                    kf_conformation_mask => "11101101111111111000",
+                                    kb_conformation_mask => "0",
+                                    kp_conformation_mask => "0",
+                                    UNUSED => "0",
+                                },
                                 {
                                     type => "csite",
                                     substrate_polarity => 0,
@@ -1062,17 +1128,33 @@ END
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
                                 },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 10, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.0,
+                            TR_transition_rate => 1.0,
+                            RT_phi => 0.0,
+                            protodomains => [
                                 {
                                     type => "bsite",
                                     substrate_polarity => 0,
-                                    binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
-                                    kf_profile => "00101000100100010010",
-                                    kb_profile => "11001000110000001000",
-                                    kp_profile => "00011111000111110011",
+                                    binding_profile => BindingProfile->binding_complement("0010010100")->sprint(),
+                                    kf_profile => "01111111010110111000",
+                                    kb_profile => "10011001111111001000",
+                                    kp_profile => "01110100110011000011",
                                     Keq_ratio => 1.0,
                                     kf_polarity_mask => "0",
                                     kb_polarity_mask => "0",
-                                    kf_conformation_mask => "11111100111111001110",
+                                    kf_conformation_mask => "11101101111111111000",
                                     kb_conformation_mask => "0",
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
