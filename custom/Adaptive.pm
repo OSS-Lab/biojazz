@@ -153,7 +153,16 @@ use base qw(Scoring);
         # if random delay, delay from 1/4 period to 1/2 period inclusive
         my $stimulus_sub_ref = \&{$config_ref->{stimulus}};
         my $stimulus_ref = undef;
-        if ($config_ref->{stimulus} eq "ss_ramp_equation") {
+        if ($config_ref->{stimulus} eq "rand_ss_ramp_equation") {
+            $stimulus_ref = &$stimulus_sub_ref(
+                NODE => "LG0000",
+                DELAY => $config_ref->{LG_delay},	
+                RANGE => $config_ref->{LG_range},
+                STRENGTH => $config_ref->{LG_strength},
+                RAMP_TIME => $config_ref->{LG_ramp_time},
+                STEPS => $config_ref->{LG_steps},
+            );
+        } elsif ($config_ref->{stimulus} eq "ss_ramp_equation") {
             $stimulus_ref = &$stimulus_sub_ref(
                 NODE => "LG0000",
                 DELAY => $config_ref->{LG_delay},	
@@ -366,6 +375,7 @@ use base qw(Scoring);
                     my @phosphatase_gene_names = map {$_->get_upper_ref()->get_upper_ref()->get_name()} @tg_adjacent_phosphatases;
 
                     my $K1 = 0.0;
+                    my $K1_concentration = 0.0;
                     if (scalar @adjacent_kinase_names > 0) {
                         for (my $i = 0; $i < @adjacent_kinase_names; $i++) {
                             my $pd_name = $adjacent_kinase_names[$i];
@@ -375,6 +385,7 @@ use base qw(Scoring);
                                 $protein_concentration = $1 + 0;
                                 $stats_ref->{$gene_name} = $protein_concentration;
                             }
+                            $K1_concentration += $protein_concentration;
                             my @K1s = ();
                             while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
                                 my $rule_name = 'K1_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
@@ -394,8 +405,10 @@ use base qw(Scoring);
                         }
                     }
                     $stats_ref->{tg_K1} = $K1;
+                    $stats_ref->{tg_K1_concentration} = $K1_concentration;
 
                     my $K2 = 0.0;
+                    my $K2_concentration = 0.0;
                     if (scalar @adjacent_phosphatase_names > 0) {
                         for (my $i = 0; $i < @adjacent_phosphatase_names; $i++) {
                             my $pd_name = $adjacent_phosphatase_names[$i];
@@ -405,6 +418,7 @@ use base qw(Scoring);
                                 $protein_concentration = $1 + 0;
                                 $stats_ref->{$gene_name} = $protein_concentration;
                             }
+                            $K2_concentration += $protein_concentration;
                             my @K2s = ();
                             while ($anc_model =~ /CanBindRule : \{\s+name\s?=>\s?\S$pd_name\s?(TPD\S+)\s?\(\s?(\S)\s?(\S)\s?(\S)\s?(\S)\s?\)\S,\n.*\n.*\n.*\s+kf\s?=>\s?(\S+),\s+kb\s?=>\s?(\S+),\s+kp\s?=>\s?(\S+),/g) {
                                 my $rule_name = 'K2_'.$pd_name.'_'."$1".'_'."$2"."$3"."$4"."$5";
@@ -424,6 +438,7 @@ use base qw(Scoring);
                         }
                     }
                     $stats_ref->{tg_K2} = $K2;
+                    $stats_ref->{tg_K2_concentration} = $K2_concentration;
 
 
                     #---------------------------------------------------------

@@ -1,17 +1,25 @@
-#-#####################################################################################
-#- File:     Ultrasensitive.pm
-#- Synopsys:
-#-#####################################################################################
-#- Detailed Description:
-#- ---------------------
+#===============================================================================
 #
-#-#####################################################################################
+#         FILE: Adaptive.pm
+#
+#  DESCRIPTION: This is the module to scoring the adaptive response accroding
+#               to stair case up and down input signal
+#
+#        FILES: Dependent on Scoring.pm and Stimuli.pm
+#         BUGS: ---
+#        NOTES: ---
+#       AUTHOR: Song Feng 
+# ORGANIZATION: LifeWorks
+#      VERSION: 1.0
+#      CREATED: 12/04/2013 15:44:11
+#     REVISION: ---
+#===============================================================================
 
 use strict;
-use diagnostics;		# equivalent to -w command-line switch
 use warnings;
+use diagnostics;
 
-package Ultrasensitive;
+package Adaptive;
 use Class::Std::Storable;
 use base qw(Scoring);
 {
@@ -21,31 +29,14 @@ use base qw(Scoring);
 
     use Stimulus;
 
-    #######################################################################################
-    # CLASS ATTRIBUTES
-    #######################################################################################
+    #==========================================================================
+    # Class Attributes
+    #==========================================================================
 
-    #######################################################################################
-    # ATTRIBUTES
-    #######################################################################################
-#    my %A_of :ATTR(get => 'A', set => 'A', init_arg => 'A');  # constructor must supply initialization
-#    my %B_of :ATTR(get => 'B', set => 'B', default => 'yyy'); # default value is yyy
+    #==========================================================================
+    # Instance Methods
+    #==========================================================================
 
-    #######################################################################################
-    # FUNCTIONS
-    #######################################################################################
-
-    #######################################################################################
-    # CLASS METHODS
-    #######################################################################################
-
-    #######################################################################################
-    # INSTANCE METHODS
-    #######################################################################################
-    #--------------------------------------------------------------------------------------
-    # Function: score_genome
-    # Synopsys: Score for ultrasensitivity.
-    #--------------------------------------------------------------------------------------
     sub score_genome {
         my $self = shift;
         my $genome_model_ref = shift;
@@ -66,22 +57,22 @@ use base qw(Scoring);
         }
         my $history_ref = $genome_model_ref->get_history_ref();
 
-        printn "Ultrasensitive::score_genome scoring genome $genome_name";
+        printn "Adaptive::score_genome scoring genome $genome_name";
 
         #---------------------------------------------------------
         # INIT SCORING
         #---------------------------------------------------------
         my $elite_flag = $genome_model_ref->get_elite_flag();
         if ($elite_flag) {
-            printn "Ultrasensitive::score_genome elite individual already scored, previous score=$stats_ref->{score}";
+            printn "Adaptive::score_genome elite individual already scored, previous score=$stats_ref->{score}";
             return if ($config_ref->{rescore_elite} == 0);
-            printn "Ultrasensitive::score_genome re-scoring elite individual" if $verbosity > 1;
+            printn "Adaptive::score_genome re-scoring elite individual" if $verbosity > 1;
 
             # Should clear stats in the evolution to prevent stats loss when rescore genomes.
             $genome_model_ref->clear_stats();
             $stats_ref->{score} = 0;
         } else {
-            printn "Ultrasensitive::score_genome scoring non-elite individual..." if $verbosity > 1;
+            printn "Adaptive::score_genome scoring non-elite individual..." if $verbosity > 1;
  
             # Should clear stats in the evolution to prevent stats loss when rescore genomes.
             $genome_model_ref->clear_stats();
@@ -440,6 +431,7 @@ use base qw(Scoring);
                     $stats_ref->{tg_K2} = $K2;
                     $stats_ref->{tg_K2_concentration} = $K2_concentration;
 
+
                     #---------------------------------------------------------
                     # RUN FACILE
                     #---------------------------------------------------------
@@ -480,6 +472,7 @@ use base qw(Scoring);
                     if (!defined $config_ref->{max_species} || $config_ref->{max_species} < 0 || $stats_ref->{num_anc_species} < $config_ref->{max_species}) {
                         $network_connectivity += 100;
                     }
+ 
                     #############################################################################
                     #----------------------------------------------------------
                     # Score expression cost
@@ -515,7 +508,7 @@ use base qw(Scoring);
                 #---------------------------------------------------------
                 # RUN MATLAB SIM
                 #---------------------------------------------------------
-                printn "Ultrasensitive::score_genome: running matlab driver..." if $verbosity > 1;
+                printn "Adaptive::score_genome: running matlab driver..." if $verbosity > 1;
                 my $matlab_ref = $self->get_matlab_ref();
                 $matlab_ref->cmd("clear all; ${genome_name}Driver");
                 $matlab_ref->wait_on("Facile.*done");
@@ -577,195 +570,79 @@ use base qw(Scoring);
                 $stats_ref->{steady_state_score} = n_hill(
                     $ss_time_max, $steady_state_threshold,1);
 
-                #---------------------------------------------------------
-                # REPORT RESULT VECTOR
-                #---------------------------------------------------------
-                printn "RESULT VECTOR: INPUT = LG OUTPUT = TG00001 DELAY = $config_ref->{LG_delay}" if $verbosity > 1;
-                my (@pos_output_vector, @neg_output_vector, @expected_output_vector);
-
-                my @sampling_times = @event_times;
-                for (my $i=0; $i < @sampling_times; $i++) {
-                    my $t = $sampling_times[$i]; 
-                    $pos_output_vector[$i] = $self->matlab_get_state(complex => "TG00001", t => $t);
-                    $neg_output_vector[$i] = $self->matlab_get_state(complex => "TG00000", t => $t);
-                    $expected_output_vector[$i] = (
-                        $config_ref->{TG_init} *
-                        p_hill($input_vector[$i], $config_ref->{hill_k}, $config_ref->{hill_n})); # positive hill function
-
-                    if ($config_ref->{round_values_flag}) {
-                        $pos_output_vector[$i] = $self->matlab_round_value(
-                            value => $pos_output_vector[$i],
-                            AbsTol => $config_ref->{AbsTol},
-                            RelTol => $config_ref->{RelTol},
-                        );
-                        $neg_output_vector[$i] = $self->matlab_round_value(
-                            value => $neg_output_vector[$i],
-                            AbsTol => $config_ref->{AbsTol},
-                            RelTol => $config_ref->{RelTol},
-                        );
-                        $expected_output_vector[$i] = $self->matlab_round_value(
-                            value => $expected_output_vector[$i],
-                            RelTol => $config_ref->{RelTol},
-                        );
-                    }
-
-                    printf("RESULT VECTOR:  t=%-6.2f input vector:  %8.4g pos_output_vector: %8.6g neg_output_vector: %8.6g (expected = %8.4g)\n",
-                        $t, $input_vector[$i], $pos_output_vector[$i], $neg_output_vector[$i], $expected_output_vector[$i]) if $verbosity > 1;
-                }
-
                 if (!$timeout_flag) {
-                    #---------------------------------------------------------
-                    # SELECT BEST OUTPUT VECTOR
-                    #---------------------------------------------------------
-                    my $i_dy2_bottom = ($config_ref->{LG_steps}-1)/2; # index at bottom of middle step
-                    my $i_dy2_top    = ($config_ref->{LG_steps}+1)/2; # index at top of middle step
-                    my $i_dy2n_bottom = $#sampling_times - ($config_ref->{LG_steps}-1)/2;   # index at bottom of middle step
-                    my $i_dy2n_top    = $#sampling_times - ($config_ref->{LG_steps}+1)/2;   # index at top of middle step
-                    my $t_bottom = $sampling_times[$i_dy2_bottom];
-                    my $t_top = $sampling_times[$i_dy2_top];
-                    my $t_bottom_n = $sampling_times[$i_dy2n_bottom];
-                    my $t_top_n = $sampling_times[$i_dy2n_top];
+                    my (@diff_output_vector, @ss_output_vector);
+                    my @sampling_times = @event_times;
+                    my $output_complex = "TG00001";
 
-                    my $pos_t1 = $pos_output_vector[$i_dy2_bottom];
-                    my $pos_t2 = $pos_output_vector[$i_dy2_top];
-                    my $neg_t1 = $neg_output_vector[$i_dy2n_bottom];
-                    my $neg_t2 = $neg_output_vector[$i_dy2n_top];
-
+                    my $t = $sampling_times[0];
+                    my $steady_state_output = $self->matlab_get_state(complex => $output_complex, t => $t);
                     if ($config_ref->{round_values_flag}) {
-                        ($pos_t1, $pos_t2, $neg_t1, $neg_t2) = map {
-                        $self->matlab_round_value(value => $_, AbsTol => $config_ref->{AbsTol}, RelTol => $config_ref->{RelTol})
-                        } ($pos_t1, $pos_t2, $neg_t1, $neg_t2);
-                    }
-                    my $pos_delta = ($pos_t2 - $pos_t1)/($pos_t2 + $pos_t1)*2; # relative measure the time points (how fast reach steady state?)
-                    my $neg_delta = ($neg_t2 - $neg_t1)/($neg_t2 + $neg_t1)*2;
-
-                    my $pos_output_select = ($pos_delta >= $neg_delta) ? 1 : 0;
-                    my $output_complex = $pos_output_select ? "TG00001" : "TG00000";
-                    my $delta = $stats_ref->{delta} = $pos_output_select ? $pos_delta : $neg_delta;
-                    my $delta_score = $stats_ref->{delta_score} = p_hill($stats_ref->{delta}, $config_ref->{delta_threshold}, 1);
-
-                    if ($delta <= 0) {
-                        printn "\nWARNING: pos_delta and neg_delta are both zero or negative\n";
-                        $stats_ref->{sim_flag} = 0;
-                    }
-                    printn "pos_output_select = $pos_output_select" if $verbosity > 1;
-                    printn "pos_delta = $pos_delta, neg_delta = $neg_delta" if $verbosity > 1;
-                    my @output_vector = $pos_output_select ? @pos_output_vector : @neg_output_vector;
-
-                    #---------------------------------------------------------
-                    # PHASE PLOT
-                    #---------------------------------------------------------
-                    if (defined $config_ref->{plot_phase} && $config_ref->{plot_phase}) {
-                        my $output_node = $pos_output_select ? "TG00001" : "TG00000";
-                        $self->matlab_plot_phase(
-                            figure => 904,
-                            X_complex => "LG0000",
-                            Y_complex => $output_node,
-                            title_prefix => "$genome_name",
-                            axis_ref => [0, $config_ref->{LG_range},
-                                0, $config_ref->{TG_init}],
-                            filename => "$genome_name" . "_phase",
+                        $steady_state_output = $self->matlab_round_value(
+                            value => $steady_state_output,
+                            AbsTol => $config_ref->{AbsTol},
+                            RelTol => $config_ref->{RelTol},
                         );
                     }
+                    for (my $i=0; $i < $#sampling_times; $i++) {
+                        # Delta_steady_state
+                        my ($diff_min, $diff_max) = $self->matlab_get_state_range(
+                            complex => $output_complex,
+                            t1 => $sampling_times[$i],
+                            t2 => $sampling_times[$i+1],
+                        );
 
-                    #---------------------------------------------------------
-                    # COMPUTE ERROR, STATS
-                    #---------------------------------------------------------
-                    my $mean_squared_err = $stats_ref->{mean_squared_err} = mean_squared_error(\@output_vector, \@expected_output_vector);
-                    my $max_mean_squared_err = $stats_ref->{max_mean_squared_err} = ($config_ref->{TG_init}) ** 2; # since it's the maximum MEAN error^2
-                    my $min_mean_squared_err = $stats_ref->{min_mean_squared_err} = 1e-6 * $stats_ref->{max_mean_squared_err};
-                    $stats_ref->{mean_squared_err_score} = (log($max_mean_squared_err)-log($min_mean_squared_err + $mean_squared_err))/log($max_mean_squared_err/$min_mean_squared_err);
+                        my $diff_max0 = abs($diff_min - $steady_state_output);
+                        my $diff_max1 = abs($diff_max - $steady_state_output);
 
-                    ######################################################################################################
-                    # ultrasensitivity measure
-                    my @output_vector_slopes = map {$output_vector[$_] - $output_vector[$_-1]} (1..$#output_vector);
-                    my $LG_steps = $config_ref->{LG_steps};
-                    confess "ERROR: LG_steps must be odd" if (int $LG_steps/2) == ($LG_steps/2);
-                    #my $dy1  = max_numeric(0, $output_vector_slopes[$i_dy2_bottom-1]);
-                    my $dy2  = max_numeric(0, $output_vector_slopes[$i_dy2_top-1]);
-                    #my $dy3  = max_numeric(0, $output_vector_slopes[$i_dy2_top]);
-                    #my $dy1n = max_numeric(0, -$output_vector_slopes[$i_dy2n_bottom]);
-                    my $dy2n = max_numeric(0, -$output_vector_slopes[$i_dy2n_top]);
-                    #my $dy3n = max_numeric(0, -$output_vector_slopes[$i_dy2n_top-1]);
+                        $diff_output_vector[$i] = ($diff_max0 > $diff_max1) ? $diff_max0 : $diff_max1; 
 
-                    my ($dy1_min, $dy1_max)   = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2_bottom-1],
-                        t2 => $sampling_times[$i_dy2_bottom],
-                    );
-                    my ($dy1n_min, $dy1n_max) = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2n_bottom],
-                        t2 => $sampling_times[$i_dy2n_bottom+1],
-                    );
-                    my ($dy3_min, $dy3_max)   = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2_top],
-                        t2 => $sampling_times[$i_dy2_top+1],
-                    );
-                    my ($dy3n_min, $dy3n_max) = $self->matlab_get_state_range(
-                        complex => $output_complex,
-                        t1 => $sampling_times[$i_dy2n_top-1],
-                        t2 => $sampling_times[$i_dy2n_top],
-                    );
-                    printn "dy1_min/max = ($dy1_min, $dy1_max) dy1n_min/max = ($dy1n_min, $dy1n_max)" if $verbosity > 1;
-                    printn "dy3_min/max = ($dy3_min, $dy3_max) dy3n_min/max = ($dy3n_min, $dy3n_max)" if $verbosity > 1;
-                    my $dy1 =  $dy1_max  - $dy1_min;
-                    my $dy1n = $dy1n_max - $dy1n_min;
-                    my $dy3 =  $dy3_max  - $dy3_min;
-                    my $dy3n = $dy3n_max - $dy3n_min;
-
-                    printn "dy1 = $dy1 dy2 = $dy2 dy3 = $dy3" if $verbosity > 1;
-                    printn "dy1n = $dy1n dy2n = $dy2n dy3n=$dy3n" if $verbosity > 1;
-
-                    my $max_dy = $config_ref->{TG_init};
-
-                    my $amplitude = 0;
-                    my $ultrasensitivity_dy1 = 0;
-                    my $ultrasensitivity_dy3 = 0;
-                    if ($delta > 0 && $max_dy != 0 && $dy2 > 0 && $dy2n > 0) {
-                        $amplitude = ($dy2 + $dy2n)/2/$max_dy;
-                        my $mean_dy1 = ($dy1 + $dy1n)/2;
-                        my $mean_dy2 = ($dy2 + $dy2n)/2;
-                        my $mean_dy3 = ($dy3 + $dy3n)/2;
-                        # adding 0.01*mean_dy2 means you score at most 100
-                        $ultrasensitivity_dy1 = $mean_dy2/($mean_dy1 + 0.001);
-                        $ultrasensitivity_dy3 = $mean_dy2/($mean_dy3 + 0.001);
-                        #$ultrasensitivity_dy1 = $mean_dy2/($mean_dy1);
-                        #$ultrasensitivity_dy3 = $mean_dy2/($mean_dy3);
-                    }
-                    #		$stats_ref->{amplitude_score} = p_hill($amplitude, $config_ref->{amplitude_threshold}, 1);
-                    $stats_ref->{amplitude_score} = $amplitude;
-                    $stats_ref->{ultrasensitivity_dy1} = $ultrasensitivity_dy1;
-                    $stats_ref->{ultrasensitivity_dy3} = $ultrasensitivity_dy3;
-                    my $w_u1 = $config_ref->{w_u1};
-                    my $w_u3 = $config_ref->{w_u3};
-                    $stats_ref->{ultrasensitivity_score} = (
-                        (p_hill($ultrasensitivity_dy1, $config_ref->{ultrasensitivity_threshold}, 1)**$w_u1) *
-                        (p_hill($ultrasensitivity_dy3, $config_ref->{ultrasensitivity_threshold}, 1)**$w_u3)
-                    )**(1/($w_u1+$w_u3));
-                    #		$stats_ref->{ultrasensitivity_score} = (
-                    #		    p_hill($ultrasensitivity_dy1, $config_ref->{ultrasensitivity_threshold}, 1));
-
-                    # check if any concentrations are negative
-                    foreach my $sample (@output_vector) {
-                        if ($sample < 0) {
+                        # check if any concentrations are negative
+                        if ($steady_state_output < 0) {
                             printn "\nWARNING: detected negative concentrations in output vector\n";
                             $stats_ref->{sim_flag} = 0;
                         }
+                        $ss_output_vector[$i] = $steady_state_output;
+                        $t = $sampling_times[$i + 1]; 
+                        $steady_state_output = $self->matlab_get_state(complex => $output_complex, t => $t);
+                        if ($config_ref->{round_values_flag}) {
+                            $steady_state_output = $self->matlab_round_value(
+                                value => $steady_state_output,
+                                AbsTol => $config_ref->{AbsTol},
+                                RelTol => $config_ref->{RelTol},
+                            );
+                        }
+                        $ss_output_vector[$i] = abs($steady_state_output - $ss_output_vector[$i]);
                     }
 
-                    if (($stats_ref->{mean_squared_err_score} < 0) || ($stats_ref->{mean_squared_err_score} > $stats_ref->{max_mean_squared_err})) {
-                        #		if (($stats_ref->{mean_squared_err_score} < 0) || ($stats_ref->{mean_squared_err_score} > 1)) {
-                        # numerics got messed up, set score to zero
-                        printn "\nWARNING: computed mean_squared_error_score out of bounds\n";
-                        $stats_ref->{sim_flag} = 0;
+                    #---------------------------
+                    # adaptation measure
+                    #---------------------------
+                    my $max_dy = $config_ref->{TG_init};
+                    my $steps = defined $config_ref->{LG_steps} ? $config_ref->{LG_steps} : 1;
+                    confess "The steps number is not consist as sampling times number" if ($steps != scalar(@ss_output_vector)/2 || $steps != scalar(@diff_output_vector)/2);
+                    my $up_adaptation = 0.0001;
+                    my $down_adaptation = 0.0001;
+                    for (my $j = 0; $j < $steps; $j++) {
+                        $up_adaptation *= (min_numeric($diff_output_vector[$j] * 2 / $max_dy, 1-1e-3) + 1e-3);
+                        $down_adaptation *= (min_numeric($diff_output_vector[2*$steps-$j-1] * 2 / $max_dy, 1-1e-3) + 1e-3);
+                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[$j] * 2 / $max_dy / 0.1, 1e-3), 1) + 1e-3);
+                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$steps-$j-1] * 2 / $max_dy / 0.1, 1e-3), 1) + 1e-3);
                     }
+                    ##########################################
+                    $up_adaptation /= 0.0001;
+                    $down_adaptation /= 0.0001;
+                    $up_adaptation **= (1/$steps/2);
+                    $down_adaptation **= (1/$steps/2);
+                    my $w_down = defined $config_ref->{w_down} ? $config_ref->{w_down} : 1.0;
+                    my $w_up = defined $config_ref->{w_up} ? $config_ref->{w_up} : 1.0;
+
+                    $stats_ref->{adaptation_score} = (($up_adaptation**$w_up)*($down_adaptation**$w_down))**(1/($w_up+$w_down));
                 }
             }
         }  # if $parse_successful
         $stats_ref->{network_connectivity} = $network_connectivity;
-        $stats_ref->{network_score} = p_hill($stats_ref->{network_connectivity}, 500, 1);
+        $stats_ref->{network_score} = p_hill($stats_ref->{network_connectivity}, 1000, 1);
 
         #---------------------------------------------------------
         # FINAL SCORE
@@ -774,17 +651,16 @@ use base qw(Scoring);
         my $network_score = $stats_ref->{network_score} = $stats_ref->{network_score} || 0;
         my $complexity_score = $stats_ref->{complexity_score} = $stats_ref->{complexity_score} || 0;
         my $steady_state_score = $stats_ref->{steady_state_score} = $stats_ref->{steady_state_score} || 0;
-        my $amplitude_score = $stats_ref->{amplitude_score} = $stats_ref->{amplitude_score} || 0;
-        my $ultrasensitivity_score = $stats_ref->{ultrasensitivity_score} = $stats_ref->{ultrasensitivity_score} || 0;
         my $expression_score = $stats_ref->{expression_score} = $stats_ref->{expression_score} || 0;
+        my $adaptation_score = $stats_ref->{adaptation_score} = $stats_ref->{adaptation_score} || 0;
+
 
         if ($parse_successful) {
-            my $w_n = $config_ref->{w_n};
-            my $w_c = $config_ref->{w_c};
-            my $w_s = $config_ref->{w_s};
-            my $w_a = $config_ref->{w_a};
-            my $w_u = $config_ref->{w_u};
-            my $w_e = $config_ref->{w_e};
+            my $w_n = defined $config_ref->{w_n} ? $config_ref->{w_n} : 0.1;
+            my $w_c = defined $config_ref->{w_c} ? $config_ref->{w_c} : 0.0;
+            my $w_s = defined $config_ref->{w_s} ? $config_ref->{w_s} : 0.0;
+            my $w_e = defined $config_ref->{w_e} ? $config_ref->{w_e} : 0.5;
+            my $w_a = defined $config_ref->{w_a} ? $config_ref->{w_a} : 1.0;
 
             # is the input connected to the output?
             my $g0  = $stats_ref->{network_connected_flag} ? 1 : 0;
@@ -794,20 +670,16 @@ use base qw(Scoring);
             # No strange numerical problems?
             my $g1  = !$stats_ref->{timeout_flag} && $stats_ref->{sim_flag} ? 1 : 0;
             # is the output amplitude large enough that the output can be trusted artifact-free?
-            my $g3  = $g1 && ($stats_ref->{delta_score} > 0.5) ? 1 : 0;
-            my $g3n = !$g3 ? 1 : 0;
 
             # don't optimize network_score once the network is connected
             $final_score =  ($network_score * $g0n + $g0)**$w_n;
             # optimize complexity only if the network is connected
             $final_score *= (1e-3 + $complexity_score * $g0)**$w_c;
             $final_score *= (1e-3 + $expression_score * $g0)**$w_e;
-            # optimize amplitude if ANC output ok and no timeout during simulation
-            $final_score *= (1e-6 + $amplitude_score * $g1)**$w_a;
-            # optimize ultrasensitivity if ANC output ok and no timeout during simulation
-            $final_score *= (1e-6 + $ultrasensitivity_score * $g1)**$w_u;
+            # optimize multistability if ANC output ok and no timeout during simulation
+            $final_score *= (1e-6 + $adaptation_score * $g1)**$w_a;
 
-            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_u + $w_e));  # re-normalization
+            $final_score = $final_score**(1/($w_n + $w_c + $w_a + $w_e));  # re-normalization
         }
 
 
@@ -836,9 +708,11 @@ use base qw(Scoring);
             #    system("mv @files $work_dir/matlab");
             #}
         }
-    }
-}
 
+        return 1;
+    } ## --- end sub score_genome
+}
+ 
 
 sub run_testcases {
     $verbosity = 1;
@@ -850,23 +724,29 @@ sub run_testcases {
 #----------------------------------------
 # CPU AND CLUSTER SETTINGS
 #----------------------------------------
-nice = 10
+cluster_type = LOCAL
+cluster_size = 1
+nice = 15
 vmem = 200000000
 
 #----------------------------------------
-# WORKSPACE AND CUSTOM SCORING MODULE
+# WORKSPACE AND CUSTOM SCORING MODULES
 #----------------------------------------
-scoring_class = Ultrasensitive
-work_dir = ultrasensitive
+scoring_class = Adaptive
+work_dir = adaptive
+local_dir = adaptive/localdir
+
+#initial_genome = random
+initial_genome = load test/custom/Adaptive.obj
+
 
 #----------------------------------------
 # GENOME PARAMS
 #----------------------------------------
 
 # Scaling: all concentrations in uM, all 2nd-order rates in uM^-1 s^-1
-
 # Genome class
-radius = 2
+radius = 10      # should be reasonable. Binomial[Width,radius..0]/2^width
 kf_max = 1e3    # uM^-1 s^-1
 kf_min = 1e-3
 kb_max = 1e3
@@ -893,10 +773,11 @@ RT_phi_max = 1.0
 RT_phi_min = 0.0
 
 # ProtoDomain class
-binding_profile_width = 10
+binding_profile_width = 20
 kf_profile_width = 20
 kb_profile_width = 20
 kp_profile_width = 10
+steric_factor_profile_width = 20
 Keq_profile_width = 10
 protodomain_unused_width = 4
 Keq_ratio_max = 1e2
@@ -907,13 +788,14 @@ Keq_ratio_min = 1e-2
 #----------------------------------------
 max_external_iterations = -1
 max_internal_iterations = -1
-max_complex_size = 3
+max_complex_size = 3  #MATLAB has maximal length of names, if using MATLAB as simulator, this value should always be less than 9. Either -1(unlimited) or 6 should be resonable, please ref the Plos ONE paper from Vincent Danos group.
 max_species = 512
-max_csite_bound_to_msite_number = 1
+max_csite_bound_to_msite_number = 1 # originally set as 1, but if consider more complex situation, we should put this unlimited, which means in complex multiple csite-msite bindings could happen.
 default_max_count = 2          # this prevents polymerization (see ANC manual)
-default_steric_factor = 1e3    # in micro-mol/L
+default_steric_factor = 1000      # in micro-mol/L
 #export_graphviz = nothing
 export_graphviz = network,collapse_states,collapse_complexes
+#export_graphviz = network,collapse_states,collapse_complexes,primary,scalar,ungrouped,canonical # possibly there are more information could be output
 
 #----------------------------------------
 # FACILE/MATLAB SETTINGS
@@ -921,7 +803,7 @@ export_graphviz = network,collapse_states,collapse_complexes
 solver = ode23s
 #solver = stoch
 
-sampling_interval = 1
+sampling_interval = 1.0
 SS_timescale = 500.0
 
 # MATLAB odeset params
@@ -936,53 +818,55 @@ MaxStep = 500.0
 plot_input = 1
 plot_output = 1
 plot_species = 0
-plot_phase = 1
-plot_min = -1
 
 round_values_flag = 0
 
 steady_state_threshold = 1000   # IC settling time
 steady_state_score_threshold = 0.5
 
-delta_threshold = 0.01          # relative measure of amplitude used to filter out integration noise
-amplitude_threshold = 0.01      # absolute measure of amplitude
-ultrasensitivity_threshold = 5  # ratio of 2nd step over 1st step
+complexity_threshold = 250
+expression_threshold = 50
+adaptation_diff_threshold = 1
+adaptation_ss_threshold = 0.1
 
 w_n = 0.0
-w_c = 0.5
-w_e = 0.0
+w_c = 0.5   # complexity score weight   
+w_e = 0.5
 w_s = 1.0
-w_a = 1.0
-w_u = 1.0
-w_u1 = 1.0
-w_u3 = 1.0
+w_a = 1.0  # adaptation score weight
+w_diff = 1.0
+w_ss = 1.0
+w_up = 1.0
+w_down = 1.0
 
 LG_range = 10          # uM (about 6 molecules in 1e-18L vol ???)
 LG_delay = ~
 LG_strength = 4.0      # in Hz
-LG_ramp_time = 3000
-LG_steps = 3
+LG_ramp_time = 1
+LG_steps = 1
 
 LG_timeout = 20000
 
+#stimulus = staircase_equation
+#stimulus = ramp_equation
 stimulus = ss_ramp_equation
 
-hill_n = 40
-hill_k = 5
-
-TG_init = 1000  # uM
+TG_init = 10  # uM
 cell_volume = 1e-18             # 1e-18L --> sub-cellular volume
 
-lg_binding_profile = 0100111010
-tg_binding_profile = 0111000110
+# to make sure the input and output have relatively large distance and also have relative large distance from themselves
+# and also make sure their binding partner to have relatively large distance in this case the intermediate binding profile could be 0010110100 have both 5 distanct to all four binding profiles
+# it depends the problem, whether want far distances between initial profiles or shorter distances
+lg_binding_profile = 00100010011101010100
+tg_binding_profile = 01101001111011010010
 
 END
 
-    burp_file("test/custom/Ultrasensitive.cfg", $config_file);
+    burp_file("test/custom/Adaptive.cfg", $config_file);
 
-    my $scoring_ref = Ultrasensitive->new({
+    my $scoring_ref = Adaptive->new({
             node_ID => 98,
-            config_file => "test/custom/Ultrasensitive.cfg",
+            config_file => "test/custom/Adaptive.cfg",
             work_dir    => "test/custom",
             matlab_startup_options => "-nodesktop -nosplash",
         });
@@ -990,11 +874,11 @@ END
     printn $scoring_ref->_DUMP();
 
     my $config_ref = {};
-    read_config($config_ref, "test/custom/Ultrasensitive.cfg");
+    read_config($config_ref, "test/custom/Adaptive.cfg");
 
     use GenomeModel;
     my $genome_model_ref = GenomeModel->new({
-            name => "Ultrasensitive",
+            name => "Adaptive",
             Genome => {
                 radius => $config_ref->{radius},
                 kf_max => $config_ref->{kf_max},
@@ -1055,7 +939,7 @@ END
                                 {
                                     type => "csite",
                                     substrate_polarity => 0,
-                                    binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
+                                    binding_profile => "11110100100010111011",
                                     kf_profile => "11010111000001100000",
                                     kb_profile => "11101010101110011000",
                                     kp_profile => "11001011010100010000",
@@ -1067,25 +951,27 @@ END
                                     kp_conformation_mask => "0",
                                     UNUSED => "0",
                                 },
-                                {
-                                    type => "bsite",
-                                    substrate_polarity => 0,
-                                    binding_profile => BindingProfile->binding_complement($lg_binding_profile)->sprint(),
-                                    kf_profile => "00101000100100010010",
-                                    kb_profile => "11001000110000001000",
-                                    kp_profile => "00011111000111110011",
-                                    Keq_ratio => 1.0,
-                                    kf_polarity_mask => "0",
-                                    kb_polarity_mask => "0",
-                                    kf_conformation_mask => "11111100111111001110",
-                                    kb_conformation_mask => "0",
-                                    kp_conformation_mask => "0",
-                                    UNUSED => "0",
-                                },
+                            ],
+                            UNUSED => "0",
+                        },
+                    ],
+                },
+                {
+                    START_CODE => undef, STOP_CODE => undef, # these fields will be filled in
+                    regulated_concentration => 1.0, # uM
+                    UNUSED => "0000",
+                    domains => [
+                        {
+                            allosteric_flag => 0,
+                            RT_transition_rate => 1.00,
+                            TR_transition_rate => 1.00,
+                            RT_phi => 1.0,
+                            protodomains => [
+
                                 {
                                     type => "csite",
                                     substrate_polarity => 1,
-                                    binding_profile => BindingProfile->binding_complement($tg_binding_profile)->sprint(),
+                                    binding_profile => "10010101000101101001",
                                     kf_profile => "11010111000001100000",
                                     kb_profile => "11101010101110011000",
                                     kp_profile => "11001011010100010000",
@@ -1109,7 +995,7 @@ END
 
     # save the genome object
     use Storable qw(store retrieve);
-    store($genome_model_ref, "test/custom/Ultrasensitive.obj");
+    store($genome_model_ref, "test/custom/Adaptive.obj");
 
     $scoring_ref->score_genome($genome_model_ref);
     printn $genome_model_ref->_DUMP();
