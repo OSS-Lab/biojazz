@@ -153,7 +153,7 @@ use base qw(Scoring);
         # if random delay, delay from 1/4 period to 1/2 period inclusive
         my $stimulus_sub_ref = \&{$config_ref->{stimulus}};
         my $stimulus_ref = undef;
-        if ($config_ref->{stimulus} eq "rand_ss_ramp_equation") {
+        if ($config_ref->{stimulus} eq "ss_ramp_equation") {
             $stimulus_ref = &$stimulus_sub_ref(
                 NODE => "LG0000",
                 DELAY => $config_ref->{LG_delay},	

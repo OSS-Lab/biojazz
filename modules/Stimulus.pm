@@ -460,3 +460,69 @@ sub ss_ramp_equation {
     }
 }
 
+
+#--------------------------------------------------------------------------------------
+# Function: rand_ss_ramp_equation
+# Synopsys: Generate a non-periodic source/sink equation pair to generate linear ramp
+#           up and down over several steps but with random step size.
+#           The system is brought to steady-state at each step.
+#--------------------------------------------------------------------------------------
+sub rand_ss_ramp_equation {
+    my %args = (
+        # default values
+        NODE => undef,
+        DELAY => "~",  # default is to wait for steady-state before applying stimulus
+        STRENGTH => undef,
+        RANGE    => undef,
+        STEPS => undef,
+        RAMP_TIME => undef,
+        @_,               # argument pair list overwrites defaults
+    );
+
+    check_args(\%args, 6);
+
+    my $node = $args{NODE};
+    my $delay = $args{DELAY};
+    my $strength = $args{STRENGTH};
+    my $range = $args{RANGE};
+    my $steps = $args{STEPS};
+    my $ramp_time = $args{RAMP_TIME};
+
+    my $step_size = $range;  # the concentration changing size
+    my $step_time = $ramp_time / $steps;
+
+    my @events = ($delay, map {"~"} (1..2*$steps));
+    my @values = (0);
+    for (my $i=1; $i < $steps; $i++) {
+        $step_size = $values[$i-1] + int(rand() * ($range - $values[$i-1] + 1 - ($steps - $i)));
+        push @values, $step_size;
+    }
+    push @values, $range;
+    for (my $i=1; $i < $steps; $i++) {
+        $step_size = $range - int(rand() * ($values[$steps+$i] + 1 - ($steps - $i)))
+    }
+    push @values, 0;
+
+    my $ramp_source_node = "(";
+    for (my $i=0; $i < (@events-1)/2; $i++) {
+        my $ii = $i + 1;
+        my $jj = $i + 1 + (@events-1)/2;
+        $ramp_source_node .= "+(event_flags($ii) && ~event_flags($jj))*min((t-event_times($ii))/$step_time, 1)*($values[$ii]-$values[$i])*$strength";
+        $ramp_source_node .= "+event_flags($jj)*max(1-(t-event_times($jj))/$step_time, 0)*($values[$jj]-$values[$jj+1])*$strength";
+    }
+    $ramp_source_node .= ")";
+
+
+    printn "ramp_equation: event list is @events" if $verbosity >= 3;
+    printn "ramp_equation: value list is @values" if $verbosity >= 3;
+
+    return {
+        equations => [
+            "null -> $node; clamp_source_$node=\"$ramp_source_node\"",
+            "$node -> null; clamp_sink_$node=$strength",
+        ],
+        events => \@events,
+        values => \@values,
+    }
+}
+
