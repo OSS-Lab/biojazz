@@ -29,6 +29,7 @@ staircase_equation
 staircase_sample
 ramp_equation
 ss_ramp_equation
+rand_ss_ramp_equation
 );
 
 use Utils;
