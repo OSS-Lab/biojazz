@@ -162,6 +162,15 @@ use base qw(Scoring);
                 RAMP_TIME => $config_ref->{LG_ramp_time},
                 STEPS => $config_ref->{LG_steps},
             );
+        } elsif ($config_ref->{stimulus} eq "ss_ramp_equation") {
+            $stimulus_ref = &$stimulus_sub_ref(
+                NODE => "LG0000",
+                DELAY => $config_ref->{LG_delay},	
+                RANGE => $config_ref->{LG_range},
+                STRENGTH => $config_ref->{LG_strength},
+                RAMP_TIME => $config_ref->{LG_ramp_time},
+                STEPS => $config_ref->{LG_steps},
+            );
         } elsif ($config_ref->{stimulus} eq "staircase_equation") {
             $stimulus_ref = &$stimulus_sub_ref(
                 NODE => "LG0000",
