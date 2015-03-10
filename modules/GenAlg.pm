@@ -557,20 +557,33 @@ use base qw();
             my $genome_ref = $genome_model_refs[$index_array_ref_of{$obj_ID}->[$i]];
             my $parent_name = $genome_ref->get_name();
             confess "ERROR: The score of $parent_name is UNDEFINED!" if !defined $genome_ref->get_score();
-            if (rand(1) < $mutation_rate) {
+            my $mutation_count = 0;
+            my $general_mutation = rand(1);
+            my $hgt_mutation = rand(1);
+            if ($general_mutation < $mutation_rate || $hgt_mutation < $config_ref->{hgt_rate}) {
                 my $child_ref = $genome_ref->duplicate();
-                $child_ref->set_stepwise_mutations(0);
-                $child_ref->set_stepwise_point_mutations(0);
-                printn "MUTATION: mutating genome $parent_name.";
-                my $mutation_count = $child_ref->mutate(
-                    mutation_rate_params => $config_ref->{mutation_rate_params},
-                    mutation_rate_global => $config_ref->{mutation_rate_global},
-                    gene_duplication_rate => $config_ref->{gene_duplication_rate},
-                    gene_deletion_rate => $config_ref->{gene_deletion_rate},
-                    domain_duplication_rate => $config_ref->{domain_duplication_rate},
-                    domain_deletion_rate => $config_ref->{domain_deletion_rate},
-                    recombination_rate => $config_ref->{recombination_rate},
-                );
+                if ($general_mutation < $mutation_rate) {
+                    $child_ref->set_stepwise_mutations(0);
+                    $child_ref->set_stepwise_point_mutations(0);
+                    printn "MUTATION: mutating genome $parent_name.";
+                    $mutation_count = $child_ref->mutate(
+                        mutation_rate_params => $config_ref->{mutation_rate_params},
+                        mutation_rate_global => $config_ref->{mutation_rate_global},
+                        gene_duplication_rate => $config_ref->{gene_duplication_rate},
+                        gene_deletion_rate => $config_ref->{gene_deletion_rate},
+                        domain_duplication_rate => $config_ref->{domain_duplication_rate},
+                        domain_deletion_rate => $config_ref->{domain_deletion_rate},
+                        recombination_rate => $config_ref->{recombination_rate},
+                    );
+
+                } 
+                if ($hgt_mutation < $config_ref->{hgt_rate}) {
+                    # now to implement the horizontal gene transfer
+                    my $donor_ref = $genome_model_refs[$index_array_ref_of{$obj_ID}->[rand($population)]];
+                    my $hgt_sequence = $donor_ref->get_chunk();
+                    $child_ref->insert_chunk($hgt_sequence);
+                    $mutation_count += length($hgt_sequence);
+                }
 
                 if ($mutation_count) {
                     $child_ref->set_score(undef);

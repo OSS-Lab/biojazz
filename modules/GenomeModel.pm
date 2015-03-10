@@ -516,6 +516,29 @@ use base qw(Model);
         return $self->get_gene_by_index($gene_index)->get_field_ref(["domains", $domain_index]);
     } ## --- end sub get_domain_by_index
 
+    #---  FUNCTION  ----------------------------------------------------------------
+    #         NAME: get_all_protodomains
+    #   PARAMETERS: 
+    #      RETURNS: protodomain references array
+    #     COMMENTS: none
+    #-------------------------------------------------------------------------------
+    sub get_all_protodomains {
+        my $self = shift; my $obj_ID = ident $self;
+        my @gene_refs = $self->get_genes();
+ 
+        my @protodomain_refs;
+        for (my $i=0;$i < @gene_refs; $i++) {
+            my @domain_refs = $self->get_domains($i);
+            foreach my $domain_ref (@domain_refs) {
+                push (@protodomain_refs, @{$domain_ref->get_field_ref(["protodomains"])});
+            }
+        }
+
+        return @protodomain_refs;
+        
+    } ## --- end sub get_domain_by_index
+
+
     #--------------------------------------------------------------------------------------
     # Function: get_domain_sequence
     # Synopsys: Given a gene and domain number, extract the sequence from genome.
@@ -1221,6 +1244,76 @@ use base qw(Model);
 
         return ($new_gene_start, $length);
     }
+
+    
+
+
+
+    sub get_chunk {
+        my $self = shift; my $obj_ID = ident $self;
+        my $sequence_ref = $self->get_sequence_ref();
+
+        my $gene_parser_ref = $self->get_gene_parser_ref();
+        my $domain_parser_ref = $self->get_domain_parser_ref();
+        my $protodomain_parser_ref = $self->get_protodomain_parser_ref();
+        my $soft_linker_code = $gene_parser_ref->get_soft_linker_code();
+        my $hard_linker_code = $domain_parser_ref->get_hard_linker_code();
+
+        my @all_protodomains = $self->get_all_protodomains();
+        my $protodomain_number = scalar @all_protodomains;
+        my $rand0 = int rand($protodomain_number + 1);
+        my $rand1;
+        do {
+            $rand1 = int rand($protodomain_number + 1);
+        } until ($rand0 != $rand1);
+        my @interPDs = sort {$a <=> $b} ($rand0, $rand1);
+
+        my $trunk_init = $all_protodomains[$interPDs[0]]->get_locus();
+        my $trunk_end;
+        if ($interPDs[1] = $protodomain_number) {
+            $trunk_end = $all_protodomains[$protodomain_number - 1]->get_locus() + $all_protodomains[$protodomain_number - 1]->get_length() + length($soft_linker_code);
+        } else {
+            $trunk_end = $all_protodomains[$interPDs[1]]->get_locus();
+        }
+
+        my $hgt_sequence = $sequence_ref->get_subseq($trunk_init, $trunk_end - $trunk_init);
+        return ($hgt_sequence);
+    } ## --- end sub get_chunk
+
+
+
+
+
+    sub insert_chunk {
+        my $self = shift; my $obj_ID = ident $self;
+        my $hgt_sequence = shift;
+        my $sequence_ref = $self->get_sequence_ref();
+
+        my $gene_parser_ref = $self->get_gene_parser_ref();
+        my $domain_parser_ref = $self->get_domain_parser_ref();
+        my $protodomain_parser_ref = $self->get_protodomain_parser_ref();
+        my $soft_linker_code = $gene_parser_ref->get_soft_linker_code();
+        my $hard_linker_code = $domain_parser_ref->get_hard_linker_code();
+
+        my @all_protodomains = $self->get_all_protodomains();
+        my $protodomain_number = scalar @all_protodomains;
+        my $rand = int rand($protodomain_number);
+
+        my $insert_locus = $all_protodomains[$rand]->get_locus();
+
+        $sequence_ref->splice_subseq($hgt_sequence, $insert_locus);
+
+        return (length($hgt_sequence));
+    } ## --- end sub get_chunk
+
+
+
+
+
+
+
+
+
 
     #--------------------------------------------------------------------------------------
     # Function: mutate
