@@ -490,7 +490,7 @@ sub rand_ss_ramp_equation {
     my $ramp_time = $args{RAMP_TIME};
 
     my $step_size = $range;  # the concentration changing size
-    my $step_time = $ramp_time / $steps;
+    my $step_time = $ramp_time / $steps | 1;
 
     my @events = ($delay, map {"~"} (1..2*$steps));
     my @values = (0);
@@ -509,8 +509,11 @@ sub rand_ss_ramp_equation {
     for (my $i=0; $i < (@events-1)/2; $i++) {
         my $ii = $i + 1;
         my $jj = $i + 1 + (@events-1)/2;
-        $ramp_source_node .= "+(event_flags($ii) && ~event_flags($jj))*min((t-event_times($ii))/$step_time, 1)*($values[$ii]-$values[$i])*$strength";
-        $ramp_source_node .= "+event_flags($jj)*max(1-(t-event_times($jj))/$step_time, 0)*($values[$jj]-$values[$jj+1])*$strength";
+        my $jjnext = $jj + 1;
+        my $amp1 = $values[$ii]-$values[$i];
+        my $amp2 = $values[$jj]-$values[$jjnext];
+        $ramp_source_node .= "+(event_flags($ii) && ~event_flags($jj))*min((t-event_times($ii))/$step_time, 1)*($amp1)*$strength";
+        $ramp_source_node .= "+event_flags($jj)*max(1-(t-event_times($jj))/$step_time, 0)*($amp2)*$strength";
     }
     $ramp_source_node .= ")";
 
