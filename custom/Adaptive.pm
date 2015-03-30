@@ -580,7 +580,7 @@ use base qw(Scoring);
                     $ss_time_max, $steady_state_threshold,1);
 
                 if (!$timeout_flag) {
-                    my (@diff_output_vector, @ss_output_vector);
+                    my (@diff_output_vector, @ss_output_vector, @ss_output_values);
                     my @sampling_times = @event_times;
                     my $output_complex = "TG00001";
 
@@ -612,6 +612,7 @@ use base qw(Scoring);
                             $stats_ref->{sim_flag} = 0;
                         }
                         $ss_output_vector[$i] = $steady_state_output;
+                        $ss_output_values[$i] = $steady_state_output;
                         $t = $sampling_times[$i + 1]; 
                         $steady_state_output = $self->matlab_get_state(complex => $output_complex, t => $t);
                         if ($config_ref->{round_values_flag}) {
@@ -627,16 +628,18 @@ use base qw(Scoring);
                     #---------------------------
                     # adaptation measure
                     #---------------------------
-                    my $max_dy = $config_ref->{TG_init};
+                    my ($up_max_dy, $down_max_dy);
                     my $steps = defined $config_ref->{LG_steps} ? $config_ref->{LG_steps} : 1;
                     confess "The steps number is not consist as sampling times number" if ($steps != scalar(@ss_output_vector)/2 || $steps != scalar(@diff_output_vector)/2);
                     my $up_adaptation = 0.0001;
                     my $down_adaptation = 0.0001;
                     for (my $j = 0; $j < $steps; $j++) {
-                        $up_adaptation *= (min_numeric($diff_output_vector[$j] * 2 / $max_dy, 1-1e-3) + 1e-3);
-                        $down_adaptation *= (min_numeric($diff_output_vector[2*$steps-$j-1] * 2 / $max_dy, 1-1e-3) + 1e-3);
-                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[$j] * 2 / $max_dy / 0.1, 1e-3), 1) + 1e-3);
-                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$steps-$j-1] * 2 / $max_dy / 0.1, 1e-3), 1) + 1e-3);
+                        $up_max_dy = max($ss_output_values[$j], 0.1) * abs($stimulus_values_list[$j+1] - $stimulus_values_list[$j]) / max($stimulus_values_list[$j],0.1)
+                        $down_max_dy = max($ss_output_values[2*$steps-$j-1],0.1) * abs($stimulus_values_list[2*$steps-$j] - $stimulus_values_list[2*$steps-$j-1]) / max($stimulus_values_list[2*$steps-$j-1],0.1)
+                        $up_adaptation *= (min_numeric($diff_output_vector[$j] * 2 / $up_max_dy, 1-1e-3) + 1e-3);
+                        $down_adaptation *= (min_numeric($diff_output_vector[2*$steps-$j-1] * 2 / $down_max_dy, 1-1e-3) + 1e-3);
+                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[$j] * 2 / $up_max_dy / 0.1, 1e-3), 1) + 1e-3);
+                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$steps-$j-1] * 2 / $down_max_dy / 0.1, 1e-3), 1) + 1e-3);
                     }
                     ##########################################
                     $up_adaptation /= 0.0001;
