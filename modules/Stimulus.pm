@@ -500,7 +500,7 @@ sub rand_ss_ramp_equation {
         push @values, $step_size;
     }
     for (my $i=0; $i < $steps; $i++) {
-        $step_size = max(($values[-1] - rand() * ($range ** ($step_size_exp*($steps-1-$i)))), 0);
+        $step_size = max_numeric(($values[-1] - rand() * ($range ** ($step_size_exp*($steps-1-$i)))), 0);
         push @values, $step_size;
     }
 
