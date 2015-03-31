@@ -741,8 +741,13 @@ use base qw();
         $title_prefix =~ s/_/\\_/g;
 
         my $matlab_ref = $matlab_ref_of{$obj_ID};
-        my $command = "io=figure(\'Visible\',\'off\');$plot_command(t, $complex); title(\'$title_prefix $title\')";
-        #my $command = "io=figure($figure);$plot_command(t, $complex); title(\'$title_prefix $title\')";
+        my $command = "";
+        my $rescoring = 0 || $config_ref_of{$obj_ID}->{rescoring};
+        if ($rescoring==1) {
+            $command = "io=figure(\'Visible\',\'off\');$plot_command(t, $complex); title(\'$title_prefix $title\')";
+        } else {
+            $command = "io=figure($figure);$plot_command(t, $complex); title(\'$title_prefix $title\')";
+        }
         printn "matlab_plot_complex: Figure $figure -- $complex" if $verbosity >= 1;
         $matlab_ref->cmd("$command");
         $matlab_ref->cmd("saveas(io, \'$filename\', \'png\')") if $filename;
@@ -816,8 +821,12 @@ use base qw();
 
         my $matlab_ref = $matlab_ref_of{$obj_ID};
         $matlab_ref->cmd("halfway = floor(size($X_complex,1)/2)");
-        #$matlab_ref->cmd("h=figure($figure); plot($X_complex(1:halfway), $Y_complex(1:halfway));title(\'$title_prefix $title\')");
-        $matlab_ref->cmd("h=figure(\'Visible\',\'off\'); plot($X_complex(1:halfway), $Y_complex(1:halfway));title(\'$title_prefix $title\')");
+        my $rescoring = 0 || $config_ref_of{$obj_ID}->{rescoring};
+        if ($rescoring==1) {
+            $matlab_ref->cmd("h=figure(\'Visible\',\'off\'); plot($X_complex(1:halfway), $Y_complex(1:halfway));title(\'$title_prefix $title\')");
+        } else {
+            $matlab_ref->cmd("h=figure($figure); plot($X_complex(1:halfway), $Y_complex(1:halfway));title(\'$title_prefix $title\')");
+        }  
         $matlab_ref->cmd("hold on; plot($X_complex(halfway+1:end), $Y_complex(halfway+1:end), \'r\'); hold off;");
         $matlab_ref->cmd("axis([".join(" ", @$axis_ref)."])") if $axis_ref;
         #$matlab_ref->cmd("hgsave(h, \'$filename\')") if $filename;
