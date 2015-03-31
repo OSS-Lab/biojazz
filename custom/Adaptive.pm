@@ -634,7 +634,7 @@ use base qw(Scoring);
                     my $up_adaptation = 0.0001;
                     my $down_adaptation = 0.0001;
                     for (my $j = 0; $j < $steps; $j++) {
-                        $up_max_dy = max_numeric($ss_output_values[$j], 0.1) * abs($stimulus_values_list[$j+1] - $stimulus_values_list[$j]) / max($stimulus_values_list[$j],0.1);
+                        $up_max_dy = max_numeric($ss_output_values[$j], 0.1) * abs($stimulus_values_list[$j+1] - $stimulus_values_list[$j]) / max_numeric($stimulus_values_list[$j],0.1);
                         $down_max_dy = max_numeric($ss_output_values[2*$steps-$j-1],0.1) * abs($stimulus_values_list[2*$steps-$j] - $stimulus_values_list[2*$steps-$j-1]) / max_numeric($stimulus_values_list[2*$steps-$j-1],0.1);
                         $up_adaptation *= (min_numeric($diff_output_vector[$j] * 2 / $up_max_dy, 1-1e-3) + 1e-3);
                         $down_adaptation *= (min_numeric($diff_output_vector[2*$steps-$j-1] * 2 / $down_max_dy, 1-1e-3) + 1e-3);
