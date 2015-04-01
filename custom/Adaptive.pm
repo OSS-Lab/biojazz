@@ -537,6 +537,7 @@ use base qw(Scoring);
                         complex => "LG0000",
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_input",
+                        plot_command => "loglog",
                     );
                 }
                 if (defined $config_ref->{plot_output} && $config_ref->{plot_output}) {
@@ -544,11 +545,13 @@ use base qw(Scoring);
                         complex => "TG00000",
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_output0",
+                        plot_command => "loglog",
                     );
                     $self->matlab_plot_complex(figure => 902,
                         complex => "TG00001",
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_output1",
+                        plot_command => "loglog",
                     );
                 }
                 if (defined $config_ref->{plot_species} && $config_ref->{plot_species}) {

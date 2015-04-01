@@ -823,11 +823,11 @@ use base qw();
         $matlab_ref->cmd("halfway = floor(size($X_complex,1)/2)");
         my $rescoring = 0 || $config_ref_of{$obj_ID}->{rescoring};
         if ($rescoring==1) {
-            $matlab_ref->cmd("h=figure(\'Visible\',\'off\'); plot($X_complex(1:halfway), $Y_complex(1:halfway));title(\'$title_prefix $title\')");
+            $matlab_ref->cmd("h=figure(\'Visible\',\'off\'); $plot_command($X_complex(1:halfway), $Y_complex(1:halfway));title(\'$title_prefix $title\')");
         } else {
-            $matlab_ref->cmd("h=figure($figure); plot($X_complex(1:halfway), $Y_complex(1:halfway));title(\'$title_prefix $title\')");
+            $matlab_ref->cmd("h=figure($figure); $plot_command($X_complex(1:halfway), $Y_complex(1:halfway));title(\'$title_prefix $title\')");
         }  
-        $matlab_ref->cmd("hold on; plot($X_complex(halfway+1:end), $Y_complex(halfway+1:end), \'r\'); hold off;");
+        $matlab_ref->cmd("hold on; $plot_command($X_complex(halfway+1:end), $Y_complex(halfway+1:end), \'r\'); hold off;");
         $matlab_ref->cmd("axis([".join(" ", @$axis_ref)."])") if $axis_ref;
         #$matlab_ref->cmd("hgsave(h, \'$filename\')") if $filename;
         $matlab_ref->cmd("saveas(h, \'$filename\', \'png\')") if $filename;
