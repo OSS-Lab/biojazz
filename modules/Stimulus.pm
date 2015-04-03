@@ -496,11 +496,13 @@ sub rand_ss_ramp_equation {
     my @events = ($delay, map {"~"} (1..2*$steps));
     my @values = (0.0001);
     for (my $i=0; $i < $steps; $i++) {
-        $step_size = $values[$i] + ($range ** (rand() * 3));
+        $step_size = $values[$i] + rand() * ($range ** ($step_size_exp*($i)));
+        #$step_size = $values[$i] + ($range ** (rand() * 3));
         push @values, $step_size;
     }
     for (my $i=0; $i < $steps; $i++) {
-        $step_size = max_numeric(($values[-1] - ($range ** (rand() * 3))), 0);
+        $step_size = max_numeric(($values[-1] - rand() * ($range ** ($step_size_exp*($steps-1-$i)))), 0);
+        #$step_size = max_numeric(($values[-1] - ($range ** (rand() * 3))), 0);
         push @values, $step_size;
     }
 
