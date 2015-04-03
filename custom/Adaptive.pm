@@ -537,7 +537,7 @@ use base qw(Scoring);
                         complex => "LG0000",
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_input",
-                        plot_command => "semilogy",
+                        plot_command => "plot",
                     );
                 }
                 if (defined $config_ref->{plot_output} && $config_ref->{plot_output}) {
