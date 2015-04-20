@@ -477,10 +477,12 @@ sub rand_ss_ramp_equation {
         RANGE    => undef,
         STEPS => undef,
         RAMP_TIME => undef,
+        MIN => 1,
+        MAX => 1000,
         @_,               # argument pair list overwrites defaults
     );
 
-    check_args(\%args, 6);
+    check_args(\%args, 8);
 
     my $node = $args{NODE};
     my $delay = $args{DELAY};
@@ -488,9 +490,11 @@ sub rand_ss_ramp_equation {
     my $range = $args{RANGE};
     my $steps = $args{STEPS};
     my $ramp_time = $args{RAMP_TIME};
+    my $lg_min = $args{MIN};
+    my $lg_max = $args{MAX};
 
     my $step_size = $range;  # the concentration changing size
-    my $step_size_exp = 3/($steps-1);
+    my $step_size_exp = ((log($log_max)-log($log_min))/log(10))/($steps-1);
     my $step_time = $ramp_time / $steps || 1;
 
     my @events = ($delay, map {"~"} (1..2*$steps));

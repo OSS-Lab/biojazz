@@ -161,6 +161,8 @@ use base qw(Scoring);
                 STRENGTH => $config_ref->{LG_strength},
                 RAMP_TIME => $config_ref->{LG_ramp_time},
                 STEPS => $config_ref->{LG_steps},
+                MIN => $config_ref->{LG_min},
+                MAX => $config_ref->{LG_max},
             );
         } elsif ($config_ref->{stimulus} eq "ss_ramp_equation") {
             $stimulus_ref = &$stimulus_sub_ref(
@@ -634,15 +636,15 @@ use base qw(Scoring);
                     my ($up_max_dy, $down_max_dy);
                     my $steps = defined $config_ref->{LG_steps} ? $config_ref->{LG_steps} : 1;
                     confess "The steps number is not consist as sampling times number" if ($steps != scalar(@ss_output_vector)/2 || $steps != scalar(@diff_output_vector)/2);
+                    my $tg_min = $TG_init / (10**($steps-1));
                     my $up_adaptation = 1;
                     my $down_adaptation = 1;
                     for (my $j = 0; $j < $steps; $j++) {
-                        $up_max_dy = max_numeric($ss_output_values[$j], 0.01) * max_numeric(abs($stimulus_values_list[$j+1] - $stimulus_values_list[$j]), 0.0001) / max_numeric($stimulus_values_list[$j],0.01);
-                        $down_max_dy = max_numeric($ss_output_values[2*$steps-$j-1],0.01) * max_numeric(abs($stimulus_values_list[2*$steps-$j] - $stimulus_values_list[2*$steps-$j-1]), 0.0001) / max_numeric($stimulus_values_list[2*$steps-$j-1],0.01);
-                        $up_adaptation *= (min_numeric($diff_output_vector[$j] * 2 / $up_max_dy, 1-0.01) + 1e-3);
-                        $down_adaptation *= (min_numeric($diff_output_vector[2*$steps-$j-1] * 2 / $down_max_dy, 1-0.01) + 1e-3);
-                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[$j] * 2 / $up_max_dy / 0.1, 1e-3), 1-0.001));
-                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$steps-$j-1] * 2 / $down_max_dy / 0.1, 1e-3), 1-0.001));
+                        $max_dy = $tg_min * 10**($j);
+                        $up_adaptation *= (min_numeric($diff_output_vector[$j] * 2 / $max_dy, 1-0.01) + 1e-3);
+                        $down_adaptation *= (min_numeric($diff_output_vector[2*$steps-$j-1] * 2 / $max_dy, 1-0.01) + 1e-3);
+                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[$j] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
+                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$steps-$j-1] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
                     }
                     ##########################################
                     $up_adaptation **= (1/$steps/2);
