@@ -633,10 +633,10 @@ use base qw(Scoring);
                     #---------------------------
                     # adaptation measure
                     #---------------------------
-                    my ($up_max_dy, $down_max_dy);
+                    my $max_dy;
                     my $steps = defined $config_ref->{LG_steps} ? $config_ref->{LG_steps} : 1;
                     confess "The steps number is not consist as sampling times number" if ($steps != scalar(@ss_output_vector)/2 || $steps != scalar(@diff_output_vector)/2);
-                    my $tg_min = $TG_init / (10**($steps-1));
+                    my $tg_min = $config_ref->{TG_init} / (10**($steps-1));
                     my $up_adaptation = 1;
                     my $down_adaptation = 1;
                     for (my $j = 0; $j < $steps; $j++) {
