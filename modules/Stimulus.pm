@@ -494,7 +494,7 @@ sub rand_ss_ramp_equation {
     my $lg_max = $args{MAX};
 
     my $step_size = $range;  # the concentration changing size
-    my $step_size_exp = ((log($log_max)-log($log_min))/log(10))/($steps-1);
+    my $step_size_exp = ((log($lg_max)-log($lg_min))/log(10))/($steps-1);
     my $step_time = $ramp_time / $steps || 1;
 
     my @events = ($delay, map {"~"} (1..2*$steps));
