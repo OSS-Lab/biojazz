@@ -101,7 +101,6 @@ cluster_type = LOCAL
 cluster_size = 1
 seed = -1
 tag = test
-config=ultrasensitive.cfg
 
 evolve : FORCE
 	@echo "ANC_HOME =" $(ANC_HOME)
