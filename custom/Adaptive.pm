@@ -633,18 +633,18 @@ use base qw(Scoring);
                     #---------------------------
                     # adaptation measure
                     #---------------------------
-                    my $max_dy;
+                    my $max_dy = $config_ref->{TG_init} / 2;
                     my $steps = defined $config_ref->{LG_steps} ? $config_ref->{LG_steps} : 1;
                     confess "The steps number is not consist as sampling times number" if ($steps != scalar(@ss_output_vector)/2 || $steps != scalar(@diff_output_vector)/2);
                     my $tg_min = $config_ref->{TG_init} / (10**($steps-1));
                     my $up_adaptation = 1;
                     my $down_adaptation = 1;
                     for (my $j = 0; $j < $steps; $j++) {
-                        $max_dy = $tg_min * 10**($j);
-                        $up_adaptation *= (min_numeric($diff_output_vector[$j] * 2 / $max_dy, 1-0.01) + 1e-3);
-                        $down_adaptation *= (min_numeric($diff_output_vector[2*$steps-$j-1] * 2 / $max_dy, 1-0.01) + 1e-3);
-                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[$j] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
-                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$steps-$j-1] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
+                        #$max_dy = $tg_min * 10**($j);
+                        $up_adaptation *= (min_numeric($diff_output_vector[2*$j] * 2 / $max_dy, 1-0.01) + 1e-3);
+                        $down_adaptation *= (min_numeric($diff_output_vector[2*$j+1] * 2 / $max_dy, 1-0.01) + 1e-3);
+                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
+                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j+1] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
                     }
                     ##########################################
                     $up_adaptation **= (1/$steps/2);
