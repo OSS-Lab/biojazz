@@ -256,6 +256,7 @@ sub score_genome {
     $config_ref->{plot_output} = 1;
     $config_ref->{plot_phase} = 1;
     $config_ref->{plot_species} = 0 || $config_ref->{plot_species};
+    $config_ref->{rescoring} = 1;
     $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes";
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
@@ -296,6 +297,7 @@ sub score_generation {
     $config_ref->{plot_output} = 1;
     $config_ref->{plot_phase} = 1;
     $config_ref->{plot_species} = 0 || $config_ref->{plot_species};
+    $config_ref->{rescoring} = 1;
     $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes";
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;
@@ -345,6 +347,7 @@ sub rescore_genomes {
     $config_ref->{plot_output} = 1;
     $config_ref->{plot_phase} = 1;
     $config_ref->{plot_species} = 0 || $config_ref->{plot_species};
+    $config_ref->{rescoring} = 1;
     $config_ref->{export_graphviz} = "network,collapse_states,collapse_complexes";
     $config_ref->{sprint_history} = 1;
     $config_ref->{sprint_transcript} = 1;

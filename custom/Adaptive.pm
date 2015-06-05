@@ -161,6 +161,8 @@ use base qw(Scoring);
                 STRENGTH => $config_ref->{LG_strength},
                 RAMP_TIME => $config_ref->{LG_ramp_time},
                 STEPS => $config_ref->{LG_steps},
+                MIN => $config_ref->{LG_min},
+                MAX => $config_ref->{LG_max},
             );
         } elsif ($config_ref->{stimulus} eq "ss_ramp_equation") {
             $stimulus_ref = &$stimulus_sub_ref(
@@ -537,6 +539,7 @@ use base qw(Scoring);
                         complex => "LG0000",
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_input",
+                        plot_command => "plot",
                     );
                 }
                 if (defined $config_ref->{plot_output} && $config_ref->{plot_output}) {
@@ -544,11 +547,13 @@ use base qw(Scoring);
                         complex => "TG00000",
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_output0",
+                        plot_command => "semilogy",
                     );
                     $self->matlab_plot_complex(figure => 902,
                         complex => "TG00001",
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_output1",
+                        plot_command => "semilogy",
                     );
                 }
                 if (defined $config_ref->{plot_species} && $config_ref->{plot_species}) {
@@ -580,7 +585,7 @@ use base qw(Scoring);
                     $ss_time_max, $steady_state_threshold,1);
 
                 if (!$timeout_flag) {
-                    my (@diff_output_vector, @ss_output_vector);
+                    my (@diff_output_vector, @ss_output_vector, @ss_output_values);
                     my @sampling_times = @event_times;
                     my $output_complex = "TG00001";
 
@@ -612,6 +617,7 @@ use base qw(Scoring);
                             $stats_ref->{sim_flag} = 0;
                         }
                         $ss_output_vector[$i] = $steady_state_output;
+                        $ss_output_values[$i] = $steady_state_output;
                         $t = $sampling_times[$i + 1]; 
                         $steady_state_output = $self->matlab_get_state(complex => $output_complex, t => $t);
                         if ($config_ref->{round_values_flag}) {
@@ -627,20 +633,20 @@ use base qw(Scoring);
                     #---------------------------
                     # adaptation measure
                     #---------------------------
-                    my $max_dy = $config_ref->{TG_init};
+                    my $max_dy = $config_ref->{TG_init} / 2;
                     my $steps = defined $config_ref->{LG_steps} ? $config_ref->{LG_steps} : 1;
                     confess "The steps number is not consist as sampling times number" if ($steps != scalar(@ss_output_vector)/2 || $steps != scalar(@diff_output_vector)/2);
-                    my $up_adaptation = 0.0001;
-                    my $down_adaptation = 0.0001;
+                    my $tg_min = $config_ref->{TG_init} / (10**($steps-1));
+                    my $up_adaptation = 1;
+                    my $down_adaptation = 1;
                     for (my $j = 0; $j < $steps; $j++) {
-                        $up_adaptation *= (min_numeric($diff_output_vector[$j] * 2 / $max_dy, 1-1e-3) + 1e-3);
-                        $down_adaptation *= (min_numeric($diff_output_vector[2*$steps-$j-1] * 2 / $max_dy, 1-1e-3) + 1e-3);
-                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[$j] * 2 / $max_dy / 0.1, 1e-3), 1) + 1e-3);
-                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$steps-$j-1] * 2 / $max_dy / 0.1, 1e-3), 1) + 1e-3);
+                        #$max_dy = $tg_min * 10**($j);
+                        $up_adaptation *= (min_numeric($diff_output_vector[2*$j] * 2 / $max_dy, 1-0.01) + 1e-3);
+                        $down_adaptation *= (min_numeric($diff_output_vector[2*$j+1] * 2 / $max_dy, 1-0.01) + 1e-3);
+                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
+                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j+1] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
                     }
                     ##########################################
-                    $up_adaptation /= 0.0001;
-                    $down_adaptation /= 0.0001;
                     $up_adaptation **= (1/$steps/2);
                     $down_adaptation **= (1/$steps/2);
                     my $w_down = defined $config_ref->{w_down} ? $config_ref->{w_down} : 1.0;

@@ -477,10 +477,12 @@ sub rand_ss_ramp_equation {
         RANGE    => undef,
         STEPS => undef,
         RAMP_TIME => undef,
+        MIN => 1,
+        MAX => 100,
         @_,               # argument pair list overwrites defaults
     );
 
-    check_args(\%args, 6);
+    check_args(\%args, 8);
 
     my $node = $args{NODE};
     my $delay = $args{DELAY};
@@ -488,29 +490,29 @@ sub rand_ss_ramp_equation {
     my $range = $args{RANGE};
     my $steps = $args{STEPS};
     my $ramp_time = $args{RAMP_TIME};
+    my $lg_min = $args{MIN};
+    my $lg_max = $args{MAX};
 
     my $step_size = $range;  # the concentration changing size
-    my $step_time = $ramp_time / $steps;
+    my $step_size_exp = ((log($lg_max)-log($lg_min))/log(10))/($steps-1);
+    my $step_time = $ramp_time / $steps || 1;
 
     my @events = ($delay, map {"~"} (1..2*$steps));
-    my @values = (0);
-    for (my $i=1; $i < $steps; $i++) {
-        $step_size = $values[$i-1] + int(rand() * ($range - $values[$i-1] + 1 - ($steps - $i)));
+    my @values = (0.0001);
+    for (my $i=0; $i < $steps; $i++) {
+        $step_size = $values[$i] + rand() * ($range ** ($step_size_exp*($i)));
+        #$step_size = $values[$i] + ($range ** (rand() * 3));
         push @values, $step_size;
     }
-    push @values, $range;
-    for (my $i=1; $i < $steps; $i++) {
-        $step_size = $range - int(rand() * ($values[$steps+$i] + 1 - ($steps - $i)));
-        push @values, $step_size;
-    }
-    push @values, 0;
 
     my $ramp_source_node = "(";
     for (my $i=0; $i < (@events-1)/2; $i++) {
-        my $ii = $i + 1;
-        my $jj = $i + 1 + (@events-1)/2;
-        $ramp_source_node .= "+(event_flags($ii) && ~event_flags($jj))*min((t-event_times($ii))/$step_time, 1)*($values[$ii]-$values[$i])*$strength";
-        $ramp_source_node .= "+event_flags($jj)*max(1-(t-event_times($jj))/$step_time, 0)*($values[$jj]-$values[$jj+1])*$strength";
+        my $ii = 2 * $i + 1;
+        my $jj = $ii + 1;
+        my $jj_pre = $jj - 1;
+        my $amp = $values[$i];
+        $ramp_source_node .= "+(event_flags($ii) && ~event_flags($jj))*min((t-event_times($ii))/$step_time, 1)*($amp)*$strength";
+        $ramp_source_node .= "+event_flags($jj)*max(1-(t-event_times($jj))/$step_time, 0)*($amp)*$strength";
     }
     $ramp_source_node .= ")";
 
