@@ -357,7 +357,7 @@ use base qw(Scoring);
                     SS_timescale => $config_ref->{SS_timescale},
                 );
                 burp_file("$matlab_work/$genome_name.mod", $anc_model);
-                system("$ENV{ANC_HOME}/anc.pl --report=species $matlab_work/$genome_name.mod");
+                system("$ENV{ANC_HOME}/anc.pl --verbosity=0 --report=species $matlab_work/$genome_name.mod");
                 my @facile_model = slurp_file("$matlab_work/$genome_name.eqn");
 
                 $stats_ref->{species_report_flag} = $self->anc_process_species_report("$matlab_work/$genome_name.species.rpt");
