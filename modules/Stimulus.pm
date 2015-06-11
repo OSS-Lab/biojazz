@@ -493,7 +493,8 @@ sub rand_ss_ramp_equation {
 
     my $step_size_exp = ((log($lg_max)-log($lg_min))/($steps-1));
     my $step_time = $ramp_time / $steps || 1;
-
+	my $step_size = $lg_min;
+	
     my @events = ($delay, map {"~"} (1..2*$steps));
     my @values = (0.0001);
     for (my $i=0; $i < $steps; $i++) {
