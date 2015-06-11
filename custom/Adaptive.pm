@@ -547,13 +547,13 @@ use base qw(Scoring);
                         complex => "TG00000",
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_output0",
-                        plot_command => "semilogy",
+                        plot_command => "plot",
                     );
                     $self->matlab_plot_complex(figure => 902,
                         complex => "TG00001",
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_output1",
-                        plot_command => "semilogy",
+                        plot_command => "plot",
                     );
                 }
                 if (defined $config_ref->{plot_species} && $config_ref->{plot_species}) {
@@ -641,10 +641,10 @@ use base qw(Scoring);
                     my $down_adaptation = 1;
                     for (my $j = 0; $j < $steps; $j++) {
                         #$max_dy = $tg_min * 10**($j);
-                        $up_adaptation *= (min_numeric($diff_output_vector[2*$j] * 2 / $max_dy, 1-0.01) + 1e-3);
-                        $down_adaptation *= (min_numeric($diff_output_vector[2*$j+1] * 2 / $max_dy, 1-0.01) + 1e-3);
-                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
-                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j+1] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
+                        $up_adaptation *= (min_numeric($diff_output_vector[2*$j] / $max_dy, 1-0.0001) + 1e-4);
+                        $down_adaptation *= (min_numeric($diff_output_vector[2*$j+1] / $max_dy, 1-0.0001) + 1e-4);
+                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j] / $max_dy / 0.01, 1e-4), 1-0.001));
+                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j+1] / $max_dy / 0.01, 1e-4), 1-0.001));
                     }
                     ##########################################
                     $up_adaptation **= (1/$steps/2);
