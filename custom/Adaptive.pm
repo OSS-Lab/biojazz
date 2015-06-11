@@ -638,7 +638,7 @@ use base qw(Scoring);
                     my $tg_min = $config_ref->{TG_init} / (10**($steps-1));
                     my $up_adaptation = 1;
                     my $down_adaptation = 1;
-					my $step_size_exp = ((log($config_ref->{LG_max})-log($config_ref->{LG_min}))/($config_ref->{LG_steps}-1));
+					my $step_size_exp = ((log($config_ref->{LG_max})-log($config_ref->{LG_min}))/log(10)/($config_ref->{LG_steps}-1));
 					
                     for (my $j = 0; $j < $steps; $j++) {
                         #$max_dy = $tg_min * 10**($j);
