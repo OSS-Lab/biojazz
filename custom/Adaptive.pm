@@ -157,7 +157,6 @@ use base qw(Scoring);
             $stimulus_ref = &$stimulus_sub_ref(
                 NODE => "LG0000",
                 DELAY => $config_ref->{LG_delay},	
-                RANGE => $config_ref->{LG_range},
                 STRENGTH => $config_ref->{LG_strength},
                 RAMP_TIME => $config_ref->{LG_ramp_time},
                 STEPS => $config_ref->{LG_steps},
@@ -639,12 +638,14 @@ use base qw(Scoring);
                     my $tg_min = $config_ref->{TG_init} / (10**($steps-1));
                     my $up_adaptation = 1;
                     my $down_adaptation = 1;
+					my $step_size_exp = ((log($config_ref->{LG_max})-log($config_ref->{LG_min}))/($config_ref->{LG_steps}-1));
+					
                     for (my $j = 0; $j < $steps; $j++) {
                         #$max_dy = $tg_min * 10**($j);
-                        $up_adaptation *= (min_numeric($diff_output_vector[2*$j] / $max_dy, 1-0.0001) + 1e-4);
-                        $down_adaptation *= (min_numeric($diff_output_vector[2*$j+1] / $max_dy, 1-0.0001) + 1e-4);
-                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j] / $max_dy / 0.01, 1e-4), 1-0.001));
-                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j+1] / $max_dy / 0.01, 1e-4), 1-0.001));
+                        $up_adaptation *= (min_numeric($diff_output_vector[2*$j] / ($max_dy * ($config_ref->{LG_min} * 10 ** ($step_size_exp))/$config_ref->{LG_max}), 1-0.0001) + 1e-4);
+                        $down_adaptation *= (min_numeric($diff_output_vector[2*$j+1] / ($max_dy * ($config_ref->{LG_min} * 10 ** ($step_size_exp))/$config_ref->{LG_max}), 1-0.0001) + 1e-4);
+                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j] / ($max_dy * ($config_ref->{LG_min} * 10 ** ($step_size_exp))/$config_ref->{LG_max}) / 0.1, 1e-4), 1-0.001));
+                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j+1] / ($max_dy * ($config_ref->{LG_min} * 10 ** ($step_size_exp))/$config_ref->{LG_max}) / 0.1, 1e-4), 1-0.001));
                     }
                     ##########################################
                     $up_adaptation **= (1/$steps/2);
