@@ -157,7 +157,6 @@ use base qw(Scoring);
             $stimulus_ref = &$stimulus_sub_ref(
                 NODE => "LG0000",
                 DELAY => $config_ref->{LG_delay},	
-                RANGE => $config_ref->{LG_range},
                 STRENGTH => $config_ref->{LG_strength},
                 RAMP_TIME => $config_ref->{LG_ramp_time},
                 STEPS => $config_ref->{LG_steps},
@@ -358,7 +357,7 @@ use base qw(Scoring);
                     SS_timescale => $config_ref->{SS_timescale},
                 );
                 burp_file("$matlab_work/$genome_name.mod", $anc_model);
-                system("$ENV{ANC_HOME}/anc.pl --report=species $matlab_work/$genome_name.mod");
+                system("$ENV{ANC_HOME}/anc.pl --verbosity=0 --report=species $matlab_work/$genome_name.mod");
                 my @facile_model = slurp_file("$matlab_work/$genome_name.eqn");
 
                 $stats_ref->{species_report_flag} = $self->anc_process_species_report("$matlab_work/$genome_name.species.rpt");
@@ -547,13 +546,13 @@ use base qw(Scoring);
                         complex => "TG00000",
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_output0",
-                        plot_command => "semilogy",
+                        plot_command => "plot",
                     );
                     $self->matlab_plot_complex(figure => 902,
                         complex => "TG00001",
                         title_prefix => "$genome_name",
                         filename => "$genome_name" . "_output1",
-                        plot_command => "semilogy",
+                        plot_command => "plot",
                     );
                 }
                 if (defined $config_ref->{plot_species} && $config_ref->{plot_species}) {
@@ -639,12 +638,14 @@ use base qw(Scoring);
                     my $tg_min = $config_ref->{TG_init} / (10**($steps-1));
                     my $up_adaptation = 1;
                     my $down_adaptation = 1;
+					my $step_size_exp = ((log($config_ref->{LG_max})-log($config_ref->{LG_min}))/log(10)/($config_ref->{LG_steps}-1));
+					
                     for (my $j = 0; $j < $steps; $j++) {
                         #$max_dy = $tg_min * 10**($j);
-                        $up_adaptation *= (min_numeric($diff_output_vector[2*$j] * 2 / $max_dy, 1-0.01) + 1e-3);
-                        $down_adaptation *= (min_numeric($diff_output_vector[2*$j+1] * 2 / $max_dy, 1-0.01) + 1e-3);
-                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
-                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j+1] * 2 / $max_dy / 0.1, 1e-3), 1-0.001));
+                        $up_adaptation *= (min_numeric($diff_output_vector[2*$j] / ($max_dy * ($config_ref->{LG_min} * 10 ** ($step_size_exp))/$config_ref->{LG_max}), 1-0.0001) + 1e-4);
+                        $down_adaptation *= (min_numeric($diff_output_vector[2*$j+1] / ($max_dy * ($config_ref->{LG_min} * 10 ** ($step_size_exp))/$config_ref->{LG_max}), 1-0.0001) + 1e-4);
+                        $up_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j] / ($max_dy * ($config_ref->{LG_min} * 10 ** ($step_size_exp))/$config_ref->{LG_max}) / 0.1, 1e-4), 1-0.001));
+                        $down_adaptation *= (1 - min_numeric(max_numeric($ss_output_vector[2*$j+1] / ($max_dy * ($config_ref->{LG_min} * 10 ** ($step_size_exp))/$config_ref->{LG_max}) / 0.1, 1e-4), 1-0.001));
                     }
                     ##########################################
                     $up_adaptation **= (1/$steps/2);

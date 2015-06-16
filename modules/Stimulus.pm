@@ -474,7 +474,6 @@ sub rand_ss_ramp_equation {
         NODE => undef,
         DELAY => "~",  # default is to wait for steady-state before applying stimulus
         STRENGTH => undef,
-        RANGE    => undef,
         STEPS => undef,
         RAMP_TIME => undef,
         MIN => 1,
@@ -482,31 +481,29 @@ sub rand_ss_ramp_equation {
         @_,               # argument pair list overwrites defaults
     );
 
-    check_args(\%args, 8);
+    check_args(\%args, 7);
 
     my $node = $args{NODE};
     my $delay = $args{DELAY};
     my $strength = $args{STRENGTH};
-    my $range = $args{RANGE};
     my $steps = $args{STEPS};
     my $ramp_time = $args{RAMP_TIME};
     my $lg_min = $args{MIN};
     my $lg_max = $args{MAX};
 
-    my $step_size = $range;  # the concentration changing size
-    my $step_size_exp = ((log($lg_max)-log($lg_min))/log(10))/($steps-1);
+    my $step_size_exp = ((log($lg_max)-log($lg_min))/log(10)/($steps-1));
     my $step_time = $ramp_time / $steps || 1;
-
+	my $step_size = $lg_min;
+	
     my @events = ($delay, map {"~"} (1..2*$steps));
-    my @values = (0.0001);
+    my @values = ();
     for (my $i=0; $i < $steps; $i++) {
-        $step_size = $values[$i] + rand() * ($range ** ($step_size_exp*($i)));
-        #$step_size = $values[$i] + ($range ** (rand() * 3));
+        $step_size = $lg_min * 10 ** ($step_size_exp*($i-1)) + rand() * (9/10) * ($lg_min * 10 ** ($step_size_exp*($i)));
         push @values, $step_size;
     }
 
     my $ramp_source_node = "(";
-    for (my $i=0; $i < (@events-1)/2; $i++) {
+    for (my $i=0; $i < $steps; $i++) {
         my $ii = 2 * $i + 1;
         my $jj = $ii + 1;
         my $jj_pre = $jj - 1;
