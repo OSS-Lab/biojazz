@@ -7,6 +7,12 @@ The main features of BioJazz are:
 * produces a human-readable model of the winning network
 * highly configurable and parameterized
 
+Citation:
+
+Song Feng, Julien F. Ollivier, Peter S. Swain, and Orkun S. Soyer 
+BioJazz: in silico evolution of cellular networks with unbounded complexity using rule-based modeling
+Nucleic Acids Res. 2015 : gkv595v1-gkv595.
+
 ###Getting Started
 
 ####Installation
