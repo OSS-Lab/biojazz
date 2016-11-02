@@ -1,37 +1,35 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>BioJazz by OSS-Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+    <title>BioJazz by OSS-Lab</title>
   </head>
+
   <body>
-    <div class="wrapper">
-      <header>
-        <h1 class="header">BioJazz</h1>
-        <p class="header">Evolving &amp; Design Biochemical Reaction Networks</p>
+    <header>
+      <div class="inner">
+        <h1>BioJazz</h1>
+        <h2>Evolving &amp; Design Biochemical Reaction Networks</h2>
+        <a href="https://github.com/OSS-Lab/biojazz" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
 
-        <ul>
-          <li class="download"><a class="buttons" href="https://github.com/OSS-Lab/biojazz/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/OSS-Lab/biojazz/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/OSS-Lab/biojazz">View On GitHub</a></li>
-        </ul>
-
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/OSS-Lab">OSS-Lab</a></p>
-
-
-      </header>
-      <section>
-        <h3>
-<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h3>
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h3>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h3>
 
 <p>BioJazz is a tool for evolving and designing biochemical reaction networks using genetic algorithm (GA).  Typically, a BioJazz user wishes to evolve or design a small network or motif which accomplishes a specific function, such as a switch or an oscillator module.  The network comprises a set of proteins whose attributes are encoded in a network's ''genome''.  The ''genome'' is a binary string which  contains all the information necessary to determine how many proteins are present in the network, their structure, which proteins interact and the biochemical parameters of their interaction. </p>
 
@@ -53,41 +51,48 @@
 <li>uses workstation clusters to speed up the design</li>
 <li>produces a human-readable model of the winning network</li>
 <li>highly configurable and parameterized</li>
-</ul><h3>
-<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting Started</h3>
+</ul>
 
 <h4>
-<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h4>
+<a id="citation" class="anchor" href="#citation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Citation:</h4>
+
+<p>Song Feng, Julien F. Ollivier, Peter S. Swain, and Orkun S. Soyer 
+BioJazz: in silico evolution of cellular networks with unbounded complexity using rule-based modeling
+Nucleic Acids Res. 2015 : gkv595v1-gkv595.</p>
+
+<h3>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Started</h3>
+
+<h4>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h4>
 
 <p>BioJazz requires the ANC and Facile tools.  You can tell BioJazz where to get them by setting the ANC_HOME and FACILE_HOME environment variables to point to the appropriate directories.  It is recommended to add the following lines to your ''~/.bashrc'' file:</p>
 
-<div class="highlight highlight-sh"><pre> <span class="nb">export </span><span class="nv">ANC_HOME</span>    <span class="o">=</span> ~/workspace/anc
- <span class="nb">export </span><span class="nv">FACILE_HOME</span> <span class="o">=</span> ~/workspace/facile
- <span class="nb">alias  </span><span class="nv">anc</span><span class="o">=</span><span class="s1">'$ANC_HOME/anc.pl'</span>
- <span class="nb">alias  </span><span class="nv">facile</span><span class="o">=</span><span class="s1">'$FACILE_HOME/facile.pl'</span>
+<div class="highlight highlight-source-shell"><pre> <span class="pl-k">export</span> ANC_HOME    = <span class="pl-k">~</span>/workspace/anc
+ <span class="pl-k">export</span> FACILE_HOME = <span class="pl-k">~</span>/workspace/facile
+ <span class="pl-c1">alias</span>  anc=<span class="pl-s"><span class="pl-pds">'</span>$ANC_HOME/anc.pl<span class="pl-pds">'</span></span>
+ <span class="pl-c1">alias</span>  facile=<span class="pl-s"><span class="pl-pds">'</span>$FACILE_HOME/facile.pl<span class="pl-pds">'</span></span>
 
- <span class="nb">export </span><span class="nv">BIOJAZZ_HOME</span> <span class="o">=</span> ~/workspace/biojazz
- <span class="nb">alias  </span><span class="nv">biojazz</span><span class="o">=</span><span class="s1">'$BIOJAZZ_HOME/biojazz.pl'</span>
-</pre></div>
+ <span class="pl-k">export</span> BIOJAZZ_HOME = <span class="pl-k">~</span>/workspace/biojazz
+ <span class="pl-c1">alias</span>  biojazz=<span class="pl-s"><span class="pl-pds">'</span>$BIOJAZZ_HOME/biojazz.pl<span class="pl-pds">'</span></span></pre></div>
 
 <p>BioJazz requires Matlab to be installed on all nodes used for computation, and assumes matlab can be started with the command ''matlab''. Here is an example of configuration in "~/.bashrc" file (on Mac OS X):</p>
 
-<div class="highlight highlight-sh"><pre> <span class="nb">export </span><span class="nv">MATLAB_HOME</span> <span class="o">=</span> /Applications/MATLAB_R2011b.app/bin
- <span class="nb">alias  </span><span class="nv">matlab</span><span class="o">=</span><span class="s1">'$MATLAB_HOME/matlab'</span>
- <span class="nb">export </span><span class="nv">PATH</span> <span class="o">=</span> <span class="nv">$MATLAB_HOME</span>:<span class="nv">$PATH</span>
+<div class="highlight highlight-source-shell"><pre> <span class="pl-k">export</span> MATLAB_HOME = /Applications/MATLAB_R2011b.app/bin
+ <span class="pl-c1">alias</span>  matlab=<span class="pl-s"><span class="pl-pds">'</span>$MATLAB_HOME/matlab<span class="pl-pds">'</span></span>
+ <span class="pl-k">export</span> PATH = <span class="pl-smi">$MATLAB_HOME</span>:<span class="pl-smi">$PATH</span>
 
- <span class="nv">DYLD_LIBRARY_PATH</span> <span class="o">=</span> /Applications/MATLAB_R2011b.app/bin/maci64:/Applications/MATLAB_R2011b.app/sys/os/maci64:/Applications/MATLAB_R2011b.app/runtime/maci64:<span class="nv">$DYLD_LIBRARY_PATH</span>
- <span class="nb">export </span>DYLD_LIBRARY_PATH
-</pre></div>
+ DYLD_LIBRARY_PATH = /Applications/MATLAB_R2011b.app/bin/maci64:/Applications/MATLAB_R2011b.app/sys/os/maci64:/Applications/MATLAB_R2011b.app/runtime/maci64:<span class="pl-smi">$DYLD_LIBRARY_PATH</span>
+ <span class="pl-k">export</span> DYLD_LIBRARY_PATH</pre></div>
 
 <p>Note that if you decide to use a cluster of workstations, these installation instructions apply to all workstations used.</p>
 
 <h5>
-<a name="cpan-modules" class="anchor" href="#cpan-modules"><span class="octicon octicon-link"></span></a>CPAN modules</h5>
+<a id="cpan-modules" class="anchor" href="#cpan-modules" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CPAN modules</h5>
 
 <p>CPAN is an internet database of Perl modules.  BioJazz/ANC/Facile use several of them and they must be installed prior to use.  You will need system administrator priviledges to install these modules (or see  for instructions on how to install them in your home directory).  You or your sysadmin will typically need to run the following commands on each system used (use sudo as prefix if available, if you don't have a admin privilege <a href="http://twiki.org/cgi-bin/view/TWiki/HowToInstallCpanModules#Install_CPAN_modules_into_your_l">here is a solution</a> let you install perl modules in your user directory):</p>
 
-<div class="highlight highlight-sh"><pre> cpan -i Class::Std
+<div class="highlight highlight-source-shell"><pre> cpan -i Class::Std
  cpan -i Class::Std::Storable
  cpan -i String::CRC32
  cpan -i Expect
@@ -95,85 +100,80 @@
  cpan -i WeakRef
  cpan -i IPC::Shareable
  cpan -i Linux::Pid
- cpan -i Text::CSV
-</pre></div>
+ cpan -i Text::CSV</pre></div>
 
 <p>Test your installation by running Facile, ANC and BioJazz without any arguments:</p>
 
-<div class="highlight highlight-sh"><pre> <span class="nv">$FACILE_HOME</span>/facile.pl
- <span class="nv">$ANC_HOME</span>/anc.pl
- <span class="nv">$BIOJAZZ_HOME</span>/biojazz.pl
-</pre></div>
+<div class="highlight highlight-source-shell"><pre> <span class="pl-smi">$FACILE_HOME</span>/facile.pl
+ <span class="pl-smi">$ANC_HOME</span>/anc.pl
+ <span class="pl-smi">$BIOJAZZ_HOME</span>/biojazz.pl</pre></div>
 
 <p>An error will be reported if any of the required modules are still missing.  Simply run CPAN again to install the missing module.</p>
 
 <h5>
-<a name="graphviz" class="anchor" href="#graphviz"><span class="octicon octicon-link"></span></a>GraphViz</h5>
+<a id="graphviz" class="anchor" href="#graphviz" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GraphViz</h5>
 
 <p>If you would like ANC to generate diagrams of the reaction network and species, you will the ''dot'' application and the following CPAN module:</p>
 
-<div class="highlight highlight-sh"><pre> cpan -i GraphViz
-</pre></div>
+<div class="highlight highlight-source-shell"><pre> cpan -i GraphViz</pre></div>
 
 <h5>
-<a name="ssh-agent" class="anchor" href="#ssh-agent"><span class="octicon octicon-link"></span></a>SSH Agent</h5>
+<a id="ssh-agent" class="anchor" href="#ssh-agent" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SSH Agent</h5>
 
 <h4>
-<a name="workspace-creation" class="anchor" href="#workspace-creation"><span class="octicon octicon-link"></span></a>Workspace Creation</h4>
+<a id="workspace-creation" class="anchor" href="#workspace-creation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Workspace Creation</h4>
 
 <p>Depending on your specific application, BioJazz will require some customized configuration and scoring functions.  Also, during the course of a single design run, BioJazz will generate a large number of files.  For this reason, the user must create a properly configured workspace which will contain the appropriate configuration files, scoring functions, and design files.</p>
 
 <p>To facilitate this, BioJazz can create the workspace for and populate it with the required directories and with template files to get you started.  To do this, run the following command:</p>
 
-<div class="highlight highlight-sh"><pre> biojazz --command<span class="o">=</span><span class="s1">'create_workspace("bjazz")'</span>
-</pre></div>
+<div class="highlight highlight-source-shell"><pre> biojazz --command=<span class="pl-s"><span class="pl-pds">'</span>create_workspace("bjazz")<span class="pl-pds">'</span></span></pre></div>
 
 <p>This will create the directory <code>bjazz</code> and various sub-directories including <code>config</code> and <code>custom</code>.  Your configuration files go in the <code>config</code> directory, while your custom scoring functions go in the <code>custom</code> directory.  At this point, the user should familiarize him/herself with some the template files that are provided, and try to run BioJazz.  </p>
 
 <p>The template file will try to design a network which contains a high concentration of dimers, and demonstrates how to use some of the functions available to the user.</p>
 
-<div class="highlight highlight-sh"><pre> <span class="nb">cd </span>bjazz
- less config/template.cfg   <span class="c"># template configuration file</span>
- less config/Template.pm    <span class="c"># template application-specific scoring function</span>
-</pre></div>
+<div class="highlight highlight-source-shell"><pre> <span class="pl-c1">cd</span> bjazz
+ less config/template.cfg   <span class="pl-c"># template configuration file</span>
+ less config/Template.pm    <span class="pl-c"># template application-specific scoring function</span></pre></div>
 
 <h4>
-<a name="running-biojazz" class="anchor" href="#running-biojazz"><span class="octicon octicon-link"></span></a>Running BioJazz</h4>
+<a id="running-biojazz" class="anchor" href="#running-biojazz" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running BioJazz</h4>
 
 <p>After taking a look around, try to run BioJazz.  The <code>cluster_type</code> and <code>cluster_size</code> arguments override the specification contained in the configuration file, and will launch both slave nodes of the cluster on your machine.</p>
 
-<div class="highlight highlight-sh"><pre> biojazz --config<span class="o">=</span>config/template.cfg --tag<span class="o">=</span>first_try --cluster_type<span class="o">=</span><span class="s2">"LOCAL"</span> --cluster_size<span class="o">=</span>2
-</pre></div>
+<div class="highlight highlight-source-shell"><pre> biojazz --config=config/template.cfg --tag=first_try --cluster_type=<span class="pl-s"><span class="pl-pds">"</span>LOCAL<span class="pl-pds">"</span></span> --cluster_size=2</pre></div>
 
 <p>This will evolve the network for only a couple generations.  The <code>tag</code> argument is very important.  In BioJazz, each design attempt is associated with a specific, user-specified tag.  BioJazz will create a directory in your workspace containing all the results and other files generated during the optimization.  This allows the user to attempt several optimizations simultaneously without fear of accidental loss of files.  The name of the design's working directory is <code>work_dir/tag</code>.  The <code>work_dir</code> parameter is specified in your configuration file (and has a value of <code>template</code> in this example).  Thus the results of the above run are contained in the directory <code>template/first_try</code>.</p>
 
-<div class="highlight highlight-sh"><pre> <span class="o">[</span>user@host bjazz<span class="o">]</span><span class="nv">$ </span>ls -la template/test_main/
+<div class="highlight highlight-source-shell"><pre> [user@host bjazz]$ ls -la template/test_main/
  total 168
- drwx------ 5 user group  4096 2008-06-03 14:53 .
+ drwx------ 5 user group  4096 2008-06-03 14:53 <span class="pl-c1">.</span>
  drwx------ 3 user group  4096 2008-06-03 14:51 ..
  drwx------ 2 user group  4096 2008-06-03 14:53 matlab
  drwx------ 2 user group  4096 2008-06-03 14:53 obj
  -rw------- 1 user group 71904 2008-06-03 14:53 ScorNode.0.20080603_145159.log
  -rw------- 1 user group 67215 2008-06-03 14:53 ScorNode.1.20080603_145159.log
- drwx------ 2 user group  4096 2008-06-03 14:51 source_2008-06-03-14:51:58
-</pre></div>
+ drwx------ 2 user group  4096 2008-06-03 14:51 source_2008-06-03-14:51:58</pre></div>
 
 <p>The <code>obj</code> directory contains all the genomes generated in a machine-readable form.  The <code>matlab</code> contains the models generated by ANC, and the <code>matlab</code> scripts generated by Facile.  The <code>ScorNode*</code> files are a log of the activity of each node in the cluster as work to compile and score genomes.  The <code>source*</code> directory is a snapshot of the source code used for that run such as your configuration and custom scoring files.</p>
 
 <p>Now try modifying the configuration file to use other available workstations and run BioJazz again...</p>
 
 <h4>
-<a name="using-a-makefile" class="anchor" href="#using-a-makefile"><span class="octicon octicon-link"></span></a>Using a Makefile</h4>
+<a id="using-a-makefile" class="anchor" href="#using-a-makefile" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Using a Makefile</h4>
 
 <p>The program <em>make</em> is a UNIX classic and is useful in the context of BioJazz: not only for running BioJazz's suite of tests, but also as a sophisticated aliasing mechanism. A Makefile is provided when your workspace is created, which contains some useful functions and can serve as a template for customization. The table below documents a number of makefile targets which correspond to some of the most typical and common tasks you will perform.
 Explaining how GNU's make program works is well beyond the scope of this document, but one of make's most useful switches is the dry-run (-n) switch. This switch will show you the commands to be executed, without actually executing them. You can use this to take a look at the BioJazz command and arguments that are generated for each of the targets below.</p>
 
 <table>
-<thead><tr>
+<thead>
+<tr>
 <th><strong>Target(Arguments)</strong></th>
 <th align="center"><strong>Example</strong></th>
 <th align="center"><strong>Description</strong></th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
 <tr>
 <td><strong><em>Testing</em></strong></td>
@@ -251,45 +251,46 @@ Explaining how GNU's make program works is well beyond the scope of this documen
 <td align="center">Deletes all design files of the given tag, including those in the scratch space (generated by the score target).</td>
 </tr>
 </tbody>
-</table><h4>
-<a name="scoring-a-specific-genome" class="anchor" href="#scoring-a-specific-genome"><span class="octicon octicon-link"></span></a>Scoring a specific genome</h4>
+</table>
 
 <h4>
-<a name="collecting-and-analyzing-statistics" class="anchor" href="#collecting-and-analyzing-statistics"><span class="octicon octicon-link"></span></a>Collecting and Analyzing Statistics</h4>
+<a id="scoring-a-specific-genome" class="anchor" href="#scoring-a-specific-genome" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scoring a specific genome</h4>
 
 <h4>
-<a name="biojazz-shell" class="anchor" href="#biojazz-shell"><span class="octicon octicon-link"></span></a>BioJazz Shell</h4>
+<a id="collecting-and-analyzing-statistics" class="anchor" href="#collecting-and-analyzing-statistics" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Collecting and Analyzing Statistics</h4>
 
 <h4>
-<a name="writing-and-testing-application-specific-functions" class="anchor" href="#writing-and-testing-application-specific-functions"><span class="octicon octicon-link"></span></a>Writing and Testing Application Specific Functions</h4>
+<a id="biojazz-shell" class="anchor" href="#biojazz-shell" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>BioJazz Shell</h4>
+
+<h4>
+<a id="writing-and-testing-application-specific-functions" class="anchor" href="#writing-and-testing-application-specific-functions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Writing and Testing Application Specific Functions</h4>
 
 <h5>
-<a name="template-files" class="anchor" href="#template-files"><span class="octicon octicon-link"></span></a>Template Files</h5>
+<a id="template-files" class="anchor" href="#template-files" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Template Files</h5>
 
 <h5>
-<a name="testing" class="anchor" href="#testing"><span class="octicon octicon-link"></span></a>Testing</h5>
+<a id="testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h5>
 
 <h5>
-<a name="debugging-when-things-go-wrong" class="anchor" href="#debugging-when-things-go-wrong"><span class="octicon octicon-link"></span></a>Debugging when things go wrong</h5>
+<a id="debugging-when-things-go-wrong" class="anchor" href="#debugging-when-things-go-wrong" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Debugging when things go wrong</h5>
 
 <h4>
-<a name="workspace-directory-structure" class="anchor" href="#workspace-directory-structure"><span class="octicon octicon-link"></span></a>Workspace Directory Structure</h4>
+<a id="workspace-directory-structure" class="anchor" href="#workspace-directory-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Workspace Directory Structure</h4>
 
-<div class="highlight highlight-sh"><pre> bjazz                               <span class="c"># workspace home</span>
-   config                            <span class="c"># configuration files</span>
-   custom                            <span class="c"># application-specific modules and functions (incl. scoring function)</span>
-   <span class="nb">test</span>/custom                       <span class="c"># recommended location for test results of custom modules</span>
-   <span class="nb">test</span>/modules                      <span class="c"># BioJazz module test results</span>
-   mydesign                          <span class="c"># application-specific directory</span>
-     mydesign.08jun01.log            <span class="c"># master node logfile</span>
-     08jun01                         <span class="c"># results directory for run with TAG=08jun01</span>
-       ScorNode.i.timestamp.log      <span class="c"># log file for slave node i</span>
-       matlab                        <span class="c"># ANC genome models, eqn files, and matlab files</span>
-       obj                           <span class="c"># genome objects in binary form</span>
-</pre></div>
+<div class="highlight highlight-source-shell"><pre> bjazz                               <span class="pl-c"># workspace home</span>
+   config                            <span class="pl-c"># configuration files</span>
+   custom                            <span class="pl-c"># application-specific modules and functions (incl. scoring function)</span>
+   test/custom                       <span class="pl-c"># recommended location for test results of custom modules</span>
+   test/modules                      <span class="pl-c"># BioJazz module test results</span>
+   mydesign                          <span class="pl-c"># application-specific directory</span>
+     mydesign.08jun01.log            <span class="pl-c"># master node logfile</span>
+     08jun01                         <span class="pl-c"># results directory for run with TAG=08jun01</span>
+       ScorNode.i.timestamp.log      <span class="pl-c"># log file for slave node i</span>
+       matlab                        <span class="pl-c"># ANC genome models, eqn files, and matlab files</span>
+       obj                           <span class="pl-c"># genome objects in binary form</span></pre></div>
 
 <h3>
-<a name="evolutionary-algorithm" class="anchor" href="#evolutionary-algorithm"><span class="octicon octicon-link"></span></a>Evolutionary Algorithm</h3>
+<a id="evolutionary-algorithm" class="anchor" href="#evolutionary-algorithm" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Evolutionary Algorithm</h3>
 
 <p>BioJazz uses a genetic algorithm (GA) to search for a functional network.  The idea behind a genetic algorithm is to encode each candidate network as a ''genome'', which is just a sequence of bits having the value 0 or 1.  Given a population of individual network genomes, the GA calls a user-specified scoring function on each of the individuals in the population to determine it's ''fitness score''.  After computing the fitness scores, the GA creates a new generation of individual networks by cloning and mutating the previous generation in such a way that fitter individuals tend to have more descendants than less fit individuals.  Thus, depending on its relative fitness score, the fate of a particular individual network may be to:</p>
 
@@ -298,14 +299,16 @@ Explaining how GNU's make program works is well beyond the scope of this documen
 <li><p>generate one or more mutated clones (asexual duplication)</p></li>
 <li><p>generate one or more children</p></li>
 <li><p>have no descendants at all (elimination)</p></li>
-</ol><p>Networks with a higher score has a better chance of fates i), ii) or iii) (i.e. surviving) than networks with a relatively lower score.</p>
+</ol>
+
+<p>Networks with a higher score has a better chance of fates i), ii) or iii) (i.e. surviving) than networks with a relatively lower score.</p>
 
 <p>The number of creation created is such that the population size is kept constant from generation to generation.  The population size is specified via the parameter ''max_population''.</p>
 
 <p>The following sections detail each step in the genetic algorithm.</p>
 
 <h4>
-<a name="initial-generation" class="anchor" href="#initial-generation"><span class="octicon octicon-link"></span></a>Initial Generation</h4>
+<a id="initial-generation" class="anchor" href="#initial-generation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Initial Generation</h4>
 
 <p>The initial generation can be either generated randomly or loaded from disk, as specified by the <code>initial_generation</code> parameter of the configuration file.  In the random case, the user can also specify the number of individuals to create (parameter <code>inum_genomes</code>) and the genome length (parameter -- currently fixed at 5000).  Loading from disk is useful to resume work on a partially completed design starting from the last generation created, or to load hand-crafted seed designs.  The following shows some examples for each case:</p>
 
@@ -322,26 +325,28 @@ Explaining how GNU's make program works is well beyond the scope of this documen
 <p>Where <code>ggg</code> is the generation number and <code>ii</code> is the individual number.</p>
 
 <h4>
-<a name="scoring" class="anchor" href="#scoring"><span class="octicon octicon-link"></span></a>Scoring</h4>
+<a id="scoring" class="anchor" href="#scoring" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scoring</h4>
 
 <ul>
 <li>the score_genome method of a user-defined scoring class is called to score individual networks</li>
 <li>the scoring class inherits many useful method from ''Scoring''</li>
 <li>describe Scoring class, its use of MatlabDriver, etc.</li>
-</ul><h4>
-<a name="replication" class="anchor" href="#replication"><span class="octicon octicon-link"></span></a>Replication</h4>
+</ul>
+
+<h4>
+<a id="replication" class="anchor" href="#replication" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Replication</h4>
 
 <p>There are two modes of replication in BioJazz.  They are rank-based and fitness-based replication.</p>
 
 <h5>
-<a name="rank-based-replication" class="anchor" href="#rank-based-replication"><span class="octicon octicon-link"></span></a>Rank-based replication</h5>
+<a id="rank-based-replication" class="anchor" href="#rank-based-replication" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Rank-based replication</h5>
 
 <p>In the rank-based mode, the fitness score returned by the user-defined evaluation routine are not used as is to compute the actual fitness of each network (the actual fitness being the expectation value for the number of children).  This mode is appropriate when small numerical differences in the score do not meaningfully correspond to the number of children an individual should have.  Therefore, BioJazz uses the fitness score of each individual to produce a ranking of the entire generation.</p>
 
 <p>Children are generated according to the following procedure.  First, the top ''elite_pool_size'' individuals are copied as is to the next generation, without any mutations.  Next, an additional (''max_population'' - ''elite_pool_size'') children need to be created to keep the population size constant.  </p>
 
 <h5>
-<a name="fitness-based-replication" class="anchor" href="#fitness-based-replication"><span class="octicon octicon-link"></span></a>Fitness-based replication</h5>
+<a id="fitness-based-replication" class="anchor" href="#fitness-based-replication" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fitness-based replication</h5>
 
 <p>In this mode, the computed fitness dictates the relative proportion of the available pool of children that a genome is to have.</p>
 
@@ -350,36 +355,37 @@ Explaining how GNU's make program works is well beyond the scope of this documen
 <p>To decide which individuals become parents a sampling procedure called the "roulette wheel" is used.  Imagine a roulette wheel where each parent has a slot whose size is proportional to the fitness....</p>
 
 <h4>
-<a name="mutation-operators" class="anchor" href="#mutation-operators"><span class="octicon octicon-link"></span></a>Mutation Operators</h4>
+<a id="mutation-operators" class="anchor" href="#mutation-operators" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Mutation Operators</h4>
 
 <h5>
-<a name="point-mutation" class="anchor" href="#point-mutation"><span class="octicon octicon-link"></span></a>Point Mutation</h5>
+<a id="point-mutation" class="anchor" href="#point-mutation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Point Mutation</h5>
 
 <h5>
-<a name="gene-duplication" class="anchor" href="#gene-duplication"><span class="octicon octicon-link"></span></a>Gene Duplication</h5>
+<a id="gene-duplication" class="anchor" href="#gene-duplication" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Gene Duplication</h5>
 
 <h5>
-<a name="gene-deletion" class="anchor" href="#gene-deletion"><span class="octicon octicon-link"></span></a>Gene Deletion</h5>
+<a id="gene-deletion" class="anchor" href="#gene-deletion" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Gene Deletion</h5>
 
 <h5>
-<a name="domain-duplication" class="anchor" href="#domain-duplication"><span class="octicon octicon-link"></span></a>Domain Duplication</h5>
+<a id="domain-duplication" class="anchor" href="#domain-duplication" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Domain Duplication</h5>
 
 <h5>
-<a name="domain-deletion" class="anchor" href="#domain-deletion"><span class="octicon octicon-link"></span></a>Domain Deletion</h5>
+<a id="domain-deletion" class="anchor" href="#domain-deletion" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Domain Deletion</h5>
 
 <h5>
-<a name="domain-shuffling" class="anchor" href="#domain-shuffling"><span class="octicon octicon-link"></span></a>Domain Shuffling</h5>
+<a id="domain-shuffling" class="anchor" href="#domain-shuffling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Domain Shuffling</h5>
 
 <h3>
-<a name="network-encoding-model" class="anchor" href="#network-encoding-model"><span class="octicon octicon-link"></span></a>Network Encoding Model</h3>
+<a id="network-encoding-model" class="anchor" href="#network-encoding-model" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Network Encoding Model</h3>
 
 <h4>
-<a name="complementarity-encoding-scheme" class="anchor" href="#complementarity-encoding-scheme"><span class="octicon octicon-link"></span></a>Complementarity Encoding Scheme</h4>
+<a id="complementarity-encoding-scheme" class="anchor" href="#complementarity-encoding-scheme" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Complementarity Encoding Scheme</h4>
 
 <p>The complementarity encoding scheme is currently implemented in BioJazz.</p>
 
 <table>
-<thead><tr>
+<thead>
+<tr>
 <th>Field Name</th>
 <th align="center">Length (L)</th>
 <th align="center">Allowed Values RegExp</th>
@@ -387,7 +393,8 @@ Explaining how GNU's make program works is well beyond the scope of this documen
 <th align="center">Dynamic Range</th>
 <th align="center">Resolution</th>
 <th align="center">Description</th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
 <tr>
 <td><strong>Genome</strong></td>
@@ -660,13 +667,15 @@ Explaining how GNU's make program works is well beyond the scope of this documen
 <td align="center">Reserved field</td>
 </tr>
 </tbody>
-</table><h4>
-<a name="field-scaling" class="anchor" href="#field-scaling"><span class="octicon octicon-link"></span></a>Field Scaling</h4>
+</table>
+
+<h4>
+<a id="field-scaling" class="anchor" href="#field-scaling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Field Scaling</h4>
 
 <p>All the above fields correspond to parameter values whose scale and dynamic range is given in a configuration file.  This section deals with the issue of translating an integer (binary encoded) scale into parameter values.  In all sections, x is the integer value corresponding to a binary field, which goes from 0 to x_max=2^L-1 where L is the length of the field.  Also, y_min is the minimum value of the parameter, and y_max is the maximum value.  For example, the regulated_concentration parameter can be made to range from 1e-3 (y_min) to 1e+3 (y_max).</p>
 
 <h5>
-<a name="linearly-scaled-fields" class="anchor" href="#linearly-scaled-fields"><span class="octicon octicon-link"></span></a>Linearly Scaled Fields</h5>
+<a id="linearly-scaled-fields" class="anchor" href="#linearly-scaled-fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Linearly Scaled Fields</h5>
 
 <p>Relevant field(s): Φ.</p>
 
@@ -677,7 +686,7 @@ Explaining how GNU's make program works is well beyond the scope of this documen
 <p>R(n) = (y_max-y_min)/(2^n-1)</p>
 
 <h5>
-<a name="loglinear-scaled-fields" class="anchor" href="#loglinear-scaled-fields"><span class="octicon octicon-link"></span></a>Loglinear Scaled Fields</h5>
+<a id="loglinear-scaled-fields" class="anchor" href="#loglinear-scaled-fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Loglinear Scaled Fields</h5>
 
 <p>Relevant field(s): kp_profile, RT/TR_transition_rate, Keq_ratio, regulated_concentration</p>
 
@@ -698,7 +707,7 @@ Explaining how GNU's make program works is well beyond the scope of this documen
 <p>FC(10bits) = 1e6^(1/1023) = 1.0136.</p>
 
 <h5>
-<a name="loglinear-scaled-profiles" class="anchor" href="#loglinear-scaled-profiles"><span class="octicon octicon-link"></span></a>Loglinear Scaled Profiles</h5>
+<a id="loglinear-scaled-profiles" class="anchor" href="#loglinear-scaled-profiles" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Loglinear Scaled Profiles</h5>
 
 <p>Fields: kf_profile, kb_profile</p>
 
@@ -717,7 +726,7 @@ Explaining how GNU's make program works is well beyond the scope of this documen
 <p>I.e. a 2x or 60% change per increment.</p>
 
 <h6>
-<a name="improvement" class="anchor" href="#improvement"><span class="octicon octicon-link"></span></a>Improvement</h6>
+<a id="improvement" class="anchor" href="#improvement" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Improvement</h6>
 
 <p>Note that there is some inefficiency in this method of coding because we need extremely long fields to get good resolution,  because x_max=L and not 2^L.</p>
 
@@ -733,23 +742,36 @@ MISMATCH = ones(MISMATCH_VECTOR)</p>
 <p>An alternative would scale the MISMATCH_VECTOR, which has a range of 2^L, instead of MISMATCH, which has a range of just L.  Caveat is that we must get the same thing if the profiles are commuted, but in fact the MISMATCH_VECTOR gets flipped, so the msb becomes the lsb.  One way around this is to designate the 2 outer bits as msbs, and the 2 most inner bits as lsbs.  You break the MISMATCH_VECTOR in two, flip the 2nd half and add to the first.  This gets us a range of 0 to [2^(L/2)-1]*2.</p>
 
 <h3>
-<a name="scoring-functions" class="anchor" href="#scoring-functions"><span class="octicon octicon-link"></span></a>Scoring Functions</h3>
+<a id="scoring-functions" class="anchor" href="#scoring-functions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scoring Functions</h3>
 
 <h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>
 
 <p>The project is firstly developed by Julien Ollivier, then modified and currently maintained by Song Feng (<a href="https://github.com/LifeWorks" class="user-mention">@LifeWorks</a>).</p>
 
 <h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Support or Contact</h3>
 
 <p>If have any problems, please contact <a href="https://github.com/LifeWorks" class="user-mention">@LifeWorks</a> or email <a href="mailto:lifeworks.song@gmail.com">lifeworks.song@gmail.com</a></p>
-      </section>
-      <footer>
-        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
-      </footer>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/OSS-Lab/biojazz/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/OSS-Lab/biojazz/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/OSS-Lab/biojazz"></a> is maintained by <a href="https://github.com/OSS-Lab">OSS-Lab</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+
+  
   </body>
 </html>
