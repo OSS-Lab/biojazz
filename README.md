@@ -19,22 +19,22 @@ Nucleic Acids Res. 2015 : gkv595v1-gkv595.
 
 BioJazz requires the ANC and Facile tools.  You can tell BioJazz where to get them by setting the ANC_HOME and FACILE_HOME environment variables to point to the appropriate directories.  It is recommended to add the following lines to your ''~/.bashrc'' file:
 ```sh
- export ANC_HOME    = ~/workspace/anc
- export FACILE_HOME = ~/workspace/facile
+ export ANC_HOME=~/workspace/anc
+ export FACILE_HOME=~/workspace/facile
  alias  anc='$ANC_HOME/anc.pl'
  alias  facile='$FACILE_HOME/facile.pl'
  
- export BIOJAZZ_HOME = ~/workspace/biojazz
+ export BIOJAZZ_HOME=~/workspace/biojazz
  alias  biojazz='$BIOJAZZ_HOME/biojazz.pl'
 ```
 
 BioJazz requires Matlab to be installed on all nodes used for computation, and assumes matlab can be started with the command ''matlab''. Here is an example of configuration in "~/.bashrc" file (on Mac OS X):
 ```sh
- export MATLAB_HOME = /Applications/MATLAB_R2011b.app/bin
+ export MATLAB_HOME=/Applications/MATLAB_R2011b.app/bin
  alias  matlab='$MATLAB_HOME/matlab'
- export PATH = $MATLAB_HOME:$PATH
+ export PATH=$MATLAB_HOME:$PATH
 
- DYLD_LIBRARY_PATH = /Applications/MATLAB_R2011b.app/bin/maci64:/Applications/MATLAB_R2011b.app/sys/os/maci64:/Applications/MATLAB_R2011b.app/runtime/maci64:$DYLD_LIBRARY_PATH
+ DYLD_LIBRARY_PATH=/Applications/MATLAB_R2011b.app/bin/maci64:/Applications/MATLAB_R2011b.app/sys/os/maci64:/Applications/MATLAB_R2011b.app/runtime/maci64:$DYLD_LIBRARY_PATH
  export DYLD_LIBRARY_PATH
 ```
 Note that if you decide to use a cluster of workstations, these installation instructions apply to all workstations used.
