@@ -68,21 +68,21 @@ Nucleic Acids Res. 2015 : gkv595v1-gkv595.</p>
 
 <p>BioJazz requires the ANC and Facile tools.  You can tell BioJazz where to get them by setting the ANC_HOME and FACILE_HOME environment variables to point to the appropriate directories.  It is recommended to add the following lines to your ''~/.bashrc'' file:</p>
 
-<div class="highlight highlight-source-shell"><pre> <span class="pl-k">export</span> ANC_HOME    = <span class="pl-k">~</span>/workspace/anc
- <span class="pl-k">export</span> FACILE_HOME = <span class="pl-k">~</span>/workspace/facile
+<div class="highlight highlight-source-shell"><pre> <span class="pl-k">export</span> ANC_HOME=<span class="pl-k">~</span>/workspace/anc
+ <span class="pl-k">export</span> FACILE_HOME=<span class="pl-k">~</span>/workspace/facile
  <span class="pl-c1">alias</span>  anc=<span class="pl-s"><span class="pl-pds">'</span>$ANC_HOME/anc.pl<span class="pl-pds">'</span></span>
  <span class="pl-c1">alias</span>  facile=<span class="pl-s"><span class="pl-pds">'</span>$FACILE_HOME/facile.pl<span class="pl-pds">'</span></span>
 
- <span class="pl-k">export</span> BIOJAZZ_HOME = <span class="pl-k">~</span>/workspace/biojazz
+ <span class="pl-k">export</span> BIOJAZZ_HOME=<span class="pl-k">~</span>/workspace/biojazz
  <span class="pl-c1">alias</span>  biojazz=<span class="pl-s"><span class="pl-pds">'</span>$BIOJAZZ_HOME/biojazz.pl<span class="pl-pds">'</span></span></pre></div>
 
 <p>BioJazz requires Matlab to be installed on all nodes used for computation, and assumes matlab can be started with the command ''matlab''. Here is an example of configuration in "~/.bashrc" file (on Mac OS X):</p>
 
-<div class="highlight highlight-source-shell"><pre> <span class="pl-k">export</span> MATLAB_HOME = /Applications/MATLAB_R2011b.app/bin
+<div class="highlight highlight-source-shell"><pre> <span class="pl-k">export</span> MATLAB_HOME=/Applications/MATLAB_R2011b.app/bin
  <span class="pl-c1">alias</span>  matlab=<span class="pl-s"><span class="pl-pds">'</span>$MATLAB_HOME/matlab<span class="pl-pds">'</span></span>
- <span class="pl-k">export</span> PATH = <span class="pl-smi">$MATLAB_HOME</span>:<span class="pl-smi">$PATH</span>
+ <span class="pl-k">export</span> PATH=<span class="pl-smi">$MATLAB_HOME</span>:<span class="pl-smi">$PATH</span>
 
- DYLD_LIBRARY_PATH = /Applications/MATLAB_R2011b.app/bin/maci64:/Applications/MATLAB_R2011b.app/sys/os/maci64:/Applications/MATLAB_R2011b.app/runtime/maci64:<span class="pl-smi">$DYLD_LIBRARY_PATH</span>
+ DYLD_LIBRARY_PATH=/Applications/MATLAB_R2011b.app/bin/maci64:/Applications/MATLAB_R2011b.app/sys/os/maci64:/Applications/MATLAB_R2011b.app/runtime/maci64:<span class="pl-smi">$DYLD_LIBRARY_PATH</span>
  <span class="pl-k">export</span> DYLD_LIBRARY_PATH</pre></div>
 
 <p>Note that if you decide to use a cluster of workstations, these installation instructions apply to all workstations used.</p>
