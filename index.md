@@ -355,7 +355,7 @@ An alternative would scale the MISMATCH_VECTOR, which has a range of 2^L, instea
 ###Scoring Functions
 
 ### Authors and Contributors
-The project was initialized by Julien Ollivier, then continuely developed and is currently maintained by Song Feng (@LifeWorks).
+The project was initialized by Julien Ollivier, then continuely developed and is currently maintained by Song Feng ( @LifeWorks ).
 
 ### Support or Contact
 If have any problems, please contact @LifeWorks or email lifeworks.song@gmail.com
